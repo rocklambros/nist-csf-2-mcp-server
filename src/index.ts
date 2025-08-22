@@ -18,12 +18,16 @@ import { logger } from './utils/logger.js';
 import { getDatabase, closeDatabase } from './db/database.js';
 import { initializeFramework } from './services/framework-loader.js';
 import type { 
-  ToolResponse,
   SubcategoryImplementation,
   RiskAssessment,
   GapAnalysis,
-  OrganizationProfile
+  ImplementationTier
 } from './types/index.js';
+
+// Import new tools
+import { csfLookup, CSFLookupSchema } from './tools/csf_lookup.js';
+import { searchFramework, SearchFrameworkSchema } from './tools/search_framework.js';
+import { getRelatedSubcategories, GetRelatedSubcategoriesSchema } from './tools/get_related_subcategories.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -243,6 +247,58 @@ async function main() {
           type: 'object',
           properties: {}
         }
+      },
+      {
+        name: 'csf_lookup',
+        description: 'Retrieve specific CSF guidance with partial matching support',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            function_id: { type: 'string', description: 'Function ID (supports partial match)' },
+            category_id: { type: 'string', description: 'Category ID (supports partial match)' },
+            subcategory_id: { type: 'string', description: 'Subcategory ID (supports partial match)' },
+            include_examples: { type: 'boolean', description: 'Include implementation examples', default: true },
+            include_relationships: { type: 'boolean', description: 'Include relationships', default: true }
+          }
+        }
+      },
+      {
+        name: 'search_framework',
+        description: 'Full-text search across the CSF framework with fuzzy matching',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: { type: 'string', description: 'Search query (min 2 characters)' },
+            element_types: { 
+              type: 'array', 
+              items: { type: 'string', enum: ['function', 'category', 'subcategory', 'implementation_example'] },
+              description: 'Filter by element types' 
+            },
+            limit: { type: 'number', description: 'Maximum results (1-100)', default: 20 },
+            fuzzy: { type: 'boolean', description: 'Enable fuzzy matching', default: true },
+            min_score: { type: 'number', description: 'Minimum score threshold (0-1)', default: 0.3 }
+          },
+          required: ['query']
+        }
+      },
+      {
+        name: 'get_related_subcategories',
+        description: 'Find related subcategories and analyze relationships',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            subcategory_id: { type: 'string', description: 'Source subcategory ID' },
+            relationship_types: { 
+              type: 'array', 
+              items: { type: 'string', enum: ['projection', 'related_to', 'supersedes', 'incorporated_into'] },
+              description: 'Filter by relationship types'
+            },
+            include_bidirectional: { type: 'boolean', description: 'Include incoming relationships', default: true },
+            depth: { type: 'number', description: 'Relationship traversal depth (1-3)', default: 1 },
+            include_details: { type: 'boolean', description: 'Include additional details', default: true }
+          },
+          required: ['subcategory_id']
+        }
       }
     ],
   }));
@@ -325,7 +381,11 @@ async function main() {
           const params = CreateOrganizationSchema.parse(args);
           
           try {
-            db.createOrganization(params);
+            db.createOrganization({
+              ...params,
+              current_tier: params.current_tier as ImplementationTier | undefined,
+              target_tier: params.target_tier as ImplementationTier | undefined
+            });
             return {
               content: [
                 {
@@ -461,6 +521,48 @@ async function main() {
                     database: dbStats
                   }
                 }, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'csf_lookup': {
+          const params = CSFLookupSchema.parse(args);
+          const result = await csfLookup(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'search_framework': {
+          const params = SearchFrameworkSchema.parse(args);
+          const result = await searchFramework(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'get_related_subcategories': {
+          const params = GetRelatedSubcategoriesSchema.parse(args);
+          const result = await getRelatedSubcategories(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
               }
             ]
           };

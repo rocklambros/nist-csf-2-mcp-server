@@ -12,8 +12,7 @@ import type {
   BaseCSFElement,
   CSFDocument,
   CSFRelationship,
-  ElementType,
-  CSFFunction
+  ElementType
 } from '../types/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -75,7 +74,7 @@ export class FrameworkLoader {
         case 'subcategory':
           this.subcategoriesCache.set(element.element_identifier, element);
           break;
-        case 'implementation_example':
+        case 'implementation_example': {
           // Group implementation examples by their parent subcategory
           const parentId = this.extractParentSubcategory(element.element_identifier);
           if (parentId) {
@@ -84,6 +83,7 @@ export class FrameworkLoader {
             this.implementationExamplesCache.set(parentId, examples);
           }
           break;
+        }
       }
     }
 
@@ -96,7 +96,7 @@ export class FrameworkLoader {
   private extractParentSubcategory(exampleId: string): string | null {
     // Format: GV.OC-01.001
     const match = exampleId.match(/^([A-Z]{2}\.[A-Z]{2}-\d{2})\.\d{3}$/);
-    return match ? match[1] : null;
+    return match ? match[1]! : null;
   }
 
   // ============================================================================
