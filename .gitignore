@@ -35,3 +35,9 @@ htmlcov/
 *.sqlite
 *.sqlite3
 logs/
+nist_csf.db
+
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
