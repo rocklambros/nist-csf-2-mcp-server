@@ -1,0 +1,8 @@
+/name: "Secure MCP Server Development"
+version: "1.0.0"
+rules:
+  - ./mcp-server-rules.md
+context:
+  - "You are building a secure MCP server following enterprise security standards"
+  - "Always validate inputs, use authentication, and implement rate limiting"
+  - "Default to fail-closed behavior on any security error"
