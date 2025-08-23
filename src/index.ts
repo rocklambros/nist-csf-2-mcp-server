@@ -28,6 +28,9 @@ import type {
 import { csfLookup, CSFLookupSchema } from './tools/csf_lookup.js';
 import { searchFramework, SearchFrameworkSchema } from './tools/search_framework.js';
 import { getRelatedSubcategories, GetRelatedSubcategoriesSchema } from './tools/get_related_subcategories.js';
+import { createProfile, CreateProfileSchema } from './tools/create_profile.js';
+import { cloneProfile, CloneProfileSchema } from './tools/clone_profile.js';
+import { quickAssessment, QuickAssessmentSchema } from './tools/quick_assessment.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -299,6 +302,97 @@ async function main() {
           },
           required: ['subcategory_id']
         }
+      },
+      {
+        name: 'create_profile',
+        description: 'Create new organization and security profile',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            org_name: { type: 'string', description: 'Organization name' },
+            sector: { type: 'string', description: 'Industry sector' },
+            size: { type: 'string', enum: ['small', 'medium', 'large', 'enterprise'], description: 'Organization size' },
+            profile_type: { type: 'string', enum: ['baseline', 'target', 'current', 'custom'], description: 'Profile type', default: 'current' },
+            profile_name: { type: 'string', description: 'Custom profile name (optional)' },
+            description: { type: 'string', description: 'Profile description' },
+            created_by: { type: 'string', description: 'Creator name' },
+            current_tier: { type: 'string', description: 'Current implementation tier' },
+            target_tier: { type: 'string', description: 'Target implementation tier' }
+          },
+          required: ['org_name', 'sector', 'size']
+        }
+      },
+      {
+        name: 'clone_profile',
+        description: 'Duplicate an existing profile with modifications',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            source_profile_id: { type: 'string', description: 'Source profile ID to clone' },
+            new_name: { type: 'string', description: 'Name for the new profile' },
+            modifications: {
+              type: 'object',
+              description: 'Optional modifications to apply',
+              properties: {
+                profile_type: { type: 'string', enum: ['baseline', 'target', 'current', 'custom'] },
+                description: { type: 'string' },
+                created_by: { type: 'string' },
+                adjustments: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      subcategory_id: { type: 'string' },
+                      implementation_level: { type: 'string', enum: ['not_implemented', 'partially_implemented', 'largely_implemented', 'fully_implemented'] },
+                      maturity_score: { type: 'number', minimum: 0, maximum: 5 },
+                      notes: { type: 'string' }
+                    },
+                    required: ['subcategory_id']
+                  }
+                }
+              }
+            }
+          },
+          required: ['source_profile_id', 'new_name']
+        }
+      },
+      {
+        name: 'quick_assessment',
+        description: 'Perform simplified assessment using yes/no/partial answers for each CSF function',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'Profile ID to assess' },
+            simplified_answers: {
+              type: 'object',
+              description: 'Simplified answers for each function',
+              properties: {
+                govern: { type: 'string', enum: ['yes', 'no', 'partial'] },
+                identify: { type: 'string', enum: ['yes', 'no', 'partial'] },
+                protect: { type: 'string', enum: ['yes', 'no', 'partial'] },
+                detect: { type: 'string', enum: ['yes', 'no', 'partial'] },
+                respond: { type: 'string', enum: ['yes', 'no', 'partial'] },
+                recover: { type: 'string', enum: ['yes', 'no', 'partial'] }
+              },
+              required: ['govern', 'identify', 'protect', 'detect', 'respond', 'recover']
+            },
+            assessed_by: { type: 'string', description: 'Assessor name' },
+            confidence_level: { type: 'string', enum: ['low', 'medium', 'high'], description: 'Confidence level', default: 'medium' },
+            notes: {
+              type: 'object',
+              description: 'Optional notes for each function',
+              properties: {
+                govern: { type: 'string' },
+                identify: { type: 'string' },
+                protect: { type: 'string' },
+                detect: { type: 'string' },
+                respond: { type: 'string' },
+                recover: { type: 'string' }
+              }
+            }
+          },
+          required: ['profile_id', 'simplified_answers']
+        }
       }
     ],
   }));
@@ -557,6 +651,48 @@ async function main() {
         case 'get_related_subcategories': {
           const params = GetRelatedSubcategoriesSchema.parse(args);
           const result = await getRelatedSubcategories(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'create_profile': {
+          const params = CreateProfileSchema.parse(args);
+          const result = await createProfile(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'clone_profile': {
+          const params = CloneProfileSchema.parse(args);
+          const result = await cloneProfile(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'quick_assessment': {
+          const params = QuickAssessmentSchema.parse(args);
+          const result = await quickAssessment(params);
           
           return {
             content: [

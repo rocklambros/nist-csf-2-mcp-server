@@ -128,6 +128,37 @@ export class CSFDatabase {
         UNIQUE(org_id, category_id)
       );
 
+      -- Profiles table (separate from organizations for versioning)
+      CREATE TABLE IF NOT EXISTS profiles (
+        profile_id TEXT PRIMARY KEY,
+        org_id TEXT NOT NULL,
+        profile_name TEXT NOT NULL,
+        profile_type TEXT NOT NULL CHECK (profile_type IN ('baseline', 'target', 'current', 'custom')),
+        description TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_by TEXT,
+        is_active BOOLEAN DEFAULT 1,
+        parent_profile_id TEXT,
+        FOREIGN KEY (org_id) REFERENCES organization_profiles(org_id),
+        FOREIGN KEY (parent_profile_id) REFERENCES profiles(profile_id)
+      );
+
+      -- Assessments table (links profiles to evaluated subcategories)
+      CREATE TABLE IF NOT EXISTS assessments (
+        assessment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        profile_id TEXT NOT NULL,
+        subcategory_id TEXT NOT NULL,
+        implementation_level TEXT CHECK (implementation_level IN ('not_implemented', 'partially_implemented', 'largely_implemented', 'fully_implemented')),
+        maturity_score INTEGER CHECK (maturity_score >= 0 AND maturity_score <= 5),
+        confidence_level TEXT CHECK (confidence_level IN ('low', 'medium', 'high')),
+        notes TEXT,
+        evidence TEXT,
+        assessed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        assessed_by TEXT,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
+        UNIQUE(profile_id, subcategory_id)
+      );
+
       -- Create indexes for better query performance
       CREATE INDEX IF NOT EXISTS idx_implementations_org ON subcategory_implementations(org_id);
       CREATE INDEX IF NOT EXISTS idx_implementations_subcategory ON subcategory_implementations(subcategory_id);
@@ -135,6 +166,9 @@ export class CSFDatabase {
       CREATE INDEX IF NOT EXISTS idx_risk_element ON risk_assessments(element_id);
       CREATE INDEX IF NOT EXISTS idx_gap_org ON gap_analysis(org_id);
       CREATE INDEX IF NOT EXISTS idx_gap_category ON gap_analysis(category_id);
+      CREATE INDEX IF NOT EXISTS idx_profiles_org ON profiles(org_id);
+      CREATE INDEX IF NOT EXISTS idx_assessments_profile ON assessments(profile_id);
+      CREATE INDEX IF NOT EXISTS idx_assessments_subcategory ON assessments(subcategory_id);
     `;
 
     this.db.exec(schema);
@@ -333,6 +367,158 @@ export class CSFDatabase {
   }
 
   // ============================================================================
+  // PROFILE MANAGEMENT
+  // ============================================================================
+
+  createProfile(profile: {
+    profile_id: string;
+    org_id: string;
+    profile_name: string;
+    profile_type: 'baseline' | 'target' | 'current' | 'custom';
+    description?: string;
+    created_by?: string;
+    parent_profile_id?: string;
+  }): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO profiles (
+        profile_id, org_id, profile_name, profile_type, 
+        description, created_by, parent_profile_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    stmt.run(
+      profile.profile_id,
+      profile.org_id,
+      profile.profile_name,
+      profile.profile_type,
+      profile.description || null,
+      profile.created_by || null,
+      profile.parent_profile_id || null
+    );
+  }
+
+  getProfile(profileId: string): any {
+    const stmt = this.db.prepare('SELECT * FROM profiles WHERE profile_id = ?');
+    return stmt.get(profileId);
+  }
+
+  getOrganizationProfiles(orgId: string): any[] {
+    const stmt = this.db.prepare('SELECT * FROM profiles WHERE org_id = ? AND is_active = 1');
+    return stmt.all(orgId);
+  }
+
+  cloneProfile(sourceProfileId: string, newProfileId: string, newName: string): void {
+    // Clone the profile
+    const cloneProfileStmt = this.db.prepare(`
+      INSERT INTO profiles (profile_id, org_id, profile_name, profile_type, description, created_by, parent_profile_id)
+      SELECT ?, org_id, ?, profile_type, description, created_by, ?
+      FROM profiles WHERE profile_id = ?
+    `);
+    
+    cloneProfileStmt.run(newProfileId, newName, sourceProfileId, sourceProfileId);
+    
+    // Clone all assessments
+    const cloneAssessmentsStmt = this.db.prepare(`
+      INSERT INTO assessments (
+        profile_id, subcategory_id, implementation_level, 
+        maturity_score, confidence_level, notes, evidence, assessed_by
+      )
+      SELECT ?, subcategory_id, implementation_level, 
+             maturity_score, confidence_level, notes, evidence, assessed_by
+      FROM assessments WHERE profile_id = ?
+    `);
+    
+    cloneAssessmentsStmt.run(newProfileId, sourceProfileId);
+  }
+
+  // ============================================================================
+  // ASSESSMENT MANAGEMENT
+  // ============================================================================
+
+  createAssessment(assessment: {
+    profile_id: string;
+    subcategory_id: string;
+    implementation_level: 'not_implemented' | 'partially_implemented' | 'largely_implemented' | 'fully_implemented';
+    maturity_score: number;
+    confidence_level?: 'low' | 'medium' | 'high';
+    notes?: string;
+    evidence?: string;
+    assessed_by?: string;
+  }): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO assessments (
+        profile_id, subcategory_id, implementation_level,
+        maturity_score, confidence_level, notes, evidence, assessed_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(profile_id, subcategory_id) DO UPDATE SET
+        implementation_level = excluded.implementation_level,
+        maturity_score = excluded.maturity_score,
+        confidence_level = excluded.confidence_level,
+        notes = excluded.notes,
+        evidence = excluded.evidence,
+        assessed_by = excluded.assessed_by,
+        assessed_at = CURRENT_TIMESTAMP
+    `);
+    
+    stmt.run(
+      assessment.profile_id,
+      assessment.subcategory_id,
+      assessment.implementation_level,
+      assessment.maturity_score,
+      assessment.confidence_level || 'medium',
+      assessment.notes || null,
+      assessment.evidence || null,
+      assessment.assessed_by || null
+    );
+  }
+
+  createBulkAssessments(profileId: string, assessments: any[]): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO assessments (
+        profile_id, subcategory_id, implementation_level,
+        maturity_score, confidence_level, notes, evidence, assessed_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(profile_id, subcategory_id) DO UPDATE SET
+        implementation_level = excluded.implementation_level,
+        maturity_score = excluded.maturity_score,
+        confidence_level = excluded.confidence_level,
+        notes = excluded.notes,
+        evidence = excluded.evidence,
+        assessed_by = excluded.assessed_by,
+        assessed_at = CURRENT_TIMESTAMP
+    `);
+    
+    const insertMany = this.db.transaction((assessments: any[]) => {
+      for (const assessment of assessments) {
+        stmt.run(
+          profileId,
+          assessment.subcategory_id,
+          assessment.implementation_level,
+          assessment.maturity_score,
+          assessment.confidence_level || 'medium',
+          assessment.notes || null,
+          assessment.evidence || null,
+          assessment.assessed_by || null
+        );
+      }
+    });
+    
+    insertMany(assessments);
+  }
+
+  getProfileAssessments(profileId: string): any[] {
+    const stmt = this.db.prepare('SELECT * FROM assessments WHERE profile_id = ?');
+    return stmt.all(profileId);
+  }
+
+  getAssessmentsBySubcategory(profileId: string, subcategoryId: string): any {
+    const stmt = this.db.prepare(
+      'SELECT * FROM assessments WHERE profile_id = ? AND subcategory_id = ?'
+    );
+    return stmt.get(profileId, subcategoryId);
+  }
+
+  // ============================================================================
   // UTILITY METHODS
   // ============================================================================
 
@@ -352,8 +538,10 @@ export class CSFDatabase {
   getStats() {
     const stats = {
       organizations: this.db.prepare('SELECT COUNT(*) as count FROM organization_profiles').get(),
+      profiles: this.db.prepare('SELECT COUNT(*) as count FROM profiles').get(),
+      assessments: this.db.prepare('SELECT COUNT(*) as count FROM assessments').get(),
       implementations: this.db.prepare('SELECT COUNT(*) as count FROM subcategory_implementations').get(),
-      assessments: this.db.prepare('SELECT COUNT(*) as count FROM risk_assessments').get(),
+      risk_assessments: this.db.prepare('SELECT COUNT(*) as count FROM risk_assessments').get(),
       gaps: this.db.prepare('SELECT COUNT(*) as count FROM gap_analysis').get()
     };
     return stats;
