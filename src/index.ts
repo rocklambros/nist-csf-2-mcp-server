@@ -39,6 +39,8 @@ import { generatePriorityMatrix, GeneratePriorityMatrixSchema } from './tools/ge
 import { createImplementationPlan, CreateImplementationPlanSchema } from './tools/create_implementation_plan.js';
 import { estimateImplementationCost, EstimateImplementationCostSchema } from './tools/estimate_implementation_cost.js';
 import { suggestNextActions, SuggestNextActionsSchema } from './tools/suggest_next_actions.js';
+import { trackProgressTool } from './tools/track_progress.js';
+import { checkComplianceDriftTool } from './tools/check_compliance_drift.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -572,6 +574,49 @@ async function main() {
           },
           required: ['profile_id', 'capacity_hours_per_week']
         }
+      },
+      {
+        name: 'track_progress',
+        description: 'Track implementation progress for NIST CSF subcategories with UPSERT operations',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'ID of the profile to track progress for' },
+            updates: {
+              type: 'array',
+              description: 'Array of subcategory progress updates',
+              items: {
+                type: 'object',
+                properties: {
+                  subcategory_id: { type: 'string', description: 'ID of the subcategory to update' },
+                  current_implementation: { type: 'string', description: 'Current implementation level description' },
+                  current_maturity: { type: 'number', description: 'Current maturity level (1-5)' },
+                  status: { 
+                    type: 'string', 
+                    enum: ['on_track', 'at_risk', 'behind', 'blocked', 'completed'],
+                    description: 'Current status of the subcategory implementation'
+                  },
+                  is_blocked: { type: 'boolean', description: 'Whether this subcategory is blocked' },
+                  blocking_reason: { type: 'string', description: 'Reason why the subcategory is blocked' },
+                  notes: { type: 'string', description: 'Additional notes about the progress' }
+                },
+                required: ['subcategory_id']
+              }
+            }
+          },
+          required: ['profile_id', 'updates']
+        }
+      },
+      {
+        name: 'check_compliance_drift',
+        description: 'Analyze compliance drift by comparing current assessments with previous baselines',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'ID of the profile to check for compliance drift' }
+          },
+          required: ['profile_id']
+        }
       }
     ],
   }));
@@ -984,6 +1029,32 @@ async function main() {
         case 'suggest_next_actions': {
           const params = SuggestNextActionsSchema.parse(args);
           const result = await suggestNextActions(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'track_progress': {
+          const result = await trackProgressTool.execute(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'check_compliance_drift': {
+          const result = await checkComplianceDriftTool.execute(args as any, db);
           
           return {
             content: [

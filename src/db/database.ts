@@ -230,6 +230,63 @@ export class CSFDatabase {
         FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
       );
 
+      -- Progress Tracking table
+      CREATE TABLE IF NOT EXISTS progress_tracking (
+        id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        subcategory_id TEXT NOT NULL,
+        baseline_implementation TEXT,
+        current_implementation TEXT,
+        target_implementation TEXT,
+        baseline_maturity INTEGER,
+        current_maturity INTEGER,
+        target_maturity INTEGER,
+        completion_percentage INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'on_track',
+        is_blocked BOOLEAN DEFAULT 0,
+        blocking_reason TEXT,
+        last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        days_since_update INTEGER DEFAULT 0,
+        trend TEXT DEFAULT 'stable',
+        notes TEXT,
+        FOREIGN KEY (profile_id) REFERENCES profiles(id),
+        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id),
+        UNIQUE(profile_id, subcategory_id)
+      );
+
+      -- Compliance Drift History table
+      CREATE TABLE IF NOT EXISTS compliance_drift_history (
+        id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        subcategory_id TEXT NOT NULL,
+        check_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        previous_implementation TEXT,
+        current_implementation TEXT,
+        drift_type TEXT,
+        drift_severity TEXT,
+        risk_impact INTEGER,
+        notification_sent BOOLEAN DEFAULT 0,
+        resolved BOOLEAN DEFAULT 0,
+        resolved_date TIMESTAMP,
+        resolution_notes TEXT,
+        FOREIGN KEY (profile_id) REFERENCES profiles(id),
+        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
+      );
+
+      -- Progress Milestones table
+      CREATE TABLE IF NOT EXISTS progress_milestones (
+        id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        milestone_name TEXT NOT NULL,
+        target_date DATE,
+        completion_date DATE,
+        status TEXT DEFAULT 'pending',
+        completion_percentage INTEGER DEFAULT 0,
+        subcategories_involved TEXT,
+        success_criteria TEXT,
+        FOREIGN KEY (profile_id) REFERENCES profiles(id)
+      );
+
       -- Create indexes for better query performance
       CREATE INDEX IF NOT EXISTS idx_implementations_org ON subcategory_implementations(org_id);
       CREATE INDEX IF NOT EXISTS idx_implementations_subcategory ON subcategory_implementations(subcategory_id);
@@ -245,6 +302,14 @@ export class CSFDatabase {
       CREATE INDEX IF NOT EXISTS idx_impl_items_phase ON implementation_items(phase_id);
       CREATE INDEX IF NOT EXISTS idx_dependencies_subcategory ON subcategory_dependencies(subcategory_id);
       CREATE INDEX IF NOT EXISTS idx_cost_estimates_subcategory ON cost_estimates(subcategory_id);
+      CREATE INDEX IF NOT EXISTS idx_progress_profile ON progress_tracking(profile_id);
+      CREATE INDEX IF NOT EXISTS idx_progress_subcategory ON progress_tracking(subcategory_id);
+      CREATE INDEX IF NOT EXISTS idx_progress_status ON progress_tracking(status);
+      CREATE INDEX IF NOT EXISTS idx_drift_profile ON compliance_drift_history(profile_id);
+      CREATE INDEX IF NOT EXISTS idx_drift_date ON compliance_drift_history(check_date);
+      CREATE INDEX IF NOT EXISTS idx_drift_unresolved ON compliance_drift_history(resolved);
+      CREATE INDEX IF NOT EXISTS idx_milestones_profile ON progress_milestones(profile_id);
+      CREATE INDEX IF NOT EXISTS idx_milestones_status ON progress_milestones(status);
     `;
 
     this.db.exec(schema);
@@ -1533,6 +1598,341 @@ export class CSFDatabase {
       topologicalOrder: sorted,
       hasCycle: sorted.length !== subcategoryIds.length
     };
+  }
+
+  // ============================================================================
+  // PROGRESS TRACKING
+  // ============================================================================
+
+  upsertProgressTracking(progress: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO progress_tracking (
+        id, profile_id, subcategory_id, baseline_implementation,
+        current_implementation, target_implementation, baseline_maturity,
+        current_maturity, target_maturity, completion_percentage,
+        status, is_blocked, blocking_reason, last_updated, trend, notes
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?)
+      ON CONFLICT(profile_id, subcategory_id) DO UPDATE SET
+        current_implementation = excluded.current_implementation,
+        current_maturity = excluded.current_maturity,
+        completion_percentage = excluded.completion_percentage,
+        status = excluded.status,
+        is_blocked = excluded.is_blocked,
+        blocking_reason = excluded.blocking_reason,
+        last_updated = datetime('now'),
+        days_since_update = 0,
+        trend = excluded.trend,
+        notes = excluded.notes
+    `);
+    
+    stmt.run(
+      progress.id,
+      progress.profile_id,
+      progress.subcategory_id,
+      progress.baseline_implementation,
+      progress.current_implementation,
+      progress.target_implementation,
+      progress.baseline_maturity,
+      progress.current_maturity,
+      progress.target_maturity,
+      progress.completion_percentage,
+      progress.status,
+      progress.is_blocked ? 1 : 0,
+      progress.blocking_reason,
+      progress.trend,
+      progress.notes
+    );
+  }
+
+  getProgressTracking(profileId: string): any[] {
+    return this.db.prepare(`
+      SELECT 
+        pt.*,
+        s.name as subcategory_name,
+        s.description as subcategory_description,
+        SUBSTR(pt.subcategory_id, 1, 2) as function_id,
+        SUBSTR(pt.subcategory_id, 1, 5) as category_id,
+        julianday('now') - julianday(pt.last_updated) as days_since_update
+      FROM progress_tracking pt
+      JOIN subcategories s ON pt.subcategory_id = s.id
+      WHERE pt.profile_id = ?
+      ORDER BY pt.subcategory_id
+    `).all(profileId);
+  }
+
+  getProgressSummary(profileId: string): any {
+    const sql = `
+      WITH progress_stats AS (
+        SELECT 
+          COUNT(*) as total_subcategories,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_count,
+          SUM(CASE WHEN status = 'on_track' THEN 1 ELSE 0 END) as on_track_count,
+          SUM(CASE WHEN status = 'at_risk' THEN 1 ELSE 0 END) as at_risk_count,
+          SUM(CASE WHEN status = 'delayed' THEN 1 ELSE 0 END) as delayed_count,
+          SUM(CASE WHEN is_blocked = 1 THEN 1 ELSE 0 END) as blocked_count,
+          AVG(completion_percentage) as avg_completion,
+          MIN(completion_percentage) as min_completion,
+          MAX(completion_percentage) as max_completion,
+          AVG(julianday('now') - julianday(last_updated)) as avg_days_since_update
+        FROM progress_tracking
+        WHERE profile_id = ?
+      ),
+      function_progress AS (
+        SELECT 
+          SUBSTR(subcategory_id, 1, 2) as function_id,
+          COUNT(*) as subcategory_count,
+          AVG(completion_percentage) as avg_completion,
+          SUM(CASE WHEN is_blocked = 1 THEN 1 ELSE 0 END) as blocked_count
+        FROM progress_tracking
+        WHERE profile_id = ?
+        GROUP BY SUBSTR(subcategory_id, 1, 2)
+      )
+      SELECT 
+        ps.*,
+        (SELECT json_group_array(json_object(
+          'function_id', function_id,
+          'subcategory_count', subcategory_count,
+          'avg_completion', ROUND(avg_completion, 2),
+          'blocked_count', blocked_count
+        )) FROM function_progress) as function_breakdown
+      FROM progress_stats ps
+    `;
+    
+    return this.db.prepare(sql).get(profileId, profileId);
+  }
+
+  recordComplianceDrift(drift: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO compliance_drift_history (
+        id, profile_id, subcategory_id, check_date, previous_implementation,
+        current_implementation, drift_type, drift_severity, risk_impact,
+        notification_sent, resolved, resolution_notes
+      ) VALUES (?, ?, ?, datetime('now'), ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    stmt.run(
+      drift.id,
+      drift.profile_id,
+      drift.subcategory_id,
+      drift.previous_implementation,
+      drift.current_implementation,
+      drift.drift_type,
+      drift.drift_severity,
+      drift.risk_impact,
+      drift.notification_sent ? 1 : 0,
+      drift.resolved ? 1 : 0,
+      drift.resolution_notes
+    );
+  }
+
+  getComplianceDrifts(profileId: string, unresolvedOnly: boolean = true): any[] {
+    let sql = `
+      SELECT 
+        cd.*,
+        s.name as subcategory_name,
+        s.description as subcategory_description,
+        SUBSTR(cd.subcategory_id, 1, 2) as function_id,
+        julianday('now') - julianday(cd.check_date) as days_since_detection
+      FROM compliance_drift_history cd
+      JOIN subcategories s ON cd.subcategory_id = s.id
+      WHERE cd.profile_id = ?
+    `;
+    
+    if (unresolvedOnly) {
+      sql += ' AND cd.resolved = 0';
+    }
+    
+    sql += ' ORDER BY cd.check_date DESC';
+    
+    return this.db.prepare(sql).all(profileId);
+  }
+
+  detectComplianceDrift(profileId: string): any[] {
+    const sql = `
+      WITH current_state AS (
+        SELECT 
+          a.subcategory_id,
+          a.implementation_level as current_implementation,
+          a.maturity_score as current_maturity,
+          a.assessed_at as last_assessment_date
+        FROM assessments a
+        WHERE a.profile_id = ?
+      ),
+      previous_state AS (
+        SELECT 
+          pt.subcategory_id,
+          pt.current_implementation as tracked_implementation,
+          pt.current_maturity as tracked_maturity,
+          pt.target_implementation,
+          pt.target_maturity,
+          pt.last_updated as last_tracking_date
+        FROM progress_tracking pt
+        WHERE pt.profile_id = ?
+      ),
+      drift_analysis AS (
+        SELECT 
+          COALESCE(c.subcategory_id, p.subcategory_id) as subcategory_id,
+          c.current_implementation,
+          c.current_maturity,
+          p.tracked_implementation,
+          p.tracked_maturity,
+          p.target_implementation,
+          p.target_maturity,
+          CASE 
+            WHEN c.current_implementation IS NULL THEN 'missing_assessment'
+            WHEN p.tracked_implementation IS NULL THEN 'untracked'
+            WHEN c.current_implementation != p.tracked_implementation THEN
+              CASE 
+                WHEN (c.current_implementation = 'not_implemented' AND p.tracked_implementation != 'not_implemented') OR
+                     (c.current_implementation = 'partially_implemented' AND p.tracked_implementation IN ('largely_implemented', 'fully_implemented')) OR
+                     (c.current_implementation = 'largely_implemented' AND p.tracked_implementation = 'fully_implemented')
+                THEN 'degradation'
+                WHEN (c.current_implementation = 'fully_implemented' AND p.tracked_implementation != 'fully_implemented') OR
+                     (c.current_implementation = 'largely_implemented' AND p.tracked_implementation IN ('not_implemented', 'partially_implemented')) OR
+                     (c.current_implementation = 'partially_implemented' AND p.tracked_implementation = 'not_implemented')
+                THEN 'improvement'
+                ELSE 'change'
+              END
+            WHEN c.current_maturity < p.tracked_maturity - 1 THEN 'maturity_degradation'
+            WHEN c.current_maturity > p.tracked_maturity + 1 THEN 'maturity_improvement'
+            ELSE 'stable'
+          END as drift_type,
+          CASE 
+            WHEN c.current_implementation = 'not_implemented' AND p.tracked_implementation IN ('largely_implemented', 'fully_implemented') THEN 'critical'
+            WHEN c.current_implementation = 'not_implemented' AND p.tracked_implementation = 'partially_implemented' THEN 'high'
+            WHEN c.current_implementation = 'partially_implemented' AND p.tracked_implementation IN ('largely_implemented', 'fully_implemented') THEN 'medium'
+            WHEN c.current_maturity < p.tracked_maturity - 1 THEN 'medium'
+            ELSE 'low'
+          END as drift_severity,
+          julianday('now') - julianday(COALESCE(c.last_assessment_date, p.last_tracking_date)) as days_since_check
+        FROM current_state c
+        FULL OUTER JOIN previous_state p ON c.subcategory_id = p.subcategory_id
+      )
+      SELECT 
+        d.*,
+        s.name as subcategory_name,
+        SUBSTR(d.subcategory_id, 1, 2) as function_id
+      FROM drift_analysis d
+      JOIN subcategories s ON d.subcategory_id = s.id
+      WHERE d.drift_type NOT IN ('stable', 'improvement', 'maturity_improvement')
+      ORDER BY 
+        CASE d.drift_severity 
+          WHEN 'critical' THEN 1
+          WHEN 'high' THEN 2
+          WHEN 'medium' THEN 3
+          ELSE 4
+        END,
+        d.subcategory_id
+    `;
+    
+    return this.db.prepare(sql).all(profileId, profileId);
+  }
+
+  updateProgressTrend(profileId: string): void {
+    const sql = `
+      UPDATE progress_tracking
+      SET trend = CASE 
+        WHEN completion_percentage > (
+          SELECT AVG(completion_percentage) 
+          FROM progress_tracking 
+          WHERE profile_id = ? 
+            AND last_updated < datetime('now', '-7 days')
+        ) THEN 'improving'
+        WHEN completion_percentage < (
+          SELECT AVG(completion_percentage) 
+          FROM progress_tracking 
+          WHERE profile_id = ? 
+            AND last_updated < datetime('now', '-7 days')
+        ) THEN 'declining'
+        ELSE 'stable'
+      END,
+      days_since_update = julianday('now') - julianday(last_updated)
+      WHERE profile_id = ?
+    `;
+    
+    this.db.prepare(sql).run(profileId, profileId, profileId);
+  }
+
+  createProgressMilestone(milestone: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO progress_milestones (
+        id, profile_id, milestone_name, target_date, completion_date,
+        status, completion_percentage, subcategories_involved, success_criteria
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    stmt.run(
+      milestone.id,
+      milestone.profile_id,
+      milestone.milestone_name,
+      milestone.target_date,
+      milestone.completion_date,
+      milestone.status || 'pending',
+      milestone.completion_percentage || 0,
+      milestone.subcategories_involved,
+      milestone.success_criteria
+    );
+  }
+
+  getProgressMilestones(profileId: string): any[] {
+    return this.db.prepare(`
+      SELECT 
+        *,
+        CASE 
+          WHEN status = 'completed' THEN 0
+          WHEN status = 'in_progress' THEN 1
+          WHEN status = 'pending' THEN 2
+          ELSE 3
+        END as status_order,
+        julianday(target_date) - julianday('now') as days_until_target
+      FROM progress_milestones
+      WHERE profile_id = ?
+      ORDER BY status_order, target_date
+    `).all(profileId);
+  }
+
+  calculateVelocity(profileId: string, daysBack: number = 30): any {
+    const sql = `
+      WITH velocity_data AS (
+        SELECT 
+          DATE(last_updated) as update_date,
+          AVG(completion_percentage) as daily_avg_completion,
+          COUNT(DISTINCT subcategory_id) as items_updated
+        FROM progress_tracking
+        WHERE profile_id = ?
+          AND last_updated >= datetime('now', '-' || ? || ' days')
+        GROUP BY DATE(last_updated)
+      ),
+      velocity_stats AS (
+        SELECT 
+          AVG(daily_avg_completion) as avg_daily_progress,
+          MAX(daily_avg_completion) as max_daily_progress,
+          MIN(daily_avg_completion) as min_daily_progress,
+          COUNT(*) as active_days,
+          SUM(items_updated) as total_items_updated
+        FROM velocity_data
+      ),
+      current_stats AS (
+        SELECT 
+          AVG(completion_percentage) as current_avg_completion,
+          COUNT(*) as total_items
+        FROM progress_tracking
+        WHERE profile_id = ?
+      )
+      SELECT 
+        v.*,
+        c.current_avg_completion,
+        c.total_items,
+        CASE 
+          WHEN v.avg_daily_progress > 0 THEN 
+            (100 - c.current_avg_completion) / v.avg_daily_progress
+          ELSE NULL
+        END as estimated_days_to_completion
+      FROM velocity_stats v
+      CROSS JOIN current_stats c
+    `;
+    
+    return this.db.prepare(sql).get(profileId, daysBack, profileId);
   }
 }
 
