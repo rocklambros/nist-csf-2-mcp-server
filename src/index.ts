@@ -41,6 +41,8 @@ import { estimateImplementationCost, EstimateImplementationCostSchema } from './
 import { suggestNextActions, SuggestNextActionsSchema } from './tools/suggest_next_actions.js';
 import { trackProgressTool } from './tools/track_progress.js';
 import { checkComplianceDriftTool } from './tools/check_compliance_drift.js';
+import { mapComplianceTool } from './tools/map_compliance.js';
+import { getIndustryBenchmarksTool } from './tools/get_industry_benchmarks.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -617,6 +619,54 @@ async function main() {
           },
           required: ['profile_id']
         }
+      },
+      {
+        name: 'map_compliance',
+        description: 'Map existing compliance framework controls to NIST CSF subcategories',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'ID of the profile to map compliance for' },
+            existing_controls: {
+              type: 'array',
+              description: 'Array of existing compliance controls to map',
+              items: {
+                type: 'object',
+                properties: {
+                  framework: {
+                    type: 'string',
+                    enum: ['ISO_27001', 'SOC_2', 'NIST_800-53', 'CIS', 'NIST_800-171', 'IEC_62443', 'PCI-DSS', 'HIPAA'],
+                    description: 'Compliance framework'
+                  },
+                  control_id: { type: 'string', description: 'Control ID within the framework' }
+                },
+                required: ['framework', 'control_id']
+              }
+            }
+          },
+          required: ['profile_id', 'existing_controls']
+        }
+      },
+      {
+        name: 'get_industry_benchmarks',
+        description: 'Compare organization against industry benchmarks and peer organizations',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'ID of the profile to benchmark' },
+            industry: {
+              type: 'string',
+              enum: ['Financial Services', 'Healthcare', 'Manufacturing', 'Retail', 'Technology', 'Government', 'Energy'],
+              description: 'Industry sector'
+            },
+            organization_size: {
+              type: 'string',
+              enum: ['small', 'medium', 'large', 'enterprise'],
+              description: 'Organization size'
+            }
+          },
+          required: ['profile_id', 'industry', 'organization_size']
+        }
       }
     ],
   }));
@@ -1055,6 +1105,32 @@ async function main() {
 
         case 'check_compliance_drift': {
           const result = await checkComplianceDriftTool.execute(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'map_compliance': {
+          const result = await mapComplianceTool.execute(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'get_industry_benchmarks': {
+          const result = await getIndustryBenchmarksTool.execute(args as any, db);
           
           return {
             content: [

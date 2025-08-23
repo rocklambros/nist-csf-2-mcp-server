@@ -310,6 +310,88 @@ export class CSFDatabase {
       CREATE INDEX IF NOT EXISTS idx_drift_unresolved ON compliance_drift_history(resolved);
       CREATE INDEX IF NOT EXISTS idx_milestones_profile ON progress_milestones(profile_id);
       CREATE INDEX IF NOT EXISTS idx_milestones_status ON progress_milestones(status);
+
+      -- Compliance mapping tables
+      CREATE TABLE IF NOT EXISTS compliance_mappings (
+        id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        framework TEXT NOT NULL,
+        framework_version TEXT,
+        control_id TEXT NOT NULL,
+        control_name TEXT,
+        control_description TEXT,
+        csf_subcategory_id TEXT NOT NULL,
+        mapping_type TEXT DEFAULT 'direct',
+        mapping_strength TEXT DEFAULT 'strong',
+        coverage_percentage INTEGER DEFAULT 100,
+        implementation_guidance TEXT,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (profile_id) REFERENCES profiles(id),
+        FOREIGN KEY (csf_subcategory_id) REFERENCES subcategories(id),
+        UNIQUE(profile_id, framework, control_id, csf_subcategory_id)
+      );
+
+      -- Framework crosswalk reference table
+      CREATE TABLE IF NOT EXISTS framework_crosswalk (
+        id TEXT PRIMARY KEY,
+        source_framework TEXT NOT NULL,
+        source_control_id TEXT NOT NULL,
+        source_control_name TEXT,
+        target_framework TEXT NOT NULL,
+        target_control_id TEXT NOT NULL,
+        target_control_name TEXT,
+        mapping_type TEXT DEFAULT 'equivalent',
+        mapping_confidence INTEGER DEFAULT 80,
+        bidirectional BOOLEAN DEFAULT 1,
+        notes TEXT,
+        UNIQUE(source_framework, source_control_id, target_framework, target_control_id)
+      );
+
+      -- Industry benchmark data
+      CREATE TABLE IF NOT EXISTS industry_benchmarks (
+        id TEXT PRIMARY KEY,
+        industry TEXT NOT NULL,
+        organization_size TEXT NOT NULL,
+        csf_function TEXT NOT NULL,
+        metric_name TEXT NOT NULL,
+        percentile_25 REAL,
+        percentile_50 REAL,
+        percentile_75 REAL,
+        percentile_90 REAL,
+        average_score REAL,
+        sample_size INTEGER,
+        data_year INTEGER,
+        source TEXT,
+        notes TEXT,
+        UNIQUE(industry, organization_size, csf_function, metric_name, data_year)
+      );
+
+      -- Compliance coverage analysis
+      CREATE TABLE IF NOT EXISTS compliance_coverage (
+        id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        framework TEXT NOT NULL,
+        total_controls INTEGER,
+        mapped_controls INTEGER,
+        fully_covered INTEGER,
+        partially_covered INTEGER,
+        not_covered INTEGER,
+        coverage_percentage REAL,
+        gap_count INTEGER,
+        critical_gaps TEXT,
+        assessment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (profile_id) REFERENCES profiles(id)
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_compliance_mappings_profile ON compliance_mappings(profile_id);
+      CREATE INDEX IF NOT EXISTS idx_compliance_mappings_framework ON compliance_mappings(framework);
+      CREATE INDEX IF NOT EXISTS idx_compliance_mappings_subcategory ON compliance_mappings(csf_subcategory_id);
+      CREATE INDEX IF NOT EXISTS idx_crosswalk_source ON framework_crosswalk(source_framework, source_control_id);
+      CREATE INDEX IF NOT EXISTS idx_crosswalk_target ON framework_crosswalk(target_framework, target_control_id);
+      CREATE INDEX IF NOT EXISTS idx_benchmarks_industry ON industry_benchmarks(industry, organization_size);
+      CREATE INDEX IF NOT EXISTS idx_coverage_profile ON compliance_coverage(profile_id, framework);
     `;
 
     this.db.exec(schema);
@@ -1933,6 +2015,282 @@ export class CSFDatabase {
     `;
     
     return this.db.prepare(sql).get(profileId, daysBack, profileId);
+  }
+
+  // ============================================================================
+  // COMPLIANCE MAPPING METHODS
+  // ============================================================================
+
+  upsertComplianceMapping(mapping: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO compliance_mappings (
+        id, profile_id, framework, framework_version, control_id,
+        control_name, control_description, csf_subcategory_id,
+        mapping_type, mapping_strength, coverage_percentage,
+        implementation_guidance, notes, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      ON CONFLICT(profile_id, framework, control_id, csf_subcategory_id) DO UPDATE SET
+        framework_version = excluded.framework_version,
+        control_name = excluded.control_name,
+        control_description = excluded.control_description,
+        mapping_type = excluded.mapping_type,
+        mapping_strength = excluded.mapping_strength,
+        coverage_percentage = excluded.coverage_percentage,
+        implementation_guidance = excluded.implementation_guidance,
+        notes = excluded.notes,
+        updated_at = datetime('now')
+    `);
+    
+    stmt.run(
+      mapping.id || `${mapping.profile_id}_${mapping.framework}_${mapping.control_id}_${mapping.csf_subcategory_id}`,
+      mapping.profile_id,
+      mapping.framework,
+      mapping.framework_version,
+      mapping.control_id,
+      mapping.control_name,
+      mapping.control_description,
+      mapping.csf_subcategory_id,
+      mapping.mapping_type || 'direct',
+      mapping.mapping_strength || 'strong',
+      mapping.coverage_percentage ?? 100,
+      mapping.implementation_guidance,
+      mapping.notes
+    );
+  }
+
+  getComplianceMappings(profileId: string, framework?: string): any[] {
+    let sql = `
+      SELECT 
+        cm.*,
+        s.name as subcategory_name,
+        s.description as subcategory_description,
+        c.name as category_name,
+        f.name as function_name
+      FROM compliance_mappings cm
+      JOIN subcategories s ON cm.csf_subcategory_id = s.id
+      JOIN categories c ON SUBSTR(s.id, 1, 5) = c.id
+      JOIN functions f ON SUBSTR(s.id, 1, 2) = f.id
+      WHERE cm.profile_id = ?
+    `;
+    
+    const params: any[] = [profileId];
+    
+    if (framework) {
+      sql += ' AND cm.framework = ?';
+      params.push(framework);
+    }
+    
+    sql += ' ORDER BY cm.framework, cm.control_id';
+    
+    return this.db.prepare(sql).all(...params);
+  }
+
+  analyzeComplianceCoverage(profileId: string, framework: string): any {
+    const sql = `
+      WITH control_coverage AS (
+        SELECT 
+          cm.control_id,
+          cm.control_name,
+          cm.csf_subcategory_id,
+          cm.coverage_percentage,
+          cm.mapping_strength,
+          CASE 
+            WHEN cm.coverage_percentage >= 80 THEN 'fully_covered'
+            WHEN cm.coverage_percentage >= 40 THEN 'partially_covered'
+            ELSE 'not_covered'
+          END as coverage_status
+        FROM compliance_mappings cm
+        WHERE cm.profile_id = ? AND cm.framework = ?
+      ),
+      coverage_summary AS (
+        SELECT 
+          COUNT(DISTINCT control_id) as mapped_controls,
+          COUNT(DISTINCT CASE WHEN coverage_status = 'fully_covered' THEN control_id END) as fully_covered,
+          COUNT(DISTINCT CASE WHEN coverage_status = 'partially_covered' THEN control_id END) as partially_covered,
+          COUNT(DISTINCT CASE WHEN coverage_status = 'not_covered' THEN control_id END) as not_covered,
+          AVG(coverage_percentage) as avg_coverage
+        FROM control_coverage
+      ),
+      subcategory_gaps AS (
+        SELECT 
+          s.id as subcategory_id,
+          s.name as subcategory_name,
+          COALESCE(MAX(cc.coverage_percentage), 0) as max_coverage
+        FROM subcategories s
+        LEFT JOIN control_coverage cc ON s.id = cc.csf_subcategory_id
+        GROUP BY s.id, s.name
+        HAVING COALESCE(MAX(cc.coverage_percentage), 0) < 50
+      )
+      SELECT 
+        cs.*,
+        (SELECT json_group_array(json_object(
+          'subcategory_id', subcategory_id,
+          'subcategory_name', subcategory_name,
+          'coverage', max_coverage
+        )) FROM subcategory_gaps) as gap_subcategories
+      FROM coverage_summary cs
+    `;
+    
+    return this.db.prepare(sql).get(profileId, framework);
+  }
+
+  upsertFrameworkCrosswalk(crosswalk: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO framework_crosswalk (
+        id, source_framework, source_control_id, source_control_name,
+        target_framework, target_control_id, target_control_name,
+        mapping_type, mapping_confidence, bidirectional, notes
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(source_framework, source_control_id, target_framework, target_control_id) DO UPDATE SET
+        source_control_name = excluded.source_control_name,
+        target_control_name = excluded.target_control_name,
+        mapping_type = excluded.mapping_type,
+        mapping_confidence = excluded.mapping_confidence,
+        bidirectional = excluded.bidirectional,
+        notes = excluded.notes
+    `);
+    
+    stmt.run(
+      crosswalk.id || `${crosswalk.source_framework}_${crosswalk.source_control_id}_${crosswalk.target_framework}_${crosswalk.target_control_id}`,
+      crosswalk.source_framework,
+      crosswalk.source_control_id,
+      crosswalk.source_control_name,
+      crosswalk.target_framework,
+      crosswalk.target_control_id,
+      crosswalk.target_control_name,
+      crosswalk.mapping_type || 'equivalent',
+      crosswalk.mapping_confidence ?? 80,
+      crosswalk.bidirectional ? 1 : 0,
+      crosswalk.notes
+    );
+  }
+
+  getFrameworkCrosswalk(sourceFramework: string, targetFramework: string): any[] {
+    return this.db.prepare(`
+      SELECT * FROM framework_crosswalk
+      WHERE (source_framework = ? AND target_framework = ?)
+         OR (bidirectional = 1 AND source_framework = ? AND target_framework = ?)
+      ORDER BY mapping_confidence DESC, source_control_id
+    `).all(sourceFramework, targetFramework, targetFramework, sourceFramework);
+  }
+
+  // ============================================================================
+  // INDUSTRY BENCHMARK METHODS
+  // ============================================================================
+
+  upsertIndustryBenchmark(benchmark: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO industry_benchmarks (
+        id, industry, organization_size, csf_function, metric_name,
+        percentile_25, percentile_50, percentile_75, percentile_90,
+        average_score, sample_size, data_year, source, notes
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(industry, organization_size, csf_function, metric_name, data_year) DO UPDATE SET
+        percentile_25 = excluded.percentile_25,
+        percentile_50 = excluded.percentile_50,
+        percentile_75 = excluded.percentile_75,
+        percentile_90 = excluded.percentile_90,
+        average_score = excluded.average_score,
+        sample_size = excluded.sample_size,
+        source = excluded.source,
+        notes = excluded.notes
+    `);
+    
+    stmt.run(
+      benchmark.id || `${benchmark.industry}_${benchmark.organization_size}_${benchmark.csf_function}_${benchmark.metric_name}_${benchmark.data_year}`,
+      benchmark.industry,
+      benchmark.organization_size,
+      benchmark.csf_function,
+      benchmark.metric_name,
+      benchmark.percentile_25,
+      benchmark.percentile_50,
+      benchmark.percentile_75,
+      benchmark.percentile_90,
+      benchmark.average_score,
+      benchmark.sample_size,
+      benchmark.data_year,
+      benchmark.source,
+      benchmark.notes
+    );
+  }
+
+  getIndustryBenchmarks(industry: string, organizationSize: string): any[] {
+    return this.db.prepare(`
+      SELECT * FROM industry_benchmarks
+      WHERE industry = ? AND organization_size = ?
+      ORDER BY csf_function, metric_name
+    `).all(industry, organizationSize);
+  }
+
+  compareProfileToBenchmark(profileId: string, industry: string, organizationSize: string): any {
+    const sql = `
+      WITH profile_scores AS (
+        SELECT 
+          SUBSTR(a.subcategory_id, 1, 2) as function_id,
+          AVG(a.maturity_score) as avg_maturity,
+          COUNT(DISTINCT a.subcategory_id) as assessed_subcategories
+        FROM assessments a
+        WHERE a.profile_id = ?
+        GROUP BY SUBSTR(a.subcategory_id, 1, 2)
+      ),
+      benchmark_data AS (
+        SELECT 
+          csf_function,
+          metric_name,
+          percentile_25,
+          percentile_50,
+          percentile_75,
+          percentile_90,
+          average_score
+        FROM industry_benchmarks
+        WHERE industry = ? 
+          AND organization_size = ?
+          AND metric_name = 'maturity_score'
+          AND data_year = (SELECT MAX(data_year) FROM industry_benchmarks WHERE industry = ? AND organization_size = ?)
+      )
+      SELECT 
+        ps.function_id,
+        ps.avg_maturity as organization_score,
+        bd.average_score as industry_average,
+        bd.percentile_50 as industry_median,
+        CASE 
+          WHEN ps.avg_maturity >= bd.percentile_90 THEN 'Top 10%'
+          WHEN ps.avg_maturity >= bd.percentile_75 THEN 'Top 25%'
+          WHEN ps.avg_maturity >= bd.percentile_50 THEN 'Above Average'
+          WHEN ps.avg_maturity >= bd.percentile_25 THEN 'Below Average'
+          ELSE 'Bottom 25%'
+        END as percentile_ranking,
+        ps.avg_maturity - bd.average_score as variance_from_average
+      FROM profile_scores ps
+      LEFT JOIN benchmark_data bd ON ps.function_id = bd.csf_function
+      ORDER BY ps.function_id
+    `;
+    
+    return this.db.prepare(sql).all(profileId, industry, organizationSize, industry, organizationSize);
+  }
+
+  recordComplianceCoverage(coverage: any): void {
+    const stmt = this.db.prepare(`
+      INSERT OR REPLACE INTO compliance_coverage (
+        id, profile_id, framework, total_controls, mapped_controls,
+        fully_covered, partially_covered, not_covered, coverage_percentage,
+        gap_count, critical_gaps, assessment_date
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+    `);
+    
+    stmt.run(
+      coverage.id || `${coverage.profile_id}_${coverage.framework}_${Date.now()}`,
+      coverage.profile_id,
+      coverage.framework,
+      coverage.total_controls,
+      coverage.mapped_controls,
+      coverage.fully_covered,
+      coverage.partially_covered,
+      coverage.not_covered,
+      coverage.coverage_percentage,
+      coverage.gap_count,
+      coverage.critical_gaps
+    );
   }
 }
 
