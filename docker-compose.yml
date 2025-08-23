@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nist-csf-mcp-server:latest
+    container_name: mcp-server
+    restart: unless-stopped
+    
+    # Security configurations
+    security_opt:
+      - no-new-privileges:true
+      - apparmor:docker-default
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    
+    # Read-only root filesystem
+    read_only: true
+    
+    # Temporary filesystems for writable directories
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100M
+    
+    volumes:
+      # Data persistence with proper permissions
+      - ./data:/app/data:rw
+      - ./logs:/app/logs:rw
+      # Secrets mounted as read-only
+      - ./secrets:/app/secrets:ro
+    
+    # Network configuration
+    ports:
+      - "127.0.0.1:8080:8080"  # Bind only to localhost
+    
+    networks:
+      - mcp-network
+    
+    # Environment variables from file
+    env_file:
+      - .env
+    
+    # Additional environment overrides
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - SERVER_PORT=8080
+      - SERVER_HOST=0.0.0.0
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=mcp-server"
+    
+    # Capabilities drop (security hardening)
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+    
+    # User mapping
+    user: "10001:10001"
+
+networks:
+  mcp-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
