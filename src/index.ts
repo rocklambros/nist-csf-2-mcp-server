@@ -46,6 +46,8 @@ import { getIndustryBenchmarksTool } from './tools/get_industry_benchmarks.js';
 import { generateReportTool } from './tools/generate_report.js';
 import { compareProfilesTool } from './tools/compare_profiles.js';
 import { exportDataTool } from './tools/export_data.js';
+import { importAssessmentTool } from './tools/import_assessment.js';
+import { validateEvidenceTool } from './tools/validate_evidence.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -733,6 +735,75 @@ async function main() {
           },
           required: ['profile_id', 'format']
         }
+      },
+      {
+        name: 'import_assessment',
+        description: 'Import assessment data from CSV, Excel, or JSON files',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            file_path: { type: 'string', description: 'Path to the file to import' },
+            format: {
+              type: 'string',
+              enum: ['csv', 'excel', 'json'],
+              description: 'File format'
+            },
+            profile_id: { type: 'string', description: 'ID of the profile to import assessments into' },
+            conflict_mode: {
+              type: 'string',
+              enum: ['skip', 'overwrite', 'merge'],
+              description: 'How to handle conflicts with existing assessments',
+              default: 'overwrite'
+            },
+            validate_only: {
+              type: 'boolean',
+              description: 'Only validate the file without importing',
+              default: false
+            }
+          },
+          required: ['file_path', 'format', 'profile_id']
+        }
+      },
+      {
+        name: 'validate_evidence',
+        description: 'Validate and store evidence files for assessments',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            assessment_id: { type: 'string', description: 'ID of the assessment to attach evidence to' },
+            evidence_files: {
+              type: 'array',
+              description: 'Array of evidence files to validate',
+              items: {
+                type: 'object',
+                properties: {
+                  file_path: { type: 'string', description: 'Path to the evidence file' },
+                  evidence_type: {
+                    type: 'string',
+                    enum: ['screenshot', 'document', 'log', 'report', 'config', 'other'],
+                    description: 'Type of evidence'
+                  },
+                  description: { type: 'string', description: 'Description of the evidence' },
+                  tags: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Tags for categorizing evidence'
+                  }
+                },
+                required: ['file_path']
+              }
+            },
+            profile_id: { type: 'string', description: 'Profile ID (optional if can be determined from assessment)' },
+            subcategory_id: { type: 'string', description: 'Subcategory ID (optional if can be determined from assessment)' },
+            uploaded_by: { type: 'string', description: 'Name or ID of the uploader' },
+            auto_validate: {
+              type: 'boolean',
+              description: 'Automatically validate files based on type and size',
+              default: false
+            }
+          },
+          required: ['assessment_id', 'evidence_files']
+        }
       }
     ],
   }));
@@ -1236,6 +1307,32 @@ async function main() {
 
         case 'export_data': {
           const result = await exportDataTool.execute(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'import_assessment': {
+          const result = await importAssessmentTool.execute(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'validate_evidence': {
+          const result = await validateEvidenceTool.execute(args as any, db);
           
           return {
             content: [

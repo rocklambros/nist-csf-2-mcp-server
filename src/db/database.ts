@@ -392,6 +392,36 @@ export class CSFDatabase {
       CREATE INDEX IF NOT EXISTS idx_crosswalk_target ON framework_crosswalk(target_framework, target_control_id);
       CREATE INDEX IF NOT EXISTS idx_benchmarks_industry ON industry_benchmarks(industry, organization_size);
       CREATE INDEX IF NOT EXISTS idx_coverage_profile ON compliance_coverage(profile_id, framework);
+
+      -- Audit Evidence Table for storing assessment evidence files
+      CREATE TABLE IF NOT EXISTS audit_evidence (
+        evidence_id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        assessment_id TEXT NOT NULL,
+        profile_id TEXT NOT NULL,
+        subcategory_id TEXT NOT NULL,
+        file_name TEXT NOT NULL,
+        file_type TEXT NOT NULL,
+        file_size INTEGER NOT NULL,
+        file_hash TEXT NOT NULL,
+        upload_date TEXT DEFAULT CURRENT_TIMESTAMP,
+        uploaded_by TEXT,
+        evidence_type TEXT, -- screenshot, document, log, report, config
+        description TEXT,
+        validation_status TEXT DEFAULT 'pending', -- pending, validated, rejected
+        validation_notes TEXT,
+        validated_by TEXT,
+        validated_at TEXT,
+        tags TEXT, -- JSON array of tags
+        metadata TEXT, -- JSON object with additional metadata
+        FOREIGN KEY (assessment_id) REFERENCES subcategory_assessments(assessment_id),
+        FOREIGN KEY (profile_id) REFERENCES organization_profiles(profile_id),
+        FOREIGN KEY (subcategory_id) REFERENCES csf_subcategories(subcategory_id)
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_evidence_assessment ON audit_evidence(assessment_id);
+      CREATE INDEX IF NOT EXISTS idx_evidence_profile ON audit_evidence(profile_id);
+      CREATE INDEX IF NOT EXISTS idx_evidence_subcategory ON audit_evidence(subcategory_id);
+      CREATE INDEX IF NOT EXISTS idx_evidence_validation ON audit_evidence(validation_status);
     `;
 
     this.db.exec(schema);
@@ -2693,6 +2723,293 @@ export class CSFDatabase {
     `;
     
     return this.db.prepare(sql).get(profileId, profileId, profileId, profileId, profileId);
+  }
+
+  // ============================================================================
+  // DATA IMPORT AND EVIDENCE VALIDATION
+  // ============================================================================
+
+  getAssessment(assessmentId: string): any {
+    return this.db.prepare(`
+      SELECT * FROM subcategory_assessments 
+      WHERE assessment_id = ?
+    `).get(assessmentId);
+  }
+
+  importAssessmentBatch(
+    profileId: string,
+    assessments: Array<{
+      subcategory_id: string;
+      implementation_level: string;
+      maturity_score: number;
+      notes?: string;
+      assessed_by?: string;
+    }>,
+    conflictMode: 'skip' | 'overwrite' | 'merge' = 'overwrite'
+  ): {
+    imported: number;
+    skipped: number;
+    errors: Array<{ subcategory_id: string; error: string }>;
+  } {
+    const result = {
+      imported: 0,
+      skipped: 0,
+      errors: [] as Array<{ subcategory_id: string; error: string }>
+    };
+
+    const transaction = this.db.transaction(() => {
+      for (const assessment of assessments) {
+        try {
+          // Validate subcategory exists
+          const subcategoryExists = this.db.prepare(
+            'SELECT subcategory_id FROM csf_subcategories WHERE subcategory_id = ?'
+          ).get(assessment.subcategory_id);
+
+          if (!subcategoryExists) {
+            result.errors.push({
+              subcategory_id: assessment.subcategory_id,
+              error: `Subcategory ${assessment.subcategory_id} does not exist`
+            });
+            continue;
+          }
+
+          // Check for existing assessment
+          const existing = this.db.prepare(`
+            SELECT assessment_id, implementation_level, maturity_score, notes 
+            FROM subcategory_assessments 
+            WHERE profile_id = ? AND subcategory_id = ?
+          `).get(profileId, assessment.subcategory_id) as any;
+
+          if (existing && conflictMode === 'skip') {
+            result.skipped++;
+            continue;
+          }
+
+          if (existing && conflictMode === 'merge') {
+            // Merge: keep higher maturity score and combine notes
+            const mergedScore = Math.max(existing.maturity_score || 0, assessment.maturity_score);
+            const mergedNotes = [existing.notes, assessment.notes]
+              .filter(Boolean)
+              .join('\n---\n');
+
+            this.db.prepare(`
+              UPDATE subcategory_assessments 
+              SET implementation_level = ?,
+                  maturity_score = ?,
+                  notes = ?,
+                  assessed_at = CURRENT_TIMESTAMP,
+                  assessed_by = ?
+              WHERE assessment_id = ?
+            `).run(
+              assessment.implementation_level,
+              mergedScore,
+              mergedNotes,
+              assessment.assessed_by || 'imported',
+              existing.assessment_id
+            );
+            result.imported++;
+          } else if (existing && conflictMode === 'overwrite') {
+            // Overwrite existing assessment
+            this.db.prepare(`
+              UPDATE subcategory_assessments 
+              SET implementation_level = ?,
+                  maturity_score = ?,
+                  notes = ?,
+                  assessed_at = CURRENT_TIMESTAMP,
+                  assessed_by = ?
+              WHERE profile_id = ? AND subcategory_id = ?
+            `).run(
+              assessment.implementation_level,
+              assessment.maturity_score,
+              assessment.notes,
+              assessment.assessed_by || 'imported',
+              profileId,
+              assessment.subcategory_id
+            );
+            result.imported++;
+          } else {
+            // Insert new assessment
+            const assessmentId = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2, '0')).join('');
+            this.db.prepare(`
+              INSERT INTO subcategory_assessments 
+              (assessment_id, profile_id, subcategory_id, implementation_level, 
+               maturity_score, notes, assessed_by)
+              VALUES (?, ?, ?, ?, ?, ?, ?)
+            `).run(
+              assessmentId,
+              profileId,
+              assessment.subcategory_id,
+              assessment.implementation_level,
+              assessment.maturity_score,
+              assessment.notes,
+              assessment.assessed_by || 'imported'
+            );
+            result.imported++;
+          }
+        } catch (error) {
+          result.errors.push({
+            subcategory_id: assessment.subcategory_id,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+        }
+      }
+    });
+
+    try {
+      transaction();
+    } catch (error) {
+      logger.error('Import transaction failed:', error);
+      throw new Error(`Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+
+    return result;
+  }
+
+  addAuditEvidence(evidence: {
+    assessment_id: string;
+    profile_id: string;
+    subcategory_id: string;
+    file_name: string;
+    file_type: string;
+    file_size: number;
+    file_hash: string;
+    uploaded_by?: string;
+    evidence_type?: string;
+    description?: string;
+    tags?: string[];
+    metadata?: Record<string, any>;
+  }): string {
+    const evidenceId = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    this.db.prepare(`
+      INSERT INTO audit_evidence 
+      (evidence_id, assessment_id, profile_id, subcategory_id, file_name, 
+       file_type, file_size, file_hash, uploaded_by, evidence_type, 
+       description, tags, metadata)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      evidenceId,
+      evidence.assessment_id,
+      evidence.profile_id,
+      evidence.subcategory_id,
+      evidence.file_name,
+      evidence.file_type,
+      evidence.file_size,
+      evidence.file_hash,
+      evidence.uploaded_by || 'system',
+      evidence.evidence_type,
+      evidence.description,
+      evidence.tags ? JSON.stringify(evidence.tags) : null,
+      evidence.metadata ? JSON.stringify(evidence.metadata) : null
+    );
+
+    return evidenceId;
+  }
+
+  validateEvidence(
+    evidenceId: string,
+    status: 'validated' | 'rejected',
+    notes: string,
+    validatedBy: string
+  ): void {
+    this.db.prepare(`
+      UPDATE audit_evidence 
+      SET validation_status = ?,
+          validation_notes = ?,
+          validated_by = ?,
+          validated_at = CURRENT_TIMESTAMP
+      WHERE evidence_id = ?
+    `).run(status, notes, validatedBy, evidenceId);
+  }
+
+  getEvidenceForAssessment(assessmentId: string): any[] {
+    return this.db.prepare(`
+      SELECT * FROM audit_evidence 
+      WHERE assessment_id = ? 
+      ORDER BY upload_date DESC
+    `).all(assessmentId);
+  }
+
+  getEvidenceValidationReport(profileId: string): any {
+    const stats = this.db.prepare(`
+      SELECT 
+        validation_status,
+        COUNT(*) as count,
+        SUM(file_size) as total_size
+      FROM audit_evidence
+      WHERE profile_id = ?
+      GROUP BY validation_status
+    `).all(profileId);
+
+    const byType = this.db.prepare(`
+      SELECT 
+        evidence_type,
+        COUNT(*) as count,
+        AVG(file_size) as avg_size
+      FROM audit_evidence
+      WHERE profile_id = ?
+      GROUP BY evidence_type
+    `).all(profileId);
+
+    const bySubcategory = this.db.prepare(`
+      SELECT 
+        ae.subcategory_id,
+        cs.subcategory_name,
+        COUNT(*) as evidence_count,
+        SUM(CASE WHEN ae.validation_status = 'validated' THEN 1 ELSE 0 END) as validated_count,
+        SUM(CASE WHEN ae.validation_status = 'rejected' THEN 1 ELSE 0 END) as rejected_count,
+        SUM(CASE WHEN ae.validation_status = 'pending' THEN 1 ELSE 0 END) as pending_count
+      FROM audit_evidence ae
+      JOIN csf_subcategories cs ON ae.subcategory_id = cs.subcategory_id
+      WHERE ae.profile_id = ?
+      GROUP BY ae.subcategory_id, cs.subcategory_name
+      ORDER BY evidence_count DESC
+    `).all(profileId);
+
+    return {
+      statistics: stats,
+      by_type: byType,
+      by_subcategory: bySubcategory,
+      generated_at: new Date().toISOString()
+    };
+  }
+
+  getImportValidationErrors(
+    data: any[],
+    _format: 'csv' | 'json' | 'excel'
+  ): Array<{ row: number; field: string; error: string }> {
+    const errors: Array<{ row: number; field: string; error: string }> = [];
+    const validSubcategories = new Set(
+      this.db.prepare('SELECT subcategory_id FROM csf_subcategories').all()
+        .map((row: any) => row.subcategory_id)
+    );
+
+    const validImplementationLevels = ['not_implemented', 'partially_implemented', 'fully_implemented'];
+
+    data.forEach((row, index) => {
+      // Check required fields
+      if (!row.subcategory_id) {
+        errors.push({ row: index + 1, field: 'subcategory_id', error: 'Required field missing' });
+      } else if (!validSubcategories.has(row.subcategory_id)) {
+        errors.push({ row: index + 1, field: 'subcategory_id', error: `Invalid subcategory: ${row.subcategory_id}` });
+      }
+
+      if (!row.implementation_level) {
+        errors.push({ row: index + 1, field: 'implementation_level', error: 'Required field missing' });
+      } else if (!validImplementationLevels.includes(row.implementation_level)) {
+        errors.push({ row: index + 1, field: 'implementation_level', error: `Invalid level: ${row.implementation_level}` });
+      }
+
+      // Validate maturity score
+      if (row.maturity_score !== undefined && row.maturity_score !== null) {
+        const score = Number(row.maturity_score);
+        if (isNaN(score) || score < 0 || score > 5) {
+          errors.push({ row: index + 1, field: 'maturity_score', error: 'Must be between 0 and 5' });
+        }
+      }
+    });
+
+    return errors;
   }
 }
 
