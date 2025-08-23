@@ -31,6 +31,9 @@ import { getRelatedSubcategories, GetRelatedSubcategoriesSchema } from './tools/
 import { createProfile, CreateProfileSchema } from './tools/create_profile.js';
 import { cloneProfile, CloneProfileSchema } from './tools/clone_profile.js';
 import { quickAssessment, QuickAssessmentSchema } from './tools/quick_assessment.js';
+import { assessMaturity, AssessMaturitySchema } from './tools/assess_maturity.js';
+import { calculateRiskScore, CalculateRiskScoreSchema } from './tools/calculate_risk_score.js';
+import { calculateMaturityTrend, CalculateMaturityTrendSchema } from './tools/calculate_maturity_trend.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -393,6 +396,66 @@ async function main() {
           },
           required: ['profile_id', 'simplified_answers']
         }
+      },
+      {
+        name: 'assess_maturity',
+        description: 'Calculate maturity tier for each CSF function',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'Profile ID to assess' },
+            include_recommendations: { type: 'boolean', description: 'Include recommendations', default: true },
+            include_subcategory_details: { type: 'boolean', description: 'Include subcategory details', default: false }
+          },
+          required: ['profile_id']
+        }
+      },
+      {
+        name: 'calculate_risk_score',
+        description: 'Calculate risk score based on unimplemented subcategories',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'Profile ID to assess' },
+            threat_weights: {
+              type: 'object',
+              description: 'Custom threat weights by function',
+              properties: {
+                govern: { type: 'number', minimum: 0, maximum: 2, default: 1.5 },
+                identify: { type: 'number', minimum: 0, maximum: 2, default: 1.3 },
+                protect: { type: 'number', minimum: 0, maximum: 2, default: 1.4 },
+                detect: { type: 'number', minimum: 0, maximum: 2, default: 1.2 },
+                respond: { type: 'number', minimum: 0, maximum: 2, default: 1.1 },
+                recover: { type: 'number', minimum: 0, maximum: 2, default: 1.0 }
+              }
+            },
+            include_heat_map: { type: 'boolean', description: 'Include heat map data', default: true },
+            include_recommendations: { type: 'boolean', description: 'Include recommendations', default: true }
+          },
+          required: ['profile_id']
+        }
+      },
+      {
+        name: 'calculate_maturity_trend',
+        description: 'Analyze historical assessments and calculate maturity trends',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'Profile ID to analyze' },
+            date_range: {
+              type: 'object',
+              description: 'Date range for analysis',
+              properties: {
+                start_date: { type: 'string', description: 'Start date (ISO format)' },
+                end_date: { type: 'string', description: 'End date (ISO format)' }
+              }
+            },
+            include_projections: { type: 'boolean', description: 'Include future projections', default: true },
+            include_velocity_analysis: { type: 'boolean', description: 'Include velocity analysis', default: true },
+            aggregation_period: { type: 'string', enum: ['daily', 'weekly', 'monthly'], description: 'Aggregation period', default: 'weekly' }
+          },
+          required: ['profile_id']
+        }
       }
     ],
   }));
@@ -693,6 +756,48 @@ async function main() {
         case 'quick_assessment': {
           const params = QuickAssessmentSchema.parse(args);
           const result = await quickAssessment(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'assess_maturity': {
+          const params = AssessMaturitySchema.parse(args);
+          const result = await assessMaturity(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'calculate_risk_score': {
+          const params = CalculateRiskScoreSchema.parse(args);
+          const result = await calculateRiskScore(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'calculate_maturity_trend': {
+          const params = CalculateMaturityTrendSchema.parse(args);
+          const result = await calculateMaturityTrend(params);
           
           return {
             content: [

@@ -519,6 +519,282 @@ export class CSFDatabase {
   }
 
   // ============================================================================
+  // ADVANCED MATURITY CALCULATIONS
+  // ============================================================================
+
+  getMaturityByFunction(profileId: string): any[] {
+    // Complex SQL with CTEs to calculate maturity by function
+    const sql = `
+      WITH function_subcategories AS (
+        SELECT 
+          SUBSTR(subcategory_id, 1, 2) as function_id,
+          subcategory_id,
+          implementation_level,
+          maturity_score,
+          confidence_level
+        FROM assessments
+        WHERE profile_id = ?
+      ),
+      function_stats AS (
+        SELECT 
+          function_id,
+          COUNT(*) as total_subcategories,
+          SUM(CASE 
+            WHEN implementation_level IN ('largely_implemented', 'fully_implemented') 
+            THEN 1 ELSE 0 
+          END) as implemented_count,
+          AVG(maturity_score) as avg_maturity,
+          MIN(maturity_score) as min_maturity,
+          MAX(maturity_score) as max_maturity,
+          SUM(CASE 
+            WHEN confidence_level = 'high' THEN 3
+            WHEN confidence_level = 'medium' THEN 2
+            WHEN confidence_level = 'low' THEN 1
+            ELSE 0
+          END) * 1.0 / COUNT(*) as avg_confidence
+        FROM function_subcategories
+        GROUP BY function_id
+      )
+      SELECT 
+        function_id,
+        total_subcategories,
+        implemented_count,
+        ROUND((implemented_count * 100.0 / total_subcategories), 2) as implementation_percentage,
+        ROUND(avg_maturity, 2) as avg_maturity,
+        min_maturity,
+        max_maturity,
+        ROUND(avg_confidence, 2) as avg_confidence,
+        CASE 
+          WHEN (implemented_count * 100.0 / total_subcategories) <= 25 THEN 'Partial'
+          WHEN (implemented_count * 100.0 / total_subcategories) <= 50 THEN 'Risk-Informed'
+          WHEN (implemented_count * 100.0 / total_subcategories) <= 75 THEN 'Repeatable'
+          ELSE 'Adaptive'
+        END as maturity_tier
+      FROM function_stats
+      ORDER BY function_id
+    `;
+    
+    return this.db.prepare(sql).all(profileId);
+  }
+
+  getRiskScoreData(profileId: string): any {
+    // Calculate risk score based on gaps and criticality
+    const sql = `
+      WITH subcategory_risks AS (
+        SELECT 
+          a.subcategory_id,
+          a.implementation_level,
+          a.maturity_score,
+          SUBSTR(a.subcategory_id, 1, 2) as function_id,
+          CASE 
+            WHEN a.implementation_level = 'not_implemented' THEN 100
+            WHEN a.implementation_level = 'partially_implemented' THEN 60
+            WHEN a.implementation_level = 'largely_implemented' THEN 30
+            ELSE 0
+          END as base_risk,
+          -- Weight by function criticality
+          CASE SUBSTR(a.subcategory_id, 1, 2)
+            WHEN 'GV' THEN 1.5  -- Govern is critical
+            WHEN 'ID' THEN 1.3  -- Identify is very important
+            WHEN 'PR' THEN 1.4  -- Protect is very important
+            WHEN 'DE' THEN 1.2  -- Detect is important
+            WHEN 'RS' THEN 1.1  -- Respond is important
+            WHEN 'RC' THEN 1.0  -- Recover is standard
+            ELSE 1.0
+          END as function_weight
+        FROM assessments a
+        WHERE a.profile_id = ?
+      ),
+      function_risks AS (
+        SELECT 
+          function_id,
+          COUNT(*) as subcategory_count,
+          AVG(base_risk * function_weight) as weighted_risk,
+          MAX(base_risk) as max_risk,
+          SUM(CASE WHEN base_risk > 50 THEN 1 ELSE 0 END) as high_risk_count
+        FROM subcategory_risks
+        GROUP BY function_id
+      )
+      SELECT 
+        function_id,
+        subcategory_count,
+        ROUND(weighted_risk, 2) as weighted_risk_score,
+        max_risk,
+        high_risk_count,
+        CASE 
+          WHEN weighted_risk >= 75 THEN 'Critical'
+          WHEN weighted_risk >= 50 THEN 'High'
+          WHEN weighted_risk >= 25 THEN 'Medium'
+          ELSE 'Low'
+        END as risk_level
+      FROM function_risks
+      ORDER BY weighted_risk DESC
+    `;
+    
+    const functionRisks = this.db.prepare(sql).all(profileId);
+    
+    // Calculate overall risk score
+    const overallSql = `
+      SELECT 
+        AVG(
+          CASE 
+            WHEN implementation_level = 'not_implemented' THEN 100
+            WHEN implementation_level = 'partially_implemented' THEN 60
+            WHEN implementation_level = 'largely_implemented' THEN 30
+            ELSE 0
+          END * 
+          CASE SUBSTR(subcategory_id, 1, 2)
+            WHEN 'GV' THEN 1.5
+            WHEN 'ID' THEN 1.3
+            WHEN 'PR' THEN 1.4
+            WHEN 'DE' THEN 1.2
+            WHEN 'RS' THEN 1.1
+            WHEN 'RC' THEN 1.0
+            ELSE 1.0
+          END
+        ) as overall_risk_score
+      FROM assessments
+      WHERE profile_id = ?
+    `;
+    
+    const overall = this.db.prepare(overallSql).get(profileId) as any;
+    
+    return {
+      overall_risk_score: overall?.overall_risk_score || 0,
+      function_risks: functionRisks
+    };
+  }
+
+  getMaturityTrend(profileId: string, startDate?: string, endDate?: string): any[] {
+    // Get historical maturity data with window functions
+    const sql = `
+      WITH RECURSIVE dates AS (
+        SELECT 
+          DATE(MIN(assessed_at)) as date
+        FROM assessments 
+        WHERE profile_id = ?
+        UNION ALL
+        SELECT 
+          DATE(date, '+1 day')
+        FROM dates
+        WHERE date < DATE(COALESCE(?, 'now'))
+      ),
+      daily_assessments AS (
+        SELECT 
+          DATE(assessed_at) as assessment_date,
+          SUBSTR(subcategory_id, 1, 2) as function_id,
+          AVG(maturity_score) as avg_maturity,
+          COUNT(*) as assessment_count
+        FROM assessments
+        WHERE profile_id = ?
+          AND DATE(assessed_at) >= COALESCE(?, DATE('now', '-90 days'))
+          AND DATE(assessed_at) <= COALESCE(?, DATE('now'))
+        GROUP BY DATE(assessed_at), SUBSTR(subcategory_id, 1, 2)
+      ),
+      trend_data AS (
+        SELECT 
+          assessment_date,
+          function_id,
+          avg_maturity,
+          assessment_count,
+          AVG(avg_maturity) OVER (
+            PARTITION BY function_id 
+            ORDER BY assessment_date 
+            ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+          ) as moving_avg_7d,
+          LAG(avg_maturity, 1) OVER (
+            PARTITION BY function_id 
+            ORDER BY assessment_date
+          ) as prev_maturity,
+          FIRST_VALUE(avg_maturity) OVER (
+            PARTITION BY function_id 
+            ORDER BY assessment_date
+          ) as initial_maturity
+        FROM daily_assessments
+      )
+      SELECT 
+        assessment_date,
+        function_id,
+        ROUND(avg_maturity, 2) as maturity_score,
+        ROUND(moving_avg_7d, 2) as moving_avg_7d,
+        ROUND(avg_maturity - COALESCE(prev_maturity, avg_maturity), 2) as daily_change,
+        ROUND(avg_maturity - initial_maturity, 2) as total_change,
+        ROUND(
+          CASE 
+            WHEN prev_maturity IS NOT NULL AND prev_maturity != 0 
+            THEN ((avg_maturity - prev_maturity) / prev_maturity) * 100
+            ELSE 0
+          END, 2
+        ) as change_percentage,
+        assessment_count
+      FROM trend_data
+      ORDER BY assessment_date, function_id
+    `;
+    
+    return this.db.prepare(sql).all(
+      profileId,
+      endDate,
+      profileId,
+      startDate,
+      endDate
+    );
+  }
+
+  getComprehensiveMaturityAnalysis(profileId: string): any {
+    // Comprehensive analysis combining multiple metrics
+    const sql = `
+      WITH assessment_data AS (
+        SELECT 
+          subcategory_id,
+          SUBSTR(subcategory_id, 1, 2) as function_id,
+          implementation_level,
+          maturity_score,
+          confidence_level,
+          assessed_at
+        FROM assessments
+        WHERE profile_id = ?
+      ),
+      function_analysis AS (
+        SELECT 
+          function_id,
+          COUNT(*) as total_subcategories,
+          AVG(maturity_score) as avg_maturity,
+          STDEV(maturity_score) as maturity_std_dev,
+          MIN(maturity_score) as min_maturity,
+          MAX(maturity_score) as max_maturity,
+          SUM(CASE WHEN maturity_score >= 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) as mature_percentage,
+          GROUP_CONCAT(
+            CASE WHEN maturity_score < 2 
+            THEN subcategory_id 
+            ELSE NULL END
+          ) as weak_subcategories
+        FROM assessment_data
+        GROUP BY function_id
+      ),
+      overall_stats AS (
+        SELECT 
+          AVG(maturity_score) as overall_avg,
+          MIN(maturity_score) as overall_min,
+          MAX(maturity_score) as overall_max,
+          COUNT(DISTINCT function_id) as functions_assessed,
+          COUNT(*) as total_assessments
+        FROM assessment_data
+      )
+      SELECT 
+        f.*,
+        o.overall_avg,
+        o.overall_min,
+        o.overall_max,
+        o.functions_assessed,
+        o.total_assessments
+      FROM function_analysis f
+      CROSS JOIN overall_stats o
+    `;
+    
+    return this.db.prepare(sql).all(profileId);
+  }
+
+  // ============================================================================
   // UTILITY METHODS
   // ============================================================================
 
