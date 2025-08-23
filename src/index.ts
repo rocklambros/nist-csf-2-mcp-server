@@ -48,6 +48,9 @@ import { compareProfilesTool } from './tools/compare_profiles.js';
 import { exportDataTool } from './tools/export_data.js';
 import { importAssessmentTool } from './tools/import_assessment.js';
 import { validateEvidenceTool } from './tools/validate_evidence.js';
+import { getImplementationTemplateTool } from './tools/get_implementation_template.js';
+import { generatePolicyTemplateTool } from './tools/generate_policy_template.js';
+import { generateTestScenariosTool } from './tools/generate_test_scenarios.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -804,6 +807,122 @@ async function main() {
           },
           required: ['assessment_id', 'evidence_files']
         }
+      },
+      {
+        name: 'get_implementation_template',
+        description: 'Generate detailed implementation guide for NIST CSF subcategories',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            subcategory_id: {
+              type: 'string',
+              description: 'NIST CSF subcategory ID (e.g., GV.OC-01)'
+            },
+            industry: {
+              type: 'string',
+              enum: ['financial_services', 'healthcare', 'manufacturing', 'technology', 'government', 'retail', 'energy'],
+              description: 'Industry sector for specific guidance'
+            },
+            organization_size: {
+              type: 'string',
+              enum: ['small', 'medium', 'large', 'enterprise'],
+              description: 'Organization size for resource planning'
+            },
+            include_examples: {
+              type: 'boolean',
+              description: 'Include example configurations',
+              default: true
+            },
+            include_tools: {
+              type: 'boolean',
+              description: 'Include recommended tools',
+              default: true
+            },
+            include_metrics: {
+              type: 'boolean',
+              description: 'Include success metrics',
+              default: true
+            }
+          },
+          required: ['subcategory_id']
+        }
+      },
+      {
+        name: 'generate_policy_template',
+        description: 'Generate policy document templates based on NIST CSF subcategories',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            subcategory_ids: {
+              type: 'array',
+              description: 'Array of NIST CSF subcategory IDs to cover in policy',
+              items: {
+                type: 'string'
+              }
+            },
+            policy_type: {
+              type: 'string',
+              enum: ['security', 'operational', 'compliance', 'governance'],
+              description: 'Type of policy to generate'
+            },
+            format: {
+              type: 'string',
+              enum: ['markdown', 'structured'],
+              description: 'Output format for the policy',
+              default: 'markdown'
+            },
+            include_procedures: {
+              type: 'boolean',
+              description: 'Include detailed procedures section',
+              default: true
+            },
+            include_compliance_mapping: {
+              type: 'boolean',
+              description: 'Include compliance framework mappings',
+              default: true
+            }
+          },
+          required: ['subcategory_ids']
+        }
+      },
+      {
+        name: 'generate_test_scenarios',
+        description: 'Generate validation test cases for NIST CSF subcategories',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            subcategory_id: {
+              type: 'string',
+              description: 'NIST CSF subcategory ID to generate tests for'
+            },
+            test_type: {
+              type: 'string',
+              enum: ['functional', 'security', 'compliance', 'performance', 'all'],
+              description: 'Type of tests to generate',
+              default: 'all'
+            },
+            include_scripts: {
+              type: 'boolean',
+              description: 'Include test script templates',
+              default: true
+            },
+            include_tools: {
+              type: 'boolean',
+              description: 'Include recommended testing tools',
+              default: true
+            },
+            severity_levels: {
+              type: 'array',
+              description: 'Severity levels to include',
+              items: {
+                type: 'string',
+                enum: ['low', 'medium', 'high', 'critical']
+              },
+              default: ['low', 'medium', 'high', 'critical']
+            }
+          },
+          required: ['subcategory_id']
+        }
       }
     ],
   }));
@@ -1333,6 +1452,45 @@ async function main() {
 
         case 'validate_evidence': {
           const result = await validateEvidenceTool.execute(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'get_implementation_template': {
+          const result = await getImplementationTemplateTool.execute(args as any, db, framework);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'generate_policy_template': {
+          const result = await generatePolicyTemplateTool.execute(args as any, db, framework);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'generate_test_scenarios': {
+          const result = await generateTestScenariosTool.execute(args as any, db, framework);
           
           return {
             content: [
