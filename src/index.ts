@@ -36,6 +36,9 @@ import { calculateRiskScore, CalculateRiskScoreSchema } from './tools/calculate_
 import { calculateMaturityTrend, CalculateMaturityTrendSchema } from './tools/calculate_maturity_trend.js';
 import { generateGapAnalysis, GenerateGapAnalysisSchema } from './tools/generate_gap_analysis.js';
 import { generatePriorityMatrix, GeneratePriorityMatrixSchema } from './tools/generate_priority_matrix.js';
+import { createImplementationPlan, CreateImplementationPlanSchema } from './tools/create_implementation_plan.js';
+import { estimateImplementationCost, EstimateImplementationCostSchema } from './tools/estimate_implementation_cost.js';
+import { suggestNextActions, SuggestNextActionsSchema } from './tools/suggest_next_actions.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -494,6 +497,81 @@ async function main() {
           },
           required: ['profile_id']
         }
+      },
+      {
+        name: 'create_implementation_plan',
+        description: 'Generate phased implementation roadmap with dependencies',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            gap_analysis_id: { type: 'string', description: 'Gap analysis ID' },
+            timeline_months: { type: 'number', description: 'Timeline in months (1-36)' },
+            available_resources: { type: 'number', description: 'Available resources (1-100)' },
+            plan_name: { type: 'string', description: 'Plan name (optional)' },
+            prioritization_strategy: { 
+              type: 'string', 
+              enum: ['risk_based', 'quick_wins', 'balanced', 'dependencies_first'],
+              description: 'Prioritization strategy',
+              default: 'balanced'
+            },
+            phase_duration: { type: 'number', description: 'Phase duration in months (1-6)', default: 3 },
+            include_dependencies: { type: 'boolean', description: 'Include dependency analysis', default: true },
+            include_milestones: { type: 'boolean', description: 'Include milestones', default: true }
+          },
+          required: ['gap_analysis_id', 'timeline_months', 'available_resources']
+        }
+      },
+      {
+        name: 'estimate_implementation_cost',
+        description: 'Calculate detailed cost breakdown for implementation',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            subcategory_ids: { 
+              type: 'array', 
+              items: { type: 'string' },
+              description: 'List of subcategory IDs'
+            },
+            organization_size: { 
+              type: 'string', 
+              enum: ['small', 'medium', 'large', 'enterprise'],
+              description: 'Organization size'
+            },
+            include_ongoing_costs: { type: 'boolean', description: 'Include ongoing costs', default: true },
+            include_risk_adjusted: { type: 'boolean', description: 'Include risk-adjusted estimates', default: true },
+            currency: { type: 'string', enum: ['USD', 'EUR', 'GBP'], description: 'Currency', default: 'USD' },
+            labor_rate_override: { type: 'number', description: 'Override labor rate (optional)' },
+            include_contingency: { type: 'boolean', description: 'Include contingency', default: true }
+          },
+          required: ['subcategory_ids', 'organization_size']
+        }
+      },
+      {
+        name: 'suggest_next_actions',
+        description: 'Recommend prioritized actions based on available capacity',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'Profile ID' },
+            capacity_hours_per_week: { type: 'number', description: 'Available hours per week (1-168)' },
+            time_horizon_weeks: { type: 'number', description: 'Time horizon in weeks (1-12)', default: 4 },
+            focus_area: { 
+              type: 'string', 
+              enum: ['all', 'govern', 'identify', 'protect', 'detect', 'respond', 'recover'],
+              description: 'Focus area',
+              default: 'all'
+            },
+            optimization_goal: { 
+              type: 'string', 
+              enum: ['quick_wins', 'risk_reduction', 'compliance', 'balanced'],
+              description: 'Optimization goal',
+              default: 'balanced'
+            },
+            include_dependencies: { type: 'boolean', description: 'Include dependency analysis', default: true },
+            include_justification: { type: 'boolean', description: 'Include justification', default: true }
+          },
+          required: ['profile_id', 'capacity_hours_per_week']
+        }
       }
     ],
   }));
@@ -864,6 +942,48 @@ async function main() {
         case 'generate_priority_matrix': {
           const params = GeneratePriorityMatrixSchema.parse(args);
           const result = await generatePriorityMatrix(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'create_implementation_plan': {
+          const params = CreateImplementationPlanSchema.parse(args);
+          const result = await createImplementationPlan(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'estimate_implementation_cost': {
+          const params = EstimateImplementationCostSchema.parse(args);
+          const result = await estimateImplementationCost(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'suggest_next_actions': {
+          const params = SuggestNextActionsSchema.parse(args);
+          const result = await suggestNextActions(params);
           
           return {
             content: [

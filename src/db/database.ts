@@ -159,6 +159,77 @@ export class CSFDatabase {
         UNIQUE(profile_id, subcategory_id)
       );
 
+      -- Implementation Plans table
+      CREATE TABLE IF NOT EXISTS implementation_plans (
+        id TEXT PRIMARY KEY,
+        gap_analysis_id TEXT NOT NULL,
+        profile_id TEXT NOT NULL,
+        plan_name TEXT NOT NULL,
+        timeline_months INTEGER NOT NULL,
+        available_resources INTEGER NOT NULL,
+        total_phases INTEGER NOT NULL,
+        total_effort_hours INTEGER NOT NULL,
+        estimated_cost REAL,
+        status TEXT DEFAULT 'draft',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (profile_id) REFERENCES profiles(id)
+      );
+
+      -- Implementation Plan Phases table
+      CREATE TABLE IF NOT EXISTS implementation_phases (
+        id TEXT PRIMARY KEY,
+        plan_id TEXT NOT NULL,
+        phase_number INTEGER NOT NULL,
+        phase_name TEXT NOT NULL,
+        start_month INTEGER NOT NULL,
+        end_month INTEGER NOT NULL,
+        effort_hours INTEGER NOT NULL,
+        resource_count INTEGER NOT NULL,
+        status TEXT DEFAULT 'pending',
+        FOREIGN KEY (plan_id) REFERENCES implementation_plans(id)
+      );
+
+      -- Implementation Plan Items table
+      CREATE TABLE IF NOT EXISTS implementation_items (
+        id TEXT PRIMARY KEY,
+        phase_id TEXT NOT NULL,
+        subcategory_id TEXT NOT NULL,
+        priority_rank INTEGER NOT NULL,
+        effort_hours INTEGER NOT NULL,
+        dependencies TEXT,
+        status TEXT DEFAULT 'pending',
+        completion_percentage INTEGER DEFAULT 0,
+        FOREIGN KEY (phase_id) REFERENCES implementation_phases(id),
+        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
+      );
+
+      -- Subcategory Dependencies table
+      CREATE TABLE IF NOT EXISTS subcategory_dependencies (
+        id TEXT PRIMARY KEY,
+        subcategory_id TEXT NOT NULL,
+        depends_on_subcategory_id TEXT NOT NULL,
+        dependency_type TEXT NOT NULL,
+        dependency_strength INTEGER DEFAULT 5,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id),
+        FOREIGN KEY (depends_on_subcategory_id) REFERENCES subcategories(id)
+      );
+
+      -- Cost Estimates table
+      CREATE TABLE IF NOT EXISTS cost_estimates (
+        id TEXT PRIMARY KEY,
+        subcategory_id TEXT NOT NULL,
+        organization_size TEXT NOT NULL,
+        labor_cost REAL NOT NULL,
+        tools_cost REAL NOT NULL,
+        training_cost REAL NOT NULL,
+        total_cost REAL NOT NULL,
+        effort_hours INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
+      );
+
       -- Create indexes for better query performance
       CREATE INDEX IF NOT EXISTS idx_implementations_org ON subcategory_implementations(org_id);
       CREATE INDEX IF NOT EXISTS idx_implementations_subcategory ON subcategory_implementations(subcategory_id);
@@ -169,6 +240,11 @@ export class CSFDatabase {
       CREATE INDEX IF NOT EXISTS idx_profiles_org ON profiles(org_id);
       CREATE INDEX IF NOT EXISTS idx_assessments_profile ON assessments(profile_id);
       CREATE INDEX IF NOT EXISTS idx_assessments_subcategory ON assessments(subcategory_id);
+      CREATE INDEX IF NOT EXISTS idx_impl_plans_gap ON implementation_plans(gap_analysis_id);
+      CREATE INDEX IF NOT EXISTS idx_impl_phases_plan ON implementation_phases(plan_id);
+      CREATE INDEX IF NOT EXISTS idx_impl_items_phase ON implementation_items(phase_id);
+      CREATE INDEX IF NOT EXISTS idx_dependencies_subcategory ON subcategory_dependencies(subcategory_id);
+      CREATE INDEX IF NOT EXISTS idx_cost_estimates_subcategory ON cost_estimates(subcategory_id);
     `;
 
     this.db.exec(schema);
@@ -1129,6 +1205,334 @@ export class CSFDatabase {
       gaps: this.db.prepare('SELECT COUNT(*) as count FROM gap_analysis').get()
     };
     return stats;
+  }
+
+  // ============================================================================
+  // IMPLEMENTATION PLANNING
+  // ============================================================================
+
+  createImplementationPlan(plan: any): string {
+    const planId = plan.id;
+    
+    // Insert main plan
+    const planStmt = this.db.prepare(`
+      INSERT INTO implementation_plans (
+        id, gap_analysis_id, profile_id, plan_name, timeline_months,
+        available_resources, total_phases, total_effort_hours, estimated_cost, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    planStmt.run(
+      planId,
+      plan.gap_analysis_id,
+      plan.profile_id,
+      plan.plan_name,
+      plan.timeline_months,
+      plan.available_resources,
+      plan.total_phases,
+      plan.total_effort_hours,
+      plan.estimated_cost,
+      plan.status || 'draft'
+    );
+    
+    return planId;
+  }
+
+  createImplementationPhase(phase: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO implementation_phases (
+        id, plan_id, phase_number, phase_name, start_month,
+        end_month, effort_hours, resource_count, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    stmt.run(
+      phase.id,
+      phase.plan_id,
+      phase.phase_number,
+      phase.phase_name,
+      phase.start_month,
+      phase.end_month,
+      phase.effort_hours,
+      phase.resource_count,
+      phase.status || 'pending'
+    );
+  }
+
+  createImplementationItem(item: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO implementation_items (
+        id, phase_id, subcategory_id, priority_rank,
+        effort_hours, dependencies, status, completion_percentage
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    stmt.run(
+      item.id,
+      item.phase_id,
+      item.subcategory_id,
+      item.priority_rank,
+      item.effort_hours,
+      item.dependencies,
+      item.status || 'pending',
+      item.completion_percentage || 0
+    );
+  }
+
+  getImplementationPlan(planId: string): any {
+    const plan = this.db.prepare(`
+      SELECT * FROM implementation_plans WHERE id = ?
+    `).get(planId);
+    
+    if (!plan) return null;
+    
+    const phases = this.db.prepare(`
+      SELECT * FROM implementation_phases 
+      WHERE plan_id = ? 
+      ORDER BY phase_number
+    `).all(planId);
+    
+    for (const phase of phases as any[]) {
+      phase.items = this.db.prepare(`
+        SELECT 
+          ii.*,
+          s.name as subcategory_name,
+          s.description as subcategory_description
+        FROM implementation_items ii
+        JOIN subcategories s ON ii.subcategory_id = s.id
+        WHERE ii.phase_id = ?
+        ORDER BY ii.priority_rank
+      `).all(phase.id);
+    }
+    
+    (plan as any).phases = phases;
+    return plan;
+  }
+
+  getSubcategoryDependencies(subcategoryId: string): any[] {
+    return this.db.prepare(`
+      SELECT 
+        sd.*,
+        s.name as depends_on_name,
+        s.description as depends_on_description
+      FROM subcategory_dependencies sd
+      JOIN subcategories s ON sd.depends_on_subcategory_id = s.id
+      WHERE sd.subcategory_id = ?
+      ORDER BY sd.dependency_strength DESC
+    `).all(subcategoryId);
+  }
+
+  createSubcategoryDependency(dep: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO subcategory_dependencies (
+        id, subcategory_id, depends_on_subcategory_id,
+        dependency_type, dependency_strength
+      ) VALUES (?, ?, ?, ?, ?)
+    `);
+    
+    stmt.run(
+      dep.id,
+      dep.subcategory_id,
+      dep.depends_on_subcategory_id,
+      dep.dependency_type,
+      dep.dependency_strength || 5
+    );
+  }
+
+  getCostEstimate(subcategoryId: string, organizationSize: string): any {
+    return this.db.prepare(`
+      SELECT * FROM cost_estimates 
+      WHERE subcategory_id = ? AND organization_size = ?
+    `).get(subcategoryId, organizationSize);
+  }
+
+  createCostEstimate(estimate: any): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO cost_estimates (
+        id, subcategory_id, organization_size, labor_cost,
+        tools_cost, training_cost, total_cost, effort_hours
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    stmt.run(
+      estimate.id,
+      estimate.subcategory_id,
+      estimate.organization_size,
+      estimate.labor_cost,
+      estimate.tools_cost,
+      estimate.training_cost,
+      estimate.total_cost,
+      estimate.effort_hours
+    );
+  }
+
+  getSuggestedActions(profileId: string, capacityHours: number): any[] {
+    const sql = `
+      WITH current_state AS (
+        SELECT 
+          a.subcategory_id,
+          a.implementation_level,
+          a.maturity_score,
+          s.name as subcategory_name,
+          SUBSTR(a.subcategory_id, 1, 2) as function_id,
+          CASE 
+            WHEN a.implementation_level = 'not_implemented' THEN 100
+            WHEN a.implementation_level = 'partially_implemented' THEN 60
+            WHEN a.implementation_level = 'largely_implemented' THEN 30
+            ELSE 0
+          END as gap_score,
+          CASE 
+            WHEN a.implementation_level = 'not_implemented' THEN 40
+            WHEN a.implementation_level = 'partially_implemented' THEN 20
+            WHEN a.implementation_level = 'largely_implemented' THEN 10
+            ELSE 5
+          END as estimated_hours,
+          CASE 
+            WHEN SUBSTR(a.subcategory_id, 1, 2) IN ('GV', 'ID') THEN 10
+            WHEN SUBSTR(a.subcategory_id, 1, 2) IN ('PR', 'DE') THEN 8
+            ELSE 6
+          END as priority_weight
+        FROM assessments a
+        JOIN subcategories s ON a.subcategory_id = s.id
+        WHERE a.profile_id = ?
+          AND a.implementation_level != 'fully_implemented'
+      ),
+      dependencies AS (
+        SELECT 
+          cs.subcategory_id,
+          COUNT(sd.depends_on_subcategory_id) as dependency_count,
+          MAX(CASE 
+            WHEN dep_a.implementation_level = 'not_implemented' THEN 1
+            ELSE 0
+          END) as has_blocking_dependency
+        FROM current_state cs
+        LEFT JOIN subcategory_dependencies sd ON cs.subcategory_id = sd.subcategory_id
+        LEFT JOIN assessments dep_a ON sd.depends_on_subcategory_id = dep_a.subcategory_id
+          AND dep_a.profile_id = ?
+        GROUP BY cs.subcategory_id
+      ),
+      prioritized AS (
+        SELECT 
+          cs.*,
+          d.dependency_count,
+          d.has_blocking_dependency,
+          (cs.gap_score * cs.priority_weight / 10.0) / (cs.estimated_hours + 1) as roi_score,
+          SUM(cs.estimated_hours) OVER (ORDER BY 
+            d.has_blocking_dependency ASC,
+            (cs.gap_score * cs.priority_weight / 10.0) / (cs.estimated_hours + 1) DESC
+          ) as cumulative_hours
+        FROM current_state cs
+        LEFT JOIN dependencies d ON cs.subcategory_id = d.subcategory_id
+      )
+      SELECT 
+        subcategory_id,
+        subcategory_name,
+        function_id,
+        implementation_level,
+        gap_score,
+        estimated_hours,
+        dependency_count,
+        has_blocking_dependency,
+        ROUND(roi_score, 2) as roi_score,
+        cumulative_hours,
+        CASE 
+          WHEN has_blocking_dependency = 1 THEN 'Address dependencies first'
+          WHEN gap_score >= 80 THEN 'Critical gap - high priority'
+          WHEN roi_score > 2 THEN 'High ROI - quick win'
+          WHEN function_id IN ('GV', 'ID') THEN 'Foundational control'
+          ELSE 'Standard priority'
+        END as justification
+      FROM prioritized
+      WHERE cumulative_hours <= ?
+        OR cumulative_hours - estimated_hours < ?
+      ORDER BY 
+        has_blocking_dependency ASC,
+        roi_score DESC
+      LIMIT 5
+    `;
+    
+    return this.db.prepare(sql).all(profileId, profileId, capacityHours, capacityHours);
+  }
+
+  getGapAnalysisItems(gapAnalysisId: string): any[] {
+    return this.db.prepare(`
+      SELECT 
+        g.*,
+        s.name as subcategory_name,
+        s.description as subcategory_description
+      FROM gap_analysis g
+      JOIN subcategories s ON g.subcategory_id = s.id
+      WHERE g.id LIKE ? || '%'
+      ORDER BY g.priority_rank
+    `).all(gapAnalysisId);
+  }
+
+  calculateDependencyGraph(subcategoryIds: string[]): any {
+    const placeholders = subcategoryIds.map(() => '?').join(',');
+    
+    const dependencies = this.db.prepare(`
+      SELECT 
+        sd.subcategory_id as from_id,
+        sd.depends_on_subcategory_id as to_id,
+        sd.dependency_type,
+        sd.dependency_strength,
+        s1.name as from_name,
+        s2.name as to_name
+      FROM subcategory_dependencies sd
+      JOIN subcategories s1 ON sd.subcategory_id = s1.id
+      JOIN subcategories s2 ON sd.depends_on_subcategory_id = s2.id
+      WHERE sd.subcategory_id IN (${placeholders})
+         OR sd.depends_on_subcategory_id IN (${placeholders})
+    `).all(...subcategoryIds, ...subcategoryIds);
+    
+    // Build adjacency list
+    const graph: Record<string, any[]> = {};
+    const inDegree: Record<string, number> = {};
+    
+    for (const id of subcategoryIds) {
+      graph[id] = [];
+      inDegree[id] = 0;
+    }
+    
+    for (const dep of dependencies as any[]) {
+      if (!graph[dep.from_id]) graph[dep.from_id] = [];
+      graph[dep.from_id]!.push(dep);
+      
+      if (subcategoryIds.includes(dep.from_id)) {
+        inDegree[dep.from_id] = (inDegree[dep.from_id] || 0) + 1;
+      }
+    }
+    
+    // Topological sort for dependency order
+    const queue: string[] = [];
+    const sorted: string[] = [];
+    
+    for (const id of subcategoryIds) {
+      if (inDegree[id] === 0) {
+        queue.push(id);
+      }
+    }
+    
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      sorted.push(current);
+      
+      for (const dep of (graph[current] || []) as any[]) {
+        if (inDegree[dep.to_id] !== undefined) {
+          inDegree[dep.to_id]!--;
+          if (inDegree[dep.to_id] === 0) {
+            queue.push(dep.to_id);
+          }
+        }
+      }
+    }
+    
+    return {
+      dependencies,
+      graph,
+      topologicalOrder: sorted,
+      hasCycle: sorted.length !== subcategoryIds.length
+    };
   }
 }
 
