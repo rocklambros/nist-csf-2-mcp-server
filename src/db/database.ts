@@ -519,6 +519,314 @@ export class CSFDatabase {
   }
 
   // ============================================================================
+  // GAP ANALYSIS OPERATIONS
+  // ============================================================================
+
+  generateGapAnalysis(currentProfileId: string, targetProfileId: string, analysisId: string): any {
+    // Complex SQL to compare profiles and generate gap analysis
+    const sql = `
+      WITH current_assessments AS (
+        SELECT 
+          subcategory_id,
+          implementation_level,
+          maturity_score,
+          confidence_level
+        FROM assessments
+        WHERE profile_id = ?
+      ),
+      target_assessments AS (
+        SELECT 
+          subcategory_id,
+          implementation_level,
+          maturity_score,
+          confidence_level
+        FROM assessments
+        WHERE profile_id = ?
+      ),
+      gap_calculations AS (
+        SELECT 
+          COALESCE(c.subcategory_id, t.subcategory_id) as subcategory_id,
+          SUBSTR(COALESCE(c.subcategory_id, t.subcategory_id), 1, 2) as function_id,
+          SUBSTR(COALESCE(c.subcategory_id, t.subcategory_id), 1, 5) as category_id,
+          COALESCE(c.maturity_score, 0) as current_score,
+          COALESCE(t.maturity_score, 5) as target_score,
+          COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) as gap_score,
+          CASE 
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 3 THEN 'Critical'
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 2 THEN 'High'
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 1 THEN 'Medium'
+            ELSE 'Low'
+          END as priority,
+          -- Estimate effort based on gap size and current state
+          CASE 
+            WHEN COALESCE(c.maturity_score, 0) = 0 THEN 'Very High'
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 3 THEN 'High'
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 2 THEN 'Medium'
+            ELSE 'Low'
+          END as estimated_effort,
+          -- Calculate risk impact
+          CASE SUBSTR(COALESCE(c.subcategory_id, t.subcategory_id), 1, 2)
+            WHEN 'GV' THEN 1.5
+            WHEN 'ID' THEN 1.3
+            WHEN 'PR' THEN 1.4
+            WHEN 'DE' THEN 1.2
+            WHEN 'RS' THEN 1.1
+            WHEN 'RC' THEN 1.0
+            ELSE 1.0
+          END * (COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0)) as risk_weighted_gap,
+          c.implementation_level as current_implementation,
+          t.implementation_level as target_implementation,
+          COALESCE(c.confidence_level, 'low') as current_confidence,
+          COALESCE(t.confidence_level, 'high') as target_confidence
+        FROM current_assessments c
+        FULL OUTER JOIN target_assessments t 
+          ON c.subcategory_id = t.subcategory_id
+      ),
+      ranked_gaps AS (
+        SELECT 
+          *,
+          ROW_NUMBER() OVER (ORDER BY risk_weighted_gap DESC) as risk_rank,
+          ROW_NUMBER() OVER (PARTITION BY function_id ORDER BY gap_score DESC) as function_rank,
+          ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY gap_score DESC) as category_rank
+        FROM gap_calculations
+        WHERE gap_score > 0
+      )
+      INSERT INTO gap_analysis (
+        id, org_id, category_id, current_score, target_score, 
+        gap_score, priority, estimated_effort, target_date, analysis_date
+      )
+      SELECT 
+        ? || '_' || category_id,
+        (SELECT org_id FROM profiles WHERE profile_id = ?),
+        category_id,
+        AVG(current_score),
+        AVG(target_score),
+        AVG(gap_score),
+        CASE 
+          WHEN AVG(gap_score) >= 3 THEN 'Critical'
+          WHEN AVG(gap_score) >= 2 THEN 'High'
+          WHEN AVG(gap_score) >= 1 THEN 'Medium'
+          ELSE 'Low'
+        END,
+        CASE 
+          WHEN MAX(estimated_effort = 'Very High') THEN 'Very High'
+          WHEN MAX(estimated_effort = 'High') THEN 'High'
+          WHEN MAX(estimated_effort = 'Medium') THEN 'Medium'
+          ELSE 'Low'
+        END,
+        DATE('now', '+90 days'),
+        CURRENT_TIMESTAMP
+      FROM ranked_gaps
+      GROUP BY category_id;
+    `;
+    
+    // Execute the insert
+    this.db.prepare(sql).run(
+      currentProfileId,
+      targetProfileId,
+      analysisId,
+      currentProfileId
+    );
+    
+    // Return the detailed gap analysis
+    const detailSql = `
+      WITH current_assessments AS (
+        SELECT 
+          subcategory_id,
+          implementation_level,
+          maturity_score,
+          confidence_level
+        FROM assessments
+        WHERE profile_id = ?
+      ),
+      target_assessments AS (
+        SELECT 
+          subcategory_id,
+          implementation_level,
+          maturity_score,
+          confidence_level
+        FROM assessments
+        WHERE profile_id = ?
+      ),
+      gap_calculations AS (
+        SELECT 
+          COALESCE(c.subcategory_id, t.subcategory_id) as subcategory_id,
+          SUBSTR(COALESCE(c.subcategory_id, t.subcategory_id), 1, 2) as function_id,
+          SUBSTR(COALESCE(c.subcategory_id, t.subcategory_id), 1, 5) as category_id,
+          COALESCE(c.maturity_score, 0) as current_score,
+          COALESCE(t.maturity_score, 5) as target_score,
+          COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) as gap_score,
+          CASE 
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 3 THEN 'Critical'
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 2 THEN 'High'
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 1 THEN 'Medium'
+            ELSE 'Low'
+          END as priority,
+          CASE 
+            WHEN COALESCE(c.maturity_score, 0) = 0 THEN 'Very High'
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 3 THEN 'High'
+            WHEN COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0) >= 2 THEN 'Medium'
+            ELSE 'Low'
+          END as estimated_effort,
+          CASE SUBSTR(COALESCE(c.subcategory_id, t.subcategory_id), 1, 2)
+            WHEN 'GV' THEN 1.5
+            WHEN 'ID' THEN 1.3
+            WHEN 'PR' THEN 1.4
+            WHEN 'DE' THEN 1.2
+            WHEN 'RS' THEN 1.1
+            WHEN 'RC' THEN 1.0
+            ELSE 1.0
+          END * (COALESCE(t.maturity_score, 5) - COALESCE(c.maturity_score, 0)) as risk_weighted_gap,
+          c.implementation_level as current_implementation,
+          t.implementation_level as target_implementation
+        FROM current_assessments c
+        FULL OUTER JOIN target_assessments t 
+          ON c.subcategory_id = t.subcategory_id
+      )
+      SELECT 
+        *,
+        ROW_NUMBER() OVER (ORDER BY risk_weighted_gap DESC) as risk_rank,
+        ROW_NUMBER() OVER (PARTITION BY function_id ORDER BY gap_score DESC) as function_rank
+      FROM gap_calculations
+      WHERE gap_score > 0
+      ORDER BY risk_weighted_gap DESC
+    `;
+    
+    return this.db.prepare(detailSql).all(currentProfileId, targetProfileId);
+  }
+
+  getGapAnalysisDetails(analysisId: string): any {
+    const sql = `
+      SELECT 
+        g.*,
+        p.org_name,
+        p.industry,
+        p.size,
+        COUNT(DISTINCT g.category_id) as total_categories,
+        AVG(g.gap_score) as avg_gap_score,
+        SUM(CASE WHEN g.priority = 'Critical' THEN 1 ELSE 0 END) as critical_gaps,
+        SUM(CASE WHEN g.priority = 'High' THEN 1 ELSE 0 END) as high_gaps
+      FROM gap_analysis g
+      JOIN organization_profiles p ON g.org_id = p.org_id
+      WHERE g.id LIKE ? || '%'
+      GROUP BY g.org_id
+    `;
+    
+    return this.db.prepare(sql).all(analysisId);
+  }
+
+  getPriorityMatrix(analysisId: string): any {
+    // Get gap analysis with effort-impact calculations
+    const sql = `
+      WITH gap_data AS (
+        SELECT 
+          category_id,
+          gap_score,
+          priority,
+          estimated_effort,
+          current_score,
+          target_score,
+          -- Calculate impact score (normalized 0-10)
+          MIN(10, gap_score * 2) as impact_score,
+          -- Calculate effort score (normalized 0-10)
+          CASE estimated_effort
+            WHEN 'Low' THEN 2
+            WHEN 'Medium' THEN 5
+            WHEN 'High' THEN 8
+            WHEN 'Very High' THEN 10
+            ELSE 5
+          END as effort_score
+        FROM gap_analysis
+        WHERE id LIKE ? || '%'
+      ),
+      matrix_classification AS (
+        SELECT 
+          *,
+          CASE 
+            WHEN impact_score >= 5 AND effort_score <= 5 THEN 'Quick Win'
+            WHEN impact_score >= 5 AND effort_score > 5 THEN 'Strategic Initiative'
+            WHEN impact_score < 5 AND effort_score <= 5 THEN 'Fill In'
+            ELSE 'Low Priority'
+          END as matrix_quadrant,
+          ROW_NUMBER() OVER (PARTITION BY 
+            CASE 
+              WHEN impact_score >= 5 AND effort_score <= 5 THEN 'Quick Win'
+              WHEN impact_score >= 5 AND effort_score > 5 THEN 'Strategic Initiative'
+              WHEN impact_score < 5 AND effort_score <= 5 THEN 'Fill In'
+              ELSE 'Low Priority'
+            END 
+            ORDER BY impact_score DESC, effort_score ASC
+          ) as quadrant_rank
+        FROM gap_data
+      )
+      SELECT 
+        category_id,
+        gap_score,
+        priority,
+        estimated_effort,
+        current_score,
+        target_score,
+        ROUND(impact_score, 2) as impact_score,
+        ROUND(effort_score, 2) as effort_score,
+        matrix_quadrant,
+        quadrant_rank
+      FROM matrix_classification
+      ORDER BY 
+        CASE matrix_quadrant
+          WHEN 'Quick Win' THEN 1
+          WHEN 'Strategic Initiative' THEN 2
+          WHEN 'Fill In' THEN 3
+          ELSE 4
+        END,
+        quadrant_rank
+    `;
+    
+    return this.db.prepare(sql).all(analysisId);
+  }
+
+  getPriorityMatrixFromAssessments(profileId: string): any[] {
+    const stmt = this.db.prepare(`
+      SELECT 
+        a.subcategory_id,
+        s.name as subcategory_name,
+        a.implementation_level as current_implementation,
+        'fully_implemented' as target_implementation,
+        a.maturity_score as current_maturity,
+        5 as target_maturity,
+        CASE 
+          WHEN a.implementation_level = 'not_implemented' THEN 100
+          WHEN a.implementation_level = 'partially_implemented' THEN 60
+          WHEN a.implementation_level = 'largely_implemented' THEN 30
+          ELSE 0
+        END as gap_score,
+        a.confidence_score,
+        CASE 
+          WHEN a.implementation_level = 'not_implemented' THEN 8
+          WHEN a.implementation_level = 'partially_implemented' THEN 5
+          WHEN a.implementation_level = 'largely_implemented' THEN 3
+          ELSE 1
+        END as effort_score,
+        CASE 
+          WHEN SUBSTR(a.subcategory_id, 1, 2) IN ('GV', 'PR') THEN 8
+          WHEN SUBSTR(a.subcategory_id, 1, 2) IN ('ID', 'DE') THEN 7
+          ELSE 6
+        END as impact_score,
+        CASE 
+          WHEN SUBSTR(a.subcategory_id, 1, 2) IN ('GV', 'PR') THEN 9
+          WHEN SUBSTR(a.subcategory_id, 1, 2) IN ('ID', 'DE') THEN 7
+          ELSE 5
+        END as risk_score
+      FROM assessments a
+      JOIN subcategories s ON a.subcategory_id = s.id
+      WHERE a.profile_id = ?
+        AND a.implementation_level != 'fully_implemented'
+      ORDER BY gap_score DESC
+    `);
+    
+    return stmt.all(profileId);
+  }
+
+  // ============================================================================
   // ADVANCED MATURITY CALCULATIONS
   // ============================================================================
 

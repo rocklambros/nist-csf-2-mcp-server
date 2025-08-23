@@ -34,6 +34,8 @@ import { quickAssessment, QuickAssessmentSchema } from './tools/quick_assessment
 import { assessMaturity, AssessMaturitySchema } from './tools/assess_maturity.js';
 import { calculateRiskScore, CalculateRiskScoreSchema } from './tools/calculate_risk_score.js';
 import { calculateMaturityTrend, CalculateMaturityTrendSchema } from './tools/calculate_maturity_trend.js';
+import { generateGapAnalysis, GenerateGapAnalysisSchema } from './tools/generate_gap_analysis.js';
+import { generatePriorityMatrix, GeneratePriorityMatrixSchema } from './tools/generate_priority_matrix.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -456,6 +458,42 @@ async function main() {
           },
           required: ['profile_id']
         }
+      },
+      {
+        name: 'generate_gap_analysis',
+        description: 'Generate comprehensive gap analysis between current and target profiles',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            current_profile_id: { type: 'string', description: 'Current profile ID' },
+            target_profile_id: { type: 'string', description: 'Target profile ID' },
+            include_priority_matrix: { type: 'boolean', description: 'Include priority matrix', default: true },
+            include_visualizations: { type: 'boolean', description: 'Include visualizations', default: true },
+            minimum_gap_score: { type: 'number', description: 'Minimum gap score threshold (0-100)', default: 0 }
+          },
+          required: ['current_profile_id', 'target_profile_id']
+        }
+      },
+      {
+        name: 'generate_priority_matrix',
+        description: 'Generate 2x2 priority matrix for gap remediation planning',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'Profile ID' },
+            target_profile_id: { type: 'string', description: 'Target profile ID (optional)' },
+            matrix_type: { 
+              type: 'string', 
+              enum: ['effort_impact', 'risk_feasibility', 'cost_benefit'],
+              description: 'Type of priority matrix',
+              default: 'effort_impact'
+            },
+            include_recommendations: { type: 'boolean', description: 'Include recommendations', default: true },
+            include_resource_estimates: { type: 'boolean', description: 'Include resource estimates', default: true },
+            max_items_per_quadrant: { type: 'number', description: 'Max items per quadrant (1-20)', default: 10 }
+          },
+          required: ['profile_id']
+        }
       }
     ],
   }));
@@ -798,6 +836,34 @@ async function main() {
         case 'calculate_maturity_trend': {
           const params = CalculateMaturityTrendSchema.parse(args);
           const result = await calculateMaturityTrend(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'generate_gap_analysis': {
+          const params = GenerateGapAnalysisSchema.parse(args);
+          const result = await generateGapAnalysis(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'generate_priority_matrix': {
+          const params = GeneratePriorityMatrixSchema.parse(args);
+          const result = await generatePriorityMatrix(params);
           
           return {
             content: [
