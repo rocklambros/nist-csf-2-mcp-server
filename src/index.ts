@@ -43,6 +43,9 @@ import { trackProgressTool } from './tools/track_progress.js';
 import { checkComplianceDriftTool } from './tools/check_compliance_drift.js';
 import { mapComplianceTool } from './tools/map_compliance.js';
 import { getIndustryBenchmarksTool } from './tools/get_industry_benchmarks.js';
+import { generateReportTool } from './tools/generate_report.js';
+import { compareProfilesTool } from './tools/compare_profiles.js';
+import { exportDataTool } from './tools/export_data.js';
 
 // ============================================================================
 // TOOL SCHEMAS
@@ -667,6 +670,69 @@ async function main() {
           },
           required: ['profile_id', 'industry', 'organization_size']
         }
+      },
+      {
+        name: 'generate_report',
+        description: 'Generate formatted reports for NIST CSF assessments and progress',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'ID of the profile to generate report for' },
+            report_type: {
+              type: 'string',
+              enum: ['executive', 'technical', 'audit', 'progress'],
+              description: 'Type of report to generate'
+            },
+            format: {
+              type: 'string',
+              enum: ['html', 'json', 'docx', 'pdf'],
+              description: 'Output format for the report'
+            },
+            include_charts: { type: 'boolean', description: 'Include charts in HTML reports', default: true },
+            include_recommendations: { type: 'boolean', description: 'Include recommendations', default: true },
+            output_path: { type: 'string', description: 'Optional output directory path' }
+          },
+          required: ['profile_id', 'report_type', 'format']
+        }
+      },
+      {
+        name: 'compare_profiles',
+        description: 'Compare multiple profiles to identify differences and similarities',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_ids: {
+              type: 'array',
+              description: 'Array of profile IDs to compare (2-5 profiles)',
+              items: { type: 'string' },
+              minItems: 2,
+              maxItems: 5
+            }
+          },
+          required: ['profile_ids']
+        }
+      },
+      {
+        name: 'export_data',
+        description: 'Export profile assessment data in various formats',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            profile_id: { type: 'string', description: 'ID of the profile to export' },
+            format: {
+              type: 'string',
+              enum: ['csv', 'json', 'excel'],
+              description: 'Export format'
+            },
+            include_assessments: { type: 'boolean', description: 'Include assessment data', default: true },
+            include_progress: { type: 'boolean', description: 'Include progress tracking data', default: true },
+            include_compliance: { type: 'boolean', description: 'Include compliance mapping data', default: true },
+            include_milestones: { type: 'boolean', description: 'Include milestone data', default: true },
+            output_path: { type: 'string', description: 'Optional output directory path' },
+            return_as_base64: { type: 'boolean', description: 'Return as base64 string', default: false }
+          },
+          required: ['profile_id', 'format']
+        }
       }
     ],
   }));
@@ -1131,6 +1197,45 @@ async function main() {
 
         case 'get_industry_benchmarks': {
           const result = await getIndustryBenchmarksTool.execute(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'generate_report': {
+          const result = await generateReportTool.execute(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'compare_profiles': {
+          const result = await compareProfilesTool.execute(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'export_data': {
+          const result = await exportDataTool.execute(args as any, db);
           
           return {
             content: [

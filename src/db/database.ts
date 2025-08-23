@@ -2292,6 +2292,408 @@ export class CSFDatabase {
       coverage.critical_gaps
     );
   }
+
+  // ============================================================================
+  // REPORTING METHODS
+  // ============================================================================
+
+  getExecutiveReportData(profileId: string): any {
+    const sql = `
+      WITH function_scores AS (
+        SELECT 
+          SUBSTR(a.subcategory_id, 1, 2) as function_id,
+          f.name as function_name,
+          AVG(a.maturity_score) as avg_maturity,
+          COUNT(DISTINCT a.subcategory_id) as subcategories_assessed,
+          SUM(CASE WHEN a.maturity_score >= 3 THEN 1 ELSE 0 END) as mature_subcategories
+        FROM assessments a
+        JOIN functions f ON SUBSTR(a.subcategory_id, 1, 2) = f.id
+        WHERE a.profile_id = ?
+        GROUP BY SUBSTR(a.subcategory_id, 1, 2), f.name
+      ),
+      risk_summary AS (
+        SELECT 
+          COUNT(*) as total_risks,
+          SUM(CASE WHEN risk_level = 'Critical' THEN 1 ELSE 0 END) as critical_risks,
+          SUM(CASE WHEN risk_level = 'High' THEN 1 ELSE 0 END) as high_risks,
+          AVG(risk_score) as avg_risk_score
+        FROM risk_assessments r
+        JOIN profiles p ON p.org_id = r.org_id
+        WHERE p.id = ?
+      ),
+      gap_summary AS (
+        SELECT 
+          COUNT(*) as total_gaps,
+          AVG(gap_score) as avg_gap_score,
+          SUM(CASE WHEN priority = 'Critical' THEN 1 ELSE 0 END) as critical_gaps
+        FROM gap_analysis g
+        JOIN profiles p ON p.org_id = g.org_id
+        WHERE p.id = ?
+      ),
+      profile_info AS (
+        SELECT 
+          p.*,
+          o.org_name,
+          o.industry,
+          o.size
+        FROM profiles p
+        JOIN organizations o ON p.org_id = o.org_id
+        WHERE p.id = ?
+      )
+      SELECT 
+        pi.*,
+        (SELECT json_group_array(json_object(
+          'function_id', function_id,
+          'function_name', function_name,
+          'avg_maturity', ROUND(avg_maturity, 2),
+          'subcategories_assessed', subcategories_assessed,
+          'mature_subcategories', mature_subcategories,
+          'maturity_percentage', ROUND(mature_subcategories * 100.0 / subcategories_assessed, 1)
+        )) FROM function_scores) as function_summary,
+        rs.total_risks,
+        rs.critical_risks,
+        rs.high_risks,
+        ROUND(rs.avg_risk_score, 2) as avg_risk_score,
+        gs.total_gaps,
+        ROUND(gs.avg_gap_score, 2) as avg_gap_score,
+        gs.critical_gaps
+      FROM profile_info pi
+      CROSS JOIN risk_summary rs
+      CROSS JOIN gap_summary gs
+    `;
+    
+    return this.db.prepare(sql).get(profileId, profileId, profileId, profileId);
+  }
+
+  getTechnicalReportData(profileId: string): any {
+    const sql = `
+      WITH subcategory_details AS (
+        SELECT 
+          a.subcategory_id,
+          s.name as subcategory_name,
+          s.description,
+          c.name as category_name,
+          f.name as function_name,
+          a.implementation_level,
+          a.maturity_score,
+          a.notes,
+          a.assessed_at
+        FROM assessments a
+        JOIN subcategories s ON a.subcategory_id = s.id
+        JOIN categories c ON SUBSTR(s.id, 1, 5) = c.id
+        JOIN functions f ON SUBSTR(s.id, 1, 2) = f.id
+        WHERE a.profile_id = ?
+        ORDER BY a.subcategory_id
+      ),
+      implementation_details AS (
+        SELECT 
+          subcategory_id,
+          implementation_status,
+          maturity_level,
+          notes,
+          last_assessed
+        FROM subcategory_implementations si
+        JOIN profiles p ON p.org_id = si.org_id
+        WHERE p.id = ?
+      ),
+      dependencies AS (
+        SELECT 
+          subcategory_id,
+          json_group_array(depends_on_subcategory_id) as dependencies
+        FROM subcategory_dependencies
+        GROUP BY subcategory_id
+      )
+      SELECT 
+        (SELECT json_group_array(json_object(
+          'subcategory_id', sd.subcategory_id,
+          'subcategory_name', sd.subcategory_name,
+          'description', sd.description,
+          'category_name', sd.category_name,
+          'function_name', sd.function_name,
+          'implementation_level', sd.implementation_level,
+          'maturity_score', sd.maturity_score,
+          'notes', sd.notes,
+          'assessed_at', sd.assessed_at,
+          'dependencies', d.dependencies
+        )) FROM subcategory_details sd
+        LEFT JOIN dependencies d ON sd.subcategory_id = d.subcategory_id
+        ) as subcategory_assessments,
+        (SELECT json_group_array(json_object(
+          'subcategory_id', subcategory_id,
+          'implementation_status', implementation_status,
+          'maturity_level', maturity_level,
+          'notes', notes,
+          'last_assessed', last_assessed
+        )) FROM implementation_details) as implementation_history
+    `;
+    
+    return this.db.prepare(sql).get(profileId, profileId);
+  }
+
+  getProgressReportData(profileId: string): any {
+    const sql = `
+      WITH progress_overview AS (
+        SELECT 
+          COUNT(*) as total_subcategories,
+          AVG(completion_percentage) as avg_completion,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+          SUM(CASE WHEN status = 'on_track' THEN 1 ELSE 0 END) as on_track,
+          SUM(CASE WHEN status = 'at_risk' THEN 1 ELSE 0 END) as at_risk,
+          SUM(CASE WHEN status = 'blocked' THEN 1 ELSE 0 END) as blocked
+        FROM progress_tracking
+        WHERE profile_id = ?
+      ),
+      milestone_status AS (
+        SELECT 
+          COUNT(*) as total_milestones,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_milestones,
+          SUM(CASE WHEN status = 'on_track' THEN 1 ELSE 0 END) as on_track_milestones,
+          SUM(CASE WHEN status = 'at_risk' THEN 1 ELSE 0 END) as at_risk_milestones
+        FROM progress_milestones
+        WHERE profile_id = ?
+      ),
+      recent_progress AS (
+        SELECT 
+          subcategory_id,
+          current_implementation,
+          current_maturity,
+          completion_percentage,
+          status,
+          last_updated,
+          notes
+        FROM progress_tracking
+        WHERE profile_id = ?
+          AND last_updated >= datetime('now', '-30 days')
+        ORDER BY last_updated DESC
+        LIMIT 10
+      ),
+      velocity_trend AS (
+        SELECT 
+          DATE(last_updated) as date,
+          AVG(completion_percentage) as daily_avg
+        FROM progress_tracking
+        WHERE profile_id = ?
+          AND last_updated >= datetime('now', '-90 days')
+        GROUP BY DATE(last_updated)
+        ORDER BY date
+      )
+      SELECT 
+        po.*,
+        ms.*,
+        (SELECT json_group_array(json_object(
+          'subcategory_id', subcategory_id,
+          'current_implementation', current_implementation,
+          'current_maturity', current_maturity,
+          'completion_percentage', completion_percentage,
+          'status', status,
+          'last_updated', last_updated,
+          'notes', notes
+        )) FROM recent_progress) as recent_updates,
+        (SELECT json_group_array(json_object(
+          'date', date,
+          'daily_avg', ROUND(daily_avg, 2)
+        )) FROM velocity_trend) as progress_trend
+      FROM progress_overview po
+      CROSS JOIN milestone_status ms
+    `;
+    
+    return this.db.prepare(sql).get(profileId, profileId, profileId, profileId);
+  }
+
+  getAuditReportData(profileId: string): any {
+    const sql = `
+      WITH audit_trail AS (
+        SELECT 
+          'assessment' as activity_type,
+          subcategory_id as item_id,
+          assessed_at as activity_date,
+          assessed_by as performed_by,
+          'Maturity: ' || maturity_score as details
+        FROM assessments
+        WHERE profile_id = ?
+        UNION ALL
+        SELECT 
+          'progress_update' as activity_type,
+          subcategory_id as item_id,
+          last_updated as activity_date,
+          'System' as performed_by,
+          'Status: ' || status || ', Completion: ' || completion_percentage || '%' as details
+        FROM progress_tracking
+        WHERE profile_id = ?
+        ORDER BY activity_date DESC
+        LIMIT 100
+      ),
+      compliance_status AS (
+        SELECT 
+          framework,
+          coverage_percentage,
+          mapped_controls,
+          fully_covered,
+          partially_covered,
+          not_covered,
+          assessment_date
+        FROM compliance_coverage
+        WHERE profile_id = ?
+      ),
+      drift_events AS (
+        SELECT 
+          subcategory_id,
+          check_date,
+          drift_type,
+          drift_severity,
+          risk_impact,
+          resolved
+        FROM compliance_drift_history
+        WHERE profile_id = ?
+          AND check_date >= datetime('now', '-90 days')
+        ORDER BY check_date DESC
+      )
+      SELECT 
+        (SELECT json_group_array(json_object(
+          'activity_type', activity_type,
+          'item_id', item_id,
+          'activity_date', activity_date,
+          'performed_by', performed_by,
+          'details', details
+        )) FROM audit_trail) as audit_log,
+        (SELECT json_group_array(json_object(
+          'framework', framework,
+          'coverage_percentage', coverage_percentage,
+          'mapped_controls', mapped_controls,
+          'fully_covered', fully_covered,
+          'partially_covered', partially_covered,
+          'not_covered', not_covered,
+          'assessment_date', assessment_date
+        )) FROM compliance_status) as compliance_summary,
+        (SELECT json_group_array(json_object(
+          'subcategory_id', subcategory_id,
+          'check_date', check_date,
+          'drift_type', drift_type,
+          'drift_severity', drift_severity,
+          'risk_impact', risk_impact,
+          'resolved', resolved
+        )) FROM drift_events) as drift_history
+    `;
+    
+    return this.db.prepare(sql).get(profileId, profileId, profileId, profileId);
+  }
+
+  compareProfiles(profileIds: string[]): any {
+    const placeholders = profileIds.map(() => '?').join(',');
+    const sql = `
+      WITH profile_comparisons AS (
+        SELECT 
+          p.id as profile_id,
+          p.profile_name,
+          o.org_name,
+          o.industry,
+          o.size,
+          p.profile_type,
+          p.created_at,
+          (SELECT AVG(maturity_score) FROM assessments WHERE profile_id = p.id) as avg_maturity,
+          (SELECT COUNT(*) FROM assessments WHERE profile_id = p.id) as assessments_count,
+          (SELECT COUNT(*) FROM progress_tracking WHERE profile_id = p.id AND status = 'completed') as completed_items
+        FROM profiles p
+        JOIN organizations o ON p.org_id = o.org_id
+        WHERE p.id IN (${placeholders})
+      ),
+      function_comparisons AS (
+        SELECT 
+          a.profile_id,
+          SUBSTR(a.subcategory_id, 1, 2) as function_id,
+          AVG(a.maturity_score) as avg_maturity
+        FROM assessments a
+        WHERE a.profile_id IN (${placeholders})
+        GROUP BY a.profile_id, SUBSTR(a.subcategory_id, 1, 2)
+      )
+      SELECT 
+        (SELECT json_group_array(json_object(
+          'profile_id', profile_id,
+          'profile_name', profile_name,
+          'org_name', org_name,
+          'industry', industry,
+          'size', size,
+          'profile_type', profile_type,
+          'created_at', created_at,
+          'avg_maturity', ROUND(avg_maturity, 2),
+          'assessments_count', assessments_count,
+          'completed_items', completed_items
+        )) FROM profile_comparisons) as profiles,
+        (SELECT json_group_array(json_object(
+          'profile_id', profile_id,
+          'function_id', function_id,
+          'avg_maturity', ROUND(avg_maturity, 2)
+        )) FROM function_comparisons) as function_scores
+    `;
+    
+    return this.db.prepare(sql).get(...profileIds, ...profileIds);
+  }
+
+  exportProfileData(profileId: string): any {
+    const sql = `
+      SELECT 
+        -- Profile Information
+        (SELECT json_object(
+          'id', p.id,
+          'profile_name', p.profile_name,
+          'profile_type', p.profile_type,
+          'description', p.description,
+          'created_at', p.created_at,
+          'created_by', p.created_by,
+          'org_name', o.org_name,
+          'industry', o.industry,
+          'size', o.size
+        ) FROM profiles p
+        JOIN organizations o ON p.org_id = o.org_id
+        WHERE p.id = ?) as profile_info,
+        
+        -- Assessments
+        (SELECT json_group_array(json_object(
+          'subcategory_id', subcategory_id,
+          'implementation_level', implementation_level,
+          'maturity_score', maturity_score,
+          'notes', notes,
+          'assessed_at', assessed_at,
+          'assessed_by', assessed_by
+        )) FROM assessments WHERE profile_id = ?) as assessments,
+        
+        -- Progress Tracking
+        (SELECT json_group_array(json_object(
+          'subcategory_id', subcategory_id,
+          'baseline_implementation', baseline_implementation,
+          'current_implementation', current_implementation,
+          'target_implementation', target_implementation,
+          'current_maturity', current_maturity,
+          'completion_percentage', completion_percentage,
+          'status', status,
+          'is_blocked', is_blocked,
+          'blocking_reason', blocking_reason,
+          'last_updated', last_updated,
+          'notes', notes
+        )) FROM progress_tracking WHERE profile_id = ?) as progress,
+        
+        -- Compliance Mappings
+        (SELECT json_group_array(json_object(
+          'framework', framework,
+          'control_id', control_id,
+          'control_name', control_name,
+          'csf_subcategory_id', csf_subcategory_id,
+          'mapping_strength', mapping_strength,
+          'coverage_percentage', coverage_percentage
+        )) FROM compliance_mappings WHERE profile_id = ?) as compliance,
+        
+        -- Milestones
+        (SELECT json_group_array(json_object(
+          'milestone_name', milestone_name,
+          'target_date', target_date,
+          'completion_date', completion_date,
+          'status', status,
+          'completion_percentage', completion_percentage
+        )) FROM progress_milestones WHERE profile_id = ?) as milestones
+    `;
+    
+    return this.db.prepare(sql).get(profileId, profileId, profileId, profileId, profileId);
+  }
 }
 
 // Singleton instance
