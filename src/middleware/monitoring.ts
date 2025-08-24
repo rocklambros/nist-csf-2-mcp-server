@@ -43,7 +43,7 @@ export function requestLoggingMiddleware(req: MonitoredRequest, res: Response, n
     correlationId: req.correlationId,
     method: req.method,
     path: req.path,
-    query: req.query,
+    query: JSON.stringify(req.query),
     ip: req.ip,
     userAgent: req.headers['user-agent'],
     contentType: req.headers['content-type'],
@@ -117,14 +117,13 @@ export function responseLoggingMiddleware(req: MonitoredRequest, res: Response, 
  * Tool execution monitoring
  */
 export function toolMonitoring(toolName: string, execute: Function) {
-  return async function(...args: any[]) {
+  return async function(this: any, ...args: any[]) {
     const correlationId = logger.getCorrelationId();
     const timer = metrics.startTimer('tool_execution_duration');
-    const startTime = Date.now();
     
     // Extract client info from context if available
-    const clientId = (this as any)?.clientId || 'unknown';
-    const userId = (this as any)?.userId;
+    const clientId = this?.clientId || 'unknown';
+    const userId = this?.userId;
     
     logger.info('Tool execution started', {
       correlationId,
@@ -216,7 +215,7 @@ export function toolMonitoring(toolName: string, execute: Function) {
  * Database query monitoring
  */
 export function monitorDatabaseQuery(operation: string, table: string, execute: Function) {
-  return async function(...args: any[]) {
+  return async function(this: any, ...args: any[]) {
     const correlationId = logger.getCorrelationId();
     const timer = metrics.startTimer('db_query_duration');
     
@@ -285,7 +284,7 @@ export function monitorDatabaseQuery(operation: string, table: string, execute: 
 /**
  * Error handling middleware
  */
-export function errorMonitoringMiddleware(err: any, req: MonitoredRequest, res: Response, next: NextFunction): void {
+export function errorMonitoringMiddleware(err: any, req: MonitoredRequest, res: Response, _next: NextFunction): void {
   const correlationId = req.correlationId || logger.generateCorrelationId();
   
   logger.error('Unhandled error in request', err, {

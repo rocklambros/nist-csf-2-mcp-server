@@ -63,7 +63,7 @@ export class AuthMiddleware {
       return null;
     }
 
-    return parts[1];
+    return parts[1] || null;
   }
 
   /**
@@ -97,8 +97,10 @@ export class AuthMiddleware {
         (err, decoded) => {
           if (err) {
             reject(err);
+            return;
           } else {
             resolve(decoded as DecodedToken);
+            return;
           }
         }
       );
@@ -122,6 +124,7 @@ export class AuthMiddleware {
         (req as any).auth = decoded;
         
         next();
+        return;
       } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
           return res.status(401).json({ error: 'Unauthorized - Token expired' });
@@ -158,6 +161,7 @@ export class AuthMiddleware {
       }
 
       next();
+      return;
     };
   }
 

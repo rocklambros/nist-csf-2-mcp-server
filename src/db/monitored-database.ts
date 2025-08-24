@@ -23,62 +23,62 @@ export class MonitoredDatabase extends CSFDatabase {
       'SELECT', 
       'organizations',
       originalGetOrganization
-    ) as typeof this.getOrganization;
+    ) as any;
     
     const originalCreateOrganization = this.createOrganization.bind(this);
     this.createOrganization = monitorDatabaseQuery(
       'INSERT',
       'organizations', 
       originalCreateOrganization
-    ) as typeof this.createOrganization;
+    ) as any;
     
     const originalUpsertImplementation = this.upsertImplementation.bind(this);
     this.upsertImplementation = monitorDatabaseQuery(
       'UPSERT',
       'implementations',
       originalUpsertImplementation
-    ) as typeof this.upsertImplementation;
+    ) as any;
     
     const originalGetImplementations = this.getImplementations.bind(this);
     this.getImplementations = monitorDatabaseQuery(
       'SELECT',
       'implementations',
       originalGetImplementations
-    ) as typeof this.getImplementations;
+    ) as any;
     
     const originalUpsertRiskAssessment = this.upsertRiskAssessment.bind(this);
     this.upsertRiskAssessment = monitorDatabaseQuery(
       'UPSERT',
       'risk_assessments',
       originalUpsertRiskAssessment
-    ) as typeof this.upsertRiskAssessment;
+    ) as any;
     
     const originalGetRiskAssessments = this.getRiskAssessments.bind(this);
     this.getRiskAssessments = monitorDatabaseQuery(
       'SELECT',
       'risk_assessments',
       originalGetRiskAssessments
-    ) as typeof this.getRiskAssessments;
+    ) as any;
     
     const originalUpsertGapAnalysis = this.upsertGapAnalysis.bind(this);
     this.upsertGapAnalysis = monitorDatabaseQuery(
       'UPSERT',
       'gap_analyses',
       originalUpsertGapAnalysis
-    ) as typeof this.upsertGapAnalysis;
+    ) as any;
     
     const originalGetGapAnalyses = this.getGapAnalyses.bind(this);
     this.getGapAnalyses = monitorDatabaseQuery(
       'SELECT',
       'gap_analyses',
       originalGetGapAnalyses
-    ) as typeof this.getGapAnalyses;
+    ) as any;
   }
   
   /**
    * Get database statistics with monitoring
    */
-  getStats(): any {
+  override getStats(): any {
     const timer = metrics.startTimer('db_query_duration');
     
     try {
@@ -96,10 +96,10 @@ export class MonitoredDatabase extends CSFDatabase {
       });
       
       // Record current gauge values
-      metrics.gauge('db_organizations_count', stats.organizations);
-      metrics.gauge('db_implementations_count', stats.implementations);
-      metrics.gauge('db_risk_assessments_count', stats.risk_assessments);
-      metrics.gauge('db_gap_analyses_count', stats.gap_analyses);
+      metrics.gauge('db_organizations_count', (stats as any).organizations || 0);
+      metrics.gauge('db_implementations_count', (stats as any).implementations || 0);
+      metrics.gauge('db_risk_assessments_count', (stats as any).risk_assessments || 0);
+      metrics.gauge('db_gap_analyses_count', (stats as any).gaps || 0);
       
       return stats;
     } catch (error) {
@@ -116,7 +116,7 @@ export class MonitoredDatabase extends CSFDatabase {
   /**
    * Create a new profile with monitoring
    */
-  createProfile(profile: any): string {
+  override createProfile(profile: any): void {
     const timer = metrics.startTimer('db_query_duration');
     const correlationId = logger.getCorrelationId();
     
@@ -127,12 +127,12 @@ export class MonitoredDatabase extends CSFDatabase {
     });
     
     try {
-      const profileId = super.createProfile(profile);
+      super.createProfile(profile);
       const duration = timer();
       
       logger.info('Profile created successfully', {
         correlationId,
-        profileId,
+        profileId: profile.profile_id,
         duration,
       });
       
@@ -146,8 +146,6 @@ export class MonitoredDatabase extends CSFDatabase {
         table: 'profiles',
         status: 'success',
       });
-      
-      return profileId;
     } catch (error) {
       const duration = timer();
       
@@ -174,7 +172,7 @@ export class MonitoredDatabase extends CSFDatabase {
   /**
    * Get assessment with monitoring
    */
-  getAssessment(profileId: string, subcategoryId?: string): any {
+  override getAssessment(profileId: string, subcategoryId?: string): any {
     const timer = metrics.startTimer('db_query_duration');
     const correlationId = logger.getCorrelationId();
     
@@ -185,7 +183,7 @@ export class MonitoredDatabase extends CSFDatabase {
     });
     
     try {
-      const assessment = super.getAssessment(profileId, subcategoryId);
+      const assessment = super.getAssessment(profileId);
       const duration = timer();
       
       logger.debug('Assessment retrieved', {
@@ -222,7 +220,7 @@ export class MonitoredDatabase extends CSFDatabase {
   /**
    * Import assessment batch with monitoring
    */
-  importAssessmentBatch(profileId: string, assessments: any[]): any {
+  override importAssessmentBatch(profileId: string, assessments: any[]): any {
     const timer = metrics.startTimer('db_query_duration');
     const correlationId = logger.getCorrelationId();
     
@@ -241,7 +239,7 @@ export class MonitoredDatabase extends CSFDatabase {
         profileId,
         imported: result.imported,
         skipped: result.skipped,
-        updated: result.updated,
+        updated: (result as any).updated || 0,
         duration,
       });
       

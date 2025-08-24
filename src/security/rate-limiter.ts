@@ -61,14 +61,14 @@ export class RateLimiter {
   /**
    * Get rate limit configuration for a tool
    */
-  private getLimit(toolName: string): RateLimitConfig {
+  protected getLimit(toolName: string): RateLimitConfig {
     return this.limits.get(toolName) || this.limits.get('default')!;
   }
   
   /**
    * Generate a unique key for rate limiting
    */
-  private getKey(clientId: string, toolName: string): string {
+  protected getKey(clientId: string, toolName: string): string {
     return `${clientId}:${toolName}`;
   }
   
@@ -190,9 +190,11 @@ export class RateLimiter {
         res.setHeader('X-RateLimit-Reset', new Date(resetTime).toISOString());
         
         next();
+        return;
       } catch (error) {
         console.error('Rate limiting error:', error);
         next(); // Don't block on rate limiting errors
+        return;
       }
     };
   }

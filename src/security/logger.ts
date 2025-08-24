@@ -353,7 +353,7 @@ export class SecurityLogger {
   /**
    * Get recent security events
    */
-  public async getRecentEvents(minutes: number = 60): Promise<SecurityLogEntry[]> {
+  public async getRecentEvents(_minutes: number = 60): Promise<SecurityLogEntry[]> {
     // This would query the log storage in production
     // For now, return empty array as placeholder
     return [];

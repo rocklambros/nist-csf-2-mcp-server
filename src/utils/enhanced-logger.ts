@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import * as os from 'os';
+import { AsyncLocalStorage } from 'async_hooks';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,7 +35,7 @@ const colors = {
 winston.addColors(colors);
 
 // Context storage for correlation IDs
-const asyncLocalStorage = new (require('async_hooks')).AsyncLocalStorage();
+const asyncLocalStorage = new AsyncLocalStorage();
 
 // Custom metadata interface
 interface LogMetadata {
@@ -68,25 +69,20 @@ const structuredFormat = winston.format.combine(
     const context = asyncLocalStorage.getStore() as any || {};
     
     const logEntry = {
-      timestamp: info.timestamp,
-      level: info.level,
-      message: info.message,
       correlationId: info.correlationId || context.correlationId || 'system',
       service: 'nist-csf-mcp-server',
       ...systemMetadata,
       ...info,
     };
     
-    // Remove duplicate fields
-    delete logEntry.timestamp;
-    delete logEntry.level;
-    delete logEntry.message;
+    // Remove duplicate fields that will be explicitly included
+    const { level: __, message: ___, ...otherFields } = logEntry;
     
     return JSON.stringify({
-      timestamp: info.timestamp,
+      timestamp: new Date().toISOString(),
       level: info.level,
       message: info.message,
-      ...logEntry
+      ...otherFields
     });
   })
 );

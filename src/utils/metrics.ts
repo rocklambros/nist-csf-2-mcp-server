@@ -305,7 +305,9 @@ class MetricsCollector extends EventEmitter {
     const stddev = Math.sqrt(variance);
     
     // Calculate rate (per second)
-    const timeRange = (filteredPoints[filteredPoints.length - 1].timestamp - filteredPoints[0].timestamp) / 1000;
+    const timeRange = filteredPoints.length > 0 
+      ? ((filteredPoints[filteredPoints.length - 1]?.timestamp || 0) - (filteredPoints[0]?.timestamp || 0)) / 1000
+      : 0;
     const rate = timeRange > 0 ? values.length / timeRange : 0;
     
     return {
@@ -314,8 +316,8 @@ class MetricsCollector extends EventEmitter {
       unit: metric.unit,
       count: values.length,
       sum,
-      min: values[0],
-      max: values[values.length - 1],
+      min: values[0] || 0,
+      max: values[values.length - 1] || 0,
       mean,
       median,
       p50: percentile(50),
@@ -479,6 +481,7 @@ class MetricsCollector extends EventEmitter {
 export const metrics = new MetricsCollector();
 
 // Export types and enums
-export { MetricsCollector, MetricConfig, AggregatedMetric };
+export type { MetricConfig, AggregatedMetric };
+export { MetricsCollector };
 
 export default metrics;

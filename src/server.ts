@@ -333,7 +333,7 @@ function createExpressApp() {
   }
   
   // Health check endpoint (no auth required)
-  app.get('/health', (req: Request, res: Response) => {
+  app.get('/health', (_req: Request, res: Response) => {
     res.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
@@ -343,9 +343,13 @@ function createExpressApp() {
   });
   
   // MCP tool endpoint
-  app.post('/tools/:toolName', async (req: Request, res: Response, next: NextFunction) => {
-    const toolName = req.params.toolName;
+  app.post('/tools/:toolName', async (req: Request, res: Response, _next: NextFunction) => {
+    const toolName = req.params.toolName as string;
     const toolConfig = TOOL_REGISTRY.get(toolName);
+    
+    if (!toolName) {
+      return res.status(400).json({ error: 'Tool name is required' });
+    }
     
     if (!toolConfig) {
       return res.status(404).json({
@@ -376,7 +380,7 @@ function createExpressApp() {
       }
       
       // Validate tool parameters
-      const validatedParams = validateToolParams(toolName, req.body);
+      const validatedParams = validateToolParams(toolName as string, req.body);
       
       // Log tool call
       const startTime = Date.now();
@@ -409,7 +413,7 @@ function createExpressApp() {
         duration_ms: Date.now() - startTime
       });
       
-      res.json({
+      return res.json({
         success: true,
         data: result
       });
@@ -442,7 +446,7 @@ function createExpressApp() {
       
       // Don't expose internal errors
       logger.error(`Tool execution error: ${toolName}`, error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'Internal server error',
         message: NODE_ENV === 'development' ? error.message : 'An error occurred processing your request'
       });
@@ -450,7 +454,7 @@ function createExpressApp() {
   });
   
   // List available tools
-  app.get('/tools', (req: Request, res: Response) => {
+  app.get('/tools', (_req: Request, res: Response) => {
     const tools = Array.from(TOOL_REGISTRY.keys()).map(name => {
       const config = TOOL_REGISTRY.get(name)!;
       return {
@@ -471,7 +475,7 @@ function createExpressApp() {
   if (ENABLE_MONITORING) {
     app.use(errorMonitoringMiddleware);
   } else {
-    app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
       logger.error('Unhandled error:', err);
       
       // Log security event for errors
@@ -479,9 +483,9 @@ function createExpressApp() {
         timestamp: new Date().toISOString(),
         event: 'unhandled_error',
         level: 'error',
-        path: req.path,
-        method: req.method,
-        ip: req.ip,
+        path: _req.path,
+        method: _req.method,
+        ip: _req.ip,
         error: NODE_ENV === 'development' ? err.message : 'Internal error'
       });
       
@@ -568,7 +572,7 @@ async function main() {
       
       try {
         // Validate parameters
-        const validatedParams = validateToolParams(name, args);
+        const validatedParams = validateToolParams(name, args || {});
         
         // Execute tool with monitoring
         let result;

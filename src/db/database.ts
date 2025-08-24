@@ -80,6 +80,33 @@ export class CSFDatabase {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
 
+      -- CSF Framework reference tables
+      CREATE TABLE IF NOT EXISTS functions (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS categories (
+        id TEXT PRIMARY KEY,
+        function_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (function_id) REFERENCES functions(id)
+      );
+
+      CREATE TABLE IF NOT EXISTS subcategories (
+        id TEXT PRIMARY KEY,
+        category_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        implementation_guidance TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (category_id) REFERENCES categories(id)
+      );
+
       -- Subcategory implementations table
       CREATE TABLE IF NOT EXISTS subcategory_implementations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -173,7 +200,7 @@ export class CSFDatabase {
         status TEXT DEFAULT 'draft',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (profile_id) REFERENCES profiles(id)
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
       );
 
       -- Implementation Plan Phases table
@@ -249,7 +276,7 @@ export class CSFDatabase {
         days_since_update INTEGER DEFAULT 0,
         trend TEXT DEFAULT 'stable',
         notes TEXT,
-        FOREIGN KEY (profile_id) REFERENCES profiles(id),
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
         FOREIGN KEY (subcategory_id) REFERENCES subcategories(id),
         UNIQUE(profile_id, subcategory_id)
       );
@@ -269,7 +296,7 @@ export class CSFDatabase {
         resolved BOOLEAN DEFAULT 0,
         resolved_date TIMESTAMP,
         resolution_notes TEXT,
-        FOREIGN KEY (profile_id) REFERENCES profiles(id),
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
         FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
       );
 
@@ -284,10 +311,12 @@ export class CSFDatabase {
         completion_percentage INTEGER DEFAULT 0,
         subcategories_involved TEXT,
         success_criteria TEXT,
-        FOREIGN KEY (profile_id) REFERENCES profiles(id)
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
       );
 
       -- Create indexes for better query performance
+      CREATE INDEX IF NOT EXISTS idx_categories_function ON categories(function_id);
+      CREATE INDEX IF NOT EXISTS idx_subcategories_category ON subcategories(category_id);
       CREATE INDEX IF NOT EXISTS idx_implementations_org ON subcategory_implementations(org_id);
       CREATE INDEX IF NOT EXISTS idx_implementations_subcategory ON subcategory_implementations(subcategory_id);
       CREATE INDEX IF NOT EXISTS idx_risk_org ON risk_assessments(org_id);
@@ -328,7 +357,7 @@ export class CSFDatabase {
         notes TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (profile_id) REFERENCES profiles(id),
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
         FOREIGN KEY (csf_subcategory_id) REFERENCES subcategories(id),
         UNIQUE(profile_id, framework, control_id, csf_subcategory_id)
       );
@@ -382,7 +411,7 @@ export class CSFDatabase {
         gap_count INTEGER,
         critical_gaps TEXT,
         assessment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (profile_id) REFERENCES profiles(id)
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
       );
 
       CREATE INDEX IF NOT EXISTS idx_compliance_mappings_profile ON compliance_mappings(profile_id);
@@ -413,9 +442,9 @@ export class CSFDatabase {
         validated_at TEXT,
         tags TEXT, -- JSON array of tags
         metadata TEXT, -- JSON object with additional metadata
-        FOREIGN KEY (assessment_id) REFERENCES subcategory_assessments(assessment_id),
-        FOREIGN KEY (profile_id) REFERENCES organization_profiles(profile_id),
-        FOREIGN KEY (subcategory_id) REFERENCES csf_subcategories(subcategory_id)
+        FOREIGN KEY (assessment_id) REFERENCES assessments(assessment_id),
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
+        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
       );
 
       CREATE INDEX IF NOT EXISTS idx_evidence_assessment ON audit_evidence(assessment_id);

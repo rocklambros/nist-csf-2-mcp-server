@@ -13,8 +13,8 @@
 
 import { getDatabase, closeDatabase } from './db/database.js';
 import { getMonitoredDatabase, closeMonitoredDatabase } from './db/monitored-database.js';
-import { initializeFramework } from './services/framework-loader.js';
-import { logger } from './utils/enhanced-logger.js';
+// import { initializeFramework } from './services/framework-loader.js';
+// import { logger } from './utils/enhanced-logger.js';
 import { toolAnalytics } from './utils/analytics.js';
 
 // Tool imports
@@ -28,7 +28,7 @@ import { createImplementationPlan } from './tools/create_implementation_plan.js'
 import { estimateImplementationCost } from './tools/estimate_implementation_cost.js';
 import { trackProgressTool } from './tools/track_progress.js';
 import { generateReportTool } from './tools/generate_report.js';
-import { compareProfilesTool } from './tools/compare_profiles.js';
+// import { compareProfilesTool } from './tools/compare_profiles.js';
 import { exportDataTool } from './tools/export_data.js';
 
 // Test data and configuration
@@ -98,7 +98,7 @@ interface TestReport {
 
 class E2ETestRunner {
   private db: any;
-  private framework: any;
+  // private framework: any;
   private report: TestReport;
   private useMonitoring: boolean;
 
@@ -122,7 +122,7 @@ class E2ETestRunner {
     try {
       // Initialize database and framework
       this.db = this.useMonitoring ? getMonitoredDatabase() : getDatabase();
-      this.framework = await initializeFramework();
+      // this.framework = await initializeFramework();
       
       console.log('✅ Test environment initialized successfully');
     } catch (error) {
@@ -189,18 +189,25 @@ class E2ETestRunner {
           profile: TEST_CONFIG.profile
         };
         
-        const result = await createProfile(profileData, this.db, this.framework);
+        const result = await createProfile({
+          org_name: profileData.organization.name,
+          sector: profileData.organization.industry,
+          size: profileData.organization.size as 'small' | 'medium' | 'large' | 'enterprise',
+          profile_type: 'current',
+          profile_name: profileData.profile.name,
+          description: profileData.profile.description
+        });
         
         if (!result.profile_id) {
           throw new Error('Profile creation failed - no profile_id returned');
         }
         
         this.report.artifacts.profileId = result.profile_id;
-        this.report.artifacts.organizationId = result.organization_id;
+        this.report.artifacts.organizationId = result.org_id;
         
         return {
           profileId: result.profile_id,
-          organizationId: result.organization_id,
+          organizationId: result.org_id,
           message: result.message
         };
       }
@@ -219,21 +226,33 @@ class E2ETestRunner {
           throw new Error('No profile ID available from previous step');
         }
         
-        const assessmentData = {
-          profile_id: this.report.artifacts.profileId,
-          assessments: TEST_CONFIG.assessments
-        };
+        // const assessmentData = {
+        //   profile_id: this.report.artifacts.profileId,
+        //   assessments: TEST_CONFIG.assessments
+        // };
         
-        const result = await quickAssessment(assessmentData, this.db, this.framework);
+        const result = await quickAssessment({
+          profile_id: this.report.artifacts.profileId!,
+          simplified_answers: {
+            govern: 'partial',
+            identify: 'partial', 
+            protect: 'partial',
+            detect: 'yes',
+            respond: 'no',
+            recover: 'partial'
+          },
+          assessed_by: 'e2e-test',
+          confidence_level: 'medium'
+        });
         
-        if (!result.imported || result.imported === 0) {
-          throw new Error('Quick assessment failed - no assessments imported');
+        if (!result.success) {
+          throw new Error('Quick assessment failed - operation not successful');
         }
         
         return {
-          imported: result.imported,
-          updated: result.updated,
-          skipped: result.skipped,
+          assessmentsCreated: result.details?.assessmentsCreated || 0,
+          functionSummaries: result.details?.functionSummaries?.length || 0,
+          overallAverage: result.initial_maturity_scores.overall_average,
           message: result.message
         };
       }
@@ -253,29 +272,29 @@ class E2ETestRunner {
         }
         
         // Get maturity assessment
-        const maturityResult = await assessMaturity(
-          { profile_id: this.report.artifacts.profileId },
-          this.db,
-          this.framework
-        );
+        const maturityResult = await assessMaturity({
+          profile_id: this.report.artifacts.profileId!,
+          include_recommendations: true,
+          include_subcategory_details: true
+        });
         
         // Calculate risk score
-        const riskResult = await calculateRiskScore(
-          { profile_id: this.report.artifacts.profileId },
-          this.db,
-          this.framework
-        );
+        const riskResult = await calculateRiskScore({
+          profile_id: this.report.artifacts.profileId!,
+          include_recommendations: true,
+          include_heat_map: false
+        });
         
         return {
           maturity: {
-            overallMaturity: maturityResult.overall_maturity,
-            functionMaturity: maturityResult.function_maturity,
-            gapCount: maturityResult.gap_count
+            overallMaturityTier: maturityResult.overall_maturity_tier,
+            overallMaturityScore: maturityResult.overall_maturity_score,
+            functionBreakdown: maturityResult.function_breakdown?.length || 0
           },
           risk: {
             overallRiskScore: riskResult.overall_risk_score,
             riskLevel: riskResult.risk_level,
-            highRiskItems: riskResult.high_risk_items?.length || 0
+            criticalRisks: riskResult.risk_summary?.critical_risks || 0
           }
         };
       }
@@ -294,25 +313,31 @@ class E2ETestRunner {
           throw new Error('No profile ID available');
         }
         
-        const gapData = {
-          current_profile_id: this.report.artifacts.profileId,
-          target_profile_id: this.report.artifacts.profileId, // Same profile for current vs target
-          analysis_name: 'E2E Test Gap Analysis'
-        };
+        // const gapData = {
+        //   current_profile_id: this.report.artifacts.profileId,
+        //   target_profile_id: this.report.artifacts.profileId,
+        //   analysis_name: 'E2E Test Gap Analysis'
+        // };
         
-        const result = await generateGapAnalysis(gapData, this.db, this.framework);
+        const result = await generateGapAnalysis({
+          current_profile_id: this.report.artifacts.profileId!,
+          target_profile_id: this.report.artifacts.profileId!,
+          include_priority_matrix: true,
+          include_visualizations: false,
+          minimum_gap_score: 0
+        });
         
-        if (!result.gap_analysis_id) {
+        if (!result.analysis_id) {
           throw new Error('Gap analysis generation failed - no analysis ID returned');
         }
         
-        this.report.artifacts.gapAnalysisId = result.gap_analysis_id;
+        this.report.artifacts.gapAnalysisId = result.analysis_id;
         
         return {
-          gapAnalysisId: result.gap_analysis_id,
-          totalGaps: result.total_gaps,
-          criticalGaps: result.critical_gaps,
-          recommendations: result.recommendations?.length || 0
+          gapAnalysisId: result.analysis_id,
+          totalGaps: result.gap_summary?.total_gaps || 0,
+          criticalGaps: result.gap_summary?.critical_gaps || 0,
+          recommendations: result.recommendations?.immediate_actions?.length || 0
         };
       }
     );
@@ -330,17 +355,19 @@ class E2ETestRunner {
           throw new Error('No gap analysis ID available');
         }
         
-        const result = await generatePriorityMatrix(
-          { gap_analysis_id: this.report.artifacts.gapAnalysisId },
-          this.db,
-          this.framework
-        );
+        const result = await generatePriorityMatrix({
+          profile_id: this.report.artifacts.profileId!,
+          include_recommendations: true,
+          matrix_type: 'effort_impact' as const,
+          include_resource_estimates: true,
+          max_items_per_quadrant: 10
+        });
         
         return {
-          highPriorityItems: result.high_priority?.length || 0,
-          mediumPriorityItems: result.medium_priority?.length || 0,
-          lowPriorityItems: result.low_priority?.length || 0,
-          totalItems: result.total_items
+          highPriorityItems: result.quadrants?.high_value_low_effort?.items?.length || 0,
+          mediumPriorityItems: result.quadrants?.high_value_high_effort?.items?.length || 0,
+          lowPriorityItems: result.quadrants?.low_value_low_effort?.items?.length || 0,
+          totalItems: result.summary?.total_items || 0
         };
       }
     );
@@ -358,19 +385,28 @@ class E2ETestRunner {
           throw new Error('No gap analysis ID available');
         }
         
-        const planData = {
-          gap_analysis_id: this.report.artifacts.gapAnalysisId,
-          plan_name: 'E2E Test Implementation Plan',
-          target_completion_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 1 year from now
-          budget_limit: 500000,
-          resource_constraints: {
-            available_hours_per_month: 160,
-            team_size: 5,
-            security_expertise_level: 'intermediate'
-          }
-        };
+        // const planData = {
+        //   gap_analysis_id: this.report.artifacts.gapAnalysisId,
+        //   plan_name: 'E2E Test Implementation Plan',
+        //   target_completion_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        //   budget_limit: 500000,
+        //   resource_constraints: {
+        //     available_hours_per_month: 160,
+        //     team_size: 5,
+        //     security_expertise_level: 'intermediate'
+        //   }
+        // };
         
-        const result = await createImplementationPlan(planData, this.db, this.framework);
+        const result = await createImplementationPlan({
+          gap_analysis_id: this.report.artifacts.gapAnalysisId!,
+          timeline_months: 12,
+          available_resources: 5,
+          prioritization_strategy: 'risk_based' as const,
+          phase_duration: 3,
+          include_dependencies: true,
+          include_milestones: true,
+          plan_name: 'E2E Test Implementation Plan'
+        });
         
         if (!result.plan_id) {
           throw new Error('Implementation plan creation failed - no plan ID returned');
@@ -381,8 +417,8 @@ class E2ETestRunner {
         return {
           planId: result.plan_id,
           totalPhases: result.total_phases,
-          totalItems: result.total_items,
-          estimatedDuration: result.estimated_duration_months,
+          totalItems: result.phases?.reduce((sum, phase) => sum + (phase.items?.length || 0), 0) || 0,
+          estimatedDuration: result.timeline_months,
           estimatedCost: result.estimated_cost
         };
       }
@@ -401,19 +437,19 @@ class E2ETestRunner {
           throw new Error('No implementation plan ID available');
         }
         
-        const result = await estimateImplementationCost(
-          { 
-            plan_id: this.report.artifacts.implementationPlanId,
-            organization_size: TEST_CONFIG.organization.size
-          },
-          this.db,
-          this.framework
-        );
+        const result = await estimateImplementationCost({
+          subcategory_ids: ['ID.AM-1', 'PR.AC-1', 'DE.AE-1'],
+          organization_size: TEST_CONFIG.organization.size as 'small' | 'medium' | 'large' | 'enterprise',
+          include_ongoing_costs: true,
+          include_risk_adjusted: false,
+          currency: 'USD' as const,
+          include_contingency: true
+        });
         
         return {
-          totalCost: result.total_estimated_cost,
+          totalCost: result.cost_summary?.total_one_time || 0,
           breakdown: result.cost_breakdown,
-          timeframe: result.implementation_timeframe_months
+          timeframe: 12 // Default timeframe since timeline_months doesn't exist in cost_summary
         };
       }
     );
@@ -459,19 +495,22 @@ class E2ETestRunner {
           }
         ];
         
-        const results = [];
-        for (const update of progressUpdates) {
-          const result = await trackProgressTool.execute(update, this.db);
-          results.push(result);
-        }
+        const result = await trackProgressTool.execute({
+          profile_id: this.report.artifacts.profileId!,
+          updates: progressUpdates.map(u => ({
+            subcategory_id: u.subcategory_id,
+            current_implementation: u.status === 'completed' ? 'fully_implemented' : 'partially_implemented',
+            current_maturity: Math.floor(u.completion_percentage / 20),
+            status: u.status as any,
+            notes: u.notes
+          }))
+        }, this.db);
         
         return {
-          updatesProcessed: results.length,
-          progressEntries: results.map(r => ({
-            subcategory: r.subcategory_id,
-            status: r.status,
-            completion: r.completion_percentage
-          }))
+          updatesProcessed: progressUpdates.length,
+          totalSubcategories: result.total_subcategories,
+          overallCompletion: result.overall_completion_percentage || 0,
+          completedCount: result.completed || 0
         };
       }
     );
@@ -489,24 +528,20 @@ class E2ETestRunner {
           throw new Error('No profile ID available');
         }
         
-        const result = await generateReportTool.execute(
-          {
-            profile_id: this.report.artifacts.profileId,
-            report_type: 'executive',
-            include_recommendations: true,
-            include_progress: true
-          },
-          this.db
-        );
+        const result = await generateReportTool.execute({
+          profile_id: this.report.artifacts.profileId!,
+          report_type: 'executive',
+          format: 'json',
+          include_recommendations: true
+        }, this.db);
         
         this.report.artifacts.reportData = result;
         
         return {
           reportType: result.report_type,
-          sectionsGenerated: Object.keys(result.sections || {}).length,
-          recommendationsCount: result.recommendations?.length || 0,
-          hasCharts: !!result.charts,
-          hasMetrics: !!result.metrics
+          format: result.format,
+          success: result.success,
+          fileSize: result.metadata?.report_size || 0
         };
       }
     );
@@ -524,23 +559,21 @@ class E2ETestRunner {
           throw new Error('No profile ID available');
         }
         
-        const result = await exportDataTool.execute(
-          {
-            profile_id: this.report.artifacts.profileId,
-            export_format: 'json',
-            include_assessments: true,
-            include_plans: true,
-            include_progress: true
-          },
-          this.db
-        );
+        const result = await exportDataTool.execute({
+          profile_id: this.report.artifacts.profileId!,
+          format: 'json',
+          include_assessments: true,
+          include_progress: true,
+          include_compliance: false,
+          include_milestones: false
+        }, this.db);
         
         return {
           exportFormat: result.format,
-          dataSize: JSON.stringify(result.data).length,
-          sectionsExported: Object.keys(result.data || {}).length,
-          assessmentsCount: result.data?.assessments?.length || 0,
-          plansCount: result.data?.implementation_plans?.length || 0
+          success: result.success,
+          recordCount: result.metadata?.record_count || 0,
+          fileSize: result.metadata?.file_size || 0,
+          includedSections: result.metadata?.included_sections?.length || 0
         };
       }
     );
@@ -736,4 +769,5 @@ if (require.main === module) {
   main().catch(console.error);
 }
 
-export { E2ETestRunner, TestReport, TestResult };
+export type { TestReport, TestResult };
+export { E2ETestRunner };
