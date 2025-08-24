@@ -17,7 +17,8 @@
     "test:security": "jest tests/security --coverage",
     "seed:questions": "tsx scripts/seed-questions.ts",
     "import:framework": "tsx scripts/import-framework-fixed.ts",
-    "db:init": "npm run build && npm run import:framework && npm run seed:questions",
+    "import:csf-framework": "tsx scripts/import-csf-framework.ts",
+    "db:init": "npm run build && npm run import:csf-framework && npm run seed:questions",
     "db:verify": "tsx scripts/verify-database.ts",
     "docker:build": "docker build -t nist-csf-mcp-server .",
     "docker:run": "docker-compose up -d"
