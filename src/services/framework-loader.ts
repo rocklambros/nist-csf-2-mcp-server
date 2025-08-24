@@ -4,7 +4,6 @@
 
 import { readFileSync } from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { logger } from '../utils/logger.js';
 import type {
   CSFFrameworkResponse,
@@ -14,9 +13,6 @@ import type {
   CSFRelationship,
   ElementType
 } from '../types/index.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class FrameworkLoader {
   private frameworkData: CSFFrameworkData | null = null;
@@ -29,7 +25,7 @@ export class FrameworkLoader {
   private implementationExamplesCache: Map<string, BaseCSFElement[]> = new Map();
 
   constructor(jsonPath?: string) {
-    this.jsonPath = jsonPath || path.join(__dirname, '../../csf-2.0-framework.json');
+    this.jsonPath = jsonPath || path.join(process.cwd(), 'data/csf-2.0-framework.json');
   }
 
   /**

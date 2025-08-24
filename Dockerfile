@@ -2,7 +2,7 @@
 FROM node:20-alpine AS builder
 
 # Install build dependencies
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 make g++ sqlite
 
 # Set working directory
 WORKDIR /build
@@ -11,19 +11,27 @@ WORKDIR /build
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies with exact versions for reproducibility
-RUN npm ci --only=production && \
+# Install ALL dependencies (including dev dependencies for build and scripts)
+RUN npm ci && \
     npm cache clean --force
 
-# Copy source code
+# Copy source code and data
 COPY src/ ./src/
+COPY scripts/ ./scripts/
+COPY data/ ./data/
 
 # Build TypeScript
 RUN npm run build
 
-# Remove dev dependencies and unnecessary files
+# Initialize database with complete framework data
+RUN npm run db:init
+
+# Verify database was built correctly
+RUN npm run db:verify
+
+# Remove dev dependencies after database build
 RUN npm prune --production && \
-    rm -rf src/ tsconfig.json
+    rm -rf src/ scripts/ tsconfig.json
 
 # Final stage - minimal runtime image
 FROM node:20-alpine
@@ -51,8 +59,9 @@ COPY --from=builder --chown=mcp-server:mcp-server /build/node_modules ./node_mod
 COPY --from=builder --chown=mcp-server:mcp-server /build/dist ./dist
 COPY --from=builder --chown=mcp-server:mcp-server /build/package*.json ./
 
-# Copy security configurations
-COPY --chown=mcp-server:mcp-server data/nist-csf-2.0.db ./data/
+# Copy framework data and pre-built database
+COPY --from=builder --chown=mcp-server:mcp-server /build/data/ ./data/
+COPY --from=builder --chown=mcp-server:mcp-server /build/nist_csf.db ./nist_csf.db
 
 # Set security environment variables
 ENV NODE_ENV=production \

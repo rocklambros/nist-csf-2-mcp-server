@@ -360,7 +360,7 @@ describe('Authentication Middleware Tests', () => {
           aud: 'test-audience',
           iss: 'https://test.auth.com'
         },
-        'secret',
+        process.env.TEST_JWT_SECRET || 'defaultTestSecret',
         { algorithm: 'HS256' }
       );
       

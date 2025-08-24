@@ -4,13 +4,9 @@
 
 import winston from 'winston';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import * as os from 'os';
 import { AsyncLocalStorage } from 'async_hooks';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Extended log levels
 const levels = {
@@ -137,7 +133,7 @@ class EnhancedLogger {
         }),
         // File transport for errors (always JSON)
         new winston.transports.File({
-          filename: path.join(__dirname, '../../logs/error.log'),
+          filename: path.join(process.cwd(), 'logs/error.log'),
           level: 'error',
           format: structuredFormat,
           maxsize: 10485760, // 10MB
@@ -145,7 +141,7 @@ class EnhancedLogger {
         }),
         // File transport for all logs (always JSON)
         new winston.transports.File({
-          filename: path.join(__dirname, '../../logs/app.log'),
+          filename: path.join(process.cwd(), 'logs/app.log'),
           format: structuredFormat,
           maxsize: 20971520, // 20MB
           maxFiles: 20,
@@ -157,7 +153,7 @@ class EnhancedLogger {
     // Add metrics log file for performance data
     if (process.env.ENABLE_METRICS_LOG === 'true') {
       this.logger.add(new winston.transports.File({
-        filename: path.join(__dirname, '../../logs/metrics.log'),
+        filename: path.join(process.cwd(), 'logs/metrics.log'),
         format: structuredFormat,
         maxsize: 10485760, // 10MB
         maxFiles: 10,

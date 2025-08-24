@@ -483,9 +483,9 @@ function generateTestData(testType: string): any {
   switch (testType) {
     case 'security':
       testData.test_accounts = [
-        { username: 'test_user_01', role: 'standard', password: 'TestPass123!' },
-        { username: 'test_admin_01', role: 'admin', password: 'AdminPass456!' },
-        { username: 'test_attacker_01', role: 'unauthorized', password: 'BadPass789!' }
+        { username: 'test_user_01', role: 'standard', password: process.env.TEST_USER_PASSWORD || 'DefaultTest123!' },
+        { username: 'test_admin_01', role: 'admin', password: process.env.TEST_ADMIN_PASSWORD || 'DefaultAdmin456!' },
+        { username: 'test_attacker_01', role: 'unauthorized', password: process.env.TEST_ATTACKER_PASSWORD || 'DefaultBad789!' }
       ];
       testData.attack_vectors = [
         'SQL injection attempts',

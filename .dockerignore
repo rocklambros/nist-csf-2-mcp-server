@@ -1,0 +1,66 @@
+# Node modules (will be installed during build)
+node_modules/
+
+# Build outputs (will be generated during build) 
+dist/
+
+# Development files
+.env
+.env.local
+.env.*.local
+
+# Test files and reports
+tests/
+test-reports/
+*.test.ts
+*.test.js
+*.backup
+**/*test*
+**/*spec*
+E2E-TEST-*.md
+run-e2e*.js
+
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files  
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Documentation (except README)
+docs/
+*.md
+!README.md
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Coverage reports
+coverage/
+.coverage
+.nyc_output
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# Lock files (we have package-lock.json)
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts that shouldn't be in image
+nist_csf.db
