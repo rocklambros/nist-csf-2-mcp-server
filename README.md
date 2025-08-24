@@ -315,6 +315,7 @@ Retrieve comprehensive assessment questions for cybersecurity framework evaluati
   "function": "GV|ID|PR|DE|RS|RC",
   "category": "Category ID (e.g., GV.OC)",
   "subcategory_ids": ["GV.OC-01", "ID.AM-01"],
+  "assessment_dimension": "risk|maturity|implementation|effectiveness",
   "organization_size": "small|medium|large|enterprise",
   "sector": "technology|healthcare|finance|government|other",
   "include_examples": true,
@@ -324,14 +325,26 @@ Retrieve comprehensive assessment questions for cybersecurity framework evaluati
 }
 ```
 
+**Comprehensive Question Bank Features**:
+- **424 assessment questions** covering all 106 NIST CSF 2.0 subcategories
+- **4 assessment dimensions** per subcategory:
+  - **Risk Assessment**: Current risk exposure evaluation
+  - **Maturity Assessment**: Organizational maturity measurement
+  - **Implementation Assessment**: Implementation progress tracking
+  - **Effectiveness Assessment**: Control effectiveness measurement
+- **5-option scoring system** with detailed risk and maturity mappings
+- **Function-specific questions** tailored to each CSF 2.0 function
+- **Complete coverage**: 100% of official NIST CSF 2.0 subcategories
+
 **Response includes**:
-- Complete question set with answer options
-- Estimated completion time
-- Function coverage statistics
-- Question metadata and weighting
+- Complete question set with multiple assessment dimensions
+- 5-option answers with risk/maturity level mappings
+- Estimated completion time (15-45 minutes for comprehensive assessment)
+- Function coverage statistics and assessment dimension breakdown
+- Question metadata, weighting, and scoring rubrics
 
 #### `validate_assessment_responses`
-Validate assessment responses for completeness and consistency.
+Validate assessment responses for completeness and consistency across all dimensions.
 
 ```json
 {
@@ -339,29 +352,36 @@ Validate assessment responses for completeness and consistency.
   "responses": [
     {
       "subcategory_id": "GV.OC-01",
+      "assessment_dimension": "risk",
       "response_value": 3,
+      "risk_level": "medium",
+      "maturity_level": "defined",
       "notes": "Implementation details",
       "evidence": "Supporting documentation"
     }
   ],
-  "validation_level": "basic|comprehensive"
+  "validation_level": "basic|comprehensive",
+  "require_all_dimensions": true
 }
 ```
 
-**Validation checks**:
-- Response completeness
-- Value consistency
-- Required question coverage
-- Logic validation across responses
+**Enhanced validation checks**:
+- **Multi-dimensional completeness**: Ensures all 4 assessment dimensions are covered
+- **Cross-dimensional consistency**: Validates logical consistency between risk, maturity, implementation, and effectiveness ratings
+- **Scoring validation**: Confirms response values align with risk/maturity level mappings
+- **Required question coverage**: Verifies coverage across all 106 subcategories
+- **Gap identification**: Identifies missing assessments by function and dimension
 
 #### `get_question_context`
-Get detailed context and guidance for specific assessment questions.
+Get detailed context and guidance for specific assessment questions with multi-dimensional insights.
 
 ```json
 {
   "subcategory_id": "GV.OC-01",
+  "assessment_dimension": "risk|maturity|implementation|effectiveness",
   "include_implementation_examples": true,
   "include_references": true,
+  "include_scoring_guidance": true,
   "organization_context": {
     "sector": "healthcare",
     "size": "medium"
@@ -369,12 +389,13 @@ Get detailed context and guidance for specific assessment questions.
 }
 ```
 
-**Context includes**:
-- Subcategory explanation and importance
-- Risk factors and common challenges
-- Best practices and implementation guidance
-- Sector-specific recommendations
-- Related subcategories and dependencies
+**Enhanced context includes**:
+- **Dimension-specific guidance**: Tailored explanations for each assessment dimension
+- **Scoring rubric details**: Clear guidance for each response option with risk/maturity mappings
+- **Cross-dimensional relationships**: How different dimensions relate and inform each other
+- **Best practices by dimension**: Specific recommendations for risk reduction, maturity improvement, implementation success, and effectiveness measurement
+- **Sector-specific insights**: Industry-tailored guidance and benchmarks
+- **Related subcategories**: Dependencies and relationships across the framework
 
 ## Project Structure
 
@@ -447,6 +468,11 @@ The SQLite database includes comprehensive tables for all CSF data and organizat
 - **`implementation_plans`**: Detailed implementation roadmaps and timelines
 - **`cost_estimates`**: Financial projections for cybersecurity implementations
 
+### Assessment & Question Bank Tables
+- **`question_bank`**: Comprehensive assessment questions for all 106 subcategories
+- **`question_options`**: Multiple choice options with risk/maturity level mappings
+- **`question_responses`**: User responses to assessment questions
+
 ### Progress & Reporting Tables
 - **`progress_tracking`**: Implementation progress updates and milestone tracking
 - **`reports`**: Generated reports and executive summaries
@@ -473,9 +499,12 @@ npm run typecheck        # TypeScript type checking
 npm run format           # Prettier code formatting
 
 # Database
-npm run db:init          # Initialize database schema
-npm run db:migrate       # Run database migrations
-npm run db:seed          # Seed with sample data
+npm run db:init                    # Initialize database schema and load framework data
+npm run import:framework           # Import NIST CSF 2.0 framework data
+npm run import:guidance            # Import implementation guidance for all subcategories
+npm run seed:questions             # Seed comprehensive question bank (424 questions)
+npm run cleanup:subcategories      # Clean up database to match official NIST CSF 2.0
+npm run db:verify                  # Verify database integrity and completeness
 ```
 
 ### Running E2E Tests

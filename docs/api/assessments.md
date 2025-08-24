@@ -11,6 +11,9 @@ This document provides detailed API reference for assessment and evaluation tool
 | `quick_assessment` | Rapid organizational assessment | QuickAssessmentParams | AssessmentResult |
 | `assess_maturity` | Comprehensive maturity evaluation | AssessMaturityParams | MaturityResult |
 | `calculate_risk_score` | Risk scoring based on gaps | RiskScoreParams | RiskResult |
+| `get_assessment_questions` | Retrieve comprehensive question bank | QuestionBankParams | QuestionSetResult |
+| `validate_assessment_responses` | Validate response completeness | ValidationParams | ValidationResult |
+| `get_question_context` | Get question guidance and context | QuestionContextParams | ContextResult |
 
 ## create_profile
 
@@ -569,5 +572,505 @@ interface AssessmentErrorResponse {
 - **Quick Assessment**: <2s for 106 subcategories  
 - **Maturity Assessment**: <5s for comprehensive analysis
 - **Risk Calculation**: <3s including heat map generation
+
+## get_assessment_questions
+
+Retrieve comprehensive assessment questions from the question bank covering all 106 NIST CSF 2.0 subcategories.
+
+### Parameters
+
+```typescript
+interface GetAssessmentQuestionsParams {
+  assessment_type?: 'quick' | 'detailed';     // Default: 'detailed'
+  function?: 'GV' | 'ID' | 'PR' | 'DE' | 'RS' | 'RC';
+  category?: string;                          // e.g., 'GV.OC'
+  subcategory_ids?: string[];                 // Specific subcategories
+  assessment_dimension?: 'risk' | 'maturity' | 'implementation' | 'effectiveness';
+  organization_size?: 'small' | 'medium' | 'large' | 'enterprise';
+  sector?: 'technology' | 'healthcare' | 'finance' | 'government' | 'other';
+  include_examples?: boolean;                 // Default: true
+  include_references?: boolean;               // Default: true
+  include_scoring_guidance?: boolean;         // Default: true
+  limit?: number;                            // Default: 50
+  offset?: number;                           // Default: 0
+}
+```
+
+### Response
+
+```typescript
+interface GetAssessmentQuestionsResponse {
+  success: boolean;
+  questions: AssessmentQuestion[];
+  metadata: {
+    total_questions: number;
+    total_subcategories_covered: number;
+    assessment_dimensions_included: string[];
+    estimated_completion_time_minutes: number;
+    coverage_statistics: {
+      functions: FunctionCoverage[];
+      dimensions: DimensionCoverage[];
+    };
+  };
+  scoring_guidance: {
+    risk_levels: RiskLevelDefinition[];
+    maturity_levels: MaturityLevelDefinition[];
+    scoring_scale: string;
+  };
+}
+
+interface AssessmentQuestion {
+  question_id: string;
+  subcategory_id: string;
+  question_text: string;
+  question_type: 'multiple_choice';
+  assessment_dimension: 'risk' | 'maturity' | 'implementation' | 'effectiveness';
+  help_text: string;
+  weight: number;
+  options: QuestionOption[];
+}
+
+interface QuestionOption {
+  option_id: string;
+  option_label: string;
+  option_description: string;
+  option_value: number;                       // 0-10 scoring
+  risk_level: 'low' | 'medium' | 'high' | 'critical';
+  maturity_level: 'initial' | 'developing' | 'defined' | 'managed' | 'optimizing';
+  sort_order: number;
+}
+```
+
+### Examples
+
+#### Get All Risk Assessment Questions
+```json
+{
+  "tool": "get_assessment_questions",
+  "arguments": {
+    "assessment_type": "detailed",
+    "assessment_dimension": "risk",
+    "include_scoring_guidance": true
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "questions": [
+    {
+      "question_id": "GV.OC-01_risk",
+      "subcategory_id": "GV.OC-01",
+      "question_text": "What is the risk level associated with your organization's cybersecurity context and stakeholder management?",
+      "question_type": "multiple_choice",
+      "assessment_dimension": "risk",
+      "help_text": "This question assesses risk for GV.OC-01",
+      "weight": 1.0,
+      "options": [
+        {
+          "option_id": "GV.OC-01_risk_opt_1",
+          "option_label": "No significant risk identified - comprehensive controls in place",
+          "option_description": "Score: 10, Risk: low, Maturity: managed",
+          "option_value": 10,
+          "risk_level": "low",
+          "maturity_level": "managed",
+          "sort_order": 1
+        },
+        {
+          "option_id": "GV.OC-01_risk_opt_5",
+          "option_label": "Critical risk - no controls in place or complete failure",
+          "option_description": "Score: 0, Risk: critical, Maturity: initial",
+          "option_value": 0,
+          "risk_level": "critical",
+          "maturity_level": "initial",
+          "sort_order": 5
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "total_questions": 106,
+    "total_subcategories_covered": 106,
+    "assessment_dimensions_included": ["risk"],
+    "estimated_completion_time_minutes": 25,
+    "coverage_statistics": {
+      "functions": [
+        {
+          "function_id": "GV",
+          "function_name": "Govern",
+          "questions_count": 31,
+          "subcategories_covered": 31
+        }
+      ],
+      "dimensions": [
+        {
+          "dimension": "risk",
+          "questions_count": 106,
+          "subcategories_covered": 106
+        }
+      ]
+    }
+  },
+  "scoring_guidance": {
+    "risk_levels": [
+      {
+        "level": "low",
+        "description": "Minimal risk with comprehensive controls",
+        "score_range": "7-10"
+      },
+      {
+        "level": "critical",
+        "description": "Severe risk requiring immediate attention",
+        "score_range": "0-2"
+      }
+    ],
+    "maturity_levels": [
+      {
+        "level": "managed",
+        "description": "Established processes with regular monitoring",
+        "characteristics": ["Documented procedures", "Regular reviews", "Performance metrics"]
+      }
+    ],
+    "scoring_scale": "0-10 point scale with risk and maturity level mappings"
+  }
+}
+```
+
+#### Get Questions for Specific Function
+```json
+{
+  "tool": "get_assessment_questions",
+  "arguments": {
+    "function": "DE",
+    "assessment_type": "detailed",
+    "include_examples": true
+  }
+}
+```
+
+## validate_assessment_responses
+
+Validate assessment responses for completeness and consistency across all dimensions.
+
+### Parameters
+
+```typescript
+interface ValidateAssessmentResponsesParams {
+  profile_id: string;
+  responses: AssessmentResponse[];
+  validation_level: 'basic' | 'comprehensive';    // Default: 'comprehensive'
+  require_all_dimensions?: boolean;               // Default: true
+  require_all_subcategories?: boolean;            // Default: false
+  cross_dimensional_validation?: boolean;         // Default: true
+}
+
+interface AssessmentResponse {
+  question_id: string;
+  subcategory_id: string;
+  assessment_dimension: 'risk' | 'maturity' | 'implementation' | 'effectiveness';
+  response_value: number;                         // 0-10 scale
+  risk_level?: 'low' | 'medium' | 'high' | 'critical';
+  maturity_level?: 'initial' | 'developing' | 'defined' | 'managed' | 'optimizing';
+  notes?: string;
+  evidence?: string;
+  response_date?: string;                        // ISO date string
+}
+```
+
+### Response
+
+```typescript
+interface ValidateAssessmentResponsesResponse {
+  success: boolean;
+  validation_status: 'valid' | 'partial' | 'invalid';
+  validation_summary: {
+    total_responses: number;
+    valid_responses: number;
+    missing_responses: number;
+    invalid_responses: number;
+    completeness_percentage: number;
+  };
+  dimension_coverage: {
+    risk: number;              // % coverage
+    maturity: number;
+    implementation: number;
+    effectiveness: number;
+  };
+  validation_issues: ValidationIssue[];
+  recommendations: string[];
+  missing_assessments: {
+    subcategory_id: string;
+    missing_dimensions: string[];
+  }[];
+}
+
+interface ValidationIssue {
+  issue_type: 'missing_response' | 'invalid_value' | 'inconsistent_cross_dimension' | 'missing_evidence';
+  severity: 'error' | 'warning' | 'info';
+  question_id: string;
+  subcategory_id: string;
+  assessment_dimension: string;
+  description: string;
+  suggested_resolution: string;
+}
+```
+
+### Examples
+
+#### Comprehensive Validation
+```json
+{
+  "tool": "validate_assessment_responses",
+  "arguments": {
+    "profile_id": "PROF-20240312-001",
+    "responses": [
+      {
+        "question_id": "GV.OC-01_risk",
+        "subcategory_id": "GV.OC-01",
+        "assessment_dimension": "risk",
+        "response_value": 5,
+        "risk_level": "medium",
+        "maturity_level": "defined",
+        "notes": "Some governance processes in place but gaps exist",
+        "evidence": "Policy documents, but missing stakeholder engagement framework"
+      },
+      {
+        "question_id": "GV.OC-01_maturity",
+        "subcategory_id": "GV.OC-01",
+        "assessment_dimension": "maturity",
+        "response_value": 6,
+        "risk_level": "medium",
+        "maturity_level": "defined"
+      }
+    ],
+    "validation_level": "comprehensive",
+    "require_all_dimensions": true,
+    "cross_dimensional_validation": true
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "validation_status": "partial",
+  "validation_summary": {
+    "total_responses": 2,
+    "valid_responses": 2,
+    "missing_responses": 422,
+    "invalid_responses": 0,
+    "completeness_percentage": 0.47
+  },
+  "dimension_coverage": {
+    "risk": 0.94,
+    "maturity": 0.94,
+    "implementation": 0.0,
+    "effectiveness": 0.0
+  },
+  "validation_issues": [
+    {
+      "issue_type": "missing_response",
+      "severity": "warning",
+      "question_id": "GV.OC-01_implementation",
+      "subcategory_id": "GV.OC-01",
+      "assessment_dimension": "implementation",
+      "description": "Missing implementation assessment for GV.OC-01",
+      "suggested_resolution": "Complete implementation assessment to get full subcategory coverage"
+    }
+  ],
+  "recommendations": [
+    "Complete assessment for all 4 dimensions per subcategory",
+    "Focus on missing implementation and effectiveness assessments",
+    "Ensure cross-dimensional consistency in responses"
+  ],
+  "missing_assessments": [
+    {
+      "subcategory_id": "GV.OC-01",
+      "missing_dimensions": ["implementation", "effectiveness"]
+    }
+  ]
+}
+```
+
+## get_question_context
+
+Get detailed context, guidance, and scoring information for specific assessment questions.
+
+### Parameters
+
+```typescript
+interface GetQuestionContextParams {
+  subcategory_id: string;
+  assessment_dimension?: 'risk' | 'maturity' | 'implementation' | 'effectiveness';
+  include_implementation_examples?: boolean;      // Default: true
+  include_references?: boolean;                  // Default: true
+  include_scoring_guidance?: boolean;            // Default: true
+  include_related_subcategories?: boolean;      // Default: true
+  organization_context?: {
+    sector: 'technology' | 'healthcare' | 'finance' | 'government' | 'other';
+    size: 'small' | 'medium' | 'large' | 'enterprise';
+  };
+}
+```
+
+### Response
+
+```typescript
+interface GetQuestionContextResponse {
+  success: boolean;
+  subcategory_id: string;
+  subcategory_details: {
+    description: string;
+    function: string;
+    category: string;
+    importance: string;
+  };
+  dimension_guidance: {
+    [dimension: string]: {
+      question_text: string;
+      assessment_focus: string;
+      scoring_rubric: ScoringRubric[];
+      best_practices: string[];
+      common_challenges: string[];
+    };
+  };
+  implementation_examples?: ImplementationExample[];
+  references?: Reference[];
+  related_subcategories?: RelatedSubcategory[];
+  sector_specific_guidance?: SectorGuidance;
+}
+
+interface ScoringRubric {
+  score_range: string;
+  risk_level: string;
+  maturity_level: string;
+  description: string;
+  indicators: string[];
+}
+```
+
+### Examples
+
+#### Get Complete Context for Governance Subcategory
+```json
+{
+  "tool": "get_question_context",
+  "arguments": {
+    "subcategory_id": "GV.OC-01",
+    "include_implementation_examples": true,
+    "include_references": true,
+    "include_scoring_guidance": true,
+    "organization_context": {
+      "sector": "technology",
+      "size": "large"
+    }
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "subcategory_id": "GV.OC-01",
+  "subcategory_details": {
+    "description": "The organizational cybersecurity strategy is established and communicated",
+    "function": "Govern",
+    "category": "Organizational Context",
+    "importance": "Foundation for all cybersecurity activities and alignment with business objectives"
+  },
+  "dimension_guidance": {
+    "risk": {
+      "question_text": "What is the risk level associated with your organization's cybersecurity context and stakeholder management?",
+      "assessment_focus": "Current risk exposure from inadequate organizational cybersecurity strategy",
+      "scoring_rubric": [
+        {
+          "score_range": "8-10",
+          "risk_level": "low",
+          "maturity_level": "managed",
+          "description": "Comprehensive cybersecurity strategy with strong governance",
+          "indicators": ["Documented strategy", "Regular reviews", "Stakeholder engagement", "Board oversight"]
+        },
+        {
+          "score_range": "0-2",
+          "risk_level": "critical",
+          "maturity_level": "initial",
+          "description": "No cybersecurity strategy or governance framework",
+          "indicators": ["No strategy document", "Lack of leadership support", "No stakeholder engagement"]
+        }
+      ],
+      "best_practices": [
+        "Develop comprehensive cybersecurity strategy aligned with business objectives",
+        "Ensure regular board and executive oversight",
+        "Establish clear stakeholder communication channels"
+      ],
+      "common_challenges": [
+        "Lack of executive buy-in and support",
+        "Difficulty aligning cybersecurity with business priorities",
+        "Insufficient stakeholder engagement"
+      ]
+    },
+    "maturity": {
+      "question_text": "What is the maturity level of your organizational cybersecurity context management?",
+      "assessment_focus": "Organizational maturity in cybersecurity strategy and governance",
+      "best_practices": [
+        "Implement continuous improvement processes",
+        "Regular strategy reviews and updates",
+        "Metrics-driven governance approach"
+      ]
+    }
+  },
+  "implementation_examples": [
+    {
+      "example_title": "Technology Sector - Large Organization",
+      "description": "Enterprise cybersecurity strategy framework",
+      "implementation_steps": [
+        "Establish cybersecurity steering committee with C-level participation",
+        "Develop comprehensive strategy document aligned with business objectives",
+        "Implement regular quarterly reviews and updates",
+        "Create stakeholder communication and reporting framework"
+      ],
+      "success_metrics": [
+        "Strategy approval at board level",
+        "Regular stakeholder feedback collection",
+        "Measurable alignment with business objectives"
+      ]
+    }
+  ],
+  "sector_specific_guidance": {
+    "sector": "technology",
+    "specific_considerations": [
+      "Rapid technology change requires agile strategy updates",
+      "Strong focus on intellectual property protection",
+      "Emphasis on secure software development lifecycle"
+    ],
+    "regulatory_requirements": ["SOX", "GDPR", "CCPA"],
+    "industry_benchmarks": {
+      "average_maturity_score": 3.2,
+      "leading_practice_score": 4.5
+    }
+  }
+}
+```
+
+## Performance Considerations
+
+### Enhanced Performance Metrics
+
+- **Question Retrieval**: <200ms for full question bank (424 questions)
+- **Validation Processing**: <500ms for comprehensive validation
+- **Context Generation**: <300ms for detailed guidance
+- **Cross-dimensional Analysis**: <1s for consistency checks
+
+### Question Bank Statistics
+
+- **Total Questions**: 424 questions across all subcategories
+- **Assessment Dimensions**: 4 per subcategory (risk, maturity, implementation, effectiveness)
+- **Response Options**: 2,120 total options with detailed scoring
+- **Complete Coverage**: 100% of NIST CSF 2.0 subcategories (106/106)
+- **Estimated Assessment Time**: 15-45 minutes for comprehensive evaluation
 
 This API provides comprehensive cybersecurity assessment capabilities with enterprise-grade performance and reliability.

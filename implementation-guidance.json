@@ -1,0 +1,4897 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "created_date": "2024-08-24",
+    "description": "Complete implementation guidance for all 106 official NIST CSF 2.0 subcategories",
+    "total_subcategories": 106,
+    "author": "Claude Code AI Assistant",
+    "guidance_framework": {
+      "quick_wins": "Immediate actions (1-4 weeks)",
+      "implementation_steps": "Complete implementation process",
+      "tools_and_resources": "Specific tools, templates, and resources",
+      "success_metrics": "Measurable outcomes and KPIs",
+      "common_pitfalls": "Common mistakes and how to avoid them",
+      "effort_estimate": "Small (1-4 weeks), Medium (1-3 months), Large (3+ months)",
+      "cost_estimate": "Low (<$10K), Medium ($10K-$50K), High (>$50K)",
+      "prerequisites": "Required foundations and capabilities"
+    }
+  },
+  "guidance": [
+    {
+      "subcategory_id": "DE.AE-02",
+      "quick_wins": [
+        "Establish event analysis procedures",
+        "Create incident criteria",
+        "Implement correlation tools"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.AE-03",
+      "quick_wins": [
+        "Establish event analysis procedures",
+        "Create incident criteria",
+        "Implement correlation tools"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.AE-04",
+      "quick_wins": [
+        "Establish event analysis procedures",
+        "Create incident criteria",
+        "Implement correlation tools"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.AE-06",
+      "quick_wins": [
+        "Establish event analysis procedures",
+        "Create incident criteria",
+        "Implement correlation tools"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.AE-07",
+      "quick_wins": [
+        "Establish event analysis procedures",
+        "Create incident criteria",
+        "Implement correlation tools"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.AE-08",
+      "quick_wins": [
+        "Establish event analysis procedures",
+        "Create incident criteria",
+        "Implement correlation tools"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.CM-01",
+      "quick_wins": [
+        "Deploy monitoring tools",
+        "Establish log collection",
+        "Create alerting procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.CM-02",
+      "quick_wins": [
+        "Deploy monitoring tools",
+        "Establish log collection",
+        "Create alerting procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.CM-03",
+      "quick_wins": [
+        "Deploy monitoring tools",
+        "Establish log collection",
+        "Create alerting procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.CM-06",
+      "quick_wins": [
+        "Deploy monitoring tools",
+        "Establish log collection",
+        "Create alerting procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "DE.CM-09",
+      "quick_wins": [
+        "Deploy monitoring tools",
+        "Establish log collection",
+        "Create alerting procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Monitoring tools",
+        "SIEM platforms",
+        "Detection systems"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Monitoring infrastructure",
+        "Security operations capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.OC-01",
+      "quick_wins": [
+        "Document organizational context and stakeholders",
+        "Review current cybersecurity alignment with business objectives",
+        "Establish stakeholder communication channels"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.OC-02",
+      "quick_wins": [
+        "Document organizational context and stakeholders",
+        "Review current cybersecurity alignment with business objectives",
+        "Establish stakeholder communication channels"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.OC-03",
+      "quick_wins": [
+        "Document organizational context and stakeholders",
+        "Review current cybersecurity alignment with business objectives",
+        "Establish stakeholder communication channels"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.OC-04",
+      "quick_wins": [
+        "Document organizational context and stakeholders",
+        "Review current cybersecurity alignment with business objectives",
+        "Establish stakeholder communication channels"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.OC-05",
+      "quick_wins": [
+        "Document organizational context and stakeholders",
+        "Review current cybersecurity alignment with business objectives",
+        "Establish stakeholder communication channels"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.OV-01",
+      "quick_wins": [
+        "Establish strategy review processes",
+        "Create performance metrics",
+        "Implement regular oversight activities"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Small",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.OV-02",
+      "quick_wins": [
+        "Establish strategy review processes",
+        "Create performance metrics",
+        "Implement regular oversight activities"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Small",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.OV-03",
+      "quick_wins": [
+        "Establish strategy review processes",
+        "Create performance metrics",
+        "Implement regular oversight activities"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Small",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.PO-01",
+      "quick_wins": [
+        "Review current cybersecurity policies",
+        "Ensure policy alignment with strategy",
+        "Establish policy communication procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Small",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.PO-02",
+      "quick_wins": [
+        "Review current cybersecurity policies",
+        "Ensure policy alignment with strategy",
+        "Establish policy communication procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Small",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RM-01",
+      "quick_wins": [
+        "Document current risk management approach",
+        "Establish risk appetite and tolerance statements",
+        "Create risk communication procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RM-02",
+      "quick_wins": [
+        "Document current risk management approach",
+        "Establish risk appetite and tolerance statements",
+        "Create risk communication procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RM-03",
+      "quick_wins": [
+        "Document current risk management approach",
+        "Establish risk appetite and tolerance statements",
+        "Create risk communication procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RM-04",
+      "quick_wins": [
+        "Document current risk management approach",
+        "Establish risk appetite and tolerance statements",
+        "Create risk communication procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RM-05",
+      "quick_wins": [
+        "Document current risk management approach",
+        "Establish risk appetite and tolerance statements",
+        "Create risk communication procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RM-06",
+      "quick_wins": [
+        "Document current risk management approach",
+        "Establish risk appetite and tolerance statements",
+        "Create risk communication procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RM-07",
+      "quick_wins": [
+        "Document current risk management approach",
+        "Establish risk appetite and tolerance statements",
+        "Create risk communication procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RR-01",
+      "quick_wins": [
+        "Document cybersecurity roles and responsibilities",
+        "Review current resource allocation",
+        "Establish accountability measures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RR-02",
+      "quick_wins": [
+        "Document cybersecurity roles and responsibilities",
+        "Review current resource allocation",
+        "Establish accountability measures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RR-03",
+      "quick_wins": [
+        "Document cybersecurity roles and responsibilities",
+        "Review current resource allocation",
+        "Establish accountability measures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.RR-04",
+      "quick_wins": [
+        "Document cybersecurity roles and responsibilities",
+        "Review current resource allocation",
+        "Establish accountability measures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-01",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-02",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-03",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-04",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-05",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-06",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-07",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "High",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-08",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-09",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "High",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "GV.SC-10",
+      "quick_wins": [
+        "Inventory critical suppliers",
+        "Establish supplier cybersecurity requirements",
+        "Create supplier risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Policy templates",
+        "Governance frameworks",
+        "Risk management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Large",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Organizational strategy and context understanding",
+        "Stakeholder engagement capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.AM-01",
+      "quick_wins": [
+        "Create asset inventory",
+        "Classify assets by criticality",
+        "Establish asset management procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.AM-02",
+      "quick_wins": [
+        "Create asset inventory",
+        "Classify assets by criticality",
+        "Establish asset management procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.AM-03",
+      "quick_wins": [
+        "Create asset inventory",
+        "Classify assets by criticality",
+        "Establish asset management procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.AM-04",
+      "quick_wins": [
+        "Create asset inventory",
+        "Classify assets by criticality",
+        "Establish asset management procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.AM-05",
+      "quick_wins": [
+        "Create asset inventory",
+        "Classify assets by criticality",
+        "Establish asset management procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.AM-07",
+      "quick_wins": [
+        "Create asset inventory",
+        "Classify assets by criticality",
+        "Establish asset management procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.AM-08",
+      "quick_wins": [
+        "Create asset inventory",
+        "Classify assets by criticality",
+        "Establish asset management procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.IM-01",
+      "quick_wins": [
+        "Document current improvement processes",
+        "Establish feedback mechanisms",
+        "Create improvement tracking procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.IM-02",
+      "quick_wins": [
+        "Document current improvement processes",
+        "Establish feedback mechanisms",
+        "Create improvement tracking procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.IM-03",
+      "quick_wins": [
+        "Document current improvement processes",
+        "Establish feedback mechanisms",
+        "Create improvement tracking procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.IM-04",
+      "quick_wins": [
+        "Document current improvement processes",
+        "Establish feedback mechanisms",
+        "Create improvement tracking procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-01",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-02",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-03",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-04",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-05",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-06",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-07",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-08",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-09",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "ID.RA-10",
+      "quick_wins": [
+        "Conduct vulnerability assessments",
+        "Establish threat intelligence feeds",
+        "Create risk assessment procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Asset inventory tools",
+        "Risk assessment frameworks",
+        "Vulnerability scanners"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Asset and system knowledge",
+        "Risk management capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.AA-01",
+      "quick_wins": [
+        "Inventory user accounts",
+        "Enable multi-factor authentication",
+        "Review access permissions"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.AA-02",
+      "quick_wins": [
+        "Inventory user accounts",
+        "Enable multi-factor authentication",
+        "Review access permissions"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.AA-03",
+      "quick_wins": [
+        "Inventory user accounts",
+        "Enable multi-factor authentication",
+        "Review access permissions"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.AA-04",
+      "quick_wins": [
+        "Inventory user accounts",
+        "Enable multi-factor authentication",
+        "Review access permissions"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.AA-05",
+      "quick_wins": [
+        "Inventory user accounts",
+        "Enable multi-factor authentication",
+        "Review access permissions"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.AA-06",
+      "quick_wins": [
+        "Inventory user accounts",
+        "Enable multi-factor authentication",
+        "Review access permissions"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.AT-01",
+      "quick_wins": [
+        "Conduct security awareness training",
+        "Create role-based training programs",
+        "Establish training tracking"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.AT-02",
+      "quick_wins": [
+        "Conduct security awareness training",
+        "Create role-based training programs",
+        "Establish training tracking"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.DS-01",
+      "quick_wins": [
+        "Classify data by sensitivity",
+        "Implement data encryption",
+        "Establish data handling procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.DS-02",
+      "quick_wins": [
+        "Classify data by sensitivity",
+        "Implement data encryption",
+        "Establish data handling procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.DS-10",
+      "quick_wins": [
+        "Classify data by sensitivity",
+        "Implement data encryption",
+        "Establish data handling procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.DS-11",
+      "quick_wins": [
+        "Classify data by sensitivity",
+        "Implement data encryption",
+        "Establish data handling procedures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Medium",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.IR-01",
+      "quick_wins": [
+        "Assess infrastructure resilience",
+        "Implement backup systems",
+        "Establish redundancy measures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.IR-02",
+      "quick_wins": [
+        "Assess infrastructure resilience",
+        "Implement backup systems",
+        "Establish redundancy measures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.IR-03",
+      "quick_wins": [
+        "Assess infrastructure resilience",
+        "Implement backup systems",
+        "Establish redundancy measures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.IR-04",
+      "quick_wins": [
+        "Assess infrastructure resilience",
+        "Implement backup systems",
+        "Establish redundancy measures"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.PS-01",
+      "quick_wins": [
+        "Establish configuration baselines",
+        "Implement change management",
+        "Deploy security monitoring"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.PS-02",
+      "quick_wins": [
+        "Establish configuration baselines",
+        "Implement change management",
+        "Deploy security monitoring"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.PS-03",
+      "quick_wins": [
+        "Establish configuration baselines",
+        "Implement change management",
+        "Deploy security monitoring"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.PS-04",
+      "quick_wins": [
+        "Establish configuration baselines",
+        "Implement change management",
+        "Deploy security monitoring"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.PS-05",
+      "quick_wins": [
+        "Establish configuration baselines",
+        "Implement change management",
+        "Deploy security monitoring"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "PR.PS-06",
+      "quick_wins": [
+        "Establish configuration baselines",
+        "Implement change management",
+        "Deploy security monitoring"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Security control frameworks",
+        "Access management systems",
+        "Configuration management tools"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Technical expertise",
+        "Security control implementation capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "RC.CO-03",
+      "quick_wins": [
+        "Create recovery communication plan",
+        "Establish stakeholder notification",
+        "Define recovery messaging"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Recovery planning tools",
+        "Business continuity frameworks",
+        "Recovery testing procedures"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Business continuity planning",
+        "Recovery capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "RC.CO-04",
+      "quick_wins": [
+        "Create recovery communication plan",
+        "Establish stakeholder notification",
+        "Define recovery messaging"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Recovery planning tools",
+        "Business continuity frameworks",
+        "Recovery testing procedures"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Business continuity planning",
+        "Recovery capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "RC.RP-01",
+      "quick_wins": [
+        "Create recovery plan",
+        "Establish recovery procedures",
+        "Define recovery criteria"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Recovery planning tools",
+        "Business continuity frameworks",
+        "Recovery testing procedures"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Business continuity planning",
+        "Recovery capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "RC.RP-02",
+      "quick_wins": [
+        "Create recovery plan",
+        "Establish recovery procedures",
+        "Define recovery criteria"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Recovery planning tools",
+        "Business continuity frameworks",
+        "Recovery testing procedures"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Business continuity planning",
+        "Recovery capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "RC.RP-03",
+      "quick_wins": [
+        "Create recovery plan",
+        "Establish recovery procedures",
+        "Define recovery criteria"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Recovery planning tools",
+        "Business continuity frameworks",
+        "Recovery testing procedures"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Business continuity planning",
+        "Recovery capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "RC.RP-04",
+      "quick_wins": [
+        "Create recovery plan",
+        "Establish recovery procedures",
+        "Define recovery criteria"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Recovery planning tools",
+        "Business continuity frameworks",
+        "Recovery testing procedures"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Business continuity planning",
+        "Recovery capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "RC.RP-05",
+      "quick_wins": [
+        "Create recovery plan",
+        "Establish recovery procedures",
+        "Define recovery criteria"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Recovery planning tools",
+        "Business continuity frameworks",
+        "Recovery testing procedures"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Business continuity planning",
+        "Recovery capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "RC.RP-06",
+      "quick_wins": [
+        "Create recovery plan",
+        "Establish recovery procedures",
+        "Define recovery criteria"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Recovery planning tools",
+        "Business continuity frameworks",
+        "Recovery testing procedures"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Business continuity planning",
+        "Recovery capabilities"
+      ]
+    },
+    {
+      "subcategory_id": "RS.AN-03",
+      "quick_wins": [
+        "Establish analysis procedures",
+        "Create forensic capabilities",
+        "Document analysis processes"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.AN-06",
+      "quick_wins": [
+        "Establish analysis procedures",
+        "Create forensic capabilities",
+        "Document analysis processes"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.AN-07",
+      "quick_wins": [
+        "Establish analysis procedures",
+        "Create forensic capabilities",
+        "Document analysis processes"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.AN-08",
+      "quick_wins": [
+        "Establish analysis procedures",
+        "Create forensic capabilities",
+        "Document analysis processes"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.CO-02",
+      "quick_wins": [
+        "Create communication plan",
+        "Establish notification procedures",
+        "Define stakeholder contacts"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.CO-03",
+      "quick_wins": [
+        "Create communication plan",
+        "Establish notification procedures",
+        "Define stakeholder contacts"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.MA-01",
+      "quick_wins": [
+        "Create incident response plan",
+        "Establish response team",
+        "Define incident categories"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.MA-02",
+      "quick_wins": [
+        "Create incident response plan",
+        "Establish response team",
+        "Define incident categories"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.MA-03",
+      "quick_wins": [
+        "Create incident response plan",
+        "Establish response team",
+        "Define incident categories"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.MA-04",
+      "quick_wins": [
+        "Create incident response plan",
+        "Establish response team",
+        "Define incident categories"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.MA-05",
+      "quick_wins": [
+        "Create incident response plan",
+        "Establish response team",
+        "Define incident categories"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.MI-01",
+      "quick_wins": [
+        "Establish containment procedures",
+        "Create eradication processes",
+        "Document response actions"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    },
+    {
+      "subcategory_id": "RS.MI-02",
+      "quick_wins": [
+        "Establish containment procedures",
+        "Create eradication processes",
+        "Document response actions"
+      ],
+      "implementation_steps": [
+        "1. Assess current state and identify gaps",
+        "2. Define requirements and success criteria",
+        "3. Develop implementation plan and timeline",
+        "4. Allocate resources and assign responsibilities",
+        "5. Implement processes and controls",
+        "6. Train personnel and establish procedures",
+        "7. Monitor effectiveness and continuously improve"
+      ],
+      "tools_and_resources": [
+        "Process documentation templates",
+        "Implementation checklists",
+        "Training materials",
+        "Incident response frameworks",
+        "Communication tools",
+        "Response playbooks"
+      ],
+      "success_metrics": [
+        "Implementation completed within planned timeline and budget",
+        "Process effectiveness measured and meets established criteria",
+        "Personnel trained and demonstrate competency",
+        "Regular monitoring and reporting established",
+        "Continuous improvement process operational"
+      ],
+      "common_pitfalls": [
+        "Not adequately assessing current state before implementation",
+        "Insufficient stakeholder engagement and communication",
+        "Inadequate resource allocation for effective implementation",
+        "Not establishing regular monitoring and improvement processes"
+      ],
+      "effort_estimate": "Medium",
+      "cost_estimate": "Low",
+      "prerequisites": [
+        "Senior leadership support",
+        "Adequate resources allocated",
+        "Incident response team",
+        "Communication procedures"
+      ]
+    }
+  ]
+}
