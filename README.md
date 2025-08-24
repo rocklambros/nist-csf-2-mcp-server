@@ -543,6 +543,170 @@ This MCP server implements enterprise-grade security measures:
 - ✅ GDPR data protection compliance
 - ✅ Industry-standard security controls
 
+## Security Configuration
+
+### Hardcoded Passwords and Secrets
+
+⚠️ **IMPORTANT**: This server requires proper configuration of secrets and authentication credentials before deployment.
+
+#### Default Configuration Files
+
+The server includes the following template files that contain placeholder values that **MUST** be changed:
+
+1. **`.env.template`** - Contains all environment variable templates
+2. **`docker-compose.yml`** - References external secrets directory
+
+#### Required Secret Configuration
+
+**Before deploying this server, you MUST configure the following:**
+
+##### 1. Authentication Secrets (`.env` file)
+```bash
+# Copy template and configure
+cp .env.template .env
+
+# Edit .env and set these REQUIRED values:
+SESSION_SECRET=your-unique-session-secret-minimum-32-chars
+HMAC_SECRET=your-unique-hmac-secret-for-data-integrity
+ENCRYPTION_KEY=your-encryption-key-for-data-at-rest
+DATABASE_PASSWORD=your-database-password-if-using-external-db
+EXTERNAL_API_KEY=your-external-service-api-keys
+```
+
+##### 2. OAuth 2.1 Authentication
+```bash
+# Configure OAuth providers in .env:
+JWKS_URL=https://your-identity-provider.com/.well-known/jwks.json
+TOKEN_ISSUER=https://your-identity-provider.com
+MCP_AUDIENCE=your-mcp-server-audience
+```
+
+##### 3. Database Encryption (Optional)
+```bash
+# If using database encryption:
+ENABLE_DB_ENCRYPTION=true
+DB_ENCRYPTION_KEY=your-database-encryption-key-32-bytes
+```
+
+#### Security Best Practices
+
+1. **Generate Strong Secrets**
+   ```bash
+   # Generate secure random secrets:
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+2. **Secret Storage**
+   - Use environment variables or secure secret management systems
+   - Never commit `.env` files to version control
+   - Use Docker secrets for containerized deployments
+   - Implement secret rotation policies
+
+3. **File Permissions**
+   ```bash
+   # Secure your environment file:
+   chmod 600 .env
+   chown app:app .env
+   ```
+
+4. **Container Security**
+   - Mount secrets as read-only volumes
+   - Use the `secrets/` directory for Docker deployments
+   - Ensure secrets are owned by the application user (UID 10001)
+
+#### Verification
+
+After configuration, verify your setup:
+
+```bash
+# Check that required environment variables are set:
+npm run config:check
+
+# Test authentication configuration:
+npm run test:auth
+
+# Validate security configuration:
+npm run security:audit
+```
+
+#### Default Values That Must Be Changed
+
+**⚠️ These default/empty values MUST be replaced:**
+
+- `SESSION_SECRET=` (empty - REQUIRED)
+- `HMAC_SECRET=` (empty - REQUIRED)  
+- `ENCRYPTION_KEY=` (empty - REQUIRED)
+- `DATABASE_PASSWORD=` (empty - set if using external DB)
+- `EXTERNAL_API_KEY=` (empty - set if using external APIs)
+- `JWKS_URL=https://your-idp.com/.well-known/jwks.json` (placeholder - REQUIRED)
+- `TOKEN_ISSUER=https://your-idp.com` (placeholder - REQUIRED)
+
+**⚠️ Test-Only Hardcoded Passwords (REMOVE in production):**
+
+**Critical Security Issue**: The following files contain hardcoded passwords for testing purposes that pose security risks:
+
+1. **`src/tools/generate_test_scenarios.ts`** (Lines 486-488):
+   ```typescript
+   // ⚠️ SECURITY RISK: Hardcoded test passwords
+   { username: 'test_user_01', role: 'standard', password: 'TestPass123!' },
+   { username: 'test_admin_01', role: 'admin', password: 'AdminPass456!' },
+   { username: 'test_attacker_01', role: 'unauthorized', password: 'BadPass789!' }
+   ```
+
+2. **`tests/security/test_auth.ts`** (Line 363):
+   ```typescript
+   // ⚠️ SECURITY RISK: Hardcoded JWT secret
+   'secret',  // Hardcoded JWT signing secret
+   ```
+
+**IMMEDIATE ACTION REQUIRED:**
+
+1. **For Development/Testing**: Replace hardcoded values with environment variables:
+   ```typescript
+   // BEFORE (UNSAFE):
+   password: 'TestPass123!'
+   
+   // AFTER (SECURE):
+   password: process.env.TEST_USER_PASSWORD || 'defaultTestPass'
+   ```
+
+2. **For Production Deployment**: 
+   - Ensure these test files are excluded from production builds
+   - Use `.dockerignore` and build processes to exclude test directories
+   - Implement dynamic test credential generation
+
+3. **Environment Variable Configuration**:
+   ```bash
+   # Add to .env file:
+   TEST_USER_PASSWORD=your-secure-test-password
+   TEST_ADMIN_PASSWORD=your-secure-admin-test-password
+   TEST_JWT_SECRET=your-secure-jwt-test-secret
+   ```
+
+4. **Production Build Safety**:
+   ```bash
+   # Exclude test files in production builds:
+   echo "tests/" >> .dockerignore
+   echo "**/*.test.ts" >> .dockerignore
+   echo "src/tools/generate_test_scenarios.ts" >> .dockerignore
+   ```
+
+**✅ Production-ready defaults (no change needed):**
+- All rate limiting configurations
+- Security header settings
+- Database connection settings
+- Monitoring and logging configurations
+
+#### Emergency Security Measures
+
+If secrets are compromised:
+
+1. **Immediately rotate all secrets**
+2. **Revoke and reissue API keys**  
+3. **Update OAuth configurations**
+4. **Review audit logs for unauthorized access**
+5. **Force password resets for all users**
+
 ## Performance & Monitoring
 
 ### Metrics & Analytics
