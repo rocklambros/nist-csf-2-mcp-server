@@ -25,7 +25,18 @@ import { validateToolParams, SecurityError } from './security/validators.js';
 // Services
 import { logger } from './utils/logger.js';
 import { getDatabase, closeDatabase } from './db/database.js';
+import { getMonitoredDatabase, closeMonitoredDatabase } from './db/monitored-database.js';
 import { initializeFramework } from './services/framework-loader.js';
+
+// Monitoring and metrics
+import { 
+  monitoringMiddleware, 
+  errorMonitoringMiddleware,
+  createMonitoringRouter,
+  toolMonitoring 
+} from './middleware/monitoring.js';
+import { metrics } from './utils/metrics.js';
+import { toolAnalytics } from './utils/analytics.js';
 
 // Tool imports (existing tools)
 import { csfLookup } from './tools/csf_lookup.js';
@@ -63,6 +74,8 @@ const ENABLE_AUTH = process.env.ENABLE_AUTH !== 'false';
 const ENABLE_RATE_LIMITING = process.env.ENABLE_RATE_LIMITING !== 'false';
 const ENABLE_SECURITY_HEADERS = process.env.ENABLE_SECURITY_HEADERS !== 'false';
 const ENABLE_CORS = process.env.ENABLE_CORS === 'true';
+const ENABLE_MONITORING = process.env.ENABLE_MONITORING !== 'false';
+const USE_MONITORED_DB = process.env.USE_MONITORED_DB !== 'false';
 
 // Tool registry with security permissions
 const TOOL_REGISTRY = new Map<string, {
@@ -301,12 +314,22 @@ function createExpressApp() {
     app.use(cors(corsOptions));
   }
   
+  // Monitoring middleware (before security for comprehensive tracking)
+  if (ENABLE_MONITORING) {
+    app.use(...monitoringMiddleware);
+  }
+  
   // Security logging
   app.use(securityLogger.middleware());
   
   // Rate limiting
   if (ENABLE_RATE_LIMITING) {
     app.use(rateLimiter.middleware());
+  }
+  
+  // Monitoring endpoints
+  if (ENABLE_MONITORING) {
+    app.use('/monitoring', createMonitoringRouter(express));
   }
   
   // Health check endpoint (no auth required)
@@ -359,10 +382,23 @@ function createExpressApp() {
       const startTime = Date.now();
       const clientId = (req as any).auth?.client_id || req.ip;
       
-      // Execute tool
-      const db = getDatabase();
+      // Execute tool with monitoring
+      const db = USE_MONITORED_DB ? getMonitoredDatabase() : getDatabase();
       const framework = await initializeFramework();
-      const result = await toolConfig.handler(validatedParams, db, framework);
+      
+      // Wrap tool execution with monitoring if enabled
+      let result;
+      if (ENABLE_MONITORING) {
+        const monitoredHandler = toolMonitoring(toolName, toolConfig.handler);
+        // Create context with client info for monitoring
+        const context = {
+          clientId,
+          userId: (req as any).auth?.sub,
+        };
+        result = await monitoredHandler.call(context, validatedParams, db, framework);
+      } else {
+        result = await toolConfig.handler(validatedParams, db, framework);
+      }
       
       // Log successful execution
       securityLogger.logToolCall({
@@ -432,25 +468,29 @@ function createExpressApp() {
   });
   
   // Error handling middleware
-  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    logger.error('Unhandled error:', err);
-    
-    // Log security event for errors
-    securityLogger.logSecurityEvent({
-      timestamp: new Date().toISOString(),
-      event: 'unhandled_error',
-      level: 'error',
-      path: req.path,
-      method: req.method,
-      ip: req.ip,
-      error: NODE_ENV === 'development' ? err.message : 'Internal error'
+  if (ENABLE_MONITORING) {
+    app.use(errorMonitoringMiddleware);
+  } else {
+    app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+      logger.error('Unhandled error:', err);
+      
+      // Log security event for errors
+      securityLogger.logSecurityEvent({
+        timestamp: new Date().toISOString(),
+        event: 'unhandled_error',
+        level: 'error',
+        path: req.path,
+        method: req.method,
+        ip: req.ip,
+        error: NODE_ENV === 'development' ? err.message : 'Internal error'
+      });
+      
+      res.status(500).json({
+        error: 'Internal server error',
+        message: NODE_ENV === 'development' ? err.message : 'An unexpected error occurred'
+      });
     });
-    
-    res.status(500).json({
-      error: 'Internal server error',
-      message: NODE_ENV === 'development' ? err.message : 'An unexpected error occurred'
-    });
-  });
+  }
   
   return app;
 }
@@ -464,9 +504,14 @@ async function main() {
   
   // Initialize services
   const framework = await initializeFramework();
-  const db = getDatabase();
+  const db = USE_MONITORED_DB ? getMonitoredDatabase() : getDatabase();
   
   logger.info('Services initialized successfully');
+  
+  // Start metrics collection if enabled
+  if (ENABLE_MONITORING) {
+    logger.info('Monitoring and metrics collection enabled');
+  }
   
   // Create Express app
   const app = createExpressApp();
@@ -479,6 +524,16 @@ async function main() {
     logger.info(`Rate limiting: ${ENABLE_RATE_LIMITING ? 'enabled' : 'disabled'}`);
     logger.info(`Security headers: ${ENABLE_SECURITY_HEADERS ? 'enabled' : 'disabled'}`);
     logger.info(`CORS: ${ENABLE_CORS ? 'enabled' : 'disabled'}`);
+    logger.info(`Monitoring: ${ENABLE_MONITORING ? 'enabled' : 'disabled'}`);
+    logger.info(`Monitored Database: ${USE_MONITORED_DB ? 'enabled' : 'disabled'}`);
+    if (ENABLE_MONITORING) {
+      logger.info(`Monitoring endpoints available at:`);
+      logger.info(`  - Health: http://${HOST}:${PORT}/monitoring/health`);
+      logger.info(`  - Metrics: http://${HOST}:${PORT}/monitoring/metrics`);
+      logger.info(`  - Analytics: http://${HOST}:${PORT}/monitoring/analytics`);
+      logger.info(`  - Tool Stats: http://${HOST}:${PORT}/monitoring/analytics/tools`);
+      logger.info(`  - User Stats: http://${HOST}:${PORT}/monitoring/analytics/users`);
+    }
   });
   
   // Also support stdio transport for MCP compatibility
@@ -515,8 +570,19 @@ async function main() {
         // Validate parameters
         const validatedParams = validateToolParams(name, args);
         
-        // Execute tool
-        const result = await toolConfig.handler(validatedParams, db, framework);
+        // Execute tool with monitoring
+        let result;
+        if (ENABLE_MONITORING) {
+          const monitoredHandler = toolMonitoring(name, toolConfig.handler);
+          // Create context for stdio transport
+          const context = {
+            clientId: 'stdio',
+            userId: 'system',
+          };
+          result = await monitoredHandler.call(context, validatedParams, db, framework);
+        } else {
+          result = await toolConfig.handler(validatedParams, db, framework);
+        }
         
         return {
           content: [
@@ -549,7 +615,18 @@ async function main() {
     });
     
     // Close database
-    closeDatabase();
+    if (USE_MONITORED_DB) {
+      closeMonitoredDatabase();
+    } else {
+      closeDatabase();
+    }
+    
+    // Stop metrics collection and analytics
+    if (ENABLE_MONITORING) {
+      metrics.stop();
+      toolAnalytics.stop();
+      logger.info('Metrics collection and analytics stopped');
+    }
     
     // Destroy rate limiter
     rateLimiter.destroy();
