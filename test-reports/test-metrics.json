@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-08-24T02:33:03.118Z",
+  "metrics": {
+    "test_counter": {
+      "value": 42,
+      "type": "counter"
+    },
+    "test_gauge": {
+      "value": 3.14,
+      "type": "gauge"
+    },
+    "test_duration": {
+      "value": 125,
+      "type": "histogram"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-08-24T02:33:03.118Z",
+  "toolUsage": {
+    "csf_lookup": {
+      "calls": 15,
+      "avgDuration": 45,
+      "errors": 0
+    },
+    "quick_assessment": {
+      "calls": 8,
+      "avgDuration": 230,
+      "errors": 1
+    },
+    "generate_report": {
+      "calls": 3,
+      "avgDuration": 1200,
+      "errors": 0
+    }
+  },
+  "userStats": {
+    "activeUsers": 5,
+    "totalSessions": 12,
+    "avgSessionDuration": 1800
+  }
+}
