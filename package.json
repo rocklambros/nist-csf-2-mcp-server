@@ -15,6 +15,8 @@
     "lint": "eslint src/**/*.ts",
     "test": "jest",
     "test:security": "jest tests/security --coverage",
+    "seed:questions": "tsx scripts/seed-questions.ts",
+    "db:init": "npm run build && npm run seed:questions",
     "docker:build": "docker build -t nist-csf-mcp-server .",
     "docker:run": "docker-compose up -d"
   },

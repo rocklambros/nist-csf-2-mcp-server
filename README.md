@@ -304,6 +304,78 @@ Compare multiple profiles for benchmarking and analysis.
 }
 ```
 
+### Question Bank Tools
+
+#### `get_assessment_questions`
+Retrieve comprehensive assessment questions for cybersecurity framework evaluation.
+
+```json
+{
+  "assessment_type": "quick|detailed",
+  "function": "GV|ID|PR|DE|RS|RC",
+  "category": "Category ID (e.g., GV.OC)",
+  "subcategory_ids": ["GV.OC-01", "ID.AM-01"],
+  "organization_size": "small|medium|large|enterprise",
+  "sector": "technology|healthcare|finance|government|other",
+  "include_examples": true,
+  "include_references": true,
+  "limit": 50,
+  "offset": 0
+}
+```
+
+**Response includes**:
+- Complete question set with answer options
+- Estimated completion time
+- Function coverage statistics
+- Question metadata and weighting
+
+#### `validate_assessment_responses`
+Validate assessment responses for completeness and consistency.
+
+```json
+{
+  "profile_id": "PROF-123",
+  "responses": [
+    {
+      "subcategory_id": "GV.OC-01",
+      "response_value": 3,
+      "notes": "Implementation details",
+      "evidence": "Supporting documentation"
+    }
+  ],
+  "validation_level": "basic|comprehensive"
+}
+```
+
+**Validation checks**:
+- Response completeness
+- Value consistency
+- Required question coverage
+- Logic validation across responses
+
+#### `get_question_context`
+Get detailed context and guidance for specific assessment questions.
+
+```json
+{
+  "subcategory_id": "GV.OC-01",
+  "include_implementation_examples": true,
+  "include_references": true,
+  "organization_context": {
+    "sector": "healthcare",
+    "size": "medium"
+  }
+}
+```
+
+**Context includes**:
+- Subcategory explanation and importance
+- Risk factors and common challenges
+- Best practices and implementation guidance
+- Sector-specific recommendations
+- Related subcategories and dependencies
+
 ## Project Structure
 
 ```

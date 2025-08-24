@@ -11,10 +11,6 @@ import type {
   GapAnalysis 
 } from '../types/index.js';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class CSFDatabase {
   private db: Database.Database;
@@ -22,7 +18,7 @@ export class CSFDatabase {
 
   constructor(dbPath?: string) {
     // Default to nist_csf.db in project root
-    this.dbPath = dbPath || path.join(__dirname, '../../nist_csf.db');
+    this.dbPath = dbPath || path.join(process.cwd(), 'nist_csf.db');
     
     try {
       this.db = new Database(this.dbPath, { 
@@ -115,7 +111,7 @@ export class CSFDatabase {
         implementation_status TEXT NOT NULL,
         maturity_level INTEGER CHECK (maturity_level >= 0 AND maturity_level <= 5),
         notes TEXT,
-        evidence TEXT, -- JSON array stored as text
+        evidence TEXT, /* JSON array stored as text */
         last_assessed DATETIME DEFAULT CURRENT_TIMESTAMP,
         assessed_by TEXT,
         FOREIGN KEY (org_id) REFERENCES organization_profiles(org_id),
@@ -451,6 +447,118 @@ export class CSFDatabase {
       CREATE INDEX IF NOT EXISTS idx_evidence_profile ON audit_evidence(profile_id);
       CREATE INDEX IF NOT EXISTS idx_evidence_subcategory ON audit_evidence(subcategory_id);
       CREATE INDEX IF NOT EXISTS idx_evidence_validation ON audit_evidence(validation_status);
+
+      -- ============================================================================
+      -- QUESTION BANK TABLES
+      -- ============================================================================
+
+      -- Question Bank table for storing assessment questions
+      CREATE TABLE IF NOT EXISTS question_bank (
+        id TEXT PRIMARY KEY,
+        subcategory_id TEXT NOT NULL,
+        question_text TEXT NOT NULL,
+        question_type TEXT NOT NULL CHECK (question_type IN ('maturity_rating', 'implementation_status', 'yes_no', 'multiple_choice')),
+        help_text TEXT,
+        organization_size TEXT, /* 'small', 'medium', 'large', 'enterprise', or NULL for all sizes */
+        sector TEXT, /* 'technology', 'healthcare', 'finance', 'government', 'other', or NULL for all sectors */
+        weight REAL DEFAULT 1.0 CHECK (weight >= 0 AND weight <= 2.0),
+        required BOOLEAN DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
+      );
+
+      -- Question Options table for multiple choice and rating questions
+      CREATE TABLE IF NOT EXISTS question_options (
+        id TEXT PRIMARY KEY,
+        question_id TEXT NOT NULL,
+        option_value INTEGER NOT NULL,
+        option_label TEXT NOT NULL,
+        option_description TEXT,
+        weight REAL DEFAULT 1.0 CHECK (weight >= 0 AND weight <= 1.0),
+        sort_order INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (question_id) REFERENCES question_bank(id) ON DELETE CASCADE,
+        UNIQUE(question_id, option_value)
+      );
+
+      -- Question Examples table for implementation examples
+      CREATE TABLE IF NOT EXISTS question_examples (
+        id TEXT PRIMARY KEY,
+        question_id TEXT NOT NULL,
+        example_text TEXT NOT NULL,
+        example_type TEXT DEFAULT 'implementation' CHECK (example_type IN ('implementation', 'evidence', 'reference')),
+        organization_size TEXT, /* Size-specific examples */
+        sector TEXT, /* Sector-specific examples */
+        sort_order INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (question_id) REFERENCES question_bank(id) ON DELETE CASCADE
+      );
+
+      -- Question Context table for additional guidance
+      CREATE TABLE IF NOT EXISTS question_context (
+        id TEXT PRIMARY KEY,
+        subcategory_id TEXT NOT NULL,
+        risk_factors TEXT, /* JSON array of risk factors */
+        best_practices TEXT, /* JSON array of best practices */
+        common_challenges TEXT, /* JSON array of common challenges */
+        sector_guidance TEXT, /* JSON object with sector-specific guidance */
+        implementation_roadmap TEXT, /* JSON array of implementation steps */
+        related_subcategories TEXT, /* JSON array of related subcategory IDs */
+        reference_materials TEXT, /* JSON array of reference materials */
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id),
+        UNIQUE(subcategory_id)
+      );
+
+      -- Question Responses table for storing assessment responses
+      CREATE TABLE IF NOT EXISTS question_responses (
+        id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        question_id TEXT NOT NULL,
+        subcategory_id TEXT NOT NULL,
+        response_value INTEGER,
+        response_text TEXT,
+        confidence_level TEXT CHECK (confidence_level IN ('low', 'medium', 'high')),
+        notes TEXT,
+        evidence TEXT, /* JSON array of evidence items */
+        responded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        responded_by TEXT,
+        validated BOOLEAN DEFAULT 0,
+        validation_notes TEXT,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
+        FOREIGN KEY (question_id) REFERENCES question_bank(id),
+        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id),
+        UNIQUE(profile_id, question_id)
+      );
+
+      -- Question Validation Rules table for conditional logic
+      CREATE TABLE IF NOT EXISTS question_validation_rules (
+        id TEXT PRIMARY KEY,
+        question_id TEXT NOT NULL,
+        rule_type TEXT NOT NULL CHECK (rule_type IN ('required_if', 'skip_if', 'show_if', 'validate_range')),
+        condition_field TEXT, /* Field to check condition against */
+        condition_operator TEXT CHECK (condition_operator IN ('equals', 'not_equals', 'greater_than', 'less_than', 'contains', 'in_list')),
+        condition_value TEXT, /* Value to compare against */
+        rule_message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (question_id) REFERENCES question_bank(id) ON DELETE CASCADE
+      );
+
+      -- Question Bank Indexes for performance
+      CREATE INDEX IF NOT EXISTS idx_question_bank_subcategory ON question_bank(subcategory_id);
+      CREATE INDEX IF NOT EXISTS idx_question_bank_type ON question_bank(question_type);
+      CREATE INDEX IF NOT EXISTS idx_question_bank_size ON question_bank(organization_size);
+      CREATE INDEX IF NOT EXISTS idx_question_bank_sector ON question_bank(sector);
+      CREATE INDEX IF NOT EXISTS idx_question_bank_required ON question_bank(required);
+      CREATE INDEX IF NOT EXISTS idx_question_options_question ON question_options(question_id);
+      CREATE INDEX IF NOT EXISTS idx_question_examples_question ON question_examples(question_id);
+      CREATE INDEX IF NOT EXISTS idx_question_context_subcategory ON question_context(subcategory_id);
+      CREATE INDEX IF NOT EXISTS idx_question_responses_profile ON question_responses(profile_id);
+      CREATE INDEX IF NOT EXISTS idx_question_responses_question ON question_responses(question_id);
+      CREATE INDEX IF NOT EXISTS idx_question_responses_subcategory ON question_responses(subcategory_id);
+      CREATE INDEX IF NOT EXISTS idx_question_validation_question ON question_validation_rules(question_id);
     `;
 
     this.db.exec(schema);
@@ -3039,6 +3147,371 @@ export class CSFDatabase {
     });
 
     return errors;
+  }
+
+  // ============================================================================
+  // QUESTION BANK METHODS
+  // ============================================================================
+
+  /**
+   * Seed question bank data for a subcategory
+   */
+  seedQuestionBankData(subcategoryId: string, questionData: {
+    questions: Array<{
+      id: string;
+      questionText: string;
+      questionType: string;
+      helpText?: string;
+      organizationSize?: string;
+      sector?: string;
+      weight?: number;
+      required?: boolean;
+      options?: Array<{
+        id: string;
+        value: number;
+        label: string;
+        description?: string;
+        weight?: number;
+        sortOrder?: number;
+      }>;
+      examples?: Array<{
+        id: string;
+        text: string;
+        type?: string;
+        organizationSize?: string;
+        sector?: string;
+        sortOrder?: number;
+      }>;
+    }>;
+    context?: {
+      riskFactors?: string[];
+      bestPractices?: string[];
+      commonChallenges?: string[];
+      sectorGuidance?: Record<string, string[]>;
+      implementationRoadmap?: string[];
+      relatedSubcategories?: string[];
+      references?: string[];
+    };
+  }): void {
+    const transaction = this.db.transaction(() => {
+      // Insert questions
+      const insertQuestion = this.db.prepare(`
+        INSERT OR REPLACE INTO question_bank (
+          id, subcategory_id, question_text, question_type, help_text,
+          organization_size, sector, weight, required, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      `);
+
+      const insertOption = this.db.prepare(`
+        INSERT OR REPLACE INTO question_options (
+          id, question_id, option_value, option_label, option_description,
+          weight, sort_order
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      const insertExample = this.db.prepare(`
+        INSERT OR REPLACE INTO question_examples (
+          id, question_id, example_text, example_type, organization_size,
+          sector, sort_order
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      for (const question of questionData.questions) {
+        insertQuestion.run(
+          question.id,
+          subcategoryId,
+          question.questionText,
+          question.questionType,
+          question.helpText || null,
+          question.organizationSize || null,
+          question.sector || null,
+          question.weight || 1.0,
+          question.required ? 1 : 0
+        );
+
+        // Insert options if provided
+        if (question.options) {
+          for (const option of question.options) {
+            insertOption.run(
+              option.id,
+              question.id,
+              option.value,
+              option.label,
+              option.description || null,
+              option.weight || 1.0,
+              option.sortOrder || 0
+            );
+          }
+        }
+
+        // Insert examples if provided
+        if (question.examples) {
+          for (const example of question.examples) {
+            insertExample.run(
+              example.id,
+              question.id,
+              example.text,
+              example.type || 'implementation',
+              example.organizationSize || null,
+              example.sector || null,
+              example.sortOrder || 0
+            );
+          }
+        }
+      }
+
+      // Insert context if provided
+      if (questionData.context) {
+        const insertContext = this.db.prepare(`
+          INSERT OR REPLACE INTO question_context (
+            id, subcategory_id, risk_factors, best_practices, common_challenges,
+            sector_guidance, implementation_roadmap, related_subcategories,
+            reference_materials, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+        `);
+
+        insertContext.run(
+          `context_${subcategoryId}`,
+          subcategoryId,
+          JSON.stringify(questionData.context.riskFactors || []),
+          JSON.stringify(questionData.context.bestPractices || []),
+          JSON.stringify(questionData.context.commonChallenges || []),
+          JSON.stringify(questionData.context.sectorGuidance || {}),
+          JSON.stringify(questionData.context.implementationRoadmap || []),
+          JSON.stringify(questionData.context.relatedSubcategories || []),
+          JSON.stringify(questionData.context.references || [])
+        );
+      }
+    });
+
+    transaction();
+    logger.info(`Question bank data seeded for subcategory: ${subcategoryId}`);
+  }
+
+  /**
+   * Get all questions for a subcategory
+   */
+  getQuestionsBySubcategory(subcategoryId: string, filters?: {
+    questionType?: string;
+    organizationSize?: string;
+    sector?: string;
+    includeOptions?: boolean;
+    includeExamples?: boolean;
+  }): any[] {
+    let sql = `
+      SELECT 
+        qb.*,
+        s.name as subcategory_name,
+        s.description as subcategory_description,
+        SUBSTR(qb.subcategory_id, 1, 2) as function_id
+      FROM question_bank qb
+      JOIN subcategories s ON qb.subcategory_id = s.id
+      WHERE qb.subcategory_id = ?
+    `;
+
+    const params: any[] = [subcategoryId];
+
+    if (filters?.questionType) {
+      sql += ' AND qb.question_type = ?';
+      params.push(filters.questionType);
+    }
+
+    if (filters?.organizationSize) {
+      sql += ' AND (qb.organization_size IS NULL OR qb.organization_size = ?)';
+      params.push(filters.organizationSize);
+    }
+
+    if (filters?.sector) {
+      sql += ' AND (qb.sector IS NULL OR qb.sector = ?)';
+      params.push(filters.sector);
+    }
+
+    sql += ' ORDER BY qb.required DESC, qb.weight DESC, qb.created_at ASC';
+
+    const questions = this.db.prepare(sql).all(...params);
+
+    // Include options and examples if requested
+    if (filters?.includeOptions || filters?.includeExamples) {
+      for (const question of questions as any[]) {
+        if (filters.includeOptions) {
+          question.options = this.getQuestionOptions(question.id);
+        }
+        if (filters.includeExamples) {
+          question.examples = this.getQuestionExamples(question.id);
+        }
+      }
+    }
+
+    return questions;
+  }
+
+  /**
+   * Get question options
+   */
+  getQuestionOptions(questionId: string): any[] {
+    return this.db.prepare(`
+      SELECT * FROM question_options 
+      WHERE question_id = ? 
+      ORDER BY sort_order ASC, option_value ASC
+    `).all(questionId);
+  }
+
+  /**
+   * Get question examples
+   */
+  getQuestionExamples(questionId: string, filters?: {
+    organizationSize?: string;
+    sector?: string;
+  }): any[] {
+    let sql = `
+      SELECT * FROM question_examples 
+      WHERE question_id = ?
+    `;
+
+    const params: any[] = [questionId];
+
+    if (filters?.organizationSize) {
+      sql += ' AND (organization_size IS NULL OR organization_size = ?)';
+      params.push(filters.organizationSize);
+    }
+
+    if (filters?.sector) {
+      sql += ' AND (sector IS NULL OR sector = ?)';
+      params.push(filters.sector);
+    }
+
+    sql += ' ORDER BY sort_order ASC, created_at ASC';
+
+    return this.db.prepare(sql).all(...params);
+  }
+
+  /**
+   * Get question context for a subcategory
+   */
+  getQuestionContext(subcategoryId: string): any {
+    const result = this.db.prepare(`
+      SELECT * FROM question_context WHERE subcategory_id = ?
+    `).get(subcategoryId);
+
+    if (!result) return null;
+
+    // Parse JSON fields
+    const resultData = result as any;
+    return {
+      ...resultData,
+      risk_factors: JSON.parse(resultData.risk_factors || '[]'),
+      best_practices: JSON.parse(resultData.best_practices || '[]'),
+      common_challenges: JSON.parse(resultData.common_challenges || '[]'),
+      sector_guidance: JSON.parse(resultData.sector_guidance || '{}'),
+      implementation_roadmap: JSON.parse(resultData.implementation_roadmap || '[]'),
+      related_subcategories: JSON.parse(resultData.related_subcategories || '[]'),
+      references: JSON.parse(resultData.reference_materials || '[]')
+    };
+  }
+
+  /**
+   * Store question response
+   */
+  storeQuestionResponse(response: {
+    id: string;
+    profileId: string;
+    questionId: string;
+    subcategoryId: string;
+    responseValue?: number;
+    responseText?: string;
+    confidenceLevel?: string;
+    notes?: string;
+    evidence?: string[];
+    respondedBy?: string;
+  }): void {
+    const stmt = this.db.prepare(`
+      INSERT OR REPLACE INTO question_responses (
+        id, profile_id, question_id, subcategory_id, response_value,
+        response_text, confidence_level, notes, evidence, responded_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    stmt.run(
+      response.id,
+      response.profileId,
+      response.questionId,
+      response.subcategoryId,
+      response.responseValue || null,
+      response.responseText || null,
+      response.confidenceLevel || null,
+      response.notes || null,
+      JSON.stringify(response.evidence || []),
+      response.respondedBy || null
+    );
+  }
+
+  /**
+   * Get question responses for a profile
+   */
+  getQuestionResponses(profileId: string, subcategoryId?: string): any[] {
+    let sql = `
+      SELECT 
+        qr.*,
+        qb.question_text,
+        qb.question_type,
+        qb.required,
+        s.name as subcategory_name
+      FROM question_responses qr
+      JOIN question_bank qb ON qr.question_id = qb.id
+      JOIN subcategories s ON qr.subcategory_id = s.id
+      WHERE qr.profile_id = ?
+    `;
+
+    const params: any[] = [profileId];
+
+    if (subcategoryId) {
+      sql += ' AND qr.subcategory_id = ?';
+      params.push(subcategoryId);
+    }
+
+    sql += ' ORDER BY qr.responded_at DESC';
+
+    const responses = this.db.prepare(sql).all(...params);
+
+    // Parse evidence JSON
+    return responses.map((response: any) => ({
+      ...response,
+      evidence: JSON.parse(response.evidence || '[]')
+    }));
+  }
+
+  /**
+   * Prepare SQL statement (expose prepare method for seeding)
+   */
+  prepare(sql: string): any {
+    return this.db.prepare(sql);
+  }
+
+  /**
+   * Get question bank statistics
+   */
+  getQuestionBankStats(): any {
+    const totalQuestions = this.db.prepare('SELECT COUNT(*) as count FROM question_bank').get();
+    const questionsByType = this.db.prepare(`
+      SELECT question_type, COUNT(*) as count 
+      FROM question_bank 
+      GROUP BY question_type
+    `).all();
+    const questionsByFunction = this.db.prepare(`
+      SELECT 
+        SUBSTR(subcategory_id, 1, 2) as function_id,
+        COUNT(*) as count
+      FROM question_bank 
+      GROUP BY SUBSTR(subcategory_id, 1, 2)
+    `).all();
+    const totalResponses = this.db.prepare('SELECT COUNT(*) as count FROM question_responses').get();
+
+    return {
+      total_questions: (totalQuestions as any).count,
+      questions_by_type: questionsByType,
+      questions_by_function: questionsByFunction,
+      total_responses: (totalResponses as any).count
+    };
   }
 }
 

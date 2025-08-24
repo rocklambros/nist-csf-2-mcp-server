@@ -52,6 +52,11 @@ import { getImplementationTemplateTool } from './tools/get_implementation_templa
 import { generatePolicyTemplateTool } from './tools/generate_policy_template.js';
 import { generateTestScenariosTool } from './tools/generate_test_scenarios.js';
 
+// Question Bank Tools
+import { getAssessmentQuestions, getAssessmentQuestionsTool } from './tools/get_assessment_questions.js';
+import { validateAssessmentResponses, validateAssessmentResponsesTool } from './tools/validate_assessment_responses.js';
+import { getQuestionContext, getQuestionContextTool } from './tools/get_question_context.js';
+
 // ============================================================================
 // TOOL SCHEMAS
 // ============================================================================
@@ -923,6 +928,22 @@ async function main() {
           },
           required: ['subcategory_id']
         }
+      },
+      // Question Bank Tools
+      {
+        name: 'get_assessment_questions',
+        description: 'Retrieve comprehensive assessment questions based on NIST CSF 2.0 subcategories with context-aware customization',
+        inputSchema: getAssessmentQuestionsTool.inputSchema
+      },
+      {
+        name: 'validate_assessment_responses',
+        description: 'Validate assessment responses for completeness, consistency, and data integrity with comprehensive error reporting',
+        inputSchema: validateAssessmentResponsesTool.inputSchema
+      },
+      {
+        name: 'get_question_context',
+        description: 'Retrieve detailed context, guidance, and examples for specific NIST CSF assessment questions with sector and size-specific recommendations',
+        inputSchema: getQuestionContextTool.inputSchema
       }
     ],
   }));
@@ -1491,6 +1512,46 @@ async function main() {
 
         case 'generate_test_scenarios': {
           const result = await generateTestScenariosTool.execute(args as any, db, framework);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        // Question Bank Tool Handlers
+        case 'get_assessment_questions': {
+          const result = await getAssessmentQuestions(args as any);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'validate_assessment_responses': {
+          const result = await validateAssessmentResponses(args as any, db);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'get_question_context': {
+          const result = await getQuestionContext(args as any);
           
           return {
             content: [

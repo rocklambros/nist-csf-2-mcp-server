@@ -1,0 +1,428 @@
+/**
+ * Unit tests for Question Bank Service
+ * Tests the core question generation and context logic
+ */
+
+import { describe, it, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals';
+import { QuestionBankService } from '../../src/services/question-bank.js';
+
+// Mock the enhanced logger
+jest.mock('../../src/utils/enhanced-logger.js', () => ({
+  logger: {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn()
+  }
+}));
+
+// Mock the framework loader
+const mockFrameworkLoader = {
+  getElementById: jest.fn(),
+  getElementsByType: jest.fn(),
+  getImplementationExamples: jest.fn(),
+  getSubcategoriesForCategory: jest.fn()
+};
+
+jest.mock('../../src/services/framework-loader.js', () => ({
+  getFrameworkLoader: () => ({
+    getElementById: jest.fn(),
+    getElementsByType: jest.fn(),
+    getImplementationExamples: jest.fn(),
+    getSubcategoriesForCategory: jest.fn()
+  })
+}));
+
+describe('QuestionBankService', () => {
+  let questionBankService: QuestionBankService;
+  let frameworkLoader: any;
+
+  beforeAll(() => {
+    questionBankService = new QuestionBankService();
+    frameworkLoader = (questionBankService as any).frameworkLoader;
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('getAssessmentQuestions', () => {
+    const mockSubcategories = [
+      {
+        element_identifier: 'GV.OC-01',
+        element_type: 'subcategory',
+        text: 'The organizational mission is understood and informs cybersecurity risk management',
+        title: ''
+      },
+      {
+        element_identifier: 'GV.OC-02',
+        element_type: 'subcategory',
+        text: 'Internal and external stakeholders are understood, and their needs and expectations regarding cybersecurity risk management are understood and considered',
+        title: ''
+      },
+      {
+        element_identifier: 'ID.AM-01',
+        element_type: 'subcategory',
+        text: 'Assets within the organization are identified and inventoried',
+        title: ''
+      }
+    ];
+
+    beforeEach(() => {
+      frameworkLoader.getElementsByType.mockReturnValue(mockSubcategories);
+      frameworkLoader.getElementById.mockImplementation((id) => {
+        if (id === 'GV.OC') return { text: 'Organizational Context', element_type: 'category' };
+        if (id === 'GV') return { text: 'GOVERN', element_type: 'function' };
+        if (id === 'ID.AM') return { text: 'Asset Management', element_type: 'category' };
+        if (id === 'ID') return { text: 'IDENTIFY', element_type: 'function' };
+        return mockSubcategories.find(sub => sub.element_identifier === id);
+      });
+      frameworkLoader.getImplementationExamples.mockReturnValue([]);
+    });
+
+    it('should generate questions for all subcategories', async () => {
+      const questions = await questionBankService.getAssessmentQuestions({
+        assessment_type: 'detailed',
+        include_examples: true,
+        include_references: true
+      });
+
+      expect(questions).toHaveLength(3);
+      expect(questions[0].subcategory_id).toBe('GV.OC-01');
+      expect(questions[0].question_text).toContain('organizational mission');
+      expect(questions[0].question_type).toBe('maturity_rating');
+      expect(questions[0].options).toHaveLength(6); // 0-5 for detailed assessment
+      expect(questions[0].function).toBe('GV');
+      expect(questions[0].category).toBe('GV.OC');
+    });
+
+    it('should filter questions by function', async () => {
+      const governQuestions = mockSubcategories.filter(sub => sub.element_identifier.startsWith('GV'));
+      mockFrameworkLoader.getElementsByType.mockReturnValue(governQuestions);
+
+      const questions = await questionBankService.getAssessmentQuestions({
+        function: 'GV',
+        assessment_type: 'detailed'
+      });
+
+      expect(questions).toHaveLength(2);
+      expect(questions.every(q => q.function === 'GV')).toBe(true);
+    });
+
+    it('should filter questions by category', async () => {
+      const categoryQuestions = mockSubcategories.filter(sub => sub.element_identifier.startsWith('GV.OC'));
+      mockFrameworkLoader.getElementsByType.mockReturnValue(categoryQuestions);
+
+      const questions = await questionBankService.getAssessmentQuestions({
+        category: 'GV.OC',
+        assessment_type: 'detailed'
+      });
+
+      expect(questions).toHaveLength(2);
+      expect(questions.every(q => q.category === 'GV.OC')).toBe(true);
+    });
+
+    it('should generate quick assessment questions', async () => {
+      const questions = await questionBankService.getAssessmentQuestions({
+        assessment_type: 'quick'
+      });
+
+      expect(questions[0].question_type).toBe('implementation_status');
+      expect(questions[0].question_text).toContain('How well does your organization implement');
+      expect(questions[0].options).toHaveLength(4); // 0-3 for quick assessment
+      expect(questions[0].options[0].label).toBe('Not Implemented');
+      expect(questions[0].options[3].label).toBe('Fully Implemented');
+    });
+
+    it('should generate detailed assessment questions with maturity levels', async () => {
+      const questions = await questionBankService.getAssessmentQuestions({
+        assessment_type: 'detailed'
+      });
+
+      expect(questions[0].question_type).toBe('maturity_rating');
+      expect(questions[0].question_text).toContain('Rate your organization\'s current implementation level');
+      expect(questions[0].options).toHaveLength(6); // 0-5 for detailed assessment
+      expect(questions[0].options[0].label).toBe('Not Implemented');
+      expect(questions[0].options[5].label).toBe('Optimized');
+      expect(questions[0].options[5].weight).toBe(1.0);
+    });
+
+    it('should customize questions for organization size', async () => {
+      const questionsSmall = await questionBankService.getAssessmentQuestions({
+        assessment_type: 'detailed',
+        organization_size: 'small'
+      });
+
+      const questionsEnterprise = await questionBankService.getAssessmentQuestions({
+        assessment_type: 'detailed',
+        organization_size: 'enterprise'
+      });
+
+      // Governance questions should have higher weight for small orgs
+      const govQuestionSmall = questionsSmall.find(q => q.subcategory_id === 'GV.OC-01');
+      const govQuestionEnterprise = questionsEnterprise.find(q => q.subcategory_id === 'GV.OC-01');
+
+      expect(govQuestionSmall?.weight).toBeGreaterThan(govQuestionEnterprise?.weight || 0);
+    });
+
+    it('should include implementation examples when requested', async () => {
+      mockFrameworkLoader.getImplementationExamples.mockReturnValue([
+        {
+          element_identifier: 'GV.OC-01.001',
+          element_type: 'implementation_example',
+          text: 'Share the organization\'s mission to provide a basis for identifying risks'
+        }
+      ]);
+
+      const questions = await questionBankService.getAssessmentQuestions({
+        assessment_type: 'detailed',
+        include_examples: true
+      });
+
+      expect(questions[0].examples).toBeDefined();
+      expect(questions[0].examples).toHaveLength(1);
+      expect(questions[0].examples?.[0]).toContain("Share the organization's mission");
+    });
+
+    it('should mark critical subcategories as required', async () => {
+      const questions = await questionBankService.getAssessmentQuestions({
+        assessment_type: 'detailed'
+      });
+
+      const criticalQuestion = questions.find(q => q.subcategory_id === 'GV.OC-01');
+      expect(criticalQuestion?.required).toBe(true);
+
+      const nonCriticalQuestion = questions.find(q => q.subcategory_id === 'GV.OC-02');
+      expect(nonCriticalQuestion?.required).toBe(false);
+    });
+
+    it('should sort questions by function, category, and subcategory', async () => {
+      const questions = await questionBankService.getAssessmentQuestions({
+        assessment_type: 'detailed'
+      });
+
+      // Should be sorted GV.OC-01, GV.OC-02, ID.AM-01
+      expect(questions[0].subcategory_id).toBe('GV.OC-01');
+      expect(questions[1].subcategory_id).toBe('GV.OC-02');
+      expect(questions[2].subcategory_id).toBe('ID.AM-01');
+    });
+
+    it('should handle specific subcategory IDs', async () => {
+      const specificSubcategories = [mockSubcategories[0], mockSubcategories[2]]; // GV.OC-01 and ID.AM-01
+      mockFrameworkLoader.getElementById
+        .mockImplementationOnce((id) => specificSubcategories.find(sub => sub.element_identifier === id));
+
+      const questions = await questionBankService.getAssessmentQuestions({
+        subcategory_ids: ['GV.OC-01', 'ID.AM-01'],
+        assessment_type: 'detailed'
+      });
+
+      expect(questions).toHaveLength(2);
+      expect(questions[0].subcategory_id).toBe('GV.OC-01');
+      expect(questions[1].subcategory_id).toBe('ID.AM-01');
+    });
+
+    it('should filter out questions for quick assessment', async () => {
+      const questions = await questionBankService.getAssessmentQuestions({
+        assessment_type: 'quick'
+      });
+
+      // For quick assessment, should prioritize required questions
+      const requiredCount = questions.filter(q => q.required).length;
+      const totalCount = questions.length;
+
+      // At least some questions should be required
+      expect(requiredCount).toBeGreaterThan(0);
+      expect(totalCount).toBeGreaterThanOrEqual(requiredCount);
+    });
+
+    it('should handle framework loader errors gracefully', async () => {
+      mockFrameworkLoader.getElementsByType.mockImplementation(() => {
+        throw new Error('Framework not available');
+      });
+
+      await expect(questionBankService.getAssessmentQuestions({
+        assessment_type: 'detailed'
+      })).rejects.toThrow('Failed to generate assessment questions: Framework not available');
+    });
+  });
+
+  describe('getQuestionContext', () => {
+    const mockSubcategory = {
+      element_identifier: 'GV.OC-01',
+      element_type: 'subcategory',
+      text: 'The organizational mission is understood and informs cybersecurity risk management'
+    };
+
+    const mockCategory = {
+      element_identifier: 'GV.OC',
+      element_type: 'category',
+      text: "The circumstances surrounding the organization's cybersecurity risk management decisions are understood"
+    };
+
+    const mockFunction = {
+      element_identifier: 'GV',
+      element_type: 'function',
+      text: "The organization's cybersecurity risk management strategy is established"
+    };
+
+    beforeEach(() => {
+      mockFrameworkLoader.getElementById.mockImplementation((id) => {
+        if (id === 'GV.OC-01') return mockSubcategory;
+        if (id === 'GV.OC') return mockCategory;
+        if (id === 'GV') return mockFunction;
+        return null;
+      });
+
+      mockFrameworkLoader.getImplementationExamples.mockReturnValue([
+        {
+          element_identifier: 'GV.OC-01.001',
+          text: 'Share the organization\'s mission to provide a basis for identifying risks'
+        }
+      ]);
+
+      mockFrameworkLoader.getSubcategoriesForCategory.mockReturnValue([
+        { element_identifier: 'GV.OC-01' },
+        { element_identifier: 'GV.OC-02' },
+        { element_identifier: 'GV.OC-03' }
+      ]);
+    });
+
+    it('should retrieve comprehensive context for a subcategory', async () => {
+      const context = await questionBankService.getQuestionContext({
+        subcategory_id: 'GV.OC-01',
+        include_implementation_examples: true,
+        include_references: true
+      });
+
+      expect(context.subcategory_id).toBe('GV.OC-01');
+      expect(context.subcategory_text).toBe(mockSubcategory.text);
+      expect(context.category_text).toBe(mockCategory.text);
+      expect(context.function_text).toBe(mockFunction.text);
+      expect(context.implementation_examples).toHaveLength(1);
+      expect(context.references).toContain('NIST CSF 2.0 - GV.OC-01');
+      expect(context.related_subcategories).toContain('GV.OC-02');
+      expect(context.risk_factors).toContain('Governance gaps');
+      expect(context.common_challenges).toContain('Resource constraints');
+      expect(context.best_practices).toContain('Start with risk assessment');
+    });
+
+    it('should include organization-specific guidance', async () => {
+      const context = await questionBankService.getQuestionContext({
+        subcategory_id: 'GV.OC-01',
+        organization_context: {
+          sector: 'healthcare',
+          size: 'medium'
+        }
+      });
+
+      expect(context.sector_specific_guidance).toContain('Consider HIPAA compliance');
+      expect(context.common_challenges).toContain('Resource constraints'); // Base challenges
+    });
+
+    it('should adjust challenges based on organization size', async () => {
+      const smallOrgContext = await questionBankService.getQuestionContext({
+        subcategory_id: 'GV.OC-01',
+        organization_context: {
+          sector: 'technology',
+          size: 'small'
+        }
+      });
+
+      const enterpriseContext = await questionBankService.getQuestionContext({
+        subcategory_id: 'GV.OC-01',
+        organization_context: {
+          sector: 'technology',
+          size: 'enterprise'
+        }
+      });
+
+      expect(smallOrgContext.common_challenges).toContain('Limited budget');
+      expect(enterpriseContext.common_challenges).toContain('Organizational complexity');
+    });
+
+    it('should handle missing subcategory', async () => {
+      mockFrameworkLoader.getElementById.mockReturnValueOnce(null);
+
+      await expect(questionBankService.getQuestionContext({
+        subcategory_id: 'INVALID-01'
+      })).rejects.toThrow('Subcategory INVALID-01 not found');
+    });
+
+    it('should handle invalid subcategory type', async () => {
+      mockFrameworkLoader.getElementById.mockReturnValueOnce({
+        element_identifier: 'GV.OC',
+        element_type: 'category' // Should be subcategory
+      });
+
+      await expect(questionBankService.getQuestionContext({
+        subcategory_id: 'GV.OC'
+      })).rejects.toThrow('Subcategory GV.OC not found');
+    });
+
+    it('should provide sector-specific guidance for different sectors', async () => {
+      const sectors = ['healthcare', 'finance', 'government', 'technology'];
+      
+      for (const sector of sectors) {
+        const context = await questionBankService.getQuestionContext({
+          subcategory_id: 'GV.OC-01',
+          organization_context: { sector, size: 'medium' }
+        });
+
+        expect(context.sector_specific_guidance).toBeDefined();
+        expect(context.sector_specific_guidance?.length).toBeGreaterThan(0);
+      }
+    });
+
+    it('should exclude optional elements when not requested', async () => {
+      const context = await questionBankService.getQuestionContext({
+        subcategory_id: 'GV.OC-01',
+        include_implementation_examples: false,
+        include_references: false
+      });
+
+      expect(context.implementation_examples).toBeUndefined();
+      expect(context.references).toBeUndefined();
+    });
+
+    it('should handle framework loader errors gracefully', async () => {
+      mockFrameworkLoader.getElementById.mockImplementation(() => {
+        throw new Error('Database connection failed');
+      });
+
+      await expect(questionBankService.getQuestionContext({
+        subcategory_id: 'GV.OC-01'
+      })).rejects.toThrow('Failed to get question context: Database connection failed');
+    });
+
+    it('should provide function-specific risk factors', async () => {
+      const testCases = [
+        { subcategory: 'GV.OC-01', expectedRisk: 'Governance gaps' },
+        { subcategory: 'ID.AM-01', expectedRisk: 'Asset visibility gaps' },
+        { subcategory: 'PR.AC-01', expectedRisk: 'Control failures' },
+        { subcategory: 'DE.CM-01', expectedRisk: 'Detection blind spots' },
+        { subcategory: 'RS.RP-01', expectedRisk: 'Incident response delays' },
+        { subcategory: 'RC.RP-01', expectedRisk: 'Business continuity failures' }
+      ];
+
+      for (const testCase of testCases) {
+        mockFrameworkLoader.getElementById.mockImplementation((id) => {
+          if (id === testCase.subcategory) {
+            return {
+              element_identifier: testCase.subcategory,
+              element_type: 'subcategory',
+              text: 'Test subcategory'
+            };
+          }
+          return null;
+        });
+
+        const context = await questionBankService.getQuestionContext({
+          subcategory_id: testCase.subcategory
+        });
+
+        expect(context.risk_factors).toContain(testCase.expectedRisk);
+      }
+    });
+  });
+});
