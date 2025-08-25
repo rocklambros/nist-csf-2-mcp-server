@@ -548,11 +548,12 @@ This MCP server implements enterprise-grade security measures:
 - ✅ XSS protection with input sanitization
 - ✅ Type-safe implementation with comprehensive TypeScript
 
-### Authentication & Authorization
-- ✅ JWT-based authentication system
-- ✅ Role-based access control (RBAC)
-- ✅ API key management and rotation
-- ✅ Session management and timeout controls
+### Authentication & Authorization - Progressive Security
+- 🚀 **Quick Start**: Disabled by default for easy initial setup
+- 🔑 **Simple Mode**: API key authentication for basic security  
+- 🏢 **Enterprise Mode**: Full OAuth 2.1 + JWT for production
+- ✅ Role-based access control (RBAC) in OAuth mode
+- ✅ Progressive upgrade path from no-auth → API key → OAuth
 
 ### Security Monitoring
 - ✅ Real-time security event logging
@@ -572,39 +573,46 @@ This MCP server implements enterprise-grade security measures:
 - ✅ GDPR data protection compliance
 - ✅ Industry-standard security controls
 
-## Security Configuration
+## Security Configuration - Choose Your Level
 
-### Hardcoded Passwords and Secrets
+### 🚀 Quick Start (Default) - No Authentication Required
 
-⚠️ **IMPORTANT**: This server requires proper configuration of secrets and authentication credentials before deployment.
+Perfect for development, testing, and getting started quickly:
 
-#### Default Configuration Files
-
-The server includes the following template files that contain placeholder values that **MUST** be changed:
-
-1. **`.env.template`** - Contains all environment variable templates
-2. **`docker-compose.yml`** - References external secrets directory
-
-#### Required Secret Configuration
-
-**Before deploying this server, you MUST configure the following:**
-
-##### 1. Authentication Secrets (`.env` file)
 ```bash
-# Copy template and configure
-cp .env.template .env
+# No configuration needed! Just run:
+npm start
 
-# Edit .env and set these REQUIRED values:
-SESSION_SECRET=your-unique-session-secret-minimum-32-chars
-HMAC_SECRET=your-unique-hmac-secret-for-data-integrity
-ENCRYPTION_KEY=your-encryption-key-for-data-at-rest
-DATABASE_PASSWORD=your-database-password-if-using-external-db
-EXTERNAL_API_KEY=your-external-service-api-keys
+# The server starts in disabled authentication mode by default
+# All MCP tools are accessible without authentication
 ```
 
-##### 2. OAuth 2.1 Authentication
+### 🔑 Simple Security - API Key Authentication
+
+Easy upgrade when you need basic security:
+
 ```bash
-# Configure OAuth providers in .env:
+# Copy template and set simple auth mode
+cp .env.template .env
+
+# Edit .env and set:
+AUTH_MODE=simple
+API_KEY=your-secret-api-key-here
+```
+
+Usage with API key:
+```bash
+curl -H "Authorization: Bearer your-secret-api-key-here" \
+     http://localhost:8080/mcp/tools
+```
+
+### 🏢 Enterprise Security - Full OAuth 2.1 + JWT
+
+Production-grade security with your identity provider:
+
+```bash
+# Configure OAuth in .env:
+AUTH_MODE=oauth
 JWKS_URL=https://your-identity-provider.com/.well-known/jwks.json
 TOKEN_ISSUER=https://your-identity-provider.com
 MCP_AUDIENCE=your-mcp-server-audience

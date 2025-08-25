@@ -68,7 +68,10 @@ import { generateTestScenariosTool } from './tools/generate_test_scenarios.js';
 const PORT = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 8080;
 const HOST = process.env.SERVER_HOST || '0.0.0.0';
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const ENABLE_AUTH = process.env.ENABLE_AUTH !== 'false';
+// Authentication is now controlled by the AuthMiddleware mode detection
+// For backwards compatibility, ENABLE_AUTH=false still works
+const LEGACY_ENABLE_AUTH = process.env.ENABLE_AUTH !== 'false';
+const ENABLE_AUTH = LEGACY_ENABLE_AUTH && authMiddleware.isAuthEnabled();
 const ENABLE_RATE_LIMITING = process.env.ENABLE_RATE_LIMITING !== 'false';
 const ENABLE_SECURITY_HEADERS = process.env.ENABLE_SECURITY_HEADERS !== 'false';
 const ENABLE_CORS = process.env.ENABLE_CORS === 'true';
@@ -509,7 +512,7 @@ async function main() {
   const server = app.listen(PORT, HOST, () => {
     logger.info(`Server running on http://${HOST}:${PORT}`);
     logger.info(`Environment: ${NODE_ENV}`);
-    logger.info(`Authentication: ${ENABLE_AUTH ? 'enabled' : 'disabled'}`);
+    logger.info(`Authentication: ${ENABLE_AUTH ? `enabled (${authMiddleware.getAuthMode()})` : 'disabled'}`);
     logger.info(`Rate limiting: ${ENABLE_RATE_LIMITING ? 'enabled' : 'disabled'}`);
     logger.info(`Security headers: ${ENABLE_SECURITY_HEADERS ? 'enabled' : 'disabled'}`);
     logger.info(`CORS: ${ENABLE_CORS ? 'enabled' : 'disabled'}`);
