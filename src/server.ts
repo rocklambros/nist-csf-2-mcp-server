@@ -54,8 +54,6 @@ import { createImplementationPlan } from './tools/create_implementation_plan.js'
 import { estimateImplementationCost } from './tools/estimate_implementation_cost.js';
 import { suggestNextActions } from './tools/suggest_next_actions.js';
 import { trackProgressTool } from './tools/track_progress.js';
-import { checkComplianceDriftTool } from './tools/check_compliance_drift.js';
-import { mapComplianceTool } from './tools/map_compliance.js';
 import { getIndustryBenchmarksTool } from './tools/get_industry_benchmarks.js';
 import { generateReportTool } from './tools/generate_report.js';
 import { compareProfilesTool } from './tools/compare_profiles.js';
@@ -195,21 +193,8 @@ function registerTools() {
     rateLimit: { requests: 50, window: 60 }
   });
   
-  TOOL_REGISTRY.set('check_compliance_drift', {
-    handler: async (args, db) => checkComplianceDriftTool.execute(args, db),
-    requiresAuth: true,
-    requiredScope: 'compliance:read',
-    rateLimit: { requests: 30, window: 60 }
-  });
   
   // Compliance tools
-  TOOL_REGISTRY.set('map_compliance', {
-    handler: async (args, db) => mapComplianceTool.execute(args, db),
-    requiresAuth: true,
-    requiredScope: 'compliance:write',
-    rateLimit: { requests: 20, window: 60 }
-  });
-  
   TOOL_REGISTRY.set('get_industry_benchmarks', {
     handler: async (args, db) => getIndustryBenchmarksTool.execute(args, db),
     requiresAuth: true,

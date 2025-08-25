@@ -40,8 +40,6 @@ import { createImplementationPlan, CreateImplementationPlanSchema } from './tool
 import { estimateImplementationCost, EstimateImplementationCostSchema } from './tools/estimate_implementation_cost.js';
 import { suggestNextActions, SuggestNextActionsSchema } from './tools/suggest_next_actions.js';
 import { trackProgressTool } from './tools/track_progress.js';
-import { checkComplianceDriftTool } from './tools/check_compliance_drift.js';
-import { mapComplianceTool } from './tools/map_compliance.js';
 import { getIndustryBenchmarksTool } from './tools/get_industry_benchmarks.js';
 import { generateReportTool } from './tools/generate_report.js';
 import { compareProfilesTool } from './tools/compare_profiles.js';
@@ -620,44 +618,6 @@ async function main() {
             }
           },
           required: ['profile_id', 'updates']
-        }
-      },
-      {
-        name: 'check_compliance_drift',
-        description: 'Analyze compliance drift by comparing current assessments with previous baselines',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            profile_id: { type: 'string', description: 'ID of the profile to check for compliance drift' }
-          },
-          required: ['profile_id']
-        }
-      },
-      {
-        name: 'map_compliance',
-        description: 'Map existing compliance framework controls to NIST CSF subcategories',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            profile_id: { type: 'string', description: 'ID of the profile to map compliance for' },
-            existing_controls: {
-              type: 'array',
-              description: 'Array of existing compliance controls to map',
-              items: {
-                type: 'object',
-                properties: {
-                  framework: {
-                    type: 'string',
-                    enum: ['ISO_27001', 'SOC_2', 'NIST_800-53', 'CIS', 'NIST_800-171', 'IEC_62443', 'PCI-DSS', 'HIPAA'],
-                    description: 'Compliance framework'
-                  },
-                  control_id: { type: 'string', description: 'Control ID within the framework' }
-                },
-                required: ['framework', 'control_id']
-              }
-            }
-          },
-          required: ['profile_id', 'existing_controls']
         }
       },
       {
@@ -1369,32 +1329,6 @@ async function main() {
 
         case 'track_progress': {
           const result = await trackProgressTool.execute(args as any, db);
-          
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result, null, 2)
-              }
-            ]
-          };
-        }
-
-        case 'check_compliance_drift': {
-          const result = await checkComplianceDriftTool.execute(args as any, db);
-          
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result, null, 2)
-              }
-            ]
-          };
-        }
-
-        case 'map_compliance': {
-          const result = await mapComplianceTool.execute(args as any, db);
           
           return {
             content: [

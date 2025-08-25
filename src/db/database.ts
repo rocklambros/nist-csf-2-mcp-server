@@ -277,25 +277,6 @@ export class CSFDatabase {
         UNIQUE(profile_id, subcategory_id)
       );
 
-      -- Compliance Drift History table
-      CREATE TABLE IF NOT EXISTS compliance_drift_history (
-        id TEXT PRIMARY KEY,
-        profile_id TEXT NOT NULL,
-        subcategory_id TEXT NOT NULL,
-        check_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        previous_implementation TEXT,
-        current_implementation TEXT,
-        drift_type TEXT,
-        drift_severity TEXT,
-        risk_impact INTEGER,
-        notification_sent BOOLEAN DEFAULT 0,
-        resolved BOOLEAN DEFAULT 0,
-        resolved_date TIMESTAMP,
-        resolution_notes TEXT,
-        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
-        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
-      );
-
       -- Progress Milestones table
       CREATE TABLE IF NOT EXISTS progress_milestones (
         id TEXT PRIMARY KEY,
@@ -330,49 +311,8 @@ export class CSFDatabase {
       CREATE INDEX IF NOT EXISTS idx_progress_profile ON progress_tracking(profile_id);
       CREATE INDEX IF NOT EXISTS idx_progress_subcategory ON progress_tracking(subcategory_id);
       CREATE INDEX IF NOT EXISTS idx_progress_status ON progress_tracking(status);
-      CREATE INDEX IF NOT EXISTS idx_drift_profile ON compliance_drift_history(profile_id);
-      CREATE INDEX IF NOT EXISTS idx_drift_date ON compliance_drift_history(check_date);
-      CREATE INDEX IF NOT EXISTS idx_drift_unresolved ON compliance_drift_history(resolved);
       CREATE INDEX IF NOT EXISTS idx_milestones_profile ON progress_milestones(profile_id);
       CREATE INDEX IF NOT EXISTS idx_milestones_status ON progress_milestones(status);
-
-      -- Compliance mapping tables
-      CREATE TABLE IF NOT EXISTS compliance_mappings (
-        id TEXT PRIMARY KEY,
-        profile_id TEXT NOT NULL,
-        framework TEXT NOT NULL,
-        framework_version TEXT,
-        control_id TEXT NOT NULL,
-        control_name TEXT,
-        control_description TEXT,
-        csf_subcategory_id TEXT NOT NULL,
-        mapping_type TEXT DEFAULT 'direct',
-        mapping_strength TEXT DEFAULT 'strong',
-        coverage_percentage INTEGER DEFAULT 100,
-        implementation_guidance TEXT,
-        notes TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
-        FOREIGN KEY (csf_subcategory_id) REFERENCES subcategories(id),
-        UNIQUE(profile_id, framework, control_id, csf_subcategory_id)
-      );
-
-      -- Framework crosswalk reference table
-      CREATE TABLE IF NOT EXISTS framework_crosswalk (
-        id TEXT PRIMARY KEY,
-        source_framework TEXT NOT NULL,
-        source_control_id TEXT NOT NULL,
-        source_control_name TEXT,
-        target_framework TEXT NOT NULL,
-        target_control_id TEXT NOT NULL,
-        target_control_name TEXT,
-        mapping_type TEXT DEFAULT 'equivalent',
-        mapping_confidence INTEGER DEFAULT 80,
-        bidirectional BOOLEAN DEFAULT 1,
-        notes TEXT,
-        UNIQUE(source_framework, source_control_id, target_framework, target_control_id)
-      );
 
       -- Industry benchmark data
       CREATE TABLE IF NOT EXISTS industry_benchmarks (
@@ -393,30 +333,7 @@ export class CSFDatabase {
         UNIQUE(industry, organization_size, csf_function, metric_name, data_year)
       );
 
-      -- Compliance coverage analysis
-      CREATE TABLE IF NOT EXISTS compliance_coverage (
-        id TEXT PRIMARY KEY,
-        profile_id TEXT NOT NULL,
-        framework TEXT NOT NULL,
-        total_controls INTEGER,
-        mapped_controls INTEGER,
-        fully_covered INTEGER,
-        partially_covered INTEGER,
-        not_covered INTEGER,
-        coverage_percentage REAL,
-        gap_count INTEGER,
-        critical_gaps TEXT,
-        assessment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
-      );
-
-      CREATE INDEX IF NOT EXISTS idx_compliance_mappings_profile ON compliance_mappings(profile_id);
-      CREATE INDEX IF NOT EXISTS idx_compliance_mappings_framework ON compliance_mappings(framework);
-      CREATE INDEX IF NOT EXISTS idx_compliance_mappings_subcategory ON compliance_mappings(csf_subcategory_id);
-      CREATE INDEX IF NOT EXISTS idx_crosswalk_source ON framework_crosswalk(source_framework, source_control_id);
-      CREATE INDEX IF NOT EXISTS idx_crosswalk_target ON framework_crosswalk(target_framework, target_control_id);
       CREATE INDEX IF NOT EXISTS idx_benchmarks_industry ON industry_benchmarks(industry, organization_size);
-      CREATE INDEX IF NOT EXISTS idx_coverage_profile ON compliance_coverage(profile_id, framework);
 
       -- Audit Evidence Table for storing assessment evidence files
       CREATE TABLE IF NOT EXISTS audit_evidence (
@@ -1949,134 +1866,6 @@ export class CSFDatabase {
     
     return this.db.prepare(sql).get(profileId, profileId);
   }
-
-  recordComplianceDrift(drift: any): void {
-    const stmt = this.db.prepare(`
-      INSERT INTO compliance_drift_history (
-        id, profile_id, subcategory_id, check_date, previous_implementation,
-        current_implementation, drift_type, drift_severity, risk_impact,
-        notification_sent, resolved, resolution_notes
-      ) VALUES (?, ?, ?, datetime('now'), ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    
-    stmt.run(
-      drift.id,
-      drift.profile_id,
-      drift.subcategory_id,
-      drift.previous_implementation,
-      drift.current_implementation,
-      drift.drift_type,
-      drift.drift_severity,
-      drift.risk_impact,
-      drift.notification_sent ? 1 : 0,
-      drift.resolved ? 1 : 0,
-      drift.resolution_notes
-    );
-  }
-
-  getComplianceDrifts(profileId: string, unresolvedOnly: boolean = true): any[] {
-    let sql = `
-      SELECT 
-        cd.*,
-        s.name as subcategory_name,
-        s.description as subcategory_description,
-        SUBSTR(cd.subcategory_id, 1, 2) as function_id,
-        julianday('now') - julianday(cd.check_date) as days_since_detection
-      FROM compliance_drift_history cd
-      JOIN subcategories s ON cd.subcategory_id = s.id
-      WHERE cd.profile_id = ?
-    `;
-    
-    if (unresolvedOnly) {
-      sql += ' AND cd.resolved = 0';
-    }
-    
-    sql += ' ORDER BY cd.check_date DESC';
-    
-    return this.db.prepare(sql).all(profileId);
-  }
-
-  detectComplianceDrift(profileId: string): any[] {
-    const sql = `
-      WITH current_state AS (
-        SELECT 
-          a.subcategory_id,
-          a.implementation_level as current_implementation,
-          a.maturity_score as current_maturity,
-          a.assessed_at as last_assessment_date
-        FROM assessments a
-        WHERE a.profile_id = ?
-      ),
-      previous_state AS (
-        SELECT 
-          pt.subcategory_id,
-          pt.current_implementation as tracked_implementation,
-          pt.current_maturity as tracked_maturity,
-          pt.target_implementation,
-          pt.target_maturity,
-          pt.last_updated as last_tracking_date
-        FROM progress_tracking pt
-        WHERE pt.profile_id = ?
-      ),
-      drift_analysis AS (
-        SELECT 
-          COALESCE(c.subcategory_id, p.subcategory_id) as subcategory_id,
-          c.current_implementation,
-          c.current_maturity,
-          p.tracked_implementation,
-          p.tracked_maturity,
-          p.target_implementation,
-          p.target_maturity,
-          CASE 
-            WHEN c.current_implementation IS NULL THEN 'missing_assessment'
-            WHEN p.tracked_implementation IS NULL THEN 'untracked'
-            WHEN c.current_implementation != p.tracked_implementation THEN
-              CASE 
-                WHEN (c.current_implementation = 'not_implemented' AND p.tracked_implementation != 'not_implemented') OR
-                     (c.current_implementation = 'partially_implemented' AND p.tracked_implementation IN ('largely_implemented', 'fully_implemented')) OR
-                     (c.current_implementation = 'largely_implemented' AND p.tracked_implementation = 'fully_implemented')
-                THEN 'degradation'
-                WHEN (c.current_implementation = 'fully_implemented' AND p.tracked_implementation != 'fully_implemented') OR
-                     (c.current_implementation = 'largely_implemented' AND p.tracked_implementation IN ('not_implemented', 'partially_implemented')) OR
-                     (c.current_implementation = 'partially_implemented' AND p.tracked_implementation = 'not_implemented')
-                THEN 'improvement'
-                ELSE 'change'
-              END
-            WHEN c.current_maturity < p.tracked_maturity - 1 THEN 'maturity_degradation'
-            WHEN c.current_maturity > p.tracked_maturity + 1 THEN 'maturity_improvement'
-            ELSE 'stable'
-          END as drift_type,
-          CASE 
-            WHEN c.current_implementation = 'not_implemented' AND p.tracked_implementation IN ('largely_implemented', 'fully_implemented') THEN 'critical'
-            WHEN c.current_implementation = 'not_implemented' AND p.tracked_implementation = 'partially_implemented' THEN 'high'
-            WHEN c.current_implementation = 'partially_implemented' AND p.tracked_implementation IN ('largely_implemented', 'fully_implemented') THEN 'medium'
-            WHEN c.current_maturity < p.tracked_maturity - 1 THEN 'medium'
-            ELSE 'low'
-          END as drift_severity,
-          julianday('now') - julianday(COALESCE(c.last_assessment_date, p.last_tracking_date)) as days_since_check
-        FROM current_state c
-        FULL OUTER JOIN previous_state p ON c.subcategory_id = p.subcategory_id
-      )
-      SELECT 
-        d.*,
-        s.name as subcategory_name,
-        SUBSTR(d.subcategory_id, 1, 2) as function_id
-      FROM drift_analysis d
-      JOIN subcategories s ON d.subcategory_id = s.id
-      WHERE d.drift_type NOT IN ('stable', 'improvement', 'maturity_improvement')
-      ORDER BY 
-        CASE d.drift_severity 
-          WHEN 'critical' THEN 1
-          WHEN 'high' THEN 2
-          WHEN 'medium' THEN 3
-          ELSE 4
-        END,
-        d.subcategory_id
-    `;
-    
-    return this.db.prepare(sql).all(profileId, profileId);
-  }
-
   updateProgressTrend(profileId: string): void {
     const sql = `
       UPDATE progress_tracking
@@ -2187,160 +1976,6 @@ export class CSFDatabase {
   // ============================================================================
   // COMPLIANCE MAPPING METHODS
   // ============================================================================
-
-  upsertComplianceMapping(mapping: any): void {
-    const stmt = this.db.prepare(`
-      INSERT INTO compliance_mappings (
-        id, profile_id, framework, framework_version, control_id,
-        control_name, control_description, csf_subcategory_id,
-        mapping_type, mapping_strength, coverage_percentage,
-        implementation_guidance, notes, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
-      ON CONFLICT(profile_id, framework, control_id, csf_subcategory_id) DO UPDATE SET
-        framework_version = excluded.framework_version,
-        control_name = excluded.control_name,
-        control_description = excluded.control_description,
-        mapping_type = excluded.mapping_type,
-        mapping_strength = excluded.mapping_strength,
-        coverage_percentage = excluded.coverage_percentage,
-        implementation_guidance = excluded.implementation_guidance,
-        notes = excluded.notes,
-        updated_at = datetime('now')
-    `);
-    
-    stmt.run(
-      mapping.id || `${mapping.profile_id}_${mapping.framework}_${mapping.control_id}_${mapping.csf_subcategory_id}`,
-      mapping.profile_id,
-      mapping.framework,
-      mapping.framework_version,
-      mapping.control_id,
-      mapping.control_name,
-      mapping.control_description,
-      mapping.csf_subcategory_id,
-      mapping.mapping_type || 'direct',
-      mapping.mapping_strength || 'strong',
-      mapping.coverage_percentage ?? 100,
-      mapping.implementation_guidance,
-      mapping.notes
-    );
-  }
-
-  getComplianceMappings(profileId: string, framework?: string): any[] {
-    let sql = `
-      SELECT 
-        cm.*,
-        s.name as subcategory_name,
-        s.description as subcategory_description,
-        c.name as category_name,
-        f.name as function_name
-      FROM compliance_mappings cm
-      JOIN subcategories s ON cm.csf_subcategory_id = s.id
-      JOIN categories c ON SUBSTR(s.id, 1, 5) = c.id
-      JOIN functions f ON SUBSTR(s.id, 1, 2) = f.id
-      WHERE cm.profile_id = ?
-    `;
-    
-    const params: any[] = [profileId];
-    
-    if (framework) {
-      sql += ' AND cm.framework = ?';
-      params.push(framework);
-    }
-    
-    sql += ' ORDER BY cm.framework, cm.control_id';
-    
-    return this.db.prepare(sql).all(...params);
-  }
-
-  analyzeComplianceCoverage(profileId: string, framework: string): any {
-    const sql = `
-      WITH control_coverage AS (
-        SELECT 
-          cm.control_id,
-          cm.control_name,
-          cm.csf_subcategory_id,
-          cm.coverage_percentage,
-          cm.mapping_strength,
-          CASE 
-            WHEN cm.coverage_percentage >= 80 THEN 'fully_covered'
-            WHEN cm.coverage_percentage >= 40 THEN 'partially_covered'
-            ELSE 'not_covered'
-          END as coverage_status
-        FROM compliance_mappings cm
-        WHERE cm.profile_id = ? AND cm.framework = ?
-      ),
-      coverage_summary AS (
-        SELECT 
-          COUNT(DISTINCT control_id) as mapped_controls,
-          COUNT(DISTINCT CASE WHEN coverage_status = 'fully_covered' THEN control_id END) as fully_covered,
-          COUNT(DISTINCT CASE WHEN coverage_status = 'partially_covered' THEN control_id END) as partially_covered,
-          COUNT(DISTINCT CASE WHEN coverage_status = 'not_covered' THEN control_id END) as not_covered,
-          AVG(coverage_percentage) as avg_coverage
-        FROM control_coverage
-      ),
-      subcategory_gaps AS (
-        SELECT 
-          s.id as subcategory_id,
-          s.name as subcategory_name,
-          COALESCE(MAX(cc.coverage_percentage), 0) as max_coverage
-        FROM subcategories s
-        LEFT JOIN control_coverage cc ON s.id = cc.csf_subcategory_id
-        GROUP BY s.id, s.name
-        HAVING COALESCE(MAX(cc.coverage_percentage), 0) < 50
-      )
-      SELECT 
-        cs.*,
-        (SELECT json_group_array(json_object(
-          'subcategory_id', subcategory_id,
-          'subcategory_name', subcategory_name,
-          'coverage', max_coverage
-        )) FROM subcategory_gaps) as gap_subcategories
-      FROM coverage_summary cs
-    `;
-    
-    return this.db.prepare(sql).get(profileId, framework);
-  }
-
-  upsertFrameworkCrosswalk(crosswalk: any): void {
-    const stmt = this.db.prepare(`
-      INSERT INTO framework_crosswalk (
-        id, source_framework, source_control_id, source_control_name,
-        target_framework, target_control_id, target_control_name,
-        mapping_type, mapping_confidence, bidirectional, notes
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(source_framework, source_control_id, target_framework, target_control_id) DO UPDATE SET
-        source_control_name = excluded.source_control_name,
-        target_control_name = excluded.target_control_name,
-        mapping_type = excluded.mapping_type,
-        mapping_confidence = excluded.mapping_confidence,
-        bidirectional = excluded.bidirectional,
-        notes = excluded.notes
-    `);
-    
-    stmt.run(
-      crosswalk.id || `${crosswalk.source_framework}_${crosswalk.source_control_id}_${crosswalk.target_framework}_${crosswalk.target_control_id}`,
-      crosswalk.source_framework,
-      crosswalk.source_control_id,
-      crosswalk.source_control_name,
-      crosswalk.target_framework,
-      crosswalk.target_control_id,
-      crosswalk.target_control_name,
-      crosswalk.mapping_type || 'equivalent',
-      crosswalk.mapping_confidence ?? 80,
-      crosswalk.bidirectional ? 1 : 0,
-      crosswalk.notes
-    );
-  }
-
-  getFrameworkCrosswalk(sourceFramework: string, targetFramework: string): any[] {
-    return this.db.prepare(`
-      SELECT * FROM framework_crosswalk
-      WHERE (source_framework = ? AND target_framework = ?)
-         OR (bidirectional = 1 AND source_framework = ? AND target_framework = ?)
-      ORDER BY mapping_confidence DESC, source_control_id
-    `).all(sourceFramework, targetFramework, targetFramework, sourceFramework);
-  }
-
   // ============================================================================
   // INDUSTRY BENCHMARK METHODS
   // ============================================================================
@@ -2435,31 +2070,6 @@ export class CSFDatabase {
     
     return this.db.prepare(sql).all(profileId, industry, organizationSize, industry, organizationSize);
   }
-
-  recordComplianceCoverage(coverage: any): void {
-    const stmt = this.db.prepare(`
-      INSERT OR REPLACE INTO compliance_coverage (
-        id, profile_id, framework, total_controls, mapped_controls,
-        fully_covered, partially_covered, not_covered, coverage_percentage,
-        gap_count, critical_gaps, assessment_date
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
-    `);
-    
-    stmt.run(
-      coverage.id || `${coverage.profile_id}_${coverage.framework}_${Date.now()}`,
-      coverage.profile_id,
-      coverage.framework,
-      coverage.total_controls,
-      coverage.mapped_controls,
-      coverage.fully_covered,
-      coverage.partially_covered,
-      coverage.not_covered,
-      coverage.coverage_percentage,
-      coverage.gap_count,
-      coverage.critical_gaps
-    );
-  }
-
   // ============================================================================
   // REPORTING METHODS
   // ============================================================================
@@ -2689,31 +2299,6 @@ export class CSFDatabase {
         WHERE profile_id = ?
         ORDER BY activity_date DESC
         LIMIT 100
-      ),
-      compliance_status AS (
-        SELECT 
-          framework,
-          coverage_percentage,
-          mapped_controls,
-          fully_covered,
-          partially_covered,
-          not_covered,
-          assessment_date
-        FROM compliance_coverage
-        WHERE profile_id = ?
-      ),
-      drift_events AS (
-        SELECT 
-          subcategory_id,
-          check_date,
-          drift_type,
-          drift_severity,
-          risk_impact,
-          resolved
-        FROM compliance_drift_history
-        WHERE profile_id = ?
-          AND check_date >= datetime('now', '-90 days')
-        ORDER BY check_date DESC
       )
       SELECT 
         (SELECT json_group_array(json_object(
@@ -2722,27 +2307,10 @@ export class CSFDatabase {
           'activity_date', activity_date,
           'performed_by', performed_by,
           'details', details
-        )) FROM audit_trail) as audit_log,
-        (SELECT json_group_array(json_object(
-          'framework', framework,
-          'coverage_percentage', coverage_percentage,
-          'mapped_controls', mapped_controls,
-          'fully_covered', fully_covered,
-          'partially_covered', partially_covered,
-          'not_covered', not_covered,
-          'assessment_date', assessment_date
-        )) FROM compliance_status) as compliance_summary,
-        (SELECT json_group_array(json_object(
-          'subcategory_id', subcategory_id,
-          'check_date', check_date,
-          'drift_type', drift_type,
-          'drift_severity', drift_severity,
-          'risk_impact', risk_impact,
-          'resolved', resolved
-        )) FROM drift_events) as drift_history
+        )) FROM audit_trail) as audit_log
     `;
     
-    return this.db.prepare(sql).get(profileId, profileId, profileId, profileId);
+    return this.db.prepare(sql).get(profileId, profileId);
   }
 
   compareProfiles(profileIds: string[]): any {
@@ -2839,16 +2407,6 @@ export class CSFDatabase {
           'notes', notes
         )) FROM progress_tracking WHERE profile_id = ?) as progress,
         
-        -- Compliance Mappings
-        (SELECT json_group_array(json_object(
-          'framework', framework,
-          'control_id', control_id,
-          'control_name', control_name,
-          'csf_subcategory_id', csf_subcategory_id,
-          'mapping_strength', mapping_strength,
-          'coverage_percentage', coverage_percentage
-        )) FROM compliance_mappings WHERE profile_id = ?) as compliance,
-        
         -- Milestones
         (SELECT json_group_array(json_object(
           'milestone_name', milestone_name,
@@ -2859,7 +2417,7 @@ export class CSFDatabase {
         )) FROM progress_milestones WHERE profile_id = ?) as milestones
     `;
     
-    return this.db.prepare(sql).get(profileId, profileId, profileId, profileId, profileId);
+    return this.db.prepare(sql).get(profileId, profileId, profileId, profileId);
   }
 
   // ============================================================================
