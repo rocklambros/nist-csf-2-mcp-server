@@ -175,6 +175,16 @@ export interface GapAnalysis {
 // MCP TOOL INTERFACES
 // ============================================================================
 
+export interface Tool {
+  name: string;
+  description: string;
+  inputSchema: {
+    type: 'object';
+    properties: Record<string, any>;
+    required: string[];
+  };
+}
+
 export interface ToolResponse<T = any> {
   success: boolean;
   data?: T;

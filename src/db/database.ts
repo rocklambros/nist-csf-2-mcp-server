@@ -476,6 +476,69 @@ export class CSFDatabase {
       CREATE INDEX IF NOT EXISTS idx_question_responses_question ON question_responses(question_id);
       CREATE INDEX IF NOT EXISTS idx_question_responses_subcategory ON question_responses(subcategory_id);
       CREATE INDEX IF NOT EXISTS idx_question_validation_question ON question_validation_rules(question_id);
+
+      -- Milestones table for project milestones
+      CREATE TABLE IF NOT EXISTS milestones (
+        milestone_id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        milestone_type TEXT NOT NULL CHECK (milestone_type IN ('assessment', 'implementation', 'review', 'audit', 'custom')),
+        title TEXT NOT NULL,
+        description TEXT,
+        target_date TEXT NOT NULL,
+        priority_level TEXT DEFAULT 'medium' CHECK (priority_level IN ('low', 'medium', 'high', 'critical')),
+        assigned_to TEXT,
+        status TEXT DEFAULT 'planned' CHECK (status IN ('planned', 'in_progress', 'completed', 'overdue')),
+        progress_percentage INTEGER DEFAULT 0 CHECK (progress_percentage >= 0 AND progress_percentage <= 100),
+        dependencies TEXT, -- JSON array
+        success_criteria TEXT, -- JSON array
+        estimated_effort_hours INTEGER,
+        budget_estimate REAL,
+        stakeholders TEXT, -- JSON array
+        deliverables TEXT, -- JSON array
+        subcategory_scope TEXT, -- JSON array
+        function_scope TEXT,
+        created_date TEXT NOT NULL,
+        last_updated TEXT NOT NULL,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
+      );
+
+      -- Audit Trail table for tracking all system activities
+      CREATE TABLE IF NOT EXISTS audit_trail (
+        audit_id TEXT PRIMARY KEY,
+        profile_id TEXT,
+        action TEXT NOT NULL,
+        resource_type TEXT NOT NULL CHECK (resource_type IN ('profile', 'assessment', 'evidence', 'report', 'user', 'system', 'test')),
+        resource_id TEXT,
+        performed_by TEXT NOT NULL,
+        ip_address TEXT,
+        user_agent TEXT,
+        session_id TEXT,
+        authentication_method TEXT,
+        before_state TEXT, -- JSON
+        after_state TEXT, -- JSON
+        modification_reason TEXT,
+        bulk_operation BOOLEAN DEFAULT 0,
+        affected_resources TEXT, -- JSON array
+        batch_size INTEGER,
+        details TEXT, -- JSON
+        timestamp TEXT NOT NULL,
+        success BOOLEAN DEFAULT 1,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
+      );
+
+      -- Organizations table (alias/view for organization_profiles for compatibility)
+      CREATE VIEW IF NOT EXISTS organizations AS 
+      SELECT org_id, org_name, industry, size, current_tier, target_tier, created_at, updated_at 
+      FROM organization_profiles;
+
+      -- Indexes for new tables
+      CREATE INDEX IF NOT EXISTS idx_milestones_profile ON milestones(profile_id);
+      CREATE INDEX IF NOT EXISTS idx_milestones_status ON milestones(status);
+      CREATE INDEX IF NOT EXISTS idx_milestones_target_date ON milestones(target_date);
+      CREATE INDEX IF NOT EXISTS idx_audit_trail_profile ON audit_trail(profile_id);
+      CREATE INDEX IF NOT EXISTS idx_audit_trail_timestamp ON audit_trail(timestamp);
+      CREATE INDEX IF NOT EXISTS idx_audit_trail_action ON audit_trail(action);
+      CREATE INDEX IF NOT EXISTS idx_audit_trail_resource ON audit_trail(resource_type, resource_id);
     `;
 
     this.db.exec(schema);

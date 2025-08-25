@@ -39,12 +39,16 @@ export async function createProfile(params: CreateProfileParams): Promise<Create
   const db = getDatabase();
   
   try {
+    // Validate and set defaults for parameters
+    const validatedParams = CreateProfileSchema.parse(params);
+    const profileType = validatedParams.profile_type || 'current';
+    
     // Generate unique IDs
-    const orgId = generateOrgId(params.org_name);
-    const profileId = generateProfileId(orgId, params.profile_type);
+    const orgId = generateOrgId(validatedParams.org_name);
+    const profileId = generateProfileId(orgId, profileType);
     
     // Profile name defaults to type-based name
-    const profileName = params.profile_name || `${params.org_name} - ${capitalize(params.profile_type)} Profile`;
+    const profileName = validatedParams.profile_name || `${validatedParams.org_name} - ${capitalize(profileType)} Profile`;
     
     // Use transaction to ensure atomicity
     const result = db.transaction(() => {
@@ -58,11 +62,11 @@ export async function createProfile(params: CreateProfileParams): Promise<Create
         // Create the organization
         db.createOrganization({
           org_id: orgId,
-          org_name: params.org_name,
-          industry: params.sector,
-          size: params.size,
-          current_tier: params.current_tier as any,
-          target_tier: params.target_tier as any
+          org_name: validatedParams.org_name,
+          industry: validatedParams.sector,
+          size: validatedParams.size,
+          current_tier: validatedParams.current_tier as any,
+          target_tier: validatedParams.target_tier as any
         });
         logger.info(`Created organization: ${orgId}`);
       }
@@ -72,14 +76,14 @@ export async function createProfile(params: CreateProfileParams): Promise<Create
         profile_id: profileId,
         org_id: orgId,
         profile_name: profileName,
-        profile_type: params.profile_type,
-        description: params.description || `${params.profile_type} security profile for ${params.org_name}`,
-        created_by: params.created_by
+        profile_type: profileType,
+        description: validatedParams.description || `${profileType} security profile for ${validatedParams.org_name}`,
+        created_by: validatedParams.created_by
       });
       logger.info(`Created profile: ${profileId}`);
       
       // Initialize default assessments based on profile type
-      if (params.profile_type === 'baseline') {
+      if (profileType === 'baseline') {
         initializeBaselineAssessments(db, profileId);
       }
       
@@ -97,7 +101,7 @@ export async function createProfile(params: CreateProfileParams): Promise<Create
       success: true,
       profile_id: result.profileId,
       org_id: result.orgId,
-      message: `Successfully created ${params.profile_type} profile for ${params.org_name}`,
+      message: `Successfully created ${profileType} profile for ${validatedParams.org_name}`,
       details: {
         organization,
         profile
@@ -211,6 +215,7 @@ function getImplementationLevel(score: number): string {
 /**
  * Capitalize first letter
  */
-function capitalize(str: string): string {
+function capitalize(str: string | undefined | null): string {
+  if (!str || typeof str !== 'string') return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
