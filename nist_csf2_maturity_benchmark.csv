@@ -1,0 +1,193 @@
+id,industry,organization_size,csf_function,percentile_25,percentile_50,percentile_75,percentile_90,average_score,sample_size,data_year,source
+1,Financial Services,Small (1-100),GV,2.0,2.6,3.3,3.5,2.6,180,2024,Synthetic Estimate Based on Industry Norms & Surveys
+2,Financial Services,Small (1-100),ID,2.1,2.7,3.3,3.5,2.7,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+3,Financial Services,Small (1-100),PR,2.3,2.9,3.4,3.7,2.9,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+4,Financial Services,Small (1-100),DE,2.2,2.8,3.4,3.7,2.8,230,2024,Synthetic Estimate Based on Industry Norms & Surveys
+5,Financial Services,Small (1-100),RS,2.4,3.0,3.6,4.1,3.0,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+6,Financial Services,Small (1-100),RC,2.3,3.0,3.6,3.9,3.0,110,2024,Synthetic Estimate Based on Industry Norms & Surveys
+7,Financial Services,Medium (101-1000),GV,2.4,3.0,3.5,3.9,3.0,220,2024,Synthetic Estimate Based on Industry Norms & Surveys
+8,Financial Services,Medium (101-1000),ID,2.5,3.2,3.8,4.2,3.2,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+9,Financial Services,Medium (101-1000),PR,2.6,3.3,3.8,4.2,3.3,170,2024,Synthetic Estimate Based on Industry Norms & Surveys
+10,Financial Services,Medium (101-1000),DE,2.5,3.1,3.6,4.2,3.1,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+11,Financial Services,Medium (101-1000),RS,3.0,3.5,4.0,4.3,3.5,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+12,Financial Services,Medium (101-1000),RC,2.7,3.4,4.1,4.4,3.4,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+13,Financial Services,Large (1001-5000),GV,3.0,3.5,4.2,4.6,3.5,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+14,Financial Services,Large (1001-5000),ID,3.0,3.6,4.1,4.4,3.6,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+15,Financial Services,Large (1001-5000),PR,3.4,3.9,4.5,4.7,3.9,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+16,Financial Services,Large (1001-5000),DE,3.0,3.7,4.3,4.5,3.7,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+17,Financial Services,Large (1001-5000),RS,3.3,4.0,4.6,4.8,4.0,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+18,Financial Services,Large (1001-5000),RC,3.4,4.0,4.7,4.9,4.0,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+19,Financial Services,Enterprise (5000+),GV,3.6,4.1,4.6,5.0,4.1,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+20,Financial Services,Enterprise (5000+),ID,3.2,3.8,4.4,4.8,3.8,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+21,Financial Services,Enterprise (5000+),PR,3.4,4.0,4.6,4.9,4.0,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+22,Financial Services,Enterprise (5000+),DE,3.1,3.8,4.3,4.6,3.8,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+23,Financial Services,Enterprise (5000+),RS,3.7,4.3,4.9,5.0,4.3,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+24,Financial Services,Enterprise (5000+),RC,3.5,4.2,4.7,5.0,4.2,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+25,Healthcare,Small (1-100),GV,1.5,2.1,2.6,2.9,2.1,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+26,Healthcare,Small (1-100),ID,1.4,2.0,2.5,2.9,2.0,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+27,Healthcare,Small (1-100),PR,1.6,2.2,2.8,3.0,2.2,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+28,Healthcare,Small (1-100),DE,1.1,1.8,2.4,2.6,1.8,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+29,Healthcare,Small (1-100),RS,1.8,2.4,3.0,3.4,2.4,110,2024,Synthetic Estimate Based on Industry Norms & Surveys
+30,Healthcare,Small (1-100),RC,1.9,2.4,3.0,3.3,2.4,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+31,Healthcare,Medium (101-1000),GV,1.8,2.4,3.0,3.3,2.4,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+32,Healthcare,Medium (101-1000),ID,1.7,2.3,2.9,3.3,2.3,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+33,Healthcare,Medium (101-1000),PR,2.3,2.8,3.4,3.6,2.8,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+34,Healthcare,Medium (101-1000),DE,2.0,2.5,3.1,3.4,2.5,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+35,Healthcare,Medium (101-1000),RS,2.1,2.7,3.3,3.7,2.7,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+36,Healthcare,Medium (101-1000),RC,2.1,2.6,3.1,3.7,2.6,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+37,Healthcare,Large (1001-5000),GV,2.1,2.8,3.4,3.8,2.8,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+38,Healthcare,Large (1001-5000),ID,2.3,2.9,3.5,3.9,2.9,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+39,Healthcare,Large (1001-5000),PR,2.5,3.0,3.7,4.0,3.0,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+40,Healthcare,Large (1001-5000),DE,2.3,2.9,3.6,4.0,2.9,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+41,Healthcare,Large (1001-5000),RS,2.8,3.4,3.9,4.4,3.4,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+42,Healthcare,Large (1001-5000),RC,2.6,3.2,3.8,4.2,3.2,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+43,Healthcare,Enterprise (5000+),GV,2.5,3.1,3.7,4.1,3.1,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+44,Healthcare,Enterprise (5000+),ID,2.7,3.3,4.0,4.2,3.3,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+45,Healthcare,Enterprise (5000+),PR,2.9,3.5,4.1,4.5,3.5,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+46,Healthcare,Enterprise (5000+),DE,2.7,3.3,3.9,4.2,3.3,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+47,Healthcare,Enterprise (5000+),RS,2.6,3.3,4.0,4.4,3.3,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+48,Healthcare,Enterprise (5000+),RC,2.9,3.5,4.1,4.6,3.5,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+49,Manufacturing,Small (1-100),GV,1.0,1.4,2.1,2.4,1.4,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+50,Manufacturing,Small (1-100),ID,1.0,1.5,2.1,2.6,1.5,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+51,Manufacturing,Small (1-100),PR,1.1,1.7,2.4,2.6,1.7,230,2024,Synthetic Estimate Based on Industry Norms & Surveys
+52,Manufacturing,Small (1-100),DE,1.0,1.5,2.1,2.4,1.5,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+53,Manufacturing,Small (1-100),RS,1.3,1.8,2.4,2.6,1.8,220,2024,Synthetic Estimate Based on Industry Norms & Surveys
+54,Manufacturing,Small (1-100),RC,1.4,1.9,2.5,2.9,1.9,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+55,Manufacturing,Medium (101-1000),GV,1.2,1.8,2.5,2.7,1.8,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+56,Manufacturing,Medium (101-1000),ID,1.4,2.0,2.6,2.8,2.0,220,2024,Synthetic Estimate Based on Industry Norms & Surveys
+57,Manufacturing,Medium (101-1000),PR,1.6,2.1,2.8,3.1,2.1,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+58,Manufacturing,Medium (101-1000),DE,1.5,2.0,2.6,3.1,2.0,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+59,Manufacturing,Medium (101-1000),RS,2.0,2.5,3.2,3.4,2.5,230,2024,Synthetic Estimate Based on Industry Norms & Surveys
+60,Manufacturing,Medium (101-1000),RC,1.7,2.2,2.9,3.2,2.2,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+61,Manufacturing,Large (1001-5000),GV,1.7,2.3,2.8,3.3,2.3,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+62,Manufacturing,Large (1001-5000),ID,2.2,2.7,3.3,3.5,2.7,220,2024,Synthetic Estimate Based on Industry Norms & Surveys
+63,Manufacturing,Large (1001-5000),PR,2.2,2.7,3.3,3.6,2.7,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+64,Manufacturing,Large (1001-5000),DE,2.1,2.7,3.3,3.5,2.7,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+65,Manufacturing,Large (1001-5000),RS,2.3,2.8,3.5,3.7,2.8,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+66,Manufacturing,Large (1001-5000),RC,2.2,2.9,3.5,3.9,2.9,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+67,Manufacturing,Enterprise (5000+),GV,2.0,2.7,3.3,3.6,2.7,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+68,Manufacturing,Enterprise (5000+),ID,2.2,2.8,3.4,3.8,2.8,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+69,Manufacturing,Enterprise (5000+),PR,2.5,3.1,3.6,3.9,3.1,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+70,Manufacturing,Enterprise (5000+),DE,2.4,2.9,3.4,3.9,2.9,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+71,Manufacturing,Enterprise (5000+),RS,2.3,3.0,3.6,3.9,3.0,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+72,Manufacturing,Enterprise (5000+),RC,2.7,3.3,3.9,4.2,3.3,110,2024,Synthetic Estimate Based on Industry Norms & Surveys
+73,Retail,Small (1-100),GV,1.5,2.1,2.7,3.1,2.1,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+74,Retail,Small (1-100),ID,1.5,2.2,2.8,3.1,2.2,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+75,Retail,Small (1-100),PR,1.9,2.5,3.1,3.5,2.5,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+76,Retail,Small (1-100),DE,1.7,2.2,2.9,3.2,2.2,230,2024,Synthetic Estimate Based on Industry Norms & Surveys
+77,Retail,Small (1-100),RS,1.8,2.3,2.9,3.4,2.3,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+78,Retail,Small (1-100),RC,1.8,2.4,3.1,3.4,2.4,220,2024,Synthetic Estimate Based on Industry Norms & Surveys
+79,Retail,Medium (101-1000),GV,2.1,2.6,3.3,3.6,2.6,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+80,Retail,Medium (101-1000),ID,2.3,2.8,3.4,3.6,2.8,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+81,Retail,Medium (101-1000),PR,2.2,2.8,3.5,3.8,2.8,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+82,Retail,Medium (101-1000),DE,2.1,2.8,3.4,3.7,2.8,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+83,Retail,Medium (101-1000),RS,2.3,2.9,3.6,3.8,2.9,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+84,Retail,Medium (101-1000),RC,2.2,2.9,3.5,4.0,2.9,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+85,Retail,Large (1001-5000),GV,2.4,2.9,3.6,3.9,2.9,170,2024,Synthetic Estimate Based on Industry Norms & Surveys
+86,Retail,Large (1001-5000),ID,2.6,3.2,3.8,4.2,3.2,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+87,Retail,Large (1001-5000),PR,2.8,3.4,4.1,4.5,3.4,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+88,Retail,Large (1001-5000),DE,2.3,2.9,3.5,4.0,2.9,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+89,Retail,Large (1001-5000),RS,2.8,3.4,4.1,4.5,3.4,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+90,Retail,Large (1001-5000),RC,2.8,3.3,4.0,4.3,3.3,180,2024,Synthetic Estimate Based on Industry Norms & Surveys
+91,Retail,Enterprise (5000+),GV,2.6,3.3,3.8,4.1,3.3,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+92,Retail,Enterprise (5000+),ID,2.8,3.4,4.0,4.4,3.4,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+93,Retail,Enterprise (5000+),PR,3.0,3.6,4.1,4.4,3.6,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+94,Retail,Enterprise (5000+),DE,2.9,3.5,4.1,4.3,3.5,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+95,Retail,Enterprise (5000+),RS,3.2,3.7,4.2,4.6,3.7,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+96,Retail,Enterprise (5000+),RC,2.9,3.5,4.1,4.6,3.5,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+97,Technology,Small (1-100),GV,1.9,2.6,3.2,3.4,2.6,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+98,Technology,Small (1-100),ID,2.3,3.0,3.6,4.1,3.0,180,2024,Synthetic Estimate Based on Industry Norms & Surveys
+99,Technology,Small (1-100),PR,2.1,2.8,3.5,3.9,2.8,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+100,Technology,Small (1-100),DE,2.4,2.9,3.5,3.7,2.9,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+101,Technology,Small (1-100),RS,2.5,3.1,3.8,4.1,3.1,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+102,Technology,Small (1-100),RC,2.6,3.3,3.9,4.2,3.3,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+103,Technology,Medium (101-1000),GV,2.3,3.0,3.6,3.9,3.0,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+104,Technology,Medium (101-1000),ID,2.7,3.3,3.9,4.2,3.3,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+105,Technology,Medium (101-1000),PR,2.9,3.5,4.1,4.6,3.5,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+106,Technology,Medium (101-1000),DE,2.7,3.2,3.7,4.2,3.2,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+107,Technology,Medium (101-1000),RS,2.9,3.4,3.9,4.3,3.4,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+108,Technology,Medium (101-1000),RC,2.9,3.6,4.2,4.4,3.6,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+109,Technology,Large (1001-5000),GV,3.0,3.6,4.2,4.6,3.6,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+110,Technology,Large (1001-5000),ID,2.8,3.5,4.0,4.6,3.5,170,2024,Synthetic Estimate Based on Industry Norms & Surveys
+111,Technology,Large (1001-5000),PR,3.3,3.9,4.5,4.9,3.9,180,2024,Synthetic Estimate Based on Industry Norms & Surveys
+112,Technology,Large (1001-5000),DE,3.1,3.7,4.2,4.5,3.7,180,2024,Synthetic Estimate Based on Industry Norms & Surveys
+113,Technology,Large (1001-5000),RS,3.5,4.0,4.6,5.0,4.0,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+114,Technology,Large (1001-5000),RC,3.3,3.9,4.6,4.9,3.9,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+115,Technology,Enterprise (5000+),GV,3.3,3.8,4.4,4.7,3.8,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+116,Technology,Enterprise (5000+),ID,3.3,3.9,4.4,4.8,3.9,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+117,Technology,Enterprise (5000+),PR,3.5,4.1,4.8,5.0,4.1,180,2024,Synthetic Estimate Based on Industry Norms & Surveys
+118,Technology,Enterprise (5000+),DE,3.3,4.0,4.5,4.9,4.0,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+119,Technology,Enterprise (5000+),RS,3.6,4.3,4.9,5.0,4.3,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+120,Technology,Enterprise (5000+),RC,3.6,4.2,4.8,5.0,4.2,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+121,Government,Small (1-100),GV,1.2,1.8,2.5,2.6,1.8,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+122,Government,Small (1-100),ID,1.2,1.8,2.4,2.7,1.8,120,2024,Synthetic Estimate Based on Industry Norms & Surveys
+123,Government,Small (1-100),PR,1.5,2.1,2.6,3.1,2.1,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+124,Government,Small (1-100),DE,1.2,1.8,2.4,2.7,1.8,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+125,Government,Small (1-100),RS,1.5,2.1,2.7,3.1,2.1,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+126,Government,Small (1-100),RC,1.6,2.2,2.8,3.1,2.2,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+127,Government,Medium (101-1000),GV,1.6,2.2,2.9,3.0,2.2,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+128,Government,Medium (101-1000),ID,1.6,2.1,2.7,3.2,2.1,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+129,Government,Medium (101-1000),PR,1.9,2.5,3.2,3.3,2.5,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+130,Government,Medium (101-1000),DE,1.6,2.2,2.9,3.0,2.2,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+131,Government,Medium (101-1000),RS,2.1,2.8,3.4,3.7,2.8,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+132,Government,Medium (101-1000),RC,1.9,2.6,3.1,3.5,2.6,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+133,Government,Large (1001-5000),GV,2.1,2.7,3.4,3.5,2.7,180,2024,Synthetic Estimate Based on Industry Norms & Surveys
+134,Government,Large (1001-5000),ID,2.3,3.0,3.5,3.9,3.0,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+135,Government,Large (1001-5000),PR,2.4,2.9,3.6,3.8,2.9,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+136,Government,Large (1001-5000),DE,2.2,2.8,3.3,3.6,2.8,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+137,Government,Large (1001-5000),RS,2.4,3.0,3.6,4.1,3.0,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+138,Government,Large (1001-5000),RC,2.8,3.3,4.0,4.4,3.3,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+139,Government,Enterprise (5000+),GV,2.4,3.0,3.6,4.1,3.0,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+140,Government,Enterprise (5000+),ID,2.6,3.3,3.9,4.1,3.3,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+141,Government,Enterprise (5000+),PR,2.4,3.1,3.7,4.1,3.1,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+142,Government,Enterprise (5000+),DE,2.5,3.1,3.8,4.1,3.1,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+143,Government,Enterprise (5000+),RS,2.9,3.4,4.1,4.3,3.4,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+144,Government,Enterprise (5000+),RC,3.1,3.6,4.1,4.5,3.6,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+145,Utilities,Small (1-100),GV,1.7,2.3,2.8,3.4,2.3,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+146,Utilities,Small (1-100),ID,1.9,2.5,3.1,3.5,2.5,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+147,Utilities,Small (1-100),PR,2.0,2.7,3.2,3.5,2.7,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+148,Utilities,Small (1-100),DE,1.8,2.5,3.2,3.4,2.5,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+149,Utilities,Small (1-100),RS,1.9,2.5,3.1,3.4,2.5,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+150,Utilities,Small (1-100),RC,2.2,2.8,3.3,3.8,2.8,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+151,Utilities,Medium (101-1000),GV,2.1,2.7,3.3,3.7,2.7,180,2024,Synthetic Estimate Based on Industry Norms & Surveys
+152,Utilities,Medium (101-1000),ID,2.1,2.8,3.4,3.7,2.8,220,2024,Synthetic Estimate Based on Industry Norms & Surveys
+153,Utilities,Medium (101-1000),PR,2.4,3.1,3.6,3.9,3.1,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+154,Utilities,Medium (101-1000),DE,2.1,2.6,3.3,3.7,2.6,110,2024,Synthetic Estimate Based on Industry Norms & Surveys
+155,Utilities,Medium (101-1000),RS,2.5,3.0,3.6,3.9,3.0,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+156,Utilities,Medium (101-1000),RC,2.5,3.2,3.8,4.1,3.2,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+157,Utilities,Large (1001-5000),GV,2.7,3.2,3.8,4.1,3.2,220,2024,Synthetic Estimate Based on Industry Norms & Surveys
+158,Utilities,Large (1001-5000),ID,2.7,3.3,3.8,4.2,3.3,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+159,Utilities,Large (1001-5000),PR,2.8,3.5,4.2,4.4,3.5,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+160,Utilities,Large (1001-5000),DE,2.5,3.2,3.8,4.0,3.2,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+161,Utilities,Large (1001-5000),RS,3.1,3.7,4.2,4.6,3.7,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+162,Utilities,Large (1001-5000),RC,3.0,3.5,4.2,4.4,3.5,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+163,Utilities,Enterprise (5000+),GV,3.2,3.8,4.4,4.6,3.8,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+164,Utilities,Enterprise (5000+),ID,3.1,3.6,4.2,4.6,3.6,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+165,Utilities,Enterprise (5000+),PR,3.2,3.8,4.4,4.7,3.8,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+166,Utilities,Enterprise (5000+),DE,3.1,3.8,4.3,4.7,3.8,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+167,Utilities,Enterprise (5000+),RS,3.1,3.8,4.4,4.9,3.8,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+168,Utilities,Enterprise (5000+),RC,3.4,4.0,4.5,4.9,4.0,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+169,Oil & Gas,Small (1-100),GV,1.6,2.1,2.7,3.0,2.1,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+170,Oil & Gas,Small (1-100),ID,1.5,2.2,2.9,3.2,2.2,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+171,Oil & Gas,Small (1-100),PR,1.7,2.4,2.9,3.3,2.4,230,2024,Synthetic Estimate Based on Industry Norms & Surveys
+172,Oil & Gas,Small (1-100),DE,1.8,2.3,2.9,3.3,2.3,230,2024,Synthetic Estimate Based on Industry Norms & Surveys
+173,Oil & Gas,Small (1-100),RS,1.9,2.5,3.2,3.6,2.5,180,2024,Synthetic Estimate Based on Industry Norms & Surveys
+174,Oil & Gas,Small (1-100),RC,1.8,2.4,3.0,3.4,2.4,190,2024,Synthetic Estimate Based on Industry Norms & Surveys
+175,Oil & Gas,Medium (101-1000),GV,1.8,2.5,3.0,3.5,2.5,100,2024,Synthetic Estimate Based on Industry Norms & Surveys
+176,Oil & Gas,Medium (101-1000),ID,2.0,2.7,3.4,3.5,2.7,170,2024,Synthetic Estimate Based on Industry Norms & Surveys
+177,Oil & Gas,Medium (101-1000),PR,2.2,2.8,3.4,3.8,2.8,240,2024,Synthetic Estimate Based on Industry Norms & Surveys
+178,Oil & Gas,Medium (101-1000),DE,2.1,2.6,3.2,3.6,2.6,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+179,Oil & Gas,Medium (101-1000),RS,2.4,3.0,3.5,4.0,3.0,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+180,Oil & Gas,Medium (101-1000),RC,2.2,2.8,3.3,3.9,2.8,170,2024,Synthetic Estimate Based on Industry Norms & Surveys
+181,Oil & Gas,Large (1001-5000),GV,2.2,2.8,3.5,3.9,2.8,170,2024,Synthetic Estimate Based on Industry Norms & Surveys
+182,Oil & Gas,Large (1001-5000),ID,2.6,3.2,3.7,4.0,3.2,150,2024,Synthetic Estimate Based on Industry Norms & Surveys
+183,Oil & Gas,Large (1001-5000),PR,2.8,3.4,4.0,4.4,3.4,210,2024,Synthetic Estimate Based on Industry Norms & Surveys
+184,Oil & Gas,Large (1001-5000),DE,2.5,3.0,3.5,4.0,3.0,110,2024,Synthetic Estimate Based on Industry Norms & Surveys
+185,Oil & Gas,Large (1001-5000),RS,2.7,3.4,4.0,4.4,3.4,90,2024,Synthetic Estimate Based on Industry Norms & Surveys
+186,Oil & Gas,Large (1001-5000),RC,2.9,3.5,4.2,4.4,3.5,80,2024,Synthetic Estimate Based on Industry Norms & Surveys
+187,Oil & Gas,Enterprise (5000+),GV,2.8,3.3,4.0,4.4,3.3,200,2024,Synthetic Estimate Based on Industry Norms & Surveys
+188,Oil & Gas,Enterprise (5000+),ID,2.7,3.2,3.9,4.2,3.2,160,2024,Synthetic Estimate Based on Industry Norms & Surveys
+189,Oil & Gas,Enterprise (5000+),PR,3.0,3.6,4.3,4.5,3.6,140,2024,Synthetic Estimate Based on Industry Norms & Surveys
+190,Oil & Gas,Enterprise (5000+),DE,2.9,3.4,3.9,4.2,3.4,130,2024,Synthetic Estimate Based on Industry Norms & Surveys
+191,Oil & Gas,Enterprise (5000+),RS,3.0,3.5,4.2,4.4,3.5,170,2024,Synthetic Estimate Based on Industry Norms & Surveys
+192,Oil & Gas,Enterprise (5000+),RC,3.2,3.8,4.4,4.6,3.8,230,2024,Synthetic Estimate Based on Industry Norms & Surveys

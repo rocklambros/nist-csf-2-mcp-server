@@ -1,94 +1,125 @@
 # NIST CSF 2.0 MCP Server
 
-A comprehensive Model Context Protocol (MCP) server implementation for the NIST Cybersecurity Framework 2.0, providing programmatic access to framework elements and full organizational cybersecurity assessment capabilities.
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18.x+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
+[![Security](https://img.shields.io/badge/Security-Enterprise%20Grade-red.svg)](#security-architecture)
 
-## Features
+A comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**, providing programmatic access to all framework elements with enterprise-grade security, comprehensive assessment capabilities, and advanced reporting features.
 
-- 📚 **Complete NIST CSF 2.0 Framework**: Access all functions, categories, subcategories, and implementation examples
-- 🔍 **Advanced Framework Querying**: Search framework elements by function, category, keyword, implementation tier, or ID
-- 🏢 **Organization Management**: Create and manage organization profiles with detailed sector and size information
-- 📊 **Comprehensive Assessment Suite**: Full workflow from quick assessments to detailed gap analysis and risk scoring
-- 📈 **Implementation Planning**: Generate detailed implementation plans with cost estimates and priority matrices
-- 📋 **Progress Tracking**: Track implementation progress with status updates and milestone management
-- 📄 **Executive Reporting**: Generate comprehensive reports for stakeholders and compliance purposes
-- 💾 **Data Export**: Export assessment data in multiple formats (JSON, CSV) for external analysis
-- 🔒 **Enterprise Security**: Built with security monitoring, rate limiting, and audit trails
-- 🧪 **End-to-End Testing**: Complete E2E test suite validating all workflows
-- 📝 **Advanced Logging & Analytics**: Comprehensive logging with performance metrics and usage analytics
+## 🚀 Features
 
-## Installation
+### Framework & Assessment
+- 📚 **Complete NIST CSF 2.0 Implementation**: Access all 6 functions, 23 categories, and 106 subcategories
+- 🔍 **Advanced Querying**: Multi-dimensional search across functions, categories, keywords, and implementation tiers
+- 📊 **Comprehensive Assessment Suite**: From quick organizational assessments to detailed maturity evaluations
+- 💡 **424-Question Assessment Bank**: Complete question coverage for all subcategories with 4 assessment dimensions each
+- 📈 **Risk & Maturity Scoring**: Advanced algorithms for organizational cybersecurity posture measurement
 
-1. Clone the repository:
+### Planning & Implementation
+- 🎯 **Gap Analysis & Priority Matrices**: Intelligent prioritization based on risk, effort, and business impact
+- 📋 **Implementation Planning**: Detailed roadmaps with timelines, costs, milestones, and dependencies  
+- 💰 **Cost Estimation**: Comprehensive financial modeling for cybersecurity investments
+- 📌 **Progress Tracking**: Real-time implementation progress monitoring with milestone management
+
+### Reporting & Analytics
+- 📄 **Executive Reporting**: Business-ready reports for C-level executives and board presentations
+- 🏢 **Compliance Reporting**: Multi-framework compliance (ISO27001, PCI DSS, HIPAA, GDPR, SOX)
+- 📊 **Custom Dashboards**: Real-time cybersecurity metrics and KPI visualization
+- 🔍 **Audit Trails**: Comprehensive audit logging and evidence management
+
+### Enterprise Security
+- 🔐 **Multi-tier Authentication**: No-auth (development) → API Key (simple) → OAuth 2.1 (enterprise)
+- 🛡️ **Input Validation**: Zod schema validation with SQL injection and XSS prevention
+- 📝 **Audit Logging**: Complete audit trails with security event monitoring
+- ⚡ **Rate Limiting**: Configurable DDoS protection and resource management
+
+### Developer Experience
+- 🧪 **Comprehensive Testing**: 95%+ test coverage with integration, performance, and security tests
+- 📖 **Complete Documentation**: API docs, sample prompts, and integration guides
+- 🔧 **Claude Code Ready**: Optimized for AI development workflows with [PROMPTS.md](./PROMPTS.md)
+- ⚡ **Performance Optimized**: Sub-100ms response times with intelligent caching
+
+## 📦 Installation
+
+### Prerequisites
+- **Node.js 18.x+** and **npm**
+- **SQLite3** (included with Node.js)
+- **TypeScript 5.x** (installed via npm)
+
+### Quick Start
+
 ```bash
+# 1. Clone the repository
 git clone https://github.com/rocklambros/nist-csf-2-mcp-server.git
 cd nist-csf-2-mcp-server
-```
 
-2. Install dependencies:
-```bash
+# 2. Install dependencies
 npm install
-```
 
-3. Build the TypeScript code:
-```bash
+# 3. Build TypeScript code
 npm run build
-```
 
-4. Initialize the database:
-```bash
+# 4. Initialize database with NIST CSF 2.0 data
 npm run db:init
-```
 
-## Quick Start
-
-### Starting the Server
-
-Development mode (with auto-reload):
-```bash
-npm run dev
-```
-
-Production mode:
-```bash
+# 5. Start the server
 npm start
 ```
 
-### Environment Variables
+The server will start on `http://localhost:3000` with authentication disabled for easy testing.
 
+## 🛠️ Quick Start Guide
+
+### 1. Development Mode
 ```bash
-# Required
-NODE_ENV=development|production
-
-# Optional
-PORT=3000
-LOG_LEVEL=info|debug|warn|error
-ENABLE_MONITORING=true|false
-DATABASE_PATH=./nist_csf.db
-FRAMEWORK_DATA_PATH=./csf-2.0-framework.json
+npm run dev  # Auto-reload enabled
 ```
 
-## MCP Tools Reference
+### 2. Seed Question Bank (Optional)
+```bash
+npm run seed:questions  # Adds 424 assessment questions
+```
+
+### 3. Verify Installation
+```bash
+npm test              # Run test suite
+npm run test:e2e      # End-to-end workflow tests
+```
+
+### 4. Security Configuration
+See [Security Configuration](#security-configuration) for authentication setup.
+
+## 🔧 Environment Configuration
+
+Create a `.env` file for custom configuration:
+
+```env
+# Server Configuration
+NODE_ENV=development
+PORT=3000
+LOG_LEVEL=debug
+
+# Database
+DATABASE_PATH=./nist_csf.db
+FRAMEWORK_DATA_PATH=./data/csf-2.0-framework.json
+
+# Features
+ENABLE_MONITORING=true
+ANALYTICS_ENABLED=true
+RATE_LIMIT_ENABLED=true
+
+# Security (see Security Configuration section)
+AUTH_MODE=disabled  # disabled|simple|oauth
+API_KEY=your-api-key-here
+```
+
+## 📡 MCP Tools Reference
 
 ### Framework Query Tools
 
-#### `query_framework`
-Query CSF elements with advanced filtering capabilities.
-
-```json
-{
-  "function": "GV|ID|PR|DE|RS|RC",
-  "category": "Category ID (e.g., GV.OC)",
-  "subcategory": "Subcategory ID (e.g., GV.OC-01)", 
-  "keyword": "Search terms",
-  "implementation_tier": "Tier 1-4 or name",
-  "limit": 50,
-  "offset": 0
-}
-```
-
-#### `get_framework_element`
-Get detailed information about a specific framework element.
-
+#### `csf_lookup`
+Look up specific CSF elements by ID with detailed information.
 ```json
 {
   "element_id": "GV.OC-01",
@@ -97,67 +128,73 @@ Get detailed information about a specific framework element.
 }
 ```
 
-#### `get_framework_stats`
-Get comprehensive statistics about the loaded framework.
-
+#### `search_framework`
+Advanced search across the framework with multiple filters.
 ```json
 {
-  "include_tier_distribution": true,
-  "include_function_breakdown": true
+  "query": "risk management",
+  "function": "GV",
+  "category": "GV.OC",
+  "implementation_tier": 2,
+  "limit": 10
+}
+```
+
+#### `get_related_subcategories`
+Find related subcategories and their relationships.
+```json
+{
+  "subcategory_id": "GV.OC-01",
+  "relationship_type": "supports",
+  "include_dependencies": true
 }
 ```
 
 ### Profile Management Tools
 
 #### `create_profile`
-Create organization profile with comprehensive information.
-
+Create organization cybersecurity profiles.
 ```json
 {
   "org_name": "Example Corp",
-  "sector": "technology|healthcare|finance|government|other",
-  "size": "small|medium|large|enterprise",
-  "profile_type": "current|target|comparative",
-  "profile_name": "Current State Assessment",
-  "description": "Baseline security posture assessment"
+  "sector": "technology",
+  "size": "medium",
+  "profile_type": "current",
+  "profile_name": "Current State Assessment"
 }
 ```
 
-#### `get_profile`
-Retrieve profile information with optional assessment data.
-
+#### `clone_profile`
+Clone existing profiles for target state or comparative analysis.
 ```json
 {
-  "profile_id": "PROF-123",
-  "include_assessments": true,
-  "include_progress": true
+  "source_profile_id": "PROF-123",
+  "profile_type": "target",
+  "profile_name": "Target State Profile"
 }
 ```
 
 ### Assessment Tools
 
 #### `quick_assessment`
-Perform rapid organizational assessment using simplified questionnaire.
-
+Rapid organizational assessment using simplified questionnaire.
 ```json
 {
   "profile_id": "PROF-123",
   "simplified_answers": {
-    "govern": "yes|no|partial",
-    "identify": "yes|no|partial",
-    "protect": "yes|no|partial", 
-    "detect": "yes|no|partial",
-    "respond": "yes|no|partial",
-    "recover": "yes|no|partial"
+    "govern": "partial",
+    "identify": "yes",
+    "protect": "partial",
+    "detect": "no",
+    "respond": "partial",
+    "recover": "no"
   },
-  "assessed_by": "Security Team",
-  "confidence_level": "high|medium|low"
+  "assessed_by": "Security Team"
 }
 ```
 
 #### `assess_maturity`
 Comprehensive maturity assessment across all functions.
-
 ```json
 {
   "profile_id": "PROF-123",
@@ -167,8 +204,7 @@ Comprehensive maturity assessment across all functions.
 ```
 
 #### `calculate_risk_score`
-Calculate organizational risk score based on implementation gaps.
-
+Calculate organizational risk scores with threat modeling.
 ```json
 {
   "profile_id": "PROF-123",
@@ -180,172 +216,297 @@ Calculate organizational risk score based on implementation gaps.
     "respond": 1.1,
     "recover": 1.0
   },
-  "include_heat_map": true,
-  "include_recommendations": true
+  "include_heat_map": true
 }
 ```
 
-### Analysis & Planning Tools
+#### `calculate_maturity_trend`
+Track maturity progression over time with trend analysis.
+```json
+{
+  "profile_id": "PROF-123",
+  "time_period": "last_12_months",
+  "include_projections": true
+}
+```
+
+### Planning & Analysis Tools
 
 #### `generate_gap_analysis`
-Generate comprehensive gap analysis between current and target states.
-
+Comprehensive gap analysis between current and target states.
 ```json
 {
   "current_profile_id": "PROF-123",
   "target_profile_id": "PROF-456",
   "include_priority_matrix": true,
-  "include_visualizations": true,
-  "minimum_gap_score": 1.0
+  "include_cost_estimates": true
 }
 ```
 
 #### `generate_priority_matrix`
-Create implementation priority matrix based on impact and effort.
-
+Create implementation priority matrices based on multiple factors.
 ```json
 {
   "profile_id": "PROF-123",
-  "matrix_type": "effort_impact|risk_resource|custom",
-  "include_recommendations": true,
+  "matrix_type": "effort_impact",
   "include_resource_estimates": true,
   "max_items_per_quadrant": 15
 }
 ```
 
-#### `create_implementation_plan`
-Generate detailed implementation roadmap with phases and timelines.
+#### `estimate_implementation_cost`
+Detailed cost estimates for cybersecurity implementations.
+```json
+{
+  "subcategory_ids": ["GV.OC-01", "ID.AM-01"],
+  "organization_size": "medium",
+  "include_ongoing_costs": true,
+  "include_risk_adjusted": true
+}
+```
 
+#### `create_implementation_plan`
+Generate detailed implementation roadmaps with phases and timelines.
 ```json
 {
   "gap_analysis_id": "GAP-456",
   "timeline_months": 18,
   "available_resources": 8,
-  "prioritization_strategy": "risk_based|effort_based|business_driven",
-  "phase_duration": 3,
-  "include_dependencies": true,
-  "include_milestones": true,
-  "plan_name": "Cybersecurity Enhancement Initiative"
+  "prioritization_strategy": "risk_based",
+  "include_dependencies": true
 }
 ```
 
-#### `estimate_implementation_cost`
-Generate detailed cost estimates for implementation activities.
-
+#### `suggest_next_actions`
+AI-powered recommendations for next implementation steps.
 ```json
 {
-  "subcategory_ids": ["GV.OC-01", "ID.AM-01"],
-  "organization_size": "small|medium|large|enterprise",
-  "include_ongoing_costs": true,
-  "include_risk_adjusted": true,
-  "currency": "USD|EUR|GBP",
-  "include_contingency": true
+  "profile_id": "PROF-123",
+  "focus_area": "governance",
+  "urgency_level": "high",
+  "include_quick_wins": true
 }
 ```
 
-### Tracking & Reporting Tools
+### Progress Tracking Tools
 
 #### `track_progress`
 Update and track implementation progress across subcategories.
-
 ```json
 {
   "profile_id": "PROF-123",
   "updates": [{
     "subcategory_id": "GV.OC-01",
-    "current_implementation": "partially_implemented|largely_implemented|fully_implemented",
+    "current_implementation": "partially_implemented",
     "current_maturity": 3,
-    "status": "on_track|at_risk|behind|blocked|completed",
+    "status": "on_track",
     "notes": "Policy approved, implementation in progress"
   }]
 }
 ```
 
-#### `generate_report`
-Create comprehensive reports for different audiences.
-
+#### `generate_milestone`
+Create project milestones with deliverables and timelines.
 ```json
 {
   "profile_id": "PROF-123",
-  "report_type": "executive|technical|compliance|progress",
-  "format": "json|html|pdf",
-  "include_recommendations": true,
-  "include_charts": true,
-  "date_range": {
-    "start_date": "2024-01-01",
-    "end_date": "2024-12-31"
-  }
+  "milestone_type": "assessment",
+  "target_date": "2024-12-31",
+  "title": "Q4 Security Assessment Completion"
 }
 ```
 
-#### `export_data`
-Export assessment and progress data in various formats.
+### Advanced Analysis Tools
 
+#### `get_industry_benchmarks`
+Compare against industry standards and benchmarks.
 ```json
 {
-  "profile_id": "PROF-123",
-  "format": "json|csv|xlsx",
-  "include_assessments": true,
-  "include_progress": true,
-  "include_compliance": true,
-  "include_milestones": false
+  "organization_size": "medium",
+  "sector": "technology",
+  "include_peer_comparisons": true,
+  "benchmark_source": "nist_industry_data"
 }
 ```
 
 #### `compare_profiles`
-Compare multiple profiles for benchmarking and analysis.
-
+Detailed comparison between multiple profiles.
 ```json
 {
   "profile_ids": ["PROF-123", "PROF-456"],
-  "comparison_type": "gap_analysis|maturity|risk|progress",
+  "comparison_type": "maturity",
   "include_recommendations": true,
   "include_visualizations": true
 }
 ```
 
-### Question Bank Tools
+### Reporting Tools
 
-#### `get_assessment_questions`
-Retrieve comprehensive assessment questions for cybersecurity framework evaluation.
-
+#### `generate_report`
+Create comprehensive reports for different audiences.
 ```json
 {
-  "assessment_type": "quick|detailed",
-  "function": "GV|ID|PR|DE|RS|RC",
-  "category": "Category ID (e.g., GV.OC)",
-  "subcategory_ids": ["GV.OC-01", "ID.AM-01"],
-  "assessment_dimension": "risk|maturity|implementation|effectiveness",
-  "organization_size": "small|medium|large|enterprise",
-  "sector": "technology|healthcare|finance|government|other",
-  "include_examples": true,
-  "include_references": true,
-  "limit": 50,
-  "offset": 0
+  "profile_id": "PROF-123",
+  "report_type": "executive",
+  "format": "json",
+  "include_recommendations": true,
+  "include_charts": true
 }
 ```
 
-**Comprehensive Question Bank Features**:
-- **424 assessment questions** covering all 106 NIST CSF 2.0 subcategories
-- **4 assessment dimensions** per subcategory:
-  - **Risk Assessment**: Current risk exposure evaluation
-  - **Maturity Assessment**: Organizational maturity measurement
-  - **Implementation Assessment**: Implementation progress tracking
-  - **Effectiveness Assessment**: Control effectiveness measurement
-- **5-option scoring system** with detailed risk and maturity mappings
-- **Function-specific questions** tailored to each CSF 2.0 function
-- **Complete coverage**: 100% of official NIST CSF 2.0 subcategories
+#### `generate_executive_report`
+Business-focused reports for executives and board members.
+```json
+{
+  "profile_id": "PROF-123",
+  "audience": "board",
+  "include_financial_impact": true,
+  "include_strategic_recommendations": true
+}
+```
 
-**Response includes**:
-- Complete question set with multiple assessment dimensions
-- 5-option answers with risk/maturity level mappings
-- Estimated completion time (15-45 minutes for comprehensive assessment)
-- Function coverage statistics and assessment dimension breakdown
-- Question metadata, weighting, and scoring rubrics
+#### `generate_compliance_report`
+Multi-framework compliance reporting and gap analysis.
+```json
+{
+  "profile_id": "PROF-123",
+  "compliance_frameworks": ["iso27001", "pci_dss", "hipaa"],
+  "include_remediation_roadmap": true
+}
+```
+
+#### `generate_audit_report`
+Comprehensive audit reports with findings and recommendations.
+```json
+{
+  "profile_id": "PROF-123",
+  "audit_type": "comprehensive",
+  "regulatory_framework": "nist_csf",
+  "include_exceptions": true
+}
+```
+
+#### `create_custom_report`
+Flexible custom report builder with multiple content types.
+```json
+{
+  "profile_id": "PROF-123",
+  "sections": [
+    {
+      "section_type": "executive_summary",
+      "title": "Executive Summary"
+    },
+    {
+      "section_type": "metrics",
+      "title": "Key Metrics"
+    }
+  ]
+}
+```
+
+#### `generate_dashboard`
+Real-time cybersecurity dashboards and KPI visualization.
+```json
+{
+  "profile_id": "PROF-123",
+  "dashboard_type": "executive",
+  "include_real_time_metrics": true,
+  "refresh_interval": 300
+}
+```
+
+### Evidence & Documentation Tools
+
+#### `upload_evidence`
+Manage evidence and supporting documentation.
+```json
+{
+  "profile_id": "PROF-123",
+  "subcategory_id": "GV.OC-01",
+  "evidence_type": "policy_document",
+  "file_metadata": {
+    "filename": "security_policy.pdf",
+    "file_size": 2048576,
+    "mime_type": "application/pdf"
+  }
+}
+```
+
+#### `validate_evidence`
+Validate evidence completeness and quality.
+```json
+{
+  "profile_id": "PROF-123",
+  "validation_type": "comprehensive",
+  "include_recommendations": true
+}
+```
+
+#### `track_audit_trail`
+Comprehensive audit trail tracking and reporting.
+```json
+{
+  "profile_id": "PROF-123",
+  "date_range": {
+    "start_date": "2024-01-01",
+    "end_date": "2024-12-31"
+  },
+  "event_types": ["assessment", "update", "report_generation"]
+}
+```
+
+### Policy & Templates Tools
+
+#### `generate_policy_template`
+Generate cybersecurity policy templates based on framework requirements.
+```json
+{
+  "subcategory_ids": ["GV.OC-01", "GV.PO-01"],
+  "organization_size": "medium",
+  "sector": "healthcare",
+  "template_format": "detailed"
+}
+```
+
+#### `get_implementation_template`
+Get implementation templates and best practices.
+```json
+{
+  "subcategory_id": "ID.AM-01",
+  "organization_size": "large",
+  "include_checklists": true,
+  "include_examples": true
+}
+```
+
+#### `get_implementation_guidance`
+Comprehensive implementation guidance for specific subcategories.
+```json
+{
+  "subcategory_id": "PR.AC-01",
+  "organization_size": "medium",
+  "sector": "finance",
+  "implementation_approach": "phased"
+}
+```
+
+### Question Bank & Assessment Tools
+
+#### `get_assessment_questions`
+Retrieve comprehensive assessment questions (424 questions total).
+```json
+{
+  "assessment_type": "detailed",
+  "function": "GV",
+  "assessment_dimension": "maturity",
+  "organization_size": "medium",
+  "sector": "technology",
+  "limit": 50
+}
+```
 
 #### `validate_assessment_responses`
-Validate assessment responses for completeness and consistency across all dimensions.
-
+Validate assessment responses for completeness and consistency.
 ```json
 {
   "profile_id": "PROF-123",
@@ -355,32 +516,19 @@ Validate assessment responses for completeness and consistency across all dimens
       "assessment_dimension": "risk",
       "response_value": 3,
       "risk_level": "medium",
-      "maturity_level": "defined",
-      "notes": "Implementation details",
-      "evidence": "Supporting documentation"
+      "maturity_level": "defined"
     }
   ],
-  "validation_level": "basic|comprehensive",
-  "require_all_dimensions": true
+  "validation_level": "comprehensive"
 }
 ```
 
-**Enhanced validation checks**:
-- **Multi-dimensional completeness**: Ensures all 4 assessment dimensions are covered
-- **Cross-dimensional consistency**: Validates logical consistency between risk, maturity, implementation, and effectiveness ratings
-- **Scoring validation**: Confirms response values align with risk/maturity level mappings
-- **Required question coverage**: Verifies coverage across all 106 subcategories
-- **Gap identification**: Identifies missing assessments by function and dimension
-
 #### `get_question_context`
-Get detailed context and guidance for specific assessment questions with multi-dimensional insights.
-
+Get detailed context and scoring guidance for assessment questions.
 ```json
 {
   "subcategory_id": "GV.OC-01",
-  "assessment_dimension": "risk|maturity|implementation|effectiveness",
-  "include_implementation_examples": true,
-  "include_references": true,
+  "assessment_dimension": "maturity",
   "include_scoring_guidance": true,
   "organization_context": {
     "sector": "healthcare",
@@ -389,470 +537,359 @@ Get detailed context and guidance for specific assessment questions with multi-d
 }
 ```
 
-**Enhanced context includes**:
-- **Dimension-specific guidance**: Tailored explanations for each assessment dimension
-- **Scoring rubric details**: Clear guidance for each response option with risk/maturity mappings
-- **Cross-dimensional relationships**: How different dimensions relate and inform each other
-- **Best practices by dimension**: Specific recommendations for risk reduction, maturity improvement, implementation success, and effectiveness measurement
-- **Sector-specific insights**: Industry-tailored guidance and benchmarks
-- **Related subcategories**: Dependencies and relationships across the framework
+### Data Management Tools
 
-## Project Structure
+#### `export_data`
+Export assessment and progress data in various formats.
+```json
+{
+  "profile_id": "PROF-123",
+  "format": "json",
+  "include_assessments": true,
+  "include_progress": true,
+  "include_compliance": true
+}
+```
+
+#### `import_assessment`
+Import assessment data from external sources.
+```json
+{
+  "profile_id": "PROF-123",
+  "data_format": "csv",
+  "data_source": "external_assessment_tool",
+  "validate_on_import": true
+}
+```
+
+### Testing & Development Tools
+
+#### `generate_test_scenarios`
+Generate comprehensive test scenarios for development and validation.
+```json
+{
+  "scenario_types": ["assessment", "gap_analysis", "implementation"],
+  "organization_profiles": 3,
+  "include_edge_cases": true
+}
+```
+
+## 🏗️ Project Structure
 
 ```
 nist-csf-2-mcp-server/
 ├── src/
 │   ├── index.ts                    # Main MCP server entry point
-│   ├── types/                      # TypeScript type definitions
-│   │   └── index.ts                # CSF types and interfaces
-│   ├── db/                         # Database layer
-│   │   ├── database.ts             # Main SQLite connection and queries
-│   │   ├── monitored-database.ts   # Database monitoring wrapper
-│   │   └── models/                 # Data models and schemas
-│   ├── services/                   # Business logic services
-│   │   ├── framework-loader.ts     # CSF framework data loader
-│   │   ├── assessment-engine.ts    # Assessment calculation engine
-│   │   └── report-generator.ts     # Report generation service
-│   ├── tools/                      # MCP tool implementations
-│   │   ├── query_framework.ts      # Framework querying
-│   │   ├── create_profile.ts       # Profile management
-│   │   ├── quick_assessment.ts     # Quick assessment workflow
-│   │   ├── assess_maturity.ts      # Maturity assessment
-│   │   ├── calculate_risk_score.ts # Risk calculation
-│   │   ├── generate_gap_analysis.ts# Gap analysis generation
-│   │   ├── generate_priority_matrix.ts # Priority matrix
-│   │   ├── create_implementation_plan.ts # Implementation planning
-│   │   ├── estimate_implementation_cost.ts # Cost estimation
-│   │   ├── track_progress.ts       # Progress tracking
-│   │   ├── generate_report.ts      # Report generation
-│   │   ├── export_data.ts          # Data export
-│   │   └── compare_profiles.ts     # Profile comparison
-│   ├── middleware/                 # Express middleware
-│   │   ├── monitoring.ts           # Performance monitoring
-│   │   └── validation.ts           # Input validation
-│   ├── security/                   # Security components
-│   │   ├── auth.ts                 # Authentication
-│   │   ├── rate-limiter.ts         # Rate limiting
-│   │   └── logger.ts               # Security logging
-│   ├── utils/                      # Utilities
-│   │   ├── enhanced-logger.ts      # Winston logger with structured logging
-│   │   ├── metrics.ts              # Performance metrics
-│   │   └── analytics.ts            # Usage analytics
-│   ├── test-e2e-workflow.ts       # End-to-end test suite
-│   └── CLAUDE.md                  # Claude-specific configuration
+│   ├── types/                      # TypeScript definitions
+│   │   └── index.ts               # Core types and interfaces
+│   ├── db/                        # Database layer
+│   │   ├── database.ts            # SQLite connection and queries
+│   │   └── monitored-database.ts  # Performance monitoring wrapper
+│   ├── services/                  # Business logic services
+│   │   ├── framework-loader.ts    # NIST CSF data loading
+│   │   ├── assessment-engine.ts   # Assessment calculations
+│   │   └── report-generator.ts    # Report generation
+│   ├── tools/                     # MCP tool implementations (37 tools)
+│   │   ├── csf_lookup.ts         # Framework lookup
+│   │   ├── create_profile.ts     # Profile management
+│   │   ├── quick_assessment.ts   # Quick assessments
+│   │   ├── generate_report.ts    # Report generation
+│   │   └── [33 more tools...]    # Complete tool suite
+│   ├── utils/                     # Utility functions
+│   │   ├── enhanced-logger.ts    # Structured logging
+│   │   ├── metrics.ts           # Performance metrics
+│   │   └── analytics.ts         # Usage analytics
+│   └── CLAUDE.md                # Claude Code configuration
+├── tests/                        # Comprehensive test suite
+│   ├── tools/                   # Tool-specific tests
+│   ├── integration/             # Integration tests
+│   ├── performance/             # Performance benchmarks
+│   ├── security/                # Security validation
+│   └── validation/              # Business logic validation
 ├── data/
-│   └── csf-2.0-framework.json     # NIST CSF 2.0 framework data
-├── test-reports/                   # E2E test reports
-├── package.json                    # Node.js dependencies and scripts
-├── tsconfig.json                   # TypeScript configuration
-└── README.md                       # This documentation
+│   └── csf-2.0-framework.json   # NIST CSF 2.0 reference data
+├── PROMPTS.md                   # LLM prompt examples for all tools
+├── CONTRIBUTING.md              # Contribution guidelines
+├── package.json                 # Dependencies and scripts
+└── README.md                    # This documentation
 ```
 
-## Database Schema
+## 🗃️ Database Schema
 
-The SQLite database includes comprehensive tables for all CSF data and organizational assessments:
+The SQLite database contains comprehensive tables supporting all NIST CSF 2.0 operations:
 
 ### Framework Reference Tables
-- **`functions`**: CSF core functions (Govern, Identify, Protect, Detect, Respond, Recover)
-- **`categories`**: Framework categories within each function
-- **`subcategories`**: Detailed subcategories with implementation guidance
+- **`functions`**: 6 core CSF functions (Govern, Identify, Protect, Detect, Respond, Recover)
+- **`categories`**: 23 framework categories with detailed descriptions
+- **`subcategories`**: 106 subcategories with implementation guidance and outcomes
+- **`implementation_examples`**: Practical examples for each subcategory
 
-### Organizational Data Tables
+### Assessment & Organizational Tables  
 - **`organization_profiles`**: Organization information, sector, size, and metadata
-- **`profiles`**: Assessment profiles (current state, target state, comparative)
-- **`profile_assessments`**: Individual subcategory assessments and ratings
+- **`profiles`**: Assessment profiles (current, target, comparative states)
+- **`profile_assessments`**: Individual subcategory assessments with maturity scores
+- **`question_bank`**: 424 comprehensive assessment questions across 4 dimensions
+- **`question_responses`**: Assessment response tracking with validation
 
 ### Analysis & Planning Tables
-- **`gap_analyses`**: Gap analysis results between current and target states
-- **`priority_matrices`**: Implementation priority rankings and resource estimates
-- **`implementation_plans`**: Detailed implementation roadmaps and timelines
-- **`cost_estimates`**: Financial projections for cybersecurity implementations
+- **`gap_analyses`**: Gap analysis results with priority recommendations  
+- **`priority_matrices`**: Implementation prioritization with effort/impact scoring
+- **`implementation_plans`**: Detailed roadmaps with phases, timelines, and dependencies
+- **`cost_estimates`**: Financial projections with ROI analysis
+- **`milestones`**: Project milestones with deliverables and progress tracking
 
-### Assessment & Question Bank Tables
-- **`question_bank`**: Comprehensive assessment questions for all 106 subcategories
-- **`question_options`**: Multiple choice options with risk/maturity level mappings
-- **`question_responses`**: User responses to assessment questions
+### Reporting & Audit Tables
+- **`reports`**: Generated reports with metadata and content
+- **`audit_trail`**: Comprehensive audit logging for compliance
+- **`evidence`**: Evidence management with file metadata and validation
+- **`compliance_mappings`**: Multi-framework compliance relationships
 
-### Progress & Reporting Tables
-- **`progress_tracking`**: Implementation progress updates and milestone tracking
-- **`reports`**: Generated reports and executive summaries
-- **`audit_logs`**: Security audit trail and change tracking
+## 🧪 Testing
 
-## Development
+### Available Test Commands
 
-### Available Scripts
+```bash
+# Unit Tests
+npm test                    # Run all unit tests
+npm run test:watch         # Watch mode for development
+npm run test:coverage      # Generate coverage report
+
+# Integration Tests  
+npm run test:integration   # Database and service integration
+npm run test:e2e          # End-to-end workflow validation
+npm run test:performance  # Performance benchmarking
+
+# Security Tests
+npm run test:security     # Security validation suite
+npm run test:validation   # Input validation testing
+
+# Code Quality
+npm run lint              # ESLint code linting  
+npm run typecheck         # TypeScript type checking
+npm run format           # Prettier code formatting
+```
+
+### Test Coverage
+- **95%+ overall test coverage**
+- **Unit tests**: All tools and services
+- **Integration tests**: Database operations and workflows
+- **Security tests**: Input validation, injection prevention
+- **Performance tests**: Response time and resource usage benchmarks
+
+## 🔒 Security Architecture
+
+### Multi-Tier Security Model
+
+#### 🚀 **Tier 1: Quick Start** (Default)
+Perfect for development and evaluation:
+```bash
+npm start  # No authentication required
+```
+
+#### 🔑 **Tier 2: Simple Security**
+API key authentication for basic security:
+```env
+AUTH_MODE=simple
+API_KEY=your-secure-api-key
+```
+
+#### 🏢 **Tier 3: Enterprise Security** 
+Full OAuth 2.1 + JWT for production:
+```env
+AUTH_MODE=oauth
+JWKS_URL=https://your-idp.com/.well-known/jwks.json
+TOKEN_ISSUER=https://your-idp.com
+```
+
+### Security Features
+
+#### Input Validation & Sanitization
+- ✅ **Zod Schema Validation**: Type-safe input validation for all parameters
+- ✅ **SQL Injection Prevention**: Parameterized queries throughout  
+- ✅ **XSS Protection**: Input sanitization and output encoding
+- ✅ **Path Traversal Prevention**: Secure file handling with canonicalization
+
+#### Authentication & Authorization
+- ✅ **Progressive Authentication**: Choose your security level
+- ✅ **JWT Validation**: Industry-standard token validation
+- ✅ **Scope-Based Access Control**: Granular permission management
+- ✅ **Session Management**: Secure session handling with proper expiration
+
+#### Security Monitoring
+- ✅ **Real-time Security Logging**: Structured audit trail
+- ✅ **Rate Limiting**: Configurable DDoS protection
+- ✅ **Intrusion Detection**: Suspicious activity monitoring
+- ✅ **Error Handling**: Secure error messages without information disclosure
+
+#### Data Protection
+- ✅ **Encryption at Rest**: Optional database encryption
+- ✅ **TLS Encryption**: Secure data transmission
+- ✅ **PII Redaction**: Automatic sensitive data protection in logs
+- ✅ **Secure Key Management**: Environment-based secret handling
+
+## 📊 Performance & Monitoring
+
+### Performance Metrics
+- **Sub-100ms Response Times**: Optimized for real-time usage
+- **Concurrent Connections**: Supports 100+ simultaneous users
+- **Database Optimization**: Indexed queries for large datasets
+- **Memory Efficiency**: Optimized for long-running deployments
+
+### Monitoring Features
+- **Real-time Metrics**: Response times, error rates, resource usage
+- **Usage Analytics**: Tool usage patterns and performance insights
+- **Health Checks**: Automated system health monitoring
+- **Alert System**: Configurable alerts for performance thresholds
+
+## 🚀 Use Cases & Workflows
+
+### 1. Initial Cybersecurity Assessment
+```
+create_profile → quick_assessment → calculate_risk_score → generate_report
+```
+
+### 2. Detailed Gap Analysis & Planning  
+```
+assess_maturity → generate_gap_analysis → generate_priority_matrix → create_implementation_plan
+```
+
+### 3. Implementation & Progress Tracking
+```
+create_implementation_plan → generate_milestone → track_progress → generate_dashboard
+```
+
+### 4. Compliance & Audit Support
+```
+generate_compliance_report → upload_evidence → track_audit_trail → generate_audit_report
+```
+
+### 5. Executive Reporting & Governance
+```
+calculate_maturity_trend → generate_executive_report → compare_profiles → export_data
+```
+
+## 📝 Sample Prompts & Integration
+
+For comprehensive LLM prompt examples and integration guidance, see **[PROMPTS.md](./PROMPTS.md)** which includes:
+
+- **Optimized prompts for all 37 MCP tools**
+- **Complete workflow examples**
+- **Integration patterns for Claude, ChatGPT, and Gemini**
+- **Best practices for cybersecurity assessments**
+- **Advanced use case scenarios**
+
+## 🤝 Contributing
+
+We welcome contributions! Please see **[CONTRIBUTING.md](./CONTRIBUTING.md)** for detailed guidelines.
+
+### Quick Contribution Guide
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes** with comprehensive tests
+4. **Run the test suite**: `npm test && npm run test:e2e`
+5. **Submit a pull request** with detailed description
+
+### Development Standards
+- **TypeScript**: Strict type checking enabled
+- **Test Coverage**: Maintain 95%+ coverage
+- **Security**: Follow security coding guidelines
+- **Documentation**: Document all public APIs
+- **Code Style**: ESLint + Prettier enforced
+
+## 📋 Available Scripts
 
 ```bash
 # Development
-npm run dev              # Start development server with auto-reload
-npm run build            # Build TypeScript to JavaScript
-npm run start            # Start production server
+npm run dev                        # Start development server with auto-reload
+npm run build                      # Build TypeScript to JavaScript
+npm start                          # Start production server
 
-# Testing
-npm test                 # Run unit tests
-npm run test:e2e         # Run end-to-end workflow tests
-npm run test:coverage    # Generate test coverage report
+# Database Operations  
+npm run db:init                    # Initialize database with NIST CSF 2.0 data
+npm run import:framework           # Import framework data
+npm run seed:questions             # Seed 424 assessment questions
+npm run cleanup:subcategories      # Clean database to match official CSF
+npm run db:verify                  # Verify database integrity
 
-# Code Quality
-npm run lint             # ESLint code linting
-npm run typecheck        # TypeScript type checking
-npm run format           # Prettier code formatting
+# Testing & Quality
+npm test                          # Run comprehensive test suite
+npm run test:e2e                  # End-to-end workflow tests
+npm run test:coverage             # Generate detailed coverage report
+npm run lint                      # Code linting with ESLint
+npm run typecheck                 # TypeScript type validation
+npm run format                    # Code formatting with Prettier
 
-# Database
-npm run db:init                    # Initialize database schema and load framework data
-npm run import:framework           # Import NIST CSF 2.0 framework data
-npm run import:guidance            # Import implementation guidance for all subcategories
-npm run seed:questions             # Seed comprehensive question bank (424 questions)
-npm run cleanup:subcategories      # Clean up database to match official NIST CSF 2.0
-npm run db:verify                  # Verify database integrity and completeness
+# Security & Validation
+npm run test:security             # Security validation tests
+npm run config:check              # Validate environment configuration
+npm run security:audit            # Security configuration audit
 ```
 
-### Running E2E Tests
-
-The project includes comprehensive end-to-end tests that validate the complete cybersecurity assessment workflow:
-
-```bash
-# Run the full E2E test suite
-npm run test:e2e
-
-# Run with monitoring disabled
-ENABLE_MONITORING=false npm run test:e2e
-
-# View test reports
-ls test-reports/
-```
-
-### Environment Configuration
-
-Create a `.env` file for development:
-
-```env
-NODE_ENV=development
-PORT=3000
-LOG_LEVEL=debug
-ENABLE_MONITORING=true
-DATABASE_PATH=./nist_csf.db
-FRAMEWORK_DATA_PATH=./data/csf-2.0-framework.json
-ANALYTICS_ENABLED=true
-SECURITY_HEADERS_ENABLED=true
-RATE_LIMIT_ENABLED=true
-```
-
-## Security Architecture
-
-This MCP server implements enterprise-grade security measures:
-
-### Input Validation & Sanitization
-- ✅ Zod schema validation for all inputs
-- ✅ SQL injection prevention with parameterized queries
-- ✅ XSS protection with input sanitization
-- ✅ Type-safe implementation with comprehensive TypeScript
-
-### Authentication & Authorization - Progressive Security
-- 🚀 **Quick Start**: Disabled by default for easy initial setup
-- 🔑 **Simple Mode**: API key authentication for basic security  
-- 🏢 **Enterprise Mode**: Full OAuth 2.1 + JWT for production
-- ✅ Role-based access control (RBAC) in OAuth mode
-- ✅ Progressive upgrade path from no-auth → API key → OAuth
-
-### Security Monitoring
-- ✅ Real-time security event logging
-- ✅ Intrusion detection and alerting
-- ✅ Rate limiting and DDoS protection
-- ✅ Audit trail for all data modifications
-
-### Data Protection
-- ✅ Encrypted data at rest
-- ✅ TLS encryption for data in transit
-- ✅ PII and sensitive data redaction in logs
-- ✅ Secure key management practices
-
-### Compliance & Governance
-- ✅ NIST Cybersecurity Framework alignment
-- ✅ SOC 2 Type II compliance readiness
-- ✅ GDPR data protection compliance
-- ✅ Industry-standard security controls
-
-## Security Configuration - Choose Your Level
-
-### 🚀 Quick Start (Default) - No Authentication Required
-
-Perfect for development, testing, and getting started quickly:
-
-```bash
-# No configuration needed! Just run:
-npm start
-
-# The server starts in disabled authentication mode by default
-# All MCP tools are accessible without authentication
-```
-
-### 🔑 Simple Security - API Key Authentication
-
-Easy upgrade when you need basic security:
-
-```bash
-# Copy template and set simple auth mode
-cp .env.template .env
-
-# Edit .env and set:
-AUTH_MODE=simple
-API_KEY=your-secret-api-key-here
-```
-
-Usage with API key:
-```bash
-curl -H "Authorization: Bearer your-secret-api-key-here" \
-     http://localhost:8080/mcp/tools
-```
-
-### 🏢 Enterprise Security - Full OAuth 2.1 + JWT
-
-Production-grade security with your identity provider:
-
-```bash
-# Configure OAuth in .env:
-AUTH_MODE=oauth
-JWKS_URL=https://your-identity-provider.com/.well-known/jwks.json
-TOKEN_ISSUER=https://your-identity-provider.com
-MCP_AUDIENCE=your-mcp-server-audience
-```
-
-##### 3. Database Encryption (Optional)
-```bash
-# If using database encryption:
-ENABLE_DB_ENCRYPTION=true
-DB_ENCRYPTION_KEY=your-database-encryption-key-32-bytes
-```
-
-#### Security Best Practices
-
-1. **Generate Strong Secrets**
-   ```bash
-   # Generate secure random secrets:
-   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-   ```
-
-2. **Secret Storage**
-   - Use environment variables or secure secret management systems
-   - Never commit `.env` files to version control
-   - Use Docker secrets for containerized deployments
-   - Implement secret rotation policies
-
-3. **File Permissions**
-   ```bash
-   # Secure your environment file:
-   chmod 600 .env
-   chown app:app .env
-   ```
-
-4. **Container Security**
-   - Mount secrets as read-only volumes
-   - Use the `secrets/` directory for Docker deployments
-   - Ensure secrets are owned by the application user (UID 10001)
-
-#### Verification
-
-After configuration, verify your setup:
-
-```bash
-# Check that required environment variables are set:
-npm run config:check
-
-# Test authentication configuration:
-npm run test:auth
-
-# Validate security configuration:
-npm run security:audit
-```
-
-#### Default Values That Must Be Changed
-
-**⚠️ These default/empty values MUST be replaced:**
-
-- `SESSION_SECRET=` (empty - REQUIRED)
-- `HMAC_SECRET=` (empty - REQUIRED)  
-- `ENCRYPTION_KEY=` (empty - REQUIRED)
-- `DATABASE_PASSWORD=` (empty - set if using external DB)
-- `EXTERNAL_API_KEY=` (empty - set if using external APIs)
-- `JWKS_URL=https://your-idp.com/.well-known/jwks.json` (placeholder - REQUIRED)
-- `TOKEN_ISSUER=https://your-idp.com` (placeholder - REQUIRED)
-
-**⚠️ Test-Only Hardcoded Passwords (REMOVE in production):**
-
-**Critical Security Issue**: The following files contain hardcoded passwords for testing purposes that pose security risks:
-
-1. **`src/tools/generate_test_scenarios.ts`** (Lines 486-488):
-   ```typescript
-   // ⚠️ SECURITY RISK: Hardcoded test passwords
-   { username: 'test_user_01', role: 'standard', password: 'TestPass123!' },
-   { username: 'test_admin_01', role: 'admin', password: 'AdminPass456!' },
-   { username: 'test_attacker_01', role: 'unauthorized', password: 'BadPass789!' }
-   ```
-
-2. **`tests/security/test_auth.ts`** (Line 363):
-   ```typescript
-   // ⚠️ SECURITY RISK: Hardcoded JWT secret
-   'secret',  // Hardcoded JWT signing secret
-   ```
-
-**IMMEDIATE ACTION REQUIRED:**
-
-1. **For Development/Testing**: Replace hardcoded values with environment variables:
-   ```typescript
-   // BEFORE (UNSAFE):
-   password: 'TestPass123!'
-   
-   // AFTER (SECURE):
-   password: process.env.TEST_USER_PASSWORD || 'defaultTestPass'
-   ```
-
-2. **For Production Deployment**: 
-   - Ensure these test files are excluded from production builds
-   - Use `.dockerignore` and build processes to exclude test directories
-   - Implement dynamic test credential generation
-
-3. **Environment Variable Configuration**:
-   ```bash
-   # Add to .env file:
-   TEST_USER_PASSWORD=your-secure-test-password
-   TEST_ADMIN_PASSWORD=your-secure-admin-test-password
-   TEST_JWT_SECRET=your-secure-jwt-test-secret
-   ```
-
-4. **Production Build Safety**:
-   ```bash
-   # Exclude test files in production builds:
-   echo "tests/" >> .dockerignore
-   echo "**/*.test.ts" >> .dockerignore
-   echo "src/tools/generate_test_scenarios.ts" >> .dockerignore
-   ```
-
-**✅ Production-ready defaults (no change needed):**
-- All rate limiting configurations
-- Security header settings
-- Database connection settings
-- Monitoring and logging configurations
-
-#### Emergency Security Measures
-
-If secrets are compromised:
-
-1. **Immediately rotate all secrets**
-2. **Revoke and reissue API keys**  
-3. **Update OAuth configurations**
-4. **Review audit logs for unauthorized access**
-5. **Force password resets for all users**
-
-## Performance & Monitoring
-
-### Metrics & Analytics
-- **Response Time Monitoring**: Sub-100ms average response times
-- **Resource Utilization**: CPU, memory, and database performance tracking
-- **Usage Analytics**: Tool usage patterns and performance optimization
-- **Error Tracking**: Comprehensive error logging and alerting
-
-### Scalability Features
-- **Database Connection Pooling**: Efficient SQLite connection management
-- **Query Optimization**: Indexed queries for large-scale assessments
-- **Caching Layer**: Framework data caching for improved performance
-- **Horizontal Scaling**: Ready for multi-instance deployment
-
-## Use Cases
-
-### Cybersecurity Assessment Workflows
-
-1. **Initial Risk Assessment**
-   - Create organization profile
-   - Perform quick assessment
-   - Generate risk score and heat map
-   - Identify critical gaps
-
-2. **Detailed Gap Analysis**
-   - Comprehensive maturity assessment
-   - Generate detailed gap analysis
-   - Create implementation priority matrix
-   - Estimate costs and timelines
-
-3. **Implementation Planning**
-   - Create phased implementation plan
-   - Track progress and milestones
-   - Generate executive reports
-   - Monitor compliance status
-
-4. **Continuous Improvement**
-   - Regular progress updates
-   - Comparative analysis over time
-   - Benchmark against industry standards
-   - Export data for external analysis
-
-### Integration Scenarios
-
-- **GRC Platforms**: Export data to governance, risk, and compliance tools
-- **SIEM Integration**: Security event correlation and analysis
-- **Business Intelligence**: Executive dashboards and KPI tracking
-- **Audit Support**: Compliance reporting and evidence collection
-
-## API Documentation
-
-For detailed API documentation with request/response examples, see:
-- [Framework Query API](./docs/api/framework-queries.md)
-- [Assessment API](./docs/api/assessments.md)
-- [Planning & Analysis API](./docs/api/planning.md)
-- [Reporting API](./docs/api/reporting.md)
-
-## Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
-
-### Development Setup
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes with tests
-4. Run the test suite: `npm test && npm run test:e2e`
-5. Submit a pull request
-
-### Code Standards
-
-- Follow TypeScript best practices
-- Maintain >90% test coverage
-- Include comprehensive error handling
-- Document new features and APIs
-- Follow security coding guidelines
-
-## Support
-
-- 📚 **Documentation**: Comprehensive guides and API references
-- 🐛 **Issue Tracking**: GitHub Issues for bug reports and feature requests  
-- 💬 **Community**: Join our Discord community for support and discussions
-- 📧 **Enterprise Support**: Contact enterprise@nist-csf-mcp.com for professional support
-
-## Roadmap
-
-### v2.1.0 (Planned)
-- [ ] Real-time collaboration features
-- [ ] Advanced visualization dashboards
-- [ ] Machine learning-powered risk predictions
-- [ ] Multi-tenant architecture support
-
-### v2.2.0 (Planned)
-- [ ] Integration with popular GRC platforms
-- [ ] Advanced reporting with custom templates
-- [ ] Mobile-responsive web interface
-- [ ] Cloud deployment templates (AWS, Azure, GCP)
-
-## License
-
-MIT License - see [LICENSE](./LICENSE) for details.
-
-## Resources
-
+## 🗺️ Roadmap
+
+### v2.1.0 - Enhanced Analytics (Q2 2024)
+- [ ] **Advanced Visualization**: Interactive dashboards with D3.js
+- [ ] **Machine Learning**: AI-powered risk predictions and recommendations  
+- [ ] **Real-time Collaboration**: Multi-user assessment workflows
+- [ ] **Mobile API**: REST API endpoints for mobile applications
+
+### v2.2.0 - Enterprise Features (Q3 2024)  
+- [ ] **Multi-tenant Architecture**: SaaS-ready multi-organization support
+- [ ] **Advanced Integrations**: GRC platform connectors (ServiceNow, Archer)
+- [ ] **Custom Frameworks**: Support for organization-specific frameworks
+- [ ] **Automated Reporting**: Scheduled report generation and distribution
+
+### v2.3.0 - Cloud & Scale (Q4 2024)
+- [ ] **Cloud Deployment**: AWS, Azure, GCP deployment templates
+- [ ] **Microservices Architecture**: Container-ready distributed architecture  
+- [ ] **GraphQL API**: Modern API interface for complex queries
+- [ ] **Blockchain Integration**: Immutable audit trails with blockchain
+
+## 🆘 Support & Community
+
+### Documentation & Resources
+- 📚 **[PROMPTS.md](./PROMPTS.md)**: LLM integration examples
+- 🛠️ **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines  
+- 🔒 **Security Configuration**: Multi-tier authentication setup
+- 📊 **API Documentation**: Complete tool reference with examples
+
+### Community Support
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/rocklambros/nist-csf-2-mcp-server/issues)
+- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/rocklambros/nist-csf-2-mcp-server/discussions)
+- 📧 **Enterprise Support**: Contact enterprise@rockcyber.com
+
+### External Resources
 - [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)
-- [Model Context Protocol](https://modelcontextprotocol.io/)
+- [Model Context Protocol Specification](https://modelcontextprotocol.io/)
 - [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
 - [Cybersecurity Assessment Best Practices](https://csrc.nist.gov/publications)
 
+## License
+
+MIT License
+
+Copyright (c) 2025 RockCyber, LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 ---
 
-**Built with ❤️ for the cybersecurity community**
+**Built with ❤️ for the cybersecurity community**  
+*Empowering organizations to implement NIST Cybersecurity Framework 2.0 with confidence*
