@@ -3,7 +3,7 @@
  */
 
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
-import { testDb, testUtils, performanceUtils } from '../setup.js';
+import { TestDatabase } from '../helpers/test-db.js';
 import { EnhancedMockDataGenerator } from '../helpers/enhanced-mock-data.js';
 
 // Import all MCP tools for benchmarking
@@ -18,7 +18,103 @@ import { generateAuditReport } from '../../src/tools/generate_audit_report.js';
 import { searchFramework } from '../../src/tools/search_framework.js';
 import { assessMaturity } from '../../src/tools/assess_maturity.js';
 
+// Local utility functions
+const performanceUtils = {
+  async measureTime<T>(fn: () => Promise<T>): Promise<{ result: T; duration: number }> {
+    const start = Date.now();
+    const result = await fn();
+    const duration = Date.now() - start;
+    return { result, duration };
+  },
+
+  async benchmark(name: string, fn: () => Promise<void>, iterations: number = 100): Promise<{
+    name: string;
+    iterations: number;
+    totalTime: number;
+    averageTime: number;
+    minTime: number;
+    maxTime: number;
+  }> {
+    const times: number[] = [];
+    
+    for (let i = 0; i < iterations; i++) {
+      const { duration } = await performanceUtils.measureTime(fn);
+      times.push(duration);
+    }
+
+    const totalTime = times.reduce((sum, time) => sum + time, 0);
+    const averageTime = totalTime / iterations;
+    const minTime = Math.min(...times);
+    const maxTime = Math.max(...times);
+
+    return {
+      name,
+      iterations,
+      totalTime,
+      averageTime,
+      minTime,
+      maxTime
+    };
+  }
+};
+
+const testUtils = {
+  async createTestProfile(overrides: any = {}): Promise<any> {
+    const orgId = `test-org-${Date.now()}`;
+    const profileId = `test-profile-${Date.now()}`;
+
+    // Create organization first
+    testDb.insertTestData('organization_profiles', {
+      org_id: orgId,
+      org_name: 'Test Organization',
+      industry: 'Technology',
+      size: 'medium',
+      current_tier: 'Tier1',
+      target_tier: 'Tier3'
+    });
+
+    // Create profile
+    const profileData = {
+      profile_id: profileId,
+      org_id: orgId,
+      profile_name: 'Test Profile',
+      profile_type: 'current',
+      description: 'Test profile for unit testing',
+      created_by: 'test-user',
+      is_active: true,
+      ...overrides
+    };
+
+    testDb.insertTestData('profiles', profileData);
+    return profileData;
+  },
+
+  async createTestAssessments(profileId: string, count: number = 5): Promise<any[]> {
+    const subcategories = ['GV.OC-01', 'GV.OC-02', 'ID.AM-01', 'PR.AC-01', 'DE.CM-01'];
+    const levels = ['not_implemented', 'partially_implemented', 'largely_implemented', 'fully_implemented'];
+    const assessments = [];
+
+    for (let i = 0; i < count; i++) {
+      const assessment = {
+        profile_id: profileId,
+        subcategory_id: subcategories[i % subcategories.length],
+        implementation_level: levels[i % levels.length],
+        maturity_score: (i % 4) + 1,
+        confidence_level: 'medium',
+        notes: `Test assessment ${i}`,
+        assessed_by: 'test-user'
+      };
+
+      testDb.insertTestData('assessments', assessment);
+      assessments.push(assessment);
+    }
+
+    return assessments;
+  }
+};
+
 describe('Performance Benchmarks', () => {
+  let testDb: TestDatabase;
   let testOrgId: string;
   let testProfileId: string;
   let targetProfileId: string;
@@ -33,28 +129,63 @@ describe('Performance Benchmarks', () => {
   };
 
   beforeAll(async () => {
-    // Setup test data for performance testing
-    const profile = await testUtils.createTestProfile({
-      profile_name: 'Performance Test Profile'
-    });
-    testOrgId = profile.org_id;
-    testProfileId = profile.profile_id;
+    // Initialize TestDatabase for performance testing
+    testDb = new TestDatabase('performance-test.db');
+    
+    // Setup test data for performance testing using direct database operations
+    testOrgId = `perf-org-${Date.now()}`;
+    testProfileId = `perf-profile-${Date.now()}`;
+    targetProfileId = `perf-target-${Date.now()}`;
+    largeProfileId = `perf-large-${Date.now()}`;
 
-    const targetProfile = await testUtils.createTestProfile({
-      profile_name: 'Performance Target Profile',
-      profile_type: 'target',
-      org_id: testOrgId
+    // Create organization
+    testDb.insertTestData('organization_profiles', {
+      org_id: testOrgId,
+      org_name: 'Performance Test Organization',
+      industry: 'Technology',
+      size: 'medium',
+      current_tier: 'Tier1',
+      target_tier: 'Tier3'
     });
-    targetProfileId = targetProfile.profile_id;
 
-    // Create large dataset profile for stress testing
-    const largeProfile = await testUtils.createTestProfile({
-      profile_name: 'Large Dataset Profile'
-    });
-    largeProfileId = largeProfile.profile_id;
+    // Create profiles
+    testDb.insertTestData('profiles', [
+      {
+        profile_id: testProfileId,
+        org_id: testOrgId,
+        profile_name: 'Performance Test Profile',
+        profile_type: 'current',
+        description: 'Performance testing profile',
+        created_by: 'test-user',
+        is_active: true
+      },
+      {
+        profile_id: targetProfileId,
+        org_id: testOrgId,
+        profile_name: 'Performance Target Profile',
+        profile_type: 'target',
+        description: 'Target performance profile',
+        created_by: 'test-user',
+        is_active: true
+      },
+      {
+        profile_id: largeProfileId,
+        org_id: testOrgId,
+        profile_name: 'Large Dataset Profile',
+        profile_type: 'current',
+        description: 'Large dataset performance profile',
+        created_by: 'test-user',
+        is_active: true
+      }
+    ]);
 
     // Populate with test data
     await setupPerformanceTestData();
+  });
+
+  afterAll(async () => {
+    // Clean up test database
+    testDb.close();
   });
 
   describe('Individual Tool Performance', () => {
@@ -63,7 +194,7 @@ describe('Performance Benchmarks', () => {
         const benchmark = await performanceUtils.benchmark(
           'create_profile',
           async () => {
-            await createProfile.execute({
+            await createProfile({
               org_name: `Perf Test Org ${Date.now()}`,
               profile_name: `Perf Test Profile ${Date.now()}`,
               industry: 'Technology',
@@ -84,7 +215,7 @@ describe('Performance Benchmarks', () => {
         const startTime = Date.now();
         
         const promises = Array.from({ length: concurrentOperations }, (_, i) =>
-          createProfile.execute({
+          createProfile({
             org_name: `Concurrent Org ${i}`,
             profile_name: `Concurrent Profile ${i}`,
             industry: 'Technology',
@@ -106,7 +237,7 @@ describe('Performance Benchmarks', () => {
     describe('Assessment Performance', () => {
       test('should create single assessment within fast threshold', async () => {
         const { result, duration } = await performanceUtils.measureTime(async () => {
-          return await quickAssessment.execute({
+          return await quickAssessment({
             profile_id: testProfileId,
             subcategory_id: `PERF-SINGLE-${Date.now()}`,
             implementation_level: 'Partially Implemented',

@@ -528,9 +528,10 @@ function generateTablesContent(data: any[], displayOptions?: any): any {
       case 'date':
         return new Date(b.assessed_date || b.created_date || 0).getTime() - 
                new Date(a.assessed_date || a.created_date || 0).getTime();
-      case 'priority':
+      case 'priority': {
         const priorityOrder: Record<string, number> = { 'critical': 4, 'high': 3, 'medium': 2, 'low': 1 };
         return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+      }
       default: // name
         return (a.subcategory_name || '').localeCompare(b.subcategory_name || '');
     }

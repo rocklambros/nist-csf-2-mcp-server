@@ -1089,7 +1089,7 @@ async function main() {
             throw new McpError(ErrorCode.InvalidRequest, `Organization not found: ${params.org_id}`);
           }
 
-          let data: any = { organization: org };
+          const data: any = { organization: org };
           
           if (!params.assessment_type || params.assessment_type === 'implementations') {
             data.implementations = db.getImplementations(params.org_id);

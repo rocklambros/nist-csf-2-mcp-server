@@ -173,7 +173,7 @@ describe('Performance Benchmarks', () => {
         
         const result = testDb.query(`
           SELECT * FROM assessments
-          ORDER BY assessment_date DESC
+          ORDER BY assessed_at DESC
           LIMIT ? OFFSET ?
         `, [pageSize, page * pageSize]);
         

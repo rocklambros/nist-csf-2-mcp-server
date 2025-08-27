@@ -1,6 +1,6 @@
 # NIST CSF 2.0 MCP Server - LLM Prompt Examples
 
-This comprehensive guide provides **optimized prompts** for using the NIST CSF 2.0 MCP Server with large language models like **Claude**, **ChatGPT**, and **Gemini**. These prompts demonstrate best practices for cybersecurity assessments and leverage all **37 MCP tools** available in the server.
+This comprehensive guide provides **optimized prompts** for using the NIST CSF 2.0 MCP Server with large language models like **Claude**, **ChatGPT**, and **Gemini**. These prompts demonstrate best practices for cybersecurity assessments and leverage all **36 MCP tools** available in the server.
 
 ## 🚀 Quick Start Prompts
 
@@ -28,11 +28,9 @@ I want to conduct a comprehensive NIST CSF 2.0 assessment for my organization. P
 Walk me through each step and explain the results.
 ```
 
-## 📋 Framework Query & Search Prompts
+## 🔍 Framework Query & Search Tools (3 Tools)
 
-### Exploring the NIST CSF 2.0 Framework
-
-#### CSF Lookup Tool
+### 1. CSF Lookup Tool (`csf_lookup`)
 ```
 I need to understand the NIST CSF 2.0 subcategory "GV.OC-01" in detail. Please:
 - Look up this subcategory with all available examples and references
@@ -40,7 +38,7 @@ I need to understand the NIST CSF 2.0 subcategory "GV.OC-01" in detail. Please:
 - Provide practical implementation examples for a healthcare organization
 ```
 
-#### Framework Search Tool  
+### 2. Framework Search Tool (`search_framework`)
 ```
 Help me find all NIST CSF 2.0 elements related to "incident response" across all functions. I want to:
 - Search for all subcategories containing incident response concepts
@@ -48,7 +46,7 @@ Help me find all NIST CSF 2.0 elements related to "incident response" across all
 - Get comprehensive results with implementation guidance
 ```
 
-#### Related Subcategories
+### 3. Related Subcategories (`get_related_subcategories`)
 ```
 I'm working on implementing access control measures. Please:
 - Find all subcategories related to "PR.AC-01" (Identity and access management)
@@ -56,9 +54,9 @@ I'm working on implementing access control measures. Please:
 - Identify supporting subcategories that should be implemented together
 ```
 
-## 🏢 Profile Management Prompts
+## 🏢 Organization & Profile Management Tools (3 Tools)
 
-### Organization Profile Creation
+### 4. Create Profile (`create_profile`)
 ```
 Create a comprehensive organization profile for our company with these details:
 - Organization: "Global Finance Corp"
@@ -66,25 +64,31 @@ Create a comprehensive organization profile for our company with these details:
 - Size: Large (5,000+ employees)
 - Assessment type: Current state baseline
 
-Then clone this profile to create a target state profile representing our desired security posture in 18 months.
+Include sector-specific risk considerations and compliance requirements.
 ```
 
-### Profile Management Workflow
+### 5. Clone Profile (`clone_profile`)
 ```
-I have an existing organization profile (PROF-123). Please help me:
-1. Review the current profile details and assessment data
-2. Clone it to create a comparative profile for benchmarking
-3. Update the progress tracking with recent security improvements
-4. Generate a trend analysis showing our maturity progression over time
+I have an existing organization profile (PROF-123). Please:
+1. Clone it to create a target state profile representing our desired security posture in 18 months
+2. Adjust the maturity levels to reflect industry best practices
+3. Include aspirational goals for regulatory compliance
 ```
 
-## 🔍 Assessment & Analysis Prompts
-
-### Quick Assessment
+### 6. Compare Profiles (`compare_profiles`)
 ```
-I need to quickly evaluate our organization's cybersecurity posture. Using profile PROF-123, please:
+Compare our current state profile (PROF-123) with our target state profile (PROF-456):
+- Highlight the most significant differences between profiles
+- Identify areas where we've exceeded expectations
+- Show gaps that require immediate attention
+- Provide visual comparison data for executive presentation
+```
 
-Perform a quick assessment with these simplified answers:
+## 🎯 Assessment & Scoring Tools (8 Tools)
+
+### 7. Quick Assessment (`quick_assessment`)
+```
+Perform a quick assessment for profile PROF-123 with these simplified responses:
 - Govern: We have basic policies but limited governance structure (partial)
 - Identify: Asset inventory is incomplete, risk assessments are ad-hoc (partial)  
 - Protect: Some access controls and training in place (partial)
@@ -95,7 +99,7 @@ Perform a quick assessment with these simplified answers:
 Analyze the results and provide immediate recommendations for improvement.
 ```
 
-### Comprehensive Maturity Assessment
+### 8. Assess Maturity (`assess_maturity`)
 ```
 Conduct a detailed maturity assessment for organization profile PROF-123. Please:
 1. Assess maturity across all 6 NIST CSF functions
@@ -107,7 +111,7 @@ Conduct a detailed maturity assessment for organization profile PROF-123. Please
 Focus on practical, actionable recommendations for a medium-sized technology company.
 ```
 
-### Risk Scoring and Analysis
+### 9. Calculate Risk Score (`calculate_risk_score`)
 ```
 Calculate a comprehensive risk score for profile PROF-123 using these threat weights:
 - Govern: 1.5 (high importance for regulatory compliance)
@@ -120,9 +124,55 @@ Calculate a comprehensive risk score for profile PROF-123 using these threat wei
 Include a risk heat map and prioritized remediation recommendations.
 ```
 
-## 📊 Planning & Implementation Prompts
+### 10. Calculate Maturity Trend (`calculate_maturity_trend`)
+```
+Analyze the maturity progression for profile PROF-123 over the past 12 months:
+- Show trend lines for each CSF function
+- Identify areas of improvement and stagnation
+- Predict future maturity trajectory based on current trends
+- Highlight success stories and improvement opportunities
+```
 
-### Gap Analysis Generation
+### 11. Get Assessment Questions (`get_assessment_questions`)
+```
+Retrieve comprehensive assessment questions for conducting a detailed evaluation:
+- Focus on the "Protect" (PR) function
+- Include all 4 dimensions: Risk, Maturity, Implementation, Effectiveness
+- Provide context and guidance for each question
+- Organize questions by subcategory for systematic assessment
+```
+
+### 12. Validate Assessment Responses (`validate_assessment_responses`)
+```
+Validate these assessment responses for profile PROF-123:
+- GV.OC-01: Response level 4 with evidence documents attached
+- ID.AM-01: Response level 2 with partial asset inventory
+- PR.AC-01: Response level 5 with full MFA implementation
+
+Check for consistency, completeness, and supporting evidence quality.
+```
+
+### 13. Get Question Context (`get_question_context`)
+```
+Provide detailed context for assessment question Q-123 including:
+- Related NIST CSF subcategories and implementation examples
+- Industry-specific guidance and best practices
+- Common implementation challenges and solutions
+- Scoring criteria and maturity level descriptions
+```
+
+### 14. Import Assessment (`import_assessment`)
+```
+Import assessment data from our previous GRC platform evaluation:
+- Profile: PROF-123
+- Source: "Previous Annual Security Assessment 2024"
+- Data format: CSV with subcategory ratings and evidence references
+- Validation: Ensure data integrity and completeness after import
+```
+
+## 📊 Planning & Analysis Tools (6 Tools)
+
+### 15. Generate Gap Analysis (`generate_gap_analysis`)
 ```
 Generate a comprehensive gap analysis between our current state (PROF-123) and target state (PROF-456). Please:
 1. Identify all significant gaps across the 6 CSF functions
@@ -132,7 +182,18 @@ Generate a comprehensive gap analysis between our current state (PROF-123) and t
 5. Provide specific implementation guidance for top priority gaps
 ```
 
-### Implementation Planning
+### 16. Generate Priority Matrix (`generate_priority_matrix`)
+```
+Create an implementation priority matrix for profile PROF-123 based on:
+- Business impact (High/Medium/Low)
+- Implementation difficulty (Easy/Medium/Hard)
+- Regulatory requirements (Critical/Important/Optional)
+- Resource availability (Available/Limited/Constrained)
+
+Include visual representation and recommended implementation sequence.
+```
+
+### 17. Create Implementation Plan (`create_implementation_plan`)
 ```
 Based on gap analysis GAP-789, create a detailed implementation plan with:
 - 18-month timeline divided into 3 phases
@@ -145,7 +206,7 @@ Based on gap analysis GAP-789, create a detailed implementation plan with:
 Focus on practical, achievable timelines and realistic resource requirements.
 ```
 
-### Cost Estimation
+### 18. Estimate Implementation Cost (`estimate_implementation_cost`)
 ```
 Provide detailed cost estimates for implementing these critical subcategories:
 - GV.OC-01 (Cybersecurity governance)
@@ -161,9 +222,27 @@ For a medium-sized healthcare organization, include:
 - ROI analysis and business justification
 ```
 
-## 📈 Progress Tracking & Monitoring Prompts
+### 19. Get Industry Benchmarks (`get_industry_benchmarks`)
+```
+Provide industry benchmark data for our financial services organization:
+- Compare our maturity scores against industry averages
+- Identify areas where we're above or below peer organizations
+- Include regulatory compliance benchmarks specific to financial services
+- Show trends and improvement opportunities based on industry data
+```
 
-### Progress Updates
+### 20. Suggest Next Actions (`suggest_next_actions`)
+```
+Based on our current assessment results for profile PROF-123, suggest the next logical actions:
+- Prioritize top 5 immediate improvements
+- Identify quick wins that can be implemented within 30 days
+- Recommend long-term strategic initiatives
+- Include resource requirements and success metrics for each action
+```
+
+## 📈 Progress Tracking & Monitoring Tools (4 Tools)
+
+### 21. Track Progress (`track_progress`)
 ```
 Update the implementation progress for profile PROF-123 with these recent developments:
 
@@ -183,430 +262,251 @@ Subcategory Updates:
 Analyze our progress and recommend next steps.
 ```
 
-### Milestone Management
+### 22. Generate Milestone (`generate_milestone`)
 ```
 Create project milestones for profile PROF-123 covering the next 6 months:
 1. Q1 Security Assessment Completion (assessment milestone)
 2. Q2 Access Control Implementation (implementation milestone)  
 3. Q2 Mid-year Executive Review (review milestone)
 
-Include deliverables, timelines, and success criteria for each milestone.
+Include deliverables, timelines, success criteria, and responsible parties for each milestone.
 ```
 
-## 📄 Reporting & Analytics Prompts
-
-### Executive Reporting
+### 23. Upload Evidence (`upload_evidence`)
 ```
-Generate a comprehensive executive report for profile PROF-123 tailored for:
-- Audience: Board of Directors
-- Focus: Business risk and strategic recommendations
-- Include financial impact analysis and ROI projections
-- Highlight regulatory compliance status
-- Provide clear action items for leadership approval
+Upload supporting evidence for our cybersecurity implementations:
+- Subcategory: PR.AC-01 (Access control)
+- Evidence type: Policy document
+- File: "Multi-Factor Authentication Policy v2.1"
+- Description: "Updated MFA policy covering all user types and applications"
+- Compliance mappings: SOX, PCI-DSS
 
-Make it suitable for a 15-minute board presentation with key metrics and visual elements.
+Validate the evidence and link it to relevant assessment responses.
 ```
 
-### Compliance Reporting
-```
-Create a multi-framework compliance report for profile PROF-123 covering:
-- ISO 27001 alignment and gaps
-- PCI DSS compliance status (we process credit cards)
-- HIPAA requirements (we handle healthcare data)
-- GDPR data protection compliance
-
-Include a remediation roadmap with timelines and resource requirements for achieving full compliance.
-```
-
-### Custom Report Generation
-```
-Build a custom quarterly security report with these sections:
-1. Executive Summary with key metrics and trends
-2. Risk Assessment with heat maps and priority rankings
-3. Implementation Progress with milestone tracking
-4. Compliance Status across multiple frameworks
-5. Industry Benchmarking against technology sector peers
-6. Next Quarter Recommendations with resource requirements
-
-Format for both technical and business stakeholders.
-```
-
-### Real-time Dashboard
-```
-Create a real-time cybersecurity dashboard for profile PROF-123 with:
-- Executive-level KPIs and trend indicators
-- Security metrics with 5-minute refresh intervals
-- Implementation progress tracking
-- Risk score trending over time
-- Compliance status indicators
-- Alert notifications for significant changes
-
-Optimize for wall display in our security operations center.
-```
-
-## 🔍 Audit & Evidence Management Prompts
-
-### Evidence Upload and Management
-```
-Help me manage evidence for our NIST CSF implementation. Please:
-1. Upload policy documentation for subcategory GV.OC-01
-2. Associate security procedure documents with PR.AC-01
-3. Link incident response test results to RS.CO-01
-4. Organize evidence by implementation tier and compliance framework
-5. Validate completeness of our evidence collection
-
-Ensure all evidence meets audit requirements and is properly categorized.
-```
-
-### Audit Trail Tracking
+### 24. Track Audit Trail (`track_audit_trail`)
 ```
 Generate a comprehensive audit trail report for profile PROF-123 covering:
-- Date range: January 1, 2024 to December 31, 2024
-- Event types: All assessment updates, report generation, and profile modifications
-- Filter for high-impact changes and administrative actions
-- Include user attribution and change justification
-- Format for regulatory compliance review
-
-Ensure the audit trail meets SOC 2 Type II requirements.
+- All assessment updates and modifications over the past 6 months
+- Evidence uploads and validation activities
+- User access and modification logs
+- Compliance-related activities and documentation
+- Export the audit trail in a format suitable for regulatory review
 ```
 
-### Audit Report Generation
+## 📄 Reporting & Analytics Tools (8 Tools)
+
+### 25. Generate Report (`generate_report`)
 ```
-Create a comprehensive audit report for profile PROF-123 with:
-- Audit type: Full compliance audit
-- Regulatory framework: NIST CSF 2.0 with ISO 27001 alignment  
-- Include exception analysis and management letter
-- Provide certification readiness assessment
-- Generate remediation recommendations with timelines
-- Include control effectiveness evaluation
-
-Target this for external auditor review and regulatory submission.
-```
-
-## 💡 Assessment Questions & Validation Prompts
-
-### Question Bank Utilization
-```
-I need to conduct a detailed assessment using your 424-question bank. Please:
-1. Retrieve questions for the Govern (GV) function focusing on maturity assessment
-2. Filter for medium-sized technology companies  
-3. Include scoring guidance and implementation examples
-4. Organize by subcategory with clear assessment dimensions
-5. Estimate completion time for comprehensive evaluation
-
-I want to ensure we cover all aspects of organizational governance maturity.
+Generate a comprehensive cybersecurity assessment report for profile PROF-123:
+- Include executive summary with key findings and recommendations
+- Detailed analysis by CSF function with maturity scores
+- Gap analysis and implementation roadmap
+- Risk assessment with heat map visualization
+- Format for C-level executive presentation
 ```
 
-### Response Validation
+### 26. Generate Executive Report (`generate_executive_report`)
 ```
-Please validate these assessment responses for profile PROF-123:
-
-Sample responses:
-1. GV.OC-01 Risk Assessment: Response value 3, Risk level: Medium, Maturity: Defined
-2. ID.AM-01 Asset Management: Response value 2, Risk level: High, Maturity: Initial  
-3. PR.AC-01 Access Control: Response value 4, Risk level: Low, Maturity: Managed
-
-Use comprehensive validation to check:
-- Cross-dimensional consistency
-- Completeness across all required areas
-- Logical alignment between risk and maturity levels
-- Evidence requirements for each response
+Create an executive-level summary report for our board of directors:
+- High-level overview of current cybersecurity posture
+- Key risk areas and business impact
+- Investment recommendations with ROI projections
+- Compliance status and regulatory considerations
+- 2-page format with visual dashboard elements
 ```
 
-### Question Context and Guidance
+### 27. Generate Compliance Report (`generate_compliance_report`)
 ```
-I need detailed context for assessing subcategory "PR.AC-01" focusing on:
-- Assessment dimension: Implementation effectiveness
-- Organization context: Medium-sized healthcare provider
-- Include specific scoring guidance for each response option
-- Provide industry-specific implementation examples
-- Show relationships to other access control subcategories
-
-Help me understand how to properly evaluate our access control implementation.
+Generate multi-framework compliance report for profile PROF-123:
+- Map NIST CSF 2.0 implementation to ISO 27001, PCI-DSS, and HIPAA
+- Identify compliance gaps and remediation requirements
+- Include audit-ready documentation and evidence references
+- Provide compliance percentage scores by framework
 ```
 
-## 🔧 Policy & Implementation Guidance Prompts
-
-### Policy Template Generation
+### 28. Generate Audit Report (`generate_audit_report`)
 ```
-Generate comprehensive policy templates for these subcategories:
-- GV.OC-01: Organizational cybersecurity governance policy
-- GV.PO-01: Cybersecurity supply chain risk management policy
-- PR.AC-01: Identity and access management policy
+Create an audit report suitable for external security audit:
+- Document all control implementations with evidence
+- Include control effectiveness ratings and testing results
+- Map controls to applicable regulatory requirements
+- Provide management responses to identified gaps
+- Format according to SOC 2 Type II reporting standards
+```
 
-Tailor for:
+### 29. Create Custom Report (`create_custom_report`)
+```
+Build a custom report for our quarterly security committee meeting:
+- Title: "Q2 Cybersecurity Progress Report"
+- Sections: Current posture, recent improvements, upcoming initiatives, budget status
+- Audience: Security committee (technical and business leaders)
+- Format: PowerPoint presentation with detailed appendix
+- Include trend analysis and peer comparison data
+```
+
+### 30. Generate Dashboard (`generate_dashboard`)
+```
+Create a real-time cybersecurity dashboard for profile PROF-123:
+- Key performance indicators (KPIs) and metrics
+- Maturity progression over time
+- Risk score trending and heat maps
+- Implementation progress tracking
+- Compliance status indicators
+- Interactive elements for drill-down analysis
+```
+
+### 31. Export Data (`export_data`)
+```
+Export comprehensive assessment data for profile PROF-123:
+- Include all assessment responses, evidence, and audit trail
+- Format: Excel workbook with multiple sheets
+- Purpose: Data backup and external GRC platform integration
+- Include data dictionary and field descriptions
+```
+
+### 32. Validate Evidence (`validate_evidence`)
+```
+Validate the quality and completeness of uploaded evidence for profile PROF-123:
+- Review all evidence documents for relevance and currency
+- Identify missing evidence for implemented controls
+- Check evidence against compliance requirements
+- Provide recommendations for evidence quality improvement
+```
+
+## 🛠️ Template & Policy Tools (4 Tools)
+
+### 33. Get Implementation Guidance (`get_implementation_guidance`)
+```
+Provide detailed implementation guidance for subcategory "DE.CM-01" (Monitoring):
+- Step-by-step implementation approach
+- Technology recommendations and vendor options
+- Resource requirements and timeline estimates
+- Success metrics and measurement criteria
+- Industry-specific considerations for healthcare sector
+```
+
+### 34. Generate Policy Template (`generate_policy_template`)
+```
+Generate a cybersecurity policy template for our organization:
+- Policy type: Incident Response Policy
 - Organization size: Medium (500-1000 employees)
-- Industry: Healthcare
-- Template format: Detailed with implementation guidance
-- Include compliance mapping to HIPAA and state regulations
+- Industry: Manufacturing
+- Include sections for roles, procedures, communication, and recovery
+- Align with NIST CSF 2.0 requirements and industry best practices
 ```
 
-### Implementation Templates and Guidance
+### 35. Get Implementation Template (`get_implementation_template`)
 ```
-Provide detailed implementation guidance for subcategory "ID.AM-01" (Asset Management) for:
-- Organization size: Large enterprise
-- Sector: Financial services  
-- Implementation approach: Phased rollout over 12 months
-- Include step-by-step checklists
-- Provide vendor evaluation criteria
-- Include success metrics and KPIs
-- Show integration with existing IT service management
+Provide implementation templates for establishing a security awareness program:
+- Training curriculum outline and content recommendations
+- Delivery methods and frequency guidelines
+- Metrics and effectiveness measurement approaches
+- Budget planning and resource allocation templates
+- Customization guidance for different employee roles
 ```
 
-### Next Actions Recommendations
+### 36. Generate Test Scenarios (`generate_test_scenarios`)
 ```
-Based on profile PROF-123's current state, provide AI-powered recommendations for:
-- Focus area: Identity and Access Management
-- Urgency level: High (regulatory audit in 6 months)
-- Include quick wins that can be implemented in 30 days
-- Prioritize actions with highest risk reduction impact
-- Consider available budget of $250K for implementations
-- Account for limited staff resources (2 security professionals)
-```
-
-## 🔄 Data Management & Integration Prompts
-
-### Data Export and Analysis
-```
-Export comprehensive data for profile PROF-123 in JSON format including:
-- All assessment results and maturity scores
-- Implementation progress tracking over time
-- Gap analysis results and priority rankings
-- Cost estimates and budget allocations
-- Compliance mapping across multiple frameworks
-
-I need this data for integration with our GRC platform and business intelligence tools.
+Create comprehensive test scenarios for validating our cybersecurity controls:
+- Focus on "Respond" (RS) function capabilities
+- Include tabletop exercises and technical testing approaches
+- Provide scenarios for different threat types and severity levels
+- Include success criteria and evaluation methods
+- Design scenarios appropriate for our retail industry context
 ```
 
-### External Assessment Import
-```
-Import assessment data from our external security consulting engagement:
-- Data format: CSV export from third-party tool
-- Source: External penetration testing and vulnerability assessment
-- Target profile: PROF-123
-- Enable validation on import to ensure data quality
-- Map external findings to NIST CSF subcategories
-- Integrate with existing assessment data
-```
+## 🎯 Advanced Workflow Patterns
 
-### Industry Benchmarking
+### Complete Assessment Workflow
 ```
-Compare our organization against industry benchmarks:
-- Organization size: Medium (500-1000 employees)
-- Sector: Technology/Software
-- Include peer comparisons for maturity levels
-- Show industry average implementation timelines
-- Provide cost benchmarks for similar organizations
-- Use NIST industry data as the benchmark source
-- Highlight areas where we exceed/lag industry averages
+Walk me through a complete cybersecurity assessment for a new client:
+1. Create organization profile → profile_id
+2. Quick assessment → initial_scores  
+3. Detailed maturity assessment → comprehensive_analysis
+4. Risk scoring → risk_profile
+5. Gap analysis → improvement_areas
+6. Priority matrix → implementation_sequence
+7. Implementation planning → roadmap
+8. Executive reporting → stakeholder_communication
+
+Provide specific recommendations and next steps at each stage.
 ```
 
-### Profile Comparison Analysis
+### Continuous Monitoring Pattern
 ```
-Perform detailed comparison between multiple profiles:
-- Primary profile: PROF-123 (current state)
-- Comparison profiles: PROF-456 (target state), PROF-789 (industry benchmark)
-- Comparison type: Comprehensive maturity analysis
-- Include visualization of differences
-- Generate specific recommendations for closing gaps
-- Show progression pathways from current to target state
-```
+Set up a continuous monitoring and improvement process:
+1. Quarterly progress tracking → trend_analysis
+2. Evidence validation → quality_assurance
+3. Benchmark comparison → competitive_analysis
+4. Risk reassessment → threat_landscape_updates
+5. Plan adjustments → adaptive_management
+6. Stakeholder reporting → communication_cadence
 
-## 🧪 Testing & Development Support Prompts
-
-### Test Scenario Generation
-```
-Generate comprehensive test scenarios for development and validation:
-- Scenario types: Assessment workflows, gap analysis, implementation planning
-- Create 3 different organization profiles representing various industries
-- Include edge cases and boundary conditions
-- Generate realistic assessment data for each scenario
-- Provide expected outcomes for validation testing
-
-This will support our development team's testing efforts and QA validation.
+Include automation recommendations and efficiency improvements.
 ```
 
-## 🎯 Advanced Workflow Examples
-
-### Complete Assessment Lifecycle
+### Compliance Audit Preparation
 ```
-Walk me through a complete cybersecurity assessment lifecycle using the MCP server:
+Prepare for an upcoming SOC 2 audit using our NIST CSF 2.0 assessment:
+1. Gap analysis against SOC 2 requirements → compliance_mapping
+2. Evidence collection and validation → audit_readiness
+3. Control effectiveness testing → assurance_activities
+4. Documentation review and completion → audit_trail
+5. Management response preparation → remediation_planning
+6. Audit report generation → regulatory_submission
 
-1. **Initial Setup**: Create organization profile for "RegionalBank" (medium-sized financial services)
-2. **Quick Assessment**: Perform rapid risk evaluation to identify critical areas
-3. **Detailed Analysis**: Comprehensive maturity assessment across all functions  
-4. **Gap Analysis**: Compare current state to industry best practices
-5. **Planning**: Create implementation roadmap with cost estimates
-6. **Tracking**: Set up progress monitoring and milestone tracking
-7. **Reporting**: Generate executive summary and compliance reports
-8. **Continuous Improvement**: Establish ongoing assessment and improvement cycle
-
-Provide specific tool calls and parameters for each step.
+Ensure all activities are audit-ready and properly documented.
 ```
 
-### Regulatory Compliance Workflow
+### Strategic Planning Integration
 ```
-Help me achieve regulatory compliance using NIST CSF 2.0 as the foundation:
+Integrate cybersecurity assessment results into strategic business planning:
+1. Risk impact analysis → business_continuity
+2. Investment prioritization → budget_planning
+3. Resource allocation → capacity_management
+4. Timeline integration → program_management
+5. Success metrics → performance_measurement
+6. Stakeholder alignment → governance_integration
 
-Target compliance frameworks:
-- SOC 2 Type II (primary requirement)
-- PCI DSS Level 1 (we process credit cards)
-- State data protection regulations
-
-Steps needed:
-1. Map current NIST CSF implementation to compliance requirements
-2. Identify gaps specific to each regulatory framework
-3. Create compliance-focused implementation plan
-4. Generate audit-ready documentation and evidence
-5. Establish continuous monitoring for ongoing compliance
-6. Prepare for external audit and certification
-
-Focus on practical steps and realistic timelines for a medium-sized organization.
+Connect cybersecurity improvements to business objectives and outcomes.
 ```
 
-### Merger & Acquisition Assessment
+## 📝 Best Practices for Effective Prompts
+
+### Prompt Structure Template
 ```
-Our company is acquiring a smaller technology firm. Help me assess their cybersecurity posture:
+**Objective**: [What you want to accomplish]
 
-1. **Baseline Assessment**: Create profiles for both organizations
-2. **Risk Analysis**: Identify cybersecurity risks in the acquisition
-3. **Gap Analysis**: Compare security maturity levels
-4. **Integration Planning**: Develop security integration roadmap
-5. **Cost Analysis**: Estimate cybersecurity integration costs
-6. **Due Diligence Report**: Generate executive summary for leadership
-7. **Post-Merger Tracking**: Plan ongoing security monitoring
+**Context**: [Organization details, constraints, requirements]
 
-Consider regulatory requirements and business continuity during integration.
-```
+**Tools to Use**: 
+1. [Primary tool] - [specific purpose]
+2. [Secondary tool] - [how it builds on first]
+3. [Additional tools] - [final analysis/reporting]
 
-## 📊 Industry-Specific Prompt Examples
+**Parameters**: [Specific values for tool inputs]
 
-### Healthcare Organization
-```
-Conduct a NIST CSF 2.0 assessment specifically tailored for healthcare:
-- Organization: Regional medical center (1,200 employees)
-- Focus on HIPAA compliance and patient data protection
-- Include medical device cybersecurity considerations
-- Address telehealth and remote patient monitoring risks
-- Generate compliance report covering both NIST CSF and HIPAA requirements
-- Provide implementation guidance for healthcare-specific challenges
+**Output Requirements**: [Format, audience, detail level]
+
+**Success Criteria**: [How you'll measure success]
+
+Please walk through this process step-by-step and explain the results and recommendations.
 ```
 
-### Financial Services Firm
-```
-Perform comprehensive cybersecurity assessment for financial services:
-- Organization: Community bank with online banking platform
-- Emphasize PCI DSS and banking regulations compliance
-- Focus on customer data protection and fraud prevention
-- Include third-party risk management assessment
-- Address regulatory examination readiness
-- Generate board-ready report with risk quantification
-```
+### Optimization Tips
+1. **Be Specific**: Include organization size, industry, and specific requirements
+2. **Sequence Tools**: Use logical tool sequences for complex workflows
+3. **Define Context**: Provide relevant background information and constraints
+4. **Specify Outputs**: Clearly define desired format, audience, and detail level
+5. **Include Validation**: Ask for validation and quality checks of results
 
-### Manufacturing Company
-```
-Assess cybersecurity for manufacturing environment:
-- Organization: Mid-size manufacturer with OT/IT convergence
-- Include industrial control systems and IoT device risks
-- Address supply chain cybersecurity challenges
-- Focus on business continuity and operational resilience
-- Consider international compliance requirements
-- Generate implementation plan for OT security improvements
-```
+### Common Workflow Patterns
+- **Assessment → Analysis → Planning → Implementation → Monitoring**
+- **Current State → Gap Analysis → Target State → Roadmap → Execution**
+- **Risk Assessment → Control Selection → Implementation → Testing → Reporting**
 
-## 🔍 Troubleshooting & Optimization Prompts
-
-### Performance Optimization
-```
-Help optimize our cybersecurity program performance:
-1. Analyze current implementation efficiency using our assessment data
-2. Identify bottlenecks in our security processes
-3. Recommend automation opportunities to improve effectiveness
-4. Calculate ROI for proposed security investments
-5. Benchmark our security spending against industry averages
-6. Provide recommendations for budget optimization
-
-Focus on measurable improvements and quantified business impact.
-```
-
-### Gap Remediation Strategy
-```
-Our last assessment identified critical gaps. Help prioritize remediation:
-- High-risk gaps: Incident response (RS function), Asset management (ID.AM)
-- Medium-risk gaps: Access control (PR.AC), Security monitoring (DE.CM)
-- Available budget: $500K over 12 months
-- Limited resources: 3 security staff, 1 part-time consultant
-
-Create a phased remediation strategy with:
-- Risk-based prioritization
-- Resource allocation optimization  
-- Quick wins for immediate risk reduction
-- Long-term strategic improvements
-- Progress milestones and success metrics
-```
-
-## 💡 Best Practices for LLM Integration
-
-### Prompt Optimization Tips
-
-#### 1. Be Specific with Parameters
-```
-✅ Good: "Create profile for TechCorp (medium, technology sector, current state)"
-❌ Vague: "Create a profile for my company"
-```
-
-#### 2. Chain Multiple Tools
-```
-✅ Good: "First create profile, then run quick assessment, then calculate risk score"
-❌ Limited: "Just create a profile"
-```
-
-#### 3. Specify Output Requirements
-```
-✅ Good: "Generate executive report suitable for board presentation"
-❌ Generic: "Create a report"
-```
-
-#### 4. Include Context and Constraints
-```
-✅ Good: "For healthcare organization with HIPAA requirements and $100K budget"  
-❌ Missing: "Generate implementation plan"
-```
-
-### Common Prompt Patterns
-
-#### Sequential Workflow Pattern
-```
-Please help me with a multi-step cybersecurity assessment:
-1. [First tool] with parameters X, Y, Z
-2. [Second tool] using results from step 1
-3. [Third tool] to analyze and report findings
-4. Provide summary and recommendations
-
-Walk through each step and explain the results.
-```
-
-#### Comparative Analysis Pattern
-```
-I need to compare multiple aspects of our cybersecurity program:
-- Compare current vs. target state using [tools]
-- Benchmark against industry standards using [tools]
-- Analyze trends over time using [tools]
-- Generate comprehensive comparison report
-
-Highlight key differences and provide actionable recommendations.
-```
-
-#### Decision Support Pattern
-```
-Help me make informed cybersecurity investment decisions:
-- Analyze current risk exposure using [assessment tools]
-- Evaluate potential solutions using [cost estimation tools]  
-- Compare alternatives using [gap analysis tools]
-- Generate business case using [reporting tools]
-
-Provide clear recommendations with supporting data and ROI analysis.
-```
+---
 
 ## 🎯 Success Metrics and KPIs
 
@@ -637,31 +537,6 @@ Generate business case presentation for executive approval.
 
 ---
 
-## 📝 Template for Custom Prompts
-
-Use this template to create your own optimized prompts:
-
-```
-**Objective**: [What you want to accomplish]
-
-**Context**: [Organization details, constraints, requirements]
-
-**Tools to Use**: 
-1. [Primary tool] - [specific purpose]
-2. [Secondary tool] - [how it builds on first]
-3. [Additional tools] - [final analysis/reporting]
-
-**Parameters**: [Specific values for tool inputs]
-
-**Output Requirements**: [Format, audience, detail level]
-
-**Success Criteria**: [How you'll measure success]
-
-Please walk through this process step-by-step and explain the results and recommendations.
-```
-
----
-
-**Remember**: These prompts are designed to leverage the full power of the NIST CSF 2.0 MCP Server. Customize them based on your specific organizational needs, industry requirements, and regulatory environment. The server's comprehensive tool suite can support everything from quick risk assessments to complex compliance reporting and long-term cybersecurity program management.
+**Remember**: These prompts are designed to leverage the full power of the NIST CSF 2.0 MCP Server's 36 specialized tools. Customize them based on your specific organizational needs, industry requirements, and regulatory environment. The server's comprehensive tool suite supports everything from quick risk assessments to complex compliance reporting and long-term cybersecurity program management.
 
 **Get Started**: Begin with the Quick Start prompts and gradually explore more advanced workflows as you become familiar with the server's capabilities. The combination of NIST CSF 2.0 framework guidance and AI-powered analysis provides unprecedented support for cybersecurity professionals at all levels.

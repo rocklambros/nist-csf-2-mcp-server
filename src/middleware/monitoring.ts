@@ -116,7 +116,7 @@ export function responseLoggingMiddleware(req: MonitoredRequest, res: Response, 
 /**
  * Tool execution monitoring
  */
-export function toolMonitoring(toolName: string, execute: Function) {
+export function toolMonitoring(toolName: string, execute: (...args: any[]) => any) {
   return async function(this: any, ...args: any[]) {
     const correlationId = logger.getCorrelationId();
     const timer = metrics.startTimer('tool_execution_duration');
@@ -214,7 +214,7 @@ export function toolMonitoring(toolName: string, execute: Function) {
 /**
  * Database query monitoring
  */
-export function monitorDatabaseQuery(operation: string, table: string, execute: Function) {
+export function monitorDatabaseQuery(operation: string, table: string, execute: (...args: any[]) => any) {
   return async function(this: any, ...args: any[]) {
     const correlationId = logger.getCorrelationId();
     const timer = metrics.startTimer('db_query_duration');

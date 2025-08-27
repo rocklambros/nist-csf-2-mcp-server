@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**. The server provides programmatic access to all NIST CSF 2.0 elements with enterprise-grade security, comprehensive assessment capabilities, advanced reporting features, and a complete suite of 37 MCP tools.
+This is a comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**. The server provides programmatic access to all NIST CSF 2.0 elements with enterprise-grade security, comprehensive assessment capabilities, advanced reporting features, and a complete suite of 36 MCP tools.
 
 ## Technology Stack
 
@@ -78,7 +78,7 @@ The server implements a comprehensive cybersecurity assessment platform followin
    - Protocol-compliant message handling
 
 2. **Tool Implementation Layer** (`src/tools/`)
-   - 37 comprehensive MCP tools covering all NIST CSF 2.0 functions
+   - 36 comprehensive MCP tools covering all NIST CSF 2.0 functions
    - Type-safe tool interfaces with Zod validation schemas
    - Consistent error handling and logging patterns
    - Modular design for maintainability
@@ -193,7 +193,7 @@ nist-csf-2-mcp-server/
 │   │   ├── framework-loader.ts       # NIST CSF data loading service
 │   │   ├── assessment-engine.ts      # Assessment calculation engine
 │   │   └── report-generator.ts       # Report generation service
-│   ├── tools/                        # MCP Tool Implementations (37 tools)
+│   ├── tools/                        # MCP Tool Implementations (36 tools)
 │   │   ├── csf_lookup.ts             # Framework element lookup
 │   │   ├── search_framework.ts       # Advanced framework search
 │   │   ├── create_profile.ts         # Organization profile management
@@ -229,7 +229,7 @@ nist-csf-2-mcp-server/
 │   └── validation/                  # Business logic validation tests
 ├── data/
 │   └── csf-2.0-framework.json       # Official NIST CSF 2.0 reference data
-├── PROMPTS.md                       # LLM prompt examples for all 37 tools
+├── PROMPTS.md                       # LLM prompt examples for all 36 tools
 ├── CONTRIBUTING.md                  # Contribution guidelines and standards
 ├── package.json                     # Node.js dependencies and scripts
 ├── tsconfig.json                    # TypeScript configuration

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.22% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/45</span>
+                <span class='fraction'>0/45</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">3.57% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/28</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/4</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.22% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/45</span>
+                <span class='fraction'>0/45</span>
             </div>
         
             
@@ -276,15 +276,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -315,14 +312,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -485,12 +485,12 @@
  * Clone Profile Tool - Duplicate existing profile with modifications
  */
 &nbsp;
-import { z } from 'zod';
-import { getDatabase } from '../db/database.js';
-import { logger } from '../utils/logger.js';
+<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
+<span class="cstat-no" title="statement not covered" >import { getDatabase } from '../db/database.js';</span>
+<span class="cstat-no" title="statement not covered" >import { logger } from '../utils/logger.js';</span>
 &nbsp;
 // Input schema for the tool
-export const CloneProfileSchema = z.object({
+export const <span class="cstat-no" title="statement not covered" >CloneProfileSchema = z.object({</span>
   source_profile_id: z.string().min(1),
   new_name: z.string().min(1),
   modifications: z.object({
@@ -524,14 +524,14 @@ interface CloneProfileResult {
 /**
  * Main function to clone a profile
  */
-export async function cloneProfile(params: CloneProfileParams): Promise&lt;CloneProfileResult&gt; {
-  const db = getDatabase();
+<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >cloneProfile(</span>params: CloneProfileParams): Promise&lt;CloneProfileResult&gt; {
+  const db = <span class="cstat-no" title="statement not covered" >getDatabase();</span>
   
-  try {
+<span class="cstat-no" title="statement not covered" >  try {</span>
     // Verify source profile exists
-    const sourceProfile = db.getProfile(params.source_profile_id);
-    if (!sourceProfile) {
-      return {
+    const sourceProfile = <span class="cstat-no" title="statement not covered" >db.getProfile(params.source_profile_id);</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!sourceProfile) {</span>
+<span class="cstat-no" title="statement not covered" >      return {</span>
         success: false,
         new_profile_id: '',
         source_profile_id: params.source_profile_id,
@@ -697,7 +697,7 @@ function <span class="fstat-no" title="function not covered" >applyAssessmentMod
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-27T01:35:29.420Z
+                at 2025-08-27T03:47:46.686Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

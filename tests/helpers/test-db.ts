@@ -141,7 +141,7 @@ export class TestDatabase {
         subcategory_id TEXT NOT NULL,
         implementation_level TEXT CHECK (implementation_level IN ('not_implemented', 'partially_implemented', 'largely_implemented', 'fully_implemented')),
         maturity_score INTEGER CHECK (maturity_score >= 0 AND maturity_score <= 5),
-        confidence_level TEXT DEFAULT 'medium',
+        confidence_level TEXT CHECK (confidence_level IN ('low', 'medium', 'high')) DEFAULT 'medium',
         notes TEXT,
         evidence TEXT,
         assessed_by TEXT,

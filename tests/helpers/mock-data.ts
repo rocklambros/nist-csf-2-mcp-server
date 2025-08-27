@@ -62,8 +62,9 @@ export const mockAssessment = {
   assessment_id: uuidv4(),
   profile_id: mockProfile.profile_id,
   subcategory_id: 'GV.OC-01',
-  implementation_level: 'Partially Implemented',
+  implementation_level: 'partially_implemented',
   maturity_score: 2,
+  confidence_level: 'medium',
   notes: 'Test assessment notes',
   assessed_by: 'test-assessor',
   assessed_at: new Date().toISOString()
@@ -73,11 +74,11 @@ export const mockAssessment = {
 export const mockImplementation = {
   org_id: mockOrganization.org_id,
   subcategory_id: 'GV.OC-01',
-  implementation_status: 'Partially Implemented',
+  implementation_status: 'partially_implemented',
   maturity_level: 2,
   notes: 'Implementation in progress',
   assessed_by: 'test-user',
-  last_assessed: new Date()
+  last_assessed: new Date().toISOString()
 };
 
 // Risk assessment mock data
@@ -107,14 +108,14 @@ export const mockGapAnalysis = {
 
 // Progress tracking mock data
 export const mockProgress = {
-  progress_id: uuidv4(),
+  id: uuidv4(),
   profile_id: mockProfile.profile_id,
   subcategory_id: 'GV.OC-01',
-  target_implementation: 'Fully Implemented',
+  target_implementation: 'fully_implemented',
   target_maturity: 4,
-  current_implementation: 'Partially Implemented',
+  current_implementation: 'partially_implemented',
   current_maturity: 2,
-  progress_percentage: 50,
+  completion_percentage: 50,
   status: 'on_track',
   last_updated: new Date().toISOString()
 };
@@ -171,15 +172,24 @@ export function generateMockProfiles(count: number) {
 }
 
 export function generateMockAssessments(count: number, profileId?: string) {
-  const levels = ['Not Implemented', 'Partially Implemented', 'Largely Implemented', 'Fully Implemented'];
-  const subcategories = ['GV.OC-01', 'GV.OC-02', 'ID.AM-01', 'PR.AC-01', 'DE.CM-01'];
+  const levels = ['not_implemented', 'partially_implemented', 'largely_implemented', 'fully_implemented'];
+  const confidenceLevels = ['low', 'medium', 'high'];
+  
+  // Generate a larger pool of subcategories to avoid UNIQUE constraint conflicts
+  const baseSubcategories = ['GV.OC', 'GV.RM', 'GV.SC', 'GV.PO', 'ID.AM', 'ID.RA', 'ID.IM', 'ID.BE', 'ID.GV', 'PR.AC', 'PR.AT', 'PR.DS', 'PR.IP', 'PR.MA', 'PR.PT', 'DE.AE', 'DE.CM', 'DE.DP', 'RS.RP', 'RS.CO', 'RS.AN', 'RS.MI', 'RS.IM', 'RC.RP', 'RC.IM', 'RC.CO'];
+  const subcategories = [];
+  for (const base of baseSubcategories) {
+    for (let i = 1; i <= 200; i++) {
+      subcategories.push(`${base}-${i.toString().padStart(3, '0')}`);
+    }
+  }
   
   return Array.from({ length: count }, (_, i) => ({
-    assessment_id: uuidv4(),
     profile_id: profileId || mockProfile.profile_id,
     subcategory_id: subcategories[i % subcategories.length],
     implementation_level: levels[i % levels.length],
     maturity_score: (i % 5) + 1,
+    confidence_level: confidenceLevels[i % confidenceLevels.length],
     notes: `Assessment notes ${i}`,
     assessed_by: `assessor-${i % 3}`,
     assessed_at: new Date(Date.now() - i * 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -188,17 +198,26 @@ export function generateMockAssessments(count: number, profileId?: string) {
 
 export function generateMockProgress(count: number, profileId?: string) {
   const statuses = ['on_track', 'at_risk', 'behind', 'blocked', 'completed'];
-  const subcategories = ['GV.OC-01', 'GV.OC-02', 'ID.AM-01', 'PR.AC-01', 'DE.CM-01'];
+  const implementations = ['not_implemented', 'partially_implemented', 'largely_implemented'];
+  
+  // Use same expanded subcategory pool as assessments
+  const baseSubcategories = ['GV.OC', 'GV.RM', 'GV.SC', 'GV.PO', 'ID.AM', 'ID.RA', 'ID.IM', 'ID.BE', 'ID.GV', 'PR.AC', 'PR.AT', 'PR.DS', 'PR.IP', 'PR.MA', 'PR.PT', 'DE.AE', 'DE.CM', 'DE.DP', 'RS.RP', 'RS.CO', 'RS.AN', 'RS.MI', 'RS.IM', 'RC.RP', 'RC.IM', 'RC.CO'];
+  const subcategories = [];
+  for (const base of baseSubcategories) {
+    for (let i = 1; i <= 200; i++) {
+      subcategories.push(`${base}-${i.toString().padStart(3, '0')}`);
+    }
+  }
   
   return Array.from({ length: count }, (_, i) => ({
-    progress_id: uuidv4(),
+    id: uuidv4(),
     profile_id: profileId || mockProfile.profile_id,
     subcategory_id: subcategories[i % subcategories.length],
-    target_implementation: 'Fully Implemented',
+    target_implementation: 'fully_implemented',
     target_maturity: 4,
-    current_implementation: ['Not Implemented', 'Partially Implemented', 'Largely Implemented'][i % 3],
+    current_implementation: implementations[i % implementations.length],
     current_maturity: (i % 3) + 1,
-    progress_percentage: Math.min(100, (i + 1) * 20),
+    completion_percentage: Math.min(100, (i + 1) * 20),
     status: statuses[i % statuses.length],
     last_updated: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString()
   }));
@@ -225,10 +244,19 @@ export function generateMockEvidence(count: number) {
 
 // Batch data for performance testing
 export function generateLargeBatchData() {
+  const profiles = generateMockProfiles(100);
+  
+  // Generate assessments that properly reference the profile IDs
+  const assessments = [];
+  profiles.forEach((profile, i) => {
+    const profileAssessments = generateMockAssessments(5, profile.profile_id);
+    assessments.push(...profileAssessments);
+  });
+  
   return {
-    profiles: generateMockProfiles(100),
-    assessments: generateMockAssessments(500),
-    progress: generateMockProgress(200),
+    profiles: profiles,
+    assessments: assessments,
+    progress: generateMockProgress(200, profiles[0].profile_id),
     evidence: generateMockEvidence(150)
   };
 }

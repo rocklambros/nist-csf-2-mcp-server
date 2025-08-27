@@ -253,7 +253,7 @@ function sortItemsByStrategy(
   strategy: string,
   dependencyGraph: any
 ): any[] {
-  let sorted = [...items];
+  const sorted = [...items];
   
   switch (strategy) {
     case 'risk_based':

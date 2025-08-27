@@ -162,10 +162,11 @@ export const testUtils = {
     const profileId = `test-profile-${Date.now()}`;
 
     // Create organization
-    testDb.prepare(`
+    const orgStmt = testDb.prepare(`
       INSERT INTO organization_profiles (org_id, org_name, industry, size, current_tier, target_tier)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(orgId, 'Test Organization', 'Technology', 'medium', 'Tier1', 'Tier3');
+    `);
+    orgStmt.run(orgId, 'Test Organization', 'Technology', 'medium', 'Tier1', 'Tier3');
 
     // Create profile
     const profileData = {
@@ -179,10 +180,11 @@ export const testUtils = {
       ...overrides
     };
 
-    testDb.prepare(`
+    const profileStmt = testDb.prepare(`
       INSERT INTO profiles (profile_id, org_id, profile_name, profile_type, description, created_by, is_active)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(
+    `);
+    profileStmt.run(
       profileData.profile_id,
       profileData.org_id,
       profileData.profile_name,
@@ -213,10 +215,11 @@ export const testUtils = {
         assessed_by: 'test-user'
       };
 
-      testDb.prepare(`
+      const assessmentStmt = testDb.prepare(`
         INSERT INTO assessments (profile_id, subcategory_id, implementation_level, maturity_score, notes, assessed_by)
         VALUES (?, ?, ?, ?, ?, ?)
-      `).run(
+      `);
+      assessmentStmt.run(
         assessment.profile_id,
         assessment.subcategory_id,
         assessment.implementation_level,
