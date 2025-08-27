@@ -57,7 +57,7 @@ export async function cloneProfile(params: CloneProfileParams): Promise<ClonePro
     }
     
     // Generate new profile ID
-    const newProfileId = generateNewProfileId(sourceProfile.org_id, params.new_name);
+    const newProfileId = generateNewProfileId((sourceProfile as any).org_id, params.new_name);
     
     // Use transaction for atomicity
     const result = db.transaction(() => {

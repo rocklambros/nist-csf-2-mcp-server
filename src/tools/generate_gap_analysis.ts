@@ -121,7 +121,7 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
       analysisId
     );
     
-    if (!analysisResult || !analysisResult.analysis_id) {
+    if (!analysisResult || !Array.isArray(analysisResult) || analysisResult.length === 0) {
       return createErrorResult('Failed to generate gap analysis');
     }
     
@@ -162,14 +162,14 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
       analysis_id: analysisId,
       analysis_date: new Date().toISOString(),
       current_profile: {
-        id: currentProfile.id,
-        name: currentProfile.name,
+        id: (currentProfile as any).id,
+        name: (currentProfile as any).name,
         overall_maturity: currentSummary.maturity,
         implementation_percentage: currentSummary.implementation
       },
       target_profile: {
-        id: targetProfile.id,
-        name: targetProfile.name,
+        id: (targetProfile as any).id,
+        name: (targetProfile as any).name,
         overall_maturity: targetSummary.maturity,
         implementation_percentage: targetSummary.implementation
       },

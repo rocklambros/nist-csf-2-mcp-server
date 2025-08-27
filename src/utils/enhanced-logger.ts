@@ -72,7 +72,9 @@ const structuredFormat = winston.format.combine(
     };
     
     // Remove duplicate fields that will be explicitly included
-    const { level: __, message: ___, ...otherFields } = logEntry;
+    const { level: _level, message: _message, ...otherFields } = logEntry;
+    // Prefix with underscore to indicate intentionally unused
+    void _level; void _message;
     
     return JSON.stringify({
       timestamp: new Date().toISOString(),
@@ -102,7 +104,9 @@ const consoleFormat = winston.format.combine(
     
     // Add remaining metadata if in debug mode
     if (process.env.LOG_LEVEL === 'debug' || process.env.LOG_LEVEL === 'trace') {
-      const { duration, statusCode, errorCode, ...rest } = meta;
+      const { duration: _duration, statusCode: _statusCode, errorCode: _errorCode, ...rest } = meta;
+      // These are intentionally unused as they're already handled above
+      void _duration; void _statusCode; void _errorCode;
       if (Object.keys(rest).length > 0) {
         msg += `\n  ${JSON.stringify(rest, null, 2)}`;
       }

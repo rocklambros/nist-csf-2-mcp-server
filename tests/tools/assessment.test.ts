@@ -20,7 +20,7 @@ describe('Quick Assessment Tool', () => {
   
   beforeEach(() => {
     testDb = new TestDatabase();
-    testDb.insertTestData('organizations', mockOrganization);
+    testDb.insertTestData('organization_profiles', mockOrganization);
     testDb.insertTestData('profiles', mockProfile);
   });
   
@@ -44,6 +44,12 @@ describe('Quick Assessment Tool', () => {
       };
       
       const result = await quickAssessment(params);
+      
+      // Log the actual result for debugging
+      if (!result.success) {
+        console.log('Test failed with error:', result.error);
+        console.log('Full result:', JSON.stringify(result, null, 2));
+      }
       
       expect(result.success).toBe(true);
       expect(result.data.summary).toBeDefined();
@@ -181,7 +187,7 @@ describe('Assess Maturity Tool', () => {
   
   beforeEach(() => {
     testDb = new TestDatabase();
-    testDb.insertTestData('organizations', mockOrganization);
+    testDb.insertTestData('organization_profiles', mockOrganization);
     testDb.insertTestData('profiles', mockProfile);
     
     // Add assessments with varying maturity
@@ -298,7 +304,7 @@ describe('Calculate Risk Score Tool', () => {
   
   beforeEach(() => {
     testDb = new TestDatabase();
-    testDb.insertTestData('organizations', mockOrganization);
+    testDb.insertTestData('organization_profiles', mockOrganization);
     testDb.insertTestData('profiles', mockProfile);
     
     // Add mixed assessments
@@ -445,7 +451,7 @@ describe('Track Progress Tool', () => {
   
   beforeEach(() => {
     testDb = new TestDatabase();
-    testDb.insertTestData('organizations', mockOrganization);
+    testDb.insertTestData('organization_profiles', mockOrganization);
     testDb.insertTestData('profiles', mockProfile);
   });
   

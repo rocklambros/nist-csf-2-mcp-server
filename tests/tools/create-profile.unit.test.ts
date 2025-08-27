@@ -3,27 +3,21 @@
  * Testing actual MCP tool implementation for coverage
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { createProfile, CreateProfileParams } from '../../src/tools/create_profile.js';
-import Database from '../../src/db/database.js';
+import { getDatabase } from '../../src/db/database.js';
+import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
-// Mock the database module
-jest.mock('../../src/db/database.js');
-jest.mock('../../src/utils/logger.js');
-
-const mockDb = {
-  transaction: jest.fn(),
-  getOrganization: jest.fn(),
-  getProfile: jest.fn(),
-  createOrganization: jest.fn(),
-  createProfile: jest.fn(),
-  createBulkAssessments: jest.fn()
-};
+// Get the mocked database function
+const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Create Profile Tool - Unit Tests', () => {
+  let mockDb: ReturnType<typeof createMockDatabase>;
+
   beforeEach(() => {
     jest.clearAllMocks();
-    (Database.getInstance as jest.MockedFunction<typeof Database.getInstance>).mockReturnValue(mockDb as any);
+    mockDb = createMockDatabase();
+    mockGetDatabase.mockReturnValue(mockDb as any);
   });
 
   describe('createProfile function', () => {
@@ -36,34 +30,42 @@ describe('Create Profile Tool - Unit Tests', () => {
         description: 'Test organization profile'
       };
 
-      // Mock transaction and database responses
-      mockDb.transaction.mockImplementation((callback: () => any) => {
-        return callback();
-      });
-      mockDb.getOrganization.mockReturnValueOnce(null).mockReturnValueOnce({
+      // Mock transaction to execute callback
+      mockDb.transaction!.mockImplementation((callback: () => any) => callback());
+      
+      // Mock organization lookup (first call returns null, second returns created org)
+      mockDb.getOrganization!.mockReturnValueOnce(null);
+      mockDb.createOrganization!.mockReturnValue('org-test-organization-abcd');
+      mockDb.getOrganization!.mockReturnValueOnce(testUtils.createMockOrganization({
         org_id: 'org-test-organization-abcd',
         org_name: 'Test Organization',
         industry: 'Technology',
         size: 'medium'
-      });
-      mockDb.getProfile.mockReturnValue({
+      }));
+      
+      // Mock profile creation
+      mockDb.createProfile!.mockReturnValue('org-test-organization-abcd-current-xyz123');
+      mockDb.getProfile!.mockReturnValue(testUtils.createMockProfile({
         profile_id: 'org-test-organization-abcd-current-xyz123',
         org_id: 'org-test-organization-abcd',
         profile_name: 'Test Organization - Current Profile',
         profile_type: 'current'
-      });
+      }));
 
       const result = await createProfile(params);
 
-      expect(result.success).toBe(true);
+      testUtils.assertSuccessResponse(result, {
+        success: true,
+        message: expect.stringContaining('Successfully created current profile')
+      });
       expect(result.profile_id).toMatch(/org-test-organization-.*-current-.*/);
       expect(result.org_id).toMatch(/org-test-organization-.*/);
-      expect(result.message).toContain('Successfully created current profile');
       expect(result.details?.organization).toBeDefined();
       expect(result.details?.profile).toBeDefined();
+      
       expect(mockDb.createOrganization).toHaveBeenCalledWith(expect.objectContaining({
         org_name: 'Test Organization',
-        industry: 'Technology',
+        industry: 'Technology', 
         size: 'medium'
       }));
       expect(mockDb.createProfile).toHaveBeenCalledWith(expect.objectContaining({

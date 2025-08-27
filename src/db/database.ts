@@ -10,6 +10,64 @@ import type {
   RiskAssessment, 
   GapAnalysis 
 } from '../types/index.js';
+
+// Database row interfaces for type safety
+interface SubcategoryImplementationRow {
+  id?: number;
+  org_id: string;
+  subcategory_id: string;
+  implementation_status: string;
+  maturity_level: number;
+  notes?: string;
+  evidence?: string; // JSON string
+  last_assessed: string; // Date as string
+  assessed_by?: string;
+}
+
+// Type interfaces removed for compilation - will be restored when used
+
+interface ProfileAssessmentRow {
+  id?: number;
+  profile_id: string;
+  subcategory_id: string;
+  implementation_level: number;
+  maturity_score: number;
+  confidence_level: string;
+  notes?: string;
+  evidence?: string; // JSON string
+  assessed_by?: string;
+  assessed_at: string; // Date as string
+}
+
+interface ProfileAssessment {
+  subcategory_id: string;
+  implementation_level: number;
+  maturity_score: number;
+  confidence_level?: string;
+  notes?: string;
+  evidence?: string;
+  assessed_by?: string;
+}
+
+interface ImplementationPlan {
+  id: string;
+  gap_analysis_id: string;
+  profile_id: string;
+  plan_name: string;
+  timeline_months: number;
+  available_resources: string;
+  total_phases: number;
+  total_effort_hours: number;
+  estimated_cost: number;
+  status: string;
+  phases?: any[];
+}
+
+// Additional type interfaces removed for compilation
+
+interface DatabaseRow {
+  [key: string]: unknown;
+}
 import path from 'path';
 
 export class CSFDatabase {
@@ -592,12 +650,14 @@ export class CSFDatabase {
 
   getImplementations(orgId: string): SubcategoryImplementation[] {
     const stmt = this.db.prepare('SELECT * FROM subcategory_implementations WHERE org_id = ?');
-    const results = stmt.all(orgId) as any[];
+    const results = stmt.all(orgId) as SubcategoryImplementationRow[];
     
-    // Parse evidence JSON
+    // Parse evidence JSON and convert types
     return results.map(row => ({
       ...row,
-      evidence: row.evidence ? JSON.parse(row.evidence) : []
+      implementation_status: row.implementation_status as SubcategoryImplementation['implementation_status'],
+      evidence: row.evidence ? JSON.parse(row.evidence) : [],
+      last_assessed: new Date(row.last_assessed)
     }));
   }
 
@@ -605,13 +665,18 @@ export class CSFDatabase {
     const stmt = this.db.prepare(
       'SELECT * FROM subcategory_implementations WHERE org_id = ? AND subcategory_id = ?'
     );
-    const result = stmt.get(orgId, subcategoryId) as any;
+    const result = stmt.get(orgId, subcategoryId) as SubcategoryImplementationRow | undefined;
     
-    if (result) {
-      result.evidence = result.evidence ? JSON.parse(result.evidence) : [];
+    if (!result) {
+      return undefined;
     }
     
-    return result;
+    return {
+      ...result,
+      implementation_status: result.implementation_status as SubcategoryImplementation['implementation_status'],
+      evidence: result.evidence ? JSON.parse(result.evidence) : [],
+      last_assessed: new Date(result.last_assessed)
+    };
   }
 
   upsertImplementation(impl: SubcategoryImplementation): void {
@@ -767,14 +832,14 @@ export class CSFDatabase {
     );
   }
 
-  getProfile(profileId: string): any {
+  getProfile(profileId: string): DatabaseRow | undefined {
     const stmt = this.db.prepare('SELECT * FROM profiles WHERE profile_id = ?');
-    return stmt.get(profileId);
+    return stmt.get(profileId) as DatabaseRow | undefined;
   }
 
-  getOrganizationProfiles(orgId: string): any[] {
+  getOrganizationProfiles(orgId: string): DatabaseRow[] {
     const stmt = this.db.prepare('SELECT * FROM profiles WHERE org_id = ? AND is_active = 1');
-    return stmt.all(orgId);
+    return stmt.all(orgId) as DatabaseRow[];
   }
 
   cloneProfile(sourceProfileId: string, newProfileId: string, newName: string): void {
@@ -842,7 +907,7 @@ export class CSFDatabase {
     );
   }
 
-  createBulkAssessments(profileId: string, assessments: any[]): void {
+  createBulkAssessments(profileId: string, assessments: ProfileAssessment[]): void {
     const stmt = this.db.prepare(`
       INSERT INTO assessments (
         profile_id, subcategory_id, implementation_level,
@@ -858,7 +923,7 @@ export class CSFDatabase {
         assessed_at = CURRENT_TIMESTAMP
     `);
     
-    const insertMany = this.db.transaction((assessments: any[]) => {
+    const insertMany = this.db.transaction((assessments: ProfileAssessment[]) => {
       for (const assessment of assessments) {
         stmt.run(
           profileId,
@@ -876,23 +941,23 @@ export class CSFDatabase {
     insertMany(assessments);
   }
 
-  getProfileAssessments(profileId: string): any[] {
+  getProfileAssessments(profileId: string): ProfileAssessmentRow[] {
     const stmt = this.db.prepare('SELECT * FROM assessments WHERE profile_id = ?');
-    return stmt.all(profileId);
+    return stmt.all(profileId) as ProfileAssessmentRow[];
   }
 
-  getAssessmentsBySubcategory(profileId: string, subcategoryId: string): any {
+  getAssessmentsBySubcategory(profileId: string, subcategoryId: string): ProfileAssessmentRow | undefined {
     const stmt = this.db.prepare(
       'SELECT * FROM assessments WHERE profile_id = ? AND subcategory_id = ?'
     );
-    return stmt.get(profileId, subcategoryId);
+    return stmt.get(profileId, subcategoryId) as ProfileAssessmentRow | undefined;
   }
 
   // ============================================================================
   // GAP ANALYSIS OPERATIONS
   // ============================================================================
 
-  generateGapAnalysis(currentProfileId: string, targetProfileId: string, analysisId: string): any {
+  generateGapAnalysis(currentProfileId: string, targetProfileId: string, analysisId: string): DatabaseRow[] {
     // Complex SQL to compare profiles and generate gap analysis
     const sql = `
       WITH current_assessments AS (
@@ -1062,10 +1127,10 @@ export class CSFDatabase {
       ORDER BY risk_weighted_gap DESC
     `;
     
-    return this.db.prepare(detailSql).all(currentProfileId, targetProfileId);
+    return this.db.prepare(detailSql).all(currentProfileId, targetProfileId) as DatabaseRow[];
   }
 
-  getGapAnalysisDetails(analysisId: string): any {
+  getGapAnalysisDetails(analysisId: string): DatabaseRow[] {
     const sql = `
       SELECT 
         g.*,
@@ -1082,10 +1147,10 @@ export class CSFDatabase {
       GROUP BY g.org_id
     `;
     
-    return this.db.prepare(sql).all(analysisId);
+    return this.db.prepare(sql).all(analysisId) as DatabaseRow[];
   }
 
-  getPriorityMatrix(analysisId: string): any {
+  getPriorityMatrix(analysisId: string): DatabaseRow[] {
     // Get gap analysis with effort-impact calculations
     const sql = `
       WITH gap_data AS (
@@ -1151,10 +1216,10 @@ export class CSFDatabase {
         quadrant_rank
     `;
     
-    return this.db.prepare(sql).all(analysisId);
+    return this.db.prepare(sql).all(analysisId) as DatabaseRow[];
   }
 
-  getPriorityMatrixFromAssessments(profileId: string): any[] {
+  getPriorityMatrixFromAssessments(profileId: string): DatabaseRow[] {
     const stmt = this.db.prepare(`
       SELECT 
         a.subcategory_id,
@@ -1193,14 +1258,14 @@ export class CSFDatabase {
       ORDER BY gap_score DESC
     `);
     
-    return stmt.all(profileId);
+    return stmt.all(profileId) as DatabaseRow[];
   }
 
   // ============================================================================
   // ADVANCED MATURITY CALCULATIONS
   // ============================================================================
 
-  getMaturityByFunction(profileId: string): any[] {
+  getMaturityByFunction(profileId: string): DatabaseRow[] {
     // Complex SQL with CTEs to calculate maturity by function
     const sql = `
       WITH function_subcategories AS (
@@ -1252,10 +1317,10 @@ export class CSFDatabase {
       ORDER BY function_id
     `;
     
-    return this.db.prepare(sql).all(profileId);
+    return this.db.prepare(sql).all(profileId) as DatabaseRow[];
   }
 
-  getRiskScoreData(profileId: string): any {
+  getRiskScoreData(profileId: string): { overall_risk_score: number; function_risks: DatabaseRow[] } {
     // Calculate risk score based on gaps and criticality
     const sql = `
       WITH subcategory_risks AS (
@@ -1309,7 +1374,7 @@ export class CSFDatabase {
       ORDER BY weighted_risk DESC
     `;
     
-    const functionRisks = this.db.prepare(sql).all(profileId);
+    const functionRisks = this.db.prepare(sql).all(profileId) as DatabaseRow[];
     
     // Calculate overall risk score
     const overallSql = `
@@ -1335,7 +1400,7 @@ export class CSFDatabase {
       WHERE profile_id = ?
     `;
     
-    const overall = this.db.prepare(overallSql).get(profileId) as any;
+    const overall = this.db.prepare(overallSql).get(profileId) as { overall_risk_score: number } | null;
     
     return {
       overall_risk_score: overall?.overall_risk_score || 0,
@@ -1343,7 +1408,7 @@ export class CSFDatabase {
     };
   }
 
-  getMaturityTrend(profileId: string, startDate?: string, endDate?: string): any[] {
+  getMaturityTrend(profileId: string, startDate?: string, endDate?: string): DatabaseRow[] {
     // Get historical maturity data with window functions
     const sql = `
       WITH RECURSIVE dates AS (
@@ -1415,10 +1480,10 @@ export class CSFDatabase {
       profileId,
       startDate,
       endDate
-    );
+    ) as DatabaseRow[];
   }
 
-  getComprehensiveMaturityAnalysis(profileId: string): any {
+  getComprehensiveMaturityAnalysis(profileId: string): DatabaseRow[] {
     // Comprehensive analysis combining multiple metrics
     const sql = `
       WITH assessment_data AS (
@@ -1469,7 +1534,7 @@ export class CSFDatabase {
       CROSS JOIN overall_stats o
     `;
     
-    return this.db.prepare(sql).all(profileId);
+    return this.db.prepare(sql).all(profileId) as DatabaseRow[];
   }
 
   // ============================================================================
@@ -1505,7 +1570,7 @@ export class CSFDatabase {
   // IMPLEMENTATION PLANNING
   // ============================================================================
 
-  createImplementationPlan(plan: any): string {
+  createImplementationPlan(plan: ImplementationPlan): string {
     const planId = plan.id;
     
     // Insert main plan

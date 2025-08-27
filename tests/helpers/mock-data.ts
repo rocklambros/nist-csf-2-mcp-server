@@ -41,7 +41,8 @@ export const mockOrganization = {
   size: 'medium',
   current_tier: 'Tier1',
   target_tier: 'Tier3',
-  created_date: new Date().toISOString()
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
 };
 
 // Profile mock data

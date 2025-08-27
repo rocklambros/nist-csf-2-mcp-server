@@ -178,7 +178,7 @@ export async function createImplementationPlan(params: CreateImplementationPlanP
       profile_id: profileId,
       plan_name: planName,
       timeline_months: params.timeline_months,
-      available_resources: params.available_resources,
+      available_resources: String(params.available_resources),
       total_phases: phases.length,
       total_effort_hours: totalEffortHours,
       estimated_cost: estimatedCost,
