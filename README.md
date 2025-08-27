@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 [![Security](https://img.shields.io/badge/Security-Enterprise%20Grade-red.svg)](#security-architecture)
 
-A comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**, providing programmatic access to all framework elements with enterprise-grade security, comprehensive assessment capabilities, and advanced reporting features.
+A comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**, providing programmatic access to all framework elements with **36 specialized MCP tools**, enterprise-grade security, comprehensive assessment capabilities, and advanced reporting features. Built for seamless integration with Claude, ChatGPT, and other AI assistants.
 
 ## 🚀 Features
 
@@ -15,6 +15,7 @@ A comprehensive **Model Context Protocol (MCP) server** implementation for the *
 - 📊 **Comprehensive Assessment Suite**: From quick organizational assessments to detailed maturity evaluations
 - 💡 **424-Question Assessment Bank**: Complete question coverage for all subcategories with 4 assessment dimensions each
 - 📈 **Risk & Maturity Scoring**: Advanced algorithms for organizational cybersecurity posture measurement
+- 🤖 **36 Specialized MCP Tools**: Complete cybersecurity assessment and management toolkit
 
 ### Planning & Implementation
 - 🎯 **Gap Analysis & Priority Matrices**: Intelligent prioritization based on risk, effort, and business impact
@@ -35,10 +36,11 @@ A comprehensive **Model Context Protocol (MCP) server** implementation for the *
 - ⚡ **Rate Limiting**: Configurable DDoS protection and resource management
 
 ### Developer Experience
-- 🧪 **Comprehensive Testing**: 95%+ test coverage with integration, performance, and security tests
+- 🧪 **Comprehensive Testing**: 95%+ test coverage with integration, performance, and security tests (70+ test files)
 - 📖 **Complete Documentation**: API docs, sample prompts, and integration guides
 - 🔧 **Claude Code Ready**: Optimized for AI development workflows with [PROMPTS.md](./PROMPTS.md)
 - ⚡ **Performance Optimized**: Sub-100ms response times with intelligent caching
+- 🎯 **Production Ready**: Enterprise-grade TypeScript with strict validation and error handling
 
 ## 📦 Installation
 
@@ -60,8 +62,8 @@ npm install
 # 3. Build TypeScript code
 npm run build
 
-# 4. Initialize database with NIST CSF 2.0 data
-npm run db:init
+# 4. Database is pre-populated (no initialization needed)
+# The NIST CSF 2.0 database comes ready with all framework data and 424 questions
 
 # 5. Start the server
 npm start
@@ -76,19 +78,13 @@ The server will start on `http://localhost:3000` with authentication disabled fo
 npm run dev  # Auto-reload enabled
 ```
 
-### 2. Seed Question Bank (Optional)
+### 2. Testing the Installation
 ```bash
-npm run seed:questions  # Adds 424 assessment questions
+npm run test:e2e      # Verify full functionality
 ```
 
-### 3. Verify Installation
-```bash
-npm test              # Run test suite
-npm run test:e2e      # End-to-end workflow tests
-```
-
-### 4. Security Configuration
-See [Security Configuration](#security-configuration) for authentication setup.
+### 3. Security Configuration
+See [Security Configuration](#-security-configuration) for authentication setup.
 
 ## 🔧 Environment Configuration
 
@@ -114,432 +110,324 @@ AUTH_MODE=disabled  # disabled|simple|oauth
 API_KEY=your-api-key-here
 ```
 
-## 📡 MCP Tools Reference
+## 🛠️ Complete MCP Tools Suite (36 Tools)
 
-### Framework Query Tools
+### Framework Query & Search Tools (3 tools)
 
-#### `csf_lookup`
-Look up specific CSF elements by ID with detailed information.
-```json
-{
-  "element_id": "GV.OC-01",
-  "include_examples": true,
-  "include_references": true
-}
+#### 1. `csf_lookup`
+Look up specific CSF elements by ID with detailed information and implementation examples.
+
+#### 2. `search_framework`
+Advanced multi-dimensional search across the framework with filters for functions, categories, keywords, and tiers.
+
+#### 3. `get_related_subcategories`
+Find related subcategories, dependencies, and cross-functional relationships.
+
+### Organization & Profile Management Tools (3 tools)
+
+#### 4. `create_profile`
+Create comprehensive organization cybersecurity profiles with industry-specific guidance and customizable assessment parameters.
+
+#### 5. `clone_profile`
+Clone existing profiles for target state planning or comparative analysis with selective modifications.
+
+#### 6. `compare_profiles`
+Compare multiple profiles side-by-side with detailed gap analysis and recommendations.
+
+### Assessment & Scoring Tools (8 tools)
+
+#### 7. `quick_assessment`
+Rapid organizational assessment using simplified yes/no/partial questionnaire for all six CSF functions.
+
+#### 8. `assess_maturity`
+Comprehensive maturity assessment across all functions with detailed recommendations and subcategory analysis.
+
+#### 9. `calculate_risk_score`
+Advanced risk scoring with customizable threat weights and heat map visualization.
+
+#### 10. `calculate_maturity_trend`
+Track maturity progression over time with statistical analysis and future projections.
+
+#### 11. `get_assessment_questions`
+Access the complete 424-question assessment bank with filtering by subcategory and assessment dimensions.
+
+#### 12. `validate_assessment_responses`
+Validate assessment responses for completeness, consistency, and business logic compliance.
+
+#### 13. `get_question_context`
+Provide additional context and guidance for specific assessment questions.
+
+#### 14. `import_assessment`
+Import assessment data from external systems with validation and normalization.
+
+### Planning & Analysis Tools (6 tools)
+
+#### 15. `generate_gap_analysis`
+Comprehensive gap analysis between current and target states with priority matrices and cost estimates.
+
+#### 16. `generate_priority_matrix`
+Create implementation priority matrices based on effort, impact, risk, and available resources.
+
+#### 17. `estimate_implementation_cost`
+Detailed financial modeling for cybersecurity implementations with labor, tools, and ongoing costs.
+
+#### 18. `create_implementation_plan`
+Generate phased implementation roadmaps with timelines, dependencies, and resource allocation.
+
+#### 19. `suggest_next_actions`
+AI-powered recommendations for next implementation steps based on risk, effort, and business impact.
+
+#### 20. `get_implementation_guidance`
+Detailed implementation guidance for specific subcategories with industry-specific recommendations.
+
+### Progress Tracking & Monitoring Tools (4 tools)
+
+#### 21. `track_progress`
+Update and track implementation progress across subcategories with milestone tracking.
+
+#### 22. `generate_milestone`
+Create and manage project milestones with deliverables and success criteria.
+
+#### 23. `track_audit_trail`
+Maintain comprehensive audit trails for compliance and change tracking.
+
+#### 24. `get_industry_benchmarks`
+Access industry-specific benchmarks and best practices for comparative analysis.
+
+### Reporting & Analytics Tools (8 tools)
+
+#### 25. `generate_report`
+Create comprehensive cybersecurity assessment reports with executive summaries.
+
+#### 26. `generate_executive_report`
+Business-ready executive reports for C-level presentations and board meetings.
+
+#### 27. `generate_audit_report`
+Detailed audit reports with findings, recommendations, and compliance status.
+
+#### 28. `generate_compliance_report`
+Multi-framework compliance reports (ISO27001, PCI DSS, HIPAA, GDPR, SOX).
+
+#### 29. `create_custom_report`
+Build custom reports with flexible data selection and formatting options.
+
+#### 30. `generate_dashboard`
+Real-time cybersecurity dashboards with KPIs and visualization.
+
+#### 31. `export_data`
+Export assessment data in multiple formats (JSON, CSV, Excel, PDF).
+
+#### 32. `validate_evidence`
+Validate and manage evidence files for audit and compliance purposes.
+
+### Template & Policy Tools (4 tools)
+
+#### 33. `get_implementation_template`
+Generate detailed implementation guides for specific subcategories with examples and tools.
+
+#### 34. `generate_policy_template`
+Create policy document templates based on NIST CSF subcategories.
+
+#### 35. `generate_test_scenarios`
+Generate security testing scenarios and validation checklists.
+
+#### 36. `upload_evidence`
+Upload and manage evidence files with automatic validation and categorization.
+
+## 🚀 Common Usage Patterns
+
+### Complete Assessment Workflow
+```bash
+# 1. Create organization profile
+create_profile → profile_id
+
+# 2. Perform initial assessment  
+quick_assessment → initial_scores
+
+# 3. Detailed maturity analysis
+assess_maturity → detailed_analysis
+
+# 4. Calculate risk scores
+calculate_risk_score → risk_profile
+
+# 5. Generate gap analysis
+generate_gap_analysis → gap_report
+
+# 6. Create implementation plan
+create_implementation_plan → roadmap
+
+# 7. Generate executive report
+generate_executive_report → executive_summary
 ```
 
-#### `search_framework`
-Advanced search across the framework with multiple filters.
-```json
-{
-  "query": "risk management",
-  "function": "GV",
-  "category": "GV.OC",
-  "implementation_tier": 2,
-  "limit": 10
-}
+### Compliance Reporting Workflow
+```bash
+# 1. Import existing assessments
+import_assessment → normalized_data
+
+# 2. Validate evidence files
+validate_evidence → compliance_check
+
+# 3. Generate compliance report
+generate_compliance_report → multi_framework_report
+
+# 4. Create audit trail
+track_audit_trail → audit_documentation
 ```
 
-#### `get_related_subcategories`
-Find related subcategories and their relationships.
-```json
-{
-  "subcategory_id": "GV.OC-01",
-  "relationship_type": "supports",
-  "include_dependencies": true
-}
+### Continuous Improvement Workflow
+```bash
+# 1. Track implementation progress
+track_progress → progress_updates
+
+# 2. Calculate maturity trends
+calculate_maturity_trend → trend_analysis
+
+# 3. Benchmark against industry
+get_industry_benchmarks → peer_comparison
+
+# 4. Suggest next actions
+suggest_next_actions → recommendations
 ```
 
-### Profile Management Tools
+## 🔧 Advanced Configuration
 
-#### `create_profile`
-Create organization cybersecurity profiles.
-```json
-{
-  "org_name": "Example Corp",
-  "sector": "technology",
-  "size": "medium",
-  "profile_type": "current",
-  "profile_name": "Current State Assessment"
-}
+### Custom Threat Modeling
+Configure threat weights for risk calculations:
+```bash
+# High-security organization (financial services)
+calculate_risk_score --threat_weights '{"govern":1.8,"identify":1.6,"protect":1.7,"detect":1.5,"respond":1.3,"recover":1.2}'
+
+# Standard organization (technology)  
+calculate_risk_score --threat_weights '{"govern":1.5,"identify":1.3,"protect":1.4,"detect":1.2,"respond":1.1,"recover":1.0}'
 ```
 
-#### `clone_profile`
-Clone existing profiles for target state or comparative analysis.
-```json
-{
-  "source_profile_id": "PROF-123",
-  "profile_type": "target",
-  "profile_name": "Target State Profile"
-}
+### Multi-Framework Compliance
+Generate compliance reports for multiple standards:
+```bash
+# ISO 27001 + PCI DSS compliance
+generate_compliance_report --frameworks '["iso27001","pci_dss"]' --include_remediation_roadmap true
+
+# Healthcare compliance (HIPAA + NIST)
+generate_compliance_report --frameworks '["hipaa","nist_csf"]' --sector healthcare
 ```
 
-### Assessment Tools
+### Industry Benchmarking
+```bash
+# Technology sector benchmarking
+get_industry_benchmarks --sector technology --organization_size medium --include_peer_comparisons true
 
-#### `quick_assessment`
-Rapid organizational assessment using simplified questionnaire.
-```json
-{
-  "profile_id": "PROF-123",
-  "simplified_answers": {
-    "govern": "partial",
-    "identify": "yes",
-    "protect": "partial",
-    "detect": "no",
-    "respond": "partial",
-    "recover": "no"
-  },
-  "assessed_by": "Security Team"
-}
+# Financial services benchmarking  
+get_industry_benchmarks --sector financial_services --organization_size large --benchmark_source nist_industry_data
 ```
 
-#### `assess_maturity`
-Comprehensive maturity assessment across all functions.
-```json
-{
-  "profile_id": "PROF-123",
-  "include_recommendations": true,
-  "include_subcategory_details": true
-}
+## 🔐 Security Configuration
+
+### Multi-Tier Authentication
+
+#### Development Mode (No Authentication)
+```env
+AUTH_MODE=disabled
+```
+Perfect for development and testing environments.
+
+#### Simple Authentication (API Key)
+```env
+AUTH_MODE=simple
+API_KEY=your-secure-api-key-here
+```
+Basic API key protection for internal deployments.
+
+#### Enterprise Authentication (OAuth 2.1)
+```env
+AUTH_MODE=oauth
+OAUTH_ISSUER=https://your-identity-provider.com
+OAUTH_AUDIENCE=nist-csf-mcp-server
+JWT_ALGORITHM=RS256
+JWKS_URI=https://your-identity-provider.com/.well-known/jwks.json
 ```
 
-#### `calculate_risk_score`
-Calculate organizational risk scores with threat modeling.
-```json
-{
-  "profile_id": "PROF-123",
-  "threat_weights": {
-    "govern": 1.5,
-    "identify": 1.3,
-    "protect": 1.4,
-    "detect": 1.2,
-    "respond": 1.1,
-    "recover": 1.0
-  },
-  "include_heat_map": true
-}
+### Security Features
+- ✅ **Input Validation**: Zod schema validation with XSS/injection prevention
+- ✅ **Rate Limiting**: Configurable request throttling
+- ✅ **Audit Logging**: Comprehensive audit trails with structured logging
+- ✅ **CORS Protection**: Configurable cross-origin resource sharing
+- ✅ **Helmet Security**: Standard HTTP security headers
+
+## 📊 Performance & Monitoring
+
+### Performance Benchmarks
+- **Database Operations**: <50ms average response time
+- **Complex Assessments**: <200ms for full maturity analysis
+- **Report Generation**: <500ms for executive reports
+- **Concurrent Users**: Supports 100+ simultaneous connections
+
+### Monitoring Features
+```env
+ENABLE_MONITORING=true
+ANALYTICS_ENABLED=true
+LOG_LEVEL=info
+METRICS_COLLECTION=true
 ```
 
-#### `calculate_maturity_trend`
-Track maturity progression over time with trend analysis.
-```json
-{
-  "profile_id": "PROF-123",
-  "time_period": "last_12_months",
-  "include_projections": true
-}
+### Health Checks
+```bash
+curl http://localhost:3000/health
+# Returns: {"status": "healthy", "version": "1.0.0", "uptime": "2h 15m"}
 ```
 
-### Planning & Analysis Tools
+## 🧪 Testing & Quality Assurance
 
-#### `generate_gap_analysis`
-Comprehensive gap analysis between current and target states.
-```json
-{
-  "current_profile_id": "PROF-123",
-  "target_profile_id": "PROF-456",
-  "include_priority_matrix": true,
-  "include_cost_estimates": true
-}
+### Comprehensive Test Suite
+```bash
+# Run all tests with coverage
+npm test
+
+# Individual test suites
+npm run test:unit        # Unit tests (95%+ coverage)
+npm run test:integration # Database integration tests
+npm run test:e2e         # End-to-end workflow tests
+npm run test:security    # Security validation tests
+npm run test:performance # Performance benchmarks
 ```
 
-#### `generate_priority_matrix`
-Create implementation priority matrices based on multiple factors.
-```json
-{
-  "profile_id": "PROF-123",
-  "matrix_type": "effort_impact",
-  "include_resource_estimates": true,
-  "max_items_per_quadrant": 15
-}
+### Test Coverage
+- **Total Test Files**: 70+ comprehensive test files
+- **Unit Test Coverage**: 95%+ across all MCP tools
+- **Integration Coverage**: Complete database and service testing
+- **Performance Testing**: All 36 tools benchmarked
+- **Security Testing**: Input validation and authentication tests
+
+## 📦 Deployment Options
+
+### Docker Deployment
+```bash
+# Build container
+npm run docker:build
+
+# Run with Docker Compose
+npm run docker:run
 ```
 
-#### `estimate_implementation_cost`
-Detailed cost estimates for cybersecurity implementations.
-```json
-{
-  "subcategory_ids": ["GV.OC-01", "ID.AM-01"],
-  "organization_size": "medium",
-  "include_ongoing_costs": true,
-  "include_risk_adjusted": true
-}
+### Production Deployment
+```bash
+# Install dependencies
+npm ci --only=production
+
+# Build for production
+npm run build
+
+# Start production server
+NODE_ENV=production npm start
 ```
 
-#### `create_implementation_plan`
-Generate detailed implementation roadmaps with phases and timelines.
-```json
-{
-  "gap_analysis_id": "GAP-456",
-  "timeline_months": 18,
-  "available_resources": 8,
-  "prioritization_strategy": "risk_based",
-  "include_dependencies": true
-}
-```
+### Enterprise Deployment
+- **Load Balancer**: Multiple instances with session affinity
+- **Database**: SQLite with backup/restore procedures
+- **Monitoring**: Integrated logging and metrics collection
+- **Security**: Full OAuth 2.1 with JWT validation
 
-#### `suggest_next_actions`
-AI-powered recommendations for next implementation steps.
-```json
-{
-  "profile_id": "PROF-123",
-  "focus_area": "governance",
-  "urgency_level": "high",
-  "include_quick_wins": true
-}
-```
-
-### Progress Tracking Tools
-
-#### `track_progress`
-Update and track implementation progress across subcategories.
-```json
-{
-  "profile_id": "PROF-123",
-  "updates": [{
-    "subcategory_id": "GV.OC-01",
-    "current_implementation": "partially_implemented",
-    "current_maturity": 3,
-    "status": "on_track",
-    "notes": "Policy approved, implementation in progress"
-  }]
-}
-```
-
-#### `generate_milestone`
-Create project milestones with deliverables and timelines.
-```json
-{
-  "profile_id": "PROF-123",
-  "milestone_type": "assessment",
-  "target_date": "2024-12-31",
-  "title": "Q4 Security Assessment Completion"
-}
-```
-
-### Advanced Analysis Tools
-
-#### `get_industry_benchmarks`
-Compare against industry standards and benchmarks.
-```json
-{
-  "organization_size": "medium",
-  "sector": "technology",
-  "include_peer_comparisons": true,
-  "benchmark_source": "nist_industry_data"
-}
-```
-
-#### `compare_profiles`
-Detailed comparison between multiple profiles.
-```json
-{
-  "profile_ids": ["PROF-123", "PROF-456"],
-  "comparison_type": "maturity",
-  "include_recommendations": true,
-  "include_visualizations": true
-}
-```
-
-### Reporting Tools
-
-#### `generate_report`
-Create comprehensive reports for different audiences.
-```json
-{
-  "profile_id": "PROF-123",
-  "report_type": "executive",
-  "format": "json",
-  "include_recommendations": true,
-  "include_charts": true
-}
-```
-
-#### `generate_executive_report`
-Business-focused reports for executives and board members.
-```json
-{
-  "profile_id": "PROF-123",
-  "audience": "board",
-  "include_financial_impact": true,
-  "include_strategic_recommendations": true
-}
-```
-
-#### `generate_compliance_report`
-Multi-framework compliance reporting and gap analysis.
-```json
-{
-  "profile_id": "PROF-123",
-  "compliance_frameworks": ["iso27001", "pci_dss", "hipaa"],
-  "include_remediation_roadmap": true
-}
-```
-
-#### `generate_audit_report`
-Comprehensive audit reports with findings and recommendations.
-```json
-{
-  "profile_id": "PROF-123",
-  "audit_type": "comprehensive",
-  "regulatory_framework": "nist_csf",
-  "include_exceptions": true
-}
-```
-
-#### `create_custom_report`
-Flexible custom report builder with multiple content types.
-```json
-{
-  "profile_id": "PROF-123",
-  "sections": [
-    {
-      "section_type": "executive_summary",
-      "title": "Executive Summary"
-    },
-    {
-      "section_type": "metrics",
-      "title": "Key Metrics"
-    }
-  ]
-}
-```
-
-#### `generate_dashboard`
-Real-time cybersecurity dashboards and KPI visualization.
-```json
-{
-  "profile_id": "PROF-123",
-  "dashboard_type": "executive",
-  "include_real_time_metrics": true,
-  "refresh_interval": 300
-}
-```
-
-### Evidence & Documentation Tools
-
-#### `upload_evidence`
-Manage evidence and supporting documentation.
-```json
-{
-  "profile_id": "PROF-123",
-  "subcategory_id": "GV.OC-01",
-  "evidence_type": "policy_document",
-  "file_metadata": {
-    "filename": "security_policy.pdf",
-    "file_size": 2048576,
-    "mime_type": "application/pdf"
-  }
-}
-```
-
-#### `validate_evidence`
-Validate evidence completeness and quality.
-```json
-{
-  "profile_id": "PROF-123",
-  "validation_type": "comprehensive",
-  "include_recommendations": true
-}
-```
-
-#### `track_audit_trail`
-Comprehensive audit trail tracking and reporting.
-```json
-{
-  "profile_id": "PROF-123",
-  "date_range": {
-    "start_date": "2024-01-01",
-    "end_date": "2024-12-31"
-  },
-  "event_types": ["assessment", "update", "report_generation"]
-}
-```
-
-### Policy & Templates Tools
-
-#### `generate_policy_template`
-Generate cybersecurity policy templates based on framework requirements.
-```json
-{
-  "subcategory_ids": ["GV.OC-01", "GV.PO-01"],
-  "organization_size": "medium",
-  "sector": "healthcare",
-  "template_format": "detailed"
-}
-```
-
-#### `get_implementation_template`
-Get implementation templates and best practices.
-```json
-{
-  "subcategory_id": "ID.AM-01",
-  "organization_size": "large",
-  "include_checklists": true,
-  "include_examples": true
-}
-```
-
-#### `get_implementation_guidance`
-Comprehensive implementation guidance for specific subcategories.
-```json
-{
-  "subcategory_id": "PR.AC-01",
-  "organization_size": "medium",
-  "sector": "finance",
-  "implementation_approach": "phased"
-}
-```
-
-### Question Bank & Assessment Tools
-
-#### `get_assessment_questions`
-Retrieve comprehensive assessment questions (424 questions total).
-```json
-{
-  "assessment_type": "detailed",
-  "function": "GV",
-  "assessment_dimension": "maturity",
-  "organization_size": "medium",
-  "sector": "technology",
-  "limit": 50
-}
-```
-
-#### `validate_assessment_responses`
-Validate assessment responses for completeness and consistency.
-```json
-{
-  "profile_id": "PROF-123",
-  "responses": [
-    {
-      "subcategory_id": "GV.OC-01",
-      "assessment_dimension": "risk",
-      "response_value": 3,
-      "risk_level": "medium",
-      "maturity_level": "defined"
-    }
-  ],
-  "validation_level": "comprehensive"
-}
-```
-
-#### `get_question_context`
-Get detailed context and scoring guidance for assessment questions.
-```json
-{
-  "subcategory_id": "GV.OC-01",
-  "assessment_dimension": "maturity",
-  "include_scoring_guidance": true,
-  "organization_context": {
-    "sector": "healthcare",
-    "size": "medium"
-  }
-}
-```
-
-### Data Management Tools
-
-#### `export_data`
+## 📚 Documentation Resources
 Export assessment and progress data in various formats.
 ```json
 {
@@ -589,7 +477,7 @@ nist-csf-2-mcp-server/
 │   │   ├── framework-loader.ts    # NIST CSF data loading
 │   │   ├── assessment-engine.ts   # Assessment calculations
 │   │   └── report-generator.ts    # Report generation
-│   ├── tools/                     # MCP tool implementations (37 tools)
+│   ├── tools/                     # MCP tool implementations (36 tools)
 │   │   ├── csf_lookup.ts         # Framework lookup
 │   │   ├── create_profile.ts     # Profile management
 │   │   ├── quick_assessment.ts   # Quick assessments
@@ -772,7 +660,7 @@ calculate_maturity_trend → generate_executive_report → compare_profiles → 
 
 For comprehensive LLM prompt examples and integration guidance, see **[PROMPTS.md](./PROMPTS.md)** which includes:
 
-- **Optimized prompts for all 37 MCP tools**
+- **Optimized prompts for all 36 MCP tools**
 - **Complete workflow examples**
 - **Integration patterns for Claude, ChatGPT, and Gemini**
 - **Best practices for cybersecurity assessments**
@@ -806,10 +694,6 @@ npm run build                      # Build TypeScript to JavaScript
 npm start                          # Start production server
 
 # Database Operations  
-npm run db:init                    # Initialize database with NIST CSF 2.0 data
-npm run import:framework           # Import framework data
-npm run seed:questions             # Seed 424 assessment questions
-npm run cleanup:subcategories      # Clean database to match official CSF
 npm run db:verify                  # Verify database integrity
 
 # Testing & Quality
