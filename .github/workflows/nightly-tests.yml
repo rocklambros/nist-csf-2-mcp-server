@@ -1,0 +1,427 @@
+name: Nightly Tests & Quality Checks
+
+on:
+  schedule:
+    # Run every night at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of tests to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - comprehensive
+        - performance
+        - security
+        - integration
+
+env:
+  NODE_VERSION: '18.x'
+
+jobs:
+  nightly-info:
+    name: Nightly Test Information
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Info
+        run: |
+          echo "🌙 Nightly Test Run"
+          echo "Timestamp: $(date)"
+          echo "Test Type: ${{ github.event.inputs.test_type || 'all' }}"
+          echo "Branch: ${{ github.ref_name }}"
+
+  comprehensive-unit-tests:
+    name: Comprehensive Unit Tests
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'comprehensive' || github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run comprehensive unit tests
+        run: |
+          # Run all unit tests including previously excluded ones
+          npm run test:unit -- --verbose --coverage --detectOpenHandles
+
+      - name: Generate detailed coverage report
+        run: |
+          npx jest --coverage --coverageReporters=html --coverageReporters=text-summary --coverageReporters=lcov
+          
+      - name: Upload comprehensive coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-unit-coverage
+          path: coverage/
+
+  stress-integration-tests:
+    name: Stress Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'integration' || github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Initialize database
+        run: npm run db:init
+
+      - name: Run stress integration tests
+        run: |
+          # Run integration tests with stress patterns
+          npm run test:integration -- --verbose --runInBand --forceExit
+          
+          # Run additional comprehensive integration tests
+          npx jest tests/tools/comprehensive-integration.test.ts --runInBand --forceExit || true
+          npx jest tests/tools/assessment-integration.test.ts --runInBand --forceExit || true
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-integration-results
+          path: coverage/
+
+  comprehensive-e2e-tests:
+    name: Comprehensive E2E Tests
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'comprehensive' || github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Initialize database
+        run: npm run db:init
+
+      - name: Run comprehensive E2E tests
+        run: |
+          npm run test:e2e -- --verbose --runInBand --detectOpenHandles
+          
+          # Additional comprehensive workflow tests
+          npx jest tests/tools/analysis.comprehensive.test.ts --runInBand --forceExit || true
+          npx jest tests/tools/assessment.comprehensive.test.ts --runInBand --forceExit || true
+          npx jest tests/tools/profile-management.comprehensive.test.ts --runInBand --forceExit || true
+          npx jest tests/tools/reporting.comprehensive.test.ts --runInBand --forceExit || true
+          npx jest tests/tools/audit-evidence.comprehensive.test.ts --runInBand --forceExit || true
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-e2e-results
+          path: coverage/
+
+  extended-security-tests:
+    name: Extended Security Tests
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'security' || github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run extended security tests
+        run: |
+          npm run test:security -- --verbose --runInBand
+          
+          # Additional security validations
+          npm audit --audit-level low --json > audit-results.json || true
+          
+      - name: Security dependency scan
+        run: |
+          # Check for known vulnerabilities
+          npm audit --audit-level moderate
+          
+          # Generate security report
+          echo "## Security Scan Results" > security-report.md
+          echo "### Dependency Audit" >> security-report.md
+          npm audit --audit-level low >> security-report.md || true
+
+      - name: Upload security results
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-security-results
+          path: |
+            audit-results.json
+            security-report.md
+            coverage/
+
+  performance-benchmarks:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'performance' || github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Initialize database
+        run: npm run db:init
+
+      - name: Run performance benchmarks
+        run: |
+          npm run test:performance -- --verbose --runInBand
+          
+          # Additional performance testing
+          npx jest tests/performance/benchmarks.performance.test.ts --runInBand --forceExit || true
+
+      - name: Generate performance report
+        run: |
+          echo "# Performance Benchmark Report" > performance-report.md
+          echo "Generated: $(date)" >> performance-report.md
+          echo "" >> performance-report.md
+          
+          # Add any performance metrics from test output
+          if [ -f performance-results.json ]; then
+            echo "## Results" >> performance-report.md
+            cat performance-results.json >> performance-report.md
+          fi
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-performance-results
+          path: |
+            performance-report.md
+            coverage/
+
+  code-quality-analysis:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'comprehensive' || github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run comprehensive linting
+        run: |
+          npm run lint -- --format json > lint-results.json || true
+          npm run lint
+
+      - name: Type checking analysis
+        run: |
+          npm run typecheck -- --pretty
+
+      - name: Generate code quality report
+        run: |
+          echo "# Code Quality Report" > code-quality-report.md
+          echo "Generated: $(date)" >> code-quality-report.md
+          echo "" >> code-quality-report.md
+          
+          echo "## TypeScript Compilation" >> code-quality-report.md
+          if npm run typecheck --silent; then
+            echo "✅ No TypeScript errors" >> code-quality-report.md
+          else
+            echo "❌ TypeScript errors found" >> code-quality-report.md
+          fi
+          
+          echo "" >> code-quality-report.md
+          echo "## ESLint Analysis" >> code-quality-report.md
+          if [ -f lint-results.json ]; then
+            echo "Lint results available in artifacts" >> code-quality-report.md
+          fi
+
+      - name: Upload code quality results
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-code-quality
+          path: |
+            lint-results.json
+            code-quality-report.md
+
+  database-integrity-check:
+    name: Database Integrity Check
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'comprehensive' || github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Initialize database
+        run: npm run db:init
+
+      - name: Verify database integrity
+        run: |
+          npm run db:verify
+          
+          # Additional integrity checks could go here
+          echo "Database integrity check completed"
+
+      - name: Upload database verification results
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-database-check
+          path: |
+            *.log
+            verification-results.json
+
+  nightly-summary:
+    name: Nightly Test Summary
+    runs-on: ubuntu-latest
+    needs: [comprehensive-unit-tests, stress-integration-tests, comprehensive-e2e-tests, extended-security-tests, performance-benchmarks, code-quality-analysis, database-integrity-check]
+    if: always() && (github.event_name == 'schedule' || github.event.inputs.test_type == 'all')
+    steps:
+      - name: Generate nightly summary
+        run: |
+          echo "# 🌙 Nightly Test Summary" > nightly-summary.md
+          echo "**Date**: $(date)" >> nightly-summary.md
+          echo "**Branch**: ${{ github.ref_name }}" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+          
+          echo "## Test Results" >> nightly-summary.md
+          echo "| Test Category | Status | Notes |" >> nightly-summary.md
+          echo "|---------------|---------|-------|" >> nightly-summary.md
+          echo "| Unit Tests | ${{ needs.comprehensive-unit-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} | Comprehensive coverage analysis |" >> nightly-summary.md
+          echo "| Integration Tests | ${{ needs.stress-integration-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} | Stress testing with full database |" >> nightly-summary.md
+          echo "| E2E Tests | ${{ needs.comprehensive-e2e-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} | Complete workflow validation |" >> nightly-summary.md
+          echo "| Security Tests | ${{ needs.extended-security-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} | Extended security scanning |" >> nightly-summary.md
+          echo "| Performance Tests | ${{ needs.performance-benchmarks.result == 'success' && '✅ Passed' || '❌ Failed' }} | Benchmark analysis |" >> nightly-summary.md
+          echo "| Code Quality | ${{ needs.code-quality-analysis.result == 'success' && '✅ Passed' || '❌ Failed' }} | Linting and type checking |" >> nightly-summary.md
+          echo "| Database Integrity | ${{ needs.database-integrity-check.result == 'success' && '✅ Passed' || '❌ Failed' }} | Schema and data validation |" >> nightly-summary.md
+          
+          # Count results
+          PASSED=0
+          FAILED=0
+          
+          RESULTS=("${{ needs.comprehensive-unit-tests.result }}" "${{ needs.stress-integration-tests.result }}" "${{ needs.comprehensive-e2e-tests.result }}" "${{ needs.extended-security-tests.result }}" "${{ needs.performance-benchmarks.result }}" "${{ needs.code-quality-analysis.result }}" "${{ needs.database-integrity-check.result }}")
+          
+          for result in "${RESULTS[@]}"; do
+            if [[ "$result" == "success" ]]; then
+              ((PASSED++))
+            else
+              ((FAILED++))
+            fi
+          done
+          
+          echo "" >> nightly-summary.md
+          echo "## Summary" >> nightly-summary.md
+          echo "**Total Tests**: 7" >> nightly-summary.md
+          echo "**Passed**: $PASSED" >> nightly-summary.md
+          echo "**Failed**: $FAILED" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+          
+          if [[ $FAILED -eq 0 ]]; then
+            echo "🎉 **Overall Status**: All nightly tests passed!" >> nightly-summary.md
+          else
+            echo "⚠️ **Overall Status**: $FAILED test(s) failed. Review required." >> nightly-summary.md
+          fi
+          
+          cat nightly-summary.md
+
+      - name: Upload nightly summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-test-summary
+          path: nightly-summary.md
+
+  notify-results:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [nightly-summary]
+    if: always() && github.event_name == 'schedule'
+    steps:
+      - name: Create issue on failure
+        if: needs.nightly-summary.result == 'failure'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const title = `🌙 Nightly Tests Failed - ${new Date().toISOString().split('T')[0]}`;
+            const body = `
+            ## Nightly Test Failure Report
+            
+            **Date**: ${new Date().toISOString()}
+            **Branch**: ${{ github.ref_name }}
+            **Commit**: ${{ github.sha }}
+            
+            One or more nightly tests have failed. Please review the workflow results and artifacts:
+            
+            - [Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            ### Action Items
+            - [ ] Review failed test results
+            - [ ] Identify root cause
+            - [ ] Create fix or issue for tracking
+            - [ ] Verify fix with test run
+            
+            **Auto-generated by GitHub Actions**
+            `;
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['bug', 'nightly-test-failure', 'priority-high']
+            });

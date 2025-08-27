@@ -1,0 +1,362 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [opened, synchronize, reopened]
+
+env:
+  NODE_VERSION: '18.x'
+
+jobs:
+  pr-info:
+    name: PR Information
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR Info
+        run: |
+          echo "PR #${{ github.event.pull_request.number }}"
+          echo "Title: ${{ github.event.pull_request.title }}"
+          echo "Author: ${{ github.event.pull_request.user.login }}"
+          echo "Base: ${{ github.event.pull_request.base.ref }}"
+          echo "Head: ${{ github.event.pull_request.head.ref }}"
+
+  changed-files:
+    name: Detect Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      src-changed: ${{ steps.changes.outputs.src }}
+      tests-changed: ${{ steps.changes.outputs.tests }}
+      tools-changed: ${{ steps.changes.outputs.tools }}
+      services-changed: ${{ steps.changes.outputs.services }}
+      config-changed: ${{ steps.changes.outputs.config }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'src/**/*.ts'
+            tests:
+              - 'tests/**/*.ts'
+            tools:
+              - 'src/tools/**/*.ts'
+            services:
+              - 'src/services/**/*.ts'
+            config:
+              - 'package.json'
+              - 'jest.config.cjs'
+              - 'tsconfig.json'
+              - '.github/workflows/**'
+
+  lint-check:
+    name: Quick Lint Check
+    runs-on: ubuntu-latest
+    needs: changed-files
+    if: needs.changed-files.outputs.src-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript check
+        run: npm run typecheck
+
+  unit-tests-pr:
+    name: PR Unit Tests
+    runs-on: ubuntu-latest
+    needs: changed-files
+    if: needs.changed-files.outputs.src-changed == 'true' || needs.changed-files.outputs.tests-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Comment PR with coverage
+        uses: actions/github-script@v6
+        if: always()
+        with:
+          script: |
+            const fs = require('fs');
+            try {
+              const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+              const total = coverage.total;
+              
+              const comment = `
+              ## 📊 Unit Test Coverage Report
+              
+              | Metric | Percentage | Status |
+              |--------|------------|--------|
+              | Lines | ${total.lines.pct}% | ${total.lines.pct >= 80 ? '✅' : '❌'} |
+              | Functions | ${total.functions.pct}% | ${total.functions.pct >= 75 ? '✅' : '❌'} |
+              | Branches | ${total.branches.pct}% | ${total.branches.pct >= 70 ? '✅' : '❌'} |
+              | Statements | ${total.statements.pct}% | ${total.statements.pct >= 80 ? '✅' : '❌'} |
+              
+              ${total.lines.pct >= 80 && total.functions.pct >= 75 && total.branches.pct >= 70 && total.statements.pct >= 80 
+                ? '🎉 All coverage thresholds met!' 
+                : '⚠️ Some coverage thresholds not met. Please add more tests.'}
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (error) {
+              console.log('Coverage file not found or invalid');
+            }
+
+  tools-tests:
+    name: MCP Tools Tests
+    runs-on: ubuntu-latest
+    needs: changed-files
+    if: needs.changed-files.outputs.tools-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tools tests
+        run: npm run test:tools
+
+  services-tests:
+    name: Service Layer Tests
+    runs-on: ubuntu-latest
+    needs: changed-files
+    if: needs.changed-files.outputs.services-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run services tests
+        run: npm run test:services
+
+  integration-tests-pr:
+    name: PR Integration Tests
+    runs-on: ubuntu-latest
+    needs: [changed-files, unit-tests-pr]
+    if: needs.changed-files.outputs.src-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Initialize database
+        run: npm run db:init
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+  security-check:
+    name: Security Check
+    runs-on: ubuntu-latest
+    needs: changed-files
+    if: needs.changed-files.outputs.src-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: npm audit --audit-level moderate
+
+      - name: Run security tests
+        run: npm run test:security
+
+  build-check:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    needs: changed-files
+    if: needs.changed-files.outputs.src-changed == 'true' || needs.changed-files.outputs.config-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Verify build artifacts
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "❌ Build directory not found"
+            exit 1
+          fi
+          if [ ! -f "dist/index.js" ]; then
+            echo "❌ Main entry point not found"
+            exit 1
+          fi
+          echo "✅ Build verification passed"
+
+  pr-summary:
+    name: PR Validation Summary
+    runs-on: ubuntu-latest
+    needs: [lint-check, unit-tests-pr, tools-tests, services-tests, integration-tests-pr, security-check, build-check]
+    if: always()
+    steps:
+      - name: Generate PR summary
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const jobs = [
+              { name: 'Lint Check', result: '${{ needs.lint-check.result }}' },
+              { name: 'Unit Tests', result: '${{ needs.unit-tests-pr.result }}' },
+              { name: 'Tools Tests', result: '${{ needs.tools-tests.result }}' },
+              { name: 'Services Tests', result: '${{ needs.services-tests.result }}' },
+              { name: 'Integration Tests', result: '${{ needs.integration-tests-pr.result }}' },
+              { name: 'Security Check', result: '${{ needs.security-check.result }}' },
+              { name: 'Build Check', result: '${{ needs.build-check.result }}' }
+            ];
+            
+            const successful = jobs.filter(job => job.result === 'success').length;
+            const failed = jobs.filter(job => job.result === 'failure').length;
+            const skipped = jobs.filter(job => job.result === 'skipped').length;
+            
+            let summary = `## 🔍 PR Validation Summary\n\n`;
+            summary += `**Status**: ${failed > 0 ? '❌ Failed' : '✅ Passed'}\n`;
+            summary += `**Results**: ${successful} passed, ${failed} failed, ${skipped} skipped\n\n`;
+            
+            summary += `### Job Details\n`;
+            jobs.forEach(job => {
+              const icon = job.result === 'success' ? '✅' : 
+                          job.result === 'failure' ? '❌' : 
+                          job.result === 'skipped' ? '⏭️' : '⏸️';
+              summary += `- ${icon} ${job.name}: ${job.result}\n`;
+            });
+            
+            if (failed > 0) {
+              summary += `\n⚠️ **Action Required**: Please fix the failing checks before merging.`;
+            } else {
+              summary += `\n🎉 **Ready for Review**: All validation checks passed!`;
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+  auto-approve-dependabot:
+    name: Auto-approve Dependabot PRs
+    runs-on: ubuntu-latest
+    needs: [lint-check, unit-tests-pr, build-check]
+    if: github.actor == 'dependabot[bot]' && needs.lint-check.result == 'success' && needs.unit-tests-pr.result == 'success' && needs.build-check.result == 'success'
+    steps:
+      - name: Approve Dependabot PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              event: 'APPROVE',
+              body: '🤖 Auto-approved by CI: Dependabot update with passing tests'
+            });
+
+  merge-readiness:
+    name: Merge Readiness Check
+    runs-on: ubuntu-latest
+    needs: [lint-check, unit-tests-pr, integration-tests-pr, security-check, build-check]
+    if: always()
+    steps:
+      - name: Check merge readiness
+        run: |
+          echo "Checking merge readiness..."
+          
+          REQUIRED_CHECKS=("lint-check" "unit-tests-pr" "build-check")
+          OPTIONAL_CHECKS=("integration-tests-pr" "security-check")
+          
+          RESULTS=(
+            "${{ needs.lint-check.result }}"
+            "${{ needs.unit-tests-pr.result }}"
+            "${{ needs.build-check.result }}"
+            "${{ needs.integration-tests-pr.result }}"
+            "${{ needs.security-check.result }}"
+          )
+          
+          FAILED_REQUIRED=0
+          for result in "${RESULTS[@]:0:3}"; do
+            if [[ "$result" == "failure" ]]; then
+              ((FAILED_REQUIRED++))
+            fi
+          done
+          
+          if [[ $FAILED_REQUIRED -gt 0 ]]; then
+            echo "❌ Merge blocked: Required checks failed"
+            exit 1
+          else
+            echo "✅ Merge ready: All required checks passed"
+          fi
