@@ -121,7 +121,7 @@ async function initializeTestData(): Promise<void> {
  */
 function cleanTestData(): void {
   const tablesToClean = [
-    'organizations',
+    'organization_profiles',
     'profiles', 
     'assessments',
     'progress_tracking',
@@ -137,6 +137,8 @@ function cleanTestData(): void {
     
     for (const table of tablesToClean) {
       try {
+        // Skip views as they can't be modified directly
+        if (table === 'organizations') continue;
         testDb.db.prepare(`DELETE FROM ${table}`).run();
       } catch (error) {
         // Table might not exist, continue
@@ -161,7 +163,7 @@ export const testUtils = {
 
     // Create organization
     testDb.db.prepare(`
-      INSERT INTO organizations (org_id, org_name, industry, size, current_tier, target_tier)
+      INSERT INTO organization_profiles (org_id, org_name, industry, size, current_tier, target_tier)
       VALUES (?, ?, ?, ?, ?, ?)
     `).run(orgId, 'Test Organization', 'Technology', 'medium', 'Tier1', 'Tier3');
 
@@ -187,7 +189,7 @@ export const testUtils = {
       profileData.profile_type,
       profileData.description,
       profileData.created_by,
-      profileData.is_active
+      profileData.is_active ? 1 : 0
     );
 
     return profileData;

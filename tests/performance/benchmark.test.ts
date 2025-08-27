@@ -43,7 +43,7 @@ describe('Performance Benchmarks', () => {
     it('should insert single record quickly', () => {
       const startTime = performance.now();
       
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       
       const duration = performance.now() - startTime;
       
@@ -51,7 +51,7 @@ describe('Performance Benchmarks', () => {
     });
     
     it('should handle batch insert of 100 records efficiently', () => {
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       const profiles = generateMockProfiles(100);
       
       const startTime = performance.now();
@@ -69,7 +69,7 @@ describe('Performance Benchmarks', () => {
     });
     
     it('should handle batch insert of 1000 records', () => {
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', { 
         ...generateMockProfiles(1)[0], 
         profile_id: 'test-profile' 
@@ -97,7 +97,7 @@ describe('Performance Benchmarks', () => {
   describe('Query Performance', () => {
     beforeEach(() => {
       // Setup large dataset
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       const profiles = generateMockProfiles(10);
       testDb.insertTestData('profiles', profiles);
       
@@ -191,7 +191,7 @@ describe('Performance Benchmarks', () => {
   describe('Search Performance', () => {
     beforeEach(() => {
       // Insert searchable data
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       const profiles = generateMockProfiles(10);
       testDb.insertTestData('profiles', profiles);
       
@@ -239,7 +239,7 @@ describe('Performance Benchmarks', () => {
   describe('Concurrent Operations', () => {
     it('should handle concurrent reads efficiently', async () => {
       // Setup data
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       const profiles = generateMockProfiles(5);
       testDb.insertTestData('profiles', profiles);
       
@@ -273,7 +273,7 @@ describe('Performance Benchmarks', () => {
     });
     
     it('should handle mixed read/write operations', async () => {
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       const profiles = generateMockProfiles(5);
       testDb.insertTestData('profiles', profiles);
       
@@ -310,7 +310,7 @@ describe('Performance Benchmarks', () => {
   describe('Memory Performance', () => {
     it('should handle large result sets without memory issues', () => {
       // Insert large dataset
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', generateMockProfiles(1)[0]);
       
       const largeDataset = generateMockAssessments(5000, 'test-profile-0');
@@ -337,7 +337,7 @@ describe('Performance Benchmarks', () => {
       
       for (let i = 0; i < iterations; i++) {
         const db = new TestDatabase();
-        db.insertTestData('organizations', {
+        db.insertTestData('organization_profiles', {
           ...mockOrganization,
           org_id: `org-${i}`
         });
@@ -354,7 +354,7 @@ describe('Performance Benchmarks', () => {
       // Setup realistic data
       const batchData = generateLargeBatchData();
       
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', batchData.profiles);
       
       batchData.profiles.forEach((profile, i) => {
@@ -387,7 +387,7 @@ describe('Performance Benchmarks', () => {
     
     it('should compare profiles efficiently', () => {
       // Setup profiles with assessments
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       const profiles = generateMockProfiles(3);
       testDb.insertTestData('profiles', profiles);
       

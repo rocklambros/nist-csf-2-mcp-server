@@ -143,7 +143,7 @@ describe('Create Profile Tool', () => {
       const db = testDb.createAppDatabase();
       
       // Insert an organization to cause duplicate key error
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       
       const params = {
         org_name: mockOrganization.org_name,
@@ -173,7 +173,7 @@ describe('Clone Profile Tool', () => {
   beforeEach(() => {
     testDb = new TestDatabase();
     // Setup source data
-    testDb.insertTestData('organizations', mockOrganization);
+    testDb.insertTestData('organization_profiles', mockOrganization);
     testDb.insertTestData('profiles', mockProfile);
   });
   
@@ -307,7 +307,7 @@ describe('Compare Profiles Tool', () => {
     testDb = new TestDatabase();
     
     // Setup test data with multiple profiles
-    testDb.insertTestData('organizations', mockOrganization);
+    testDb.insertTestData('organization_profiles', mockOrganization);
     
     const profiles = [
       { ...mockProfile, profile_id: 'profile-1', profile_name: 'Profile 1' },

@@ -37,7 +37,7 @@ describe('Database Integration Tests', () => {
     it('should commit successful transactions', () => {
       testDb.beginTransaction();
       
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', mockProfile);
       
       testDb.commit();
@@ -53,9 +53,9 @@ describe('Database Integration Tests', () => {
       testDb.beginTransaction();
       
       try {
-        testDb.insertTestData('organizations', mockOrganization);
+        testDb.insertTestData('organization_profiles', mockOrganization);
         // Try to insert duplicate
-        testDb.insertTestData('organizations', mockOrganization);
+        testDb.insertTestData('organization_profiles', mockOrganization);
       } catch (error) {
         testDb.rollback();
       }
@@ -71,7 +71,7 @@ describe('Database Integration Tests', () => {
       }).toThrow();
       
       // Insert organization first
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       
       // Now profile insertion should work
       testDb.insertTestData('profiles', mockProfile);
@@ -84,7 +84,7 @@ describe('Database Integration Tests', () => {
   describe('Batch Operations', () => {
     it('should handle batch inserts efficiently', () => {
       // Insert organization and profile first
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', mockProfile);
       
       // Generate large batch of assessments
@@ -106,7 +106,7 @@ describe('Database Integration Tests', () => {
     });
     
     it('should handle batch updates', () => {
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', mockProfile);
       
       // Insert initial progress records
@@ -131,7 +131,7 @@ describe('Database Integration Tests', () => {
     
     it('should handle batch deletes with cascade', () => {
       // Setup related data
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', mockProfile);
       testDb.insertTestData('assessments', generateMockAssessments(10, mockProfile.profile_id));
       
@@ -150,7 +150,7 @@ describe('Database Integration Tests', () => {
   describe('Complex Queries', () => {
     beforeEach(() => {
       // Setup comprehensive test data
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', mockProfile);
       testDb.insertTestData('assessments', generateMockAssessments(20, mockProfile.profile_id));
       testDb.insertTestData('progress_tracking', generateMockProgress(10, mockProfile.profile_id));
@@ -226,7 +226,7 @@ describe('Database Integration Tests', () => {
   describe('Performance Optimization', () => {
     it('should use indexes effectively', () => {
       // Insert large dataset
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', mockProfile);
       
       const largeDataset = generateMockAssessments(1000, mockProfile.profile_id);
@@ -246,7 +246,7 @@ describe('Database Integration Tests', () => {
     });
     
     it('should handle concurrent reads', async () => {
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', mockProfile);
       testDb.insertTestData('assessments', generateMockAssessments(100, mockProfile.profile_id));
       
@@ -272,11 +272,11 @@ describe('Database Integration Tests', () => {
   
   describe('Data Integrity', () => {
     it('should enforce unique constraints', () => {
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       
       // Try to insert duplicate
       expect(() => {
-        testDb.insertTestData('organizations', mockOrganization);
+        testDb.insertTestData('organization_profiles', mockOrganization);
       }).toThrow();
     });
     
@@ -288,7 +288,7 @@ describe('Database Integration Tests', () => {
     });
     
     it('should handle NULL values correctly', () => {
-      testDb.insertTestData('organizations', {
+      testDb.insertTestData('organization_profiles', {
         ...mockOrganization,
         current_tier: null,
         target_tier: null
@@ -304,7 +304,7 @@ describe('Database Integration Tests', () => {
     });
     
     it('should apply default values', () => {
-      testDb.insertTestData('organizations', mockOrganization);
+      testDb.insertTestData('organization_profiles', mockOrganization);
       testDb.insertTestData('profiles', {
         profile_id: 'test-profile',
         org_id: mockOrganization.org_id,

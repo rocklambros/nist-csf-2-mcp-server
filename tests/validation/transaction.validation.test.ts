@@ -27,7 +27,7 @@ describe('Transaction and Response Validation Tests', () => {
     describe('ACID Properties Validation', () => {
       test('should maintain atomicity in profile creation', async () => {
         // Create a scenario where profile creation might partially fail
-        const initialOrgCount = getTableCount('organizations');
+        const initialOrgCount = getTableCount('organization_profiles');
         const initialProfileCount = getTableCount('profiles');
 
         // Valid profile creation should be fully atomic
@@ -42,11 +42,11 @@ describe('Transaction and Response Validation Tests', () => {
 
         if (result.success) {
           // Both organization and profile should be created
-          expect(getTableCount('organizations')).toBe(initialOrgCount + 1);
+          expect(getTableCount('organization_profiles')).toBe(initialOrgCount + 1);
           expect(getTableCount('profiles')).toBe(initialProfileCount + 1);
         } else {
           // Neither should be created on failure
-          expect(getTableCount('organizations')).toBe(initialOrgCount);
+          expect(getTableCount('organization_profiles')).toBe(initialOrgCount);
           expect(getTableCount('profiles')).toBe(initialProfileCount);
         }
       });
