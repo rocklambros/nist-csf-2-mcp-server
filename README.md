@@ -110,6 +110,163 @@ AUTH_MODE=disabled  # disabled|simple|oauth
 API_KEY=your-api-key-here
 ```
 
+## 🔌 MCP Client Integration
+
+### Claude Desktop Integration
+
+To connect this NIST CSF 2.0 MCP server to Claude Desktop:
+
+#### 1. Install and Start the Server
+```bash
+# Clone and build the server (if not already done)
+git clone https://github.com/rocklambros/nist-csf-2-mcp-server.git
+cd nist-csf-2-mcp-server
+npm install
+npm run build
+npm start  # Server runs on http://localhost:3000
+```
+
+#### 2. Configure Claude Desktop
+Add the MCP server to your Claude Desktop configuration file:
+
+**Location of config file:**
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+**Configuration:**
+```json
+{
+  "mcpServers": {
+    "nist-csf-2": {
+      "command": "node",
+      "args": ["/path/to/nist-csf-2-mcp-server/dist/index.js"],
+      "env": {
+        "NODE_ENV": "production",
+        "AUTH_MODE": "disabled"
+      }
+    }
+  }
+}
+```
+
+**Alternative using npm start:**
+```json
+{
+  "mcpServers": {
+    "nist-csf-2": {
+      "command": "npm",
+      "args": ["start"],
+      "cwd": "/path/to/nist-csf-2-mcp-server",
+      "env": {
+        "NODE_ENV": "production",
+        "AUTH_MODE": "disabled"
+      }
+    }
+  }
+}
+```
+
+#### 3. Restart Claude Desktop
+After updating the configuration, restart Claude Desktop to load the NIST CSF 2.0 MCP server.
+
+#### 4. Verify Connection
+In Claude Desktop, you should now have access to all 36 NIST CSF 2.0 tools. Test the connection:
+```
+Please use csf_lookup to find information about subcategory "GV.OC-01"
+```
+
+### ChatGPT Integration (via MCP Connectors)
+
+To connect this server to ChatGPT, you'll need an MCP-to-OpenAI connector:
+
+#### Option 1: Using MCP Bridge
+```bash
+# Install MCP Bridge (third-party connector)
+npm install -g @modelcontextprotocol/bridge
+
+# Start the bridge
+mcp-bridge --mcp-server http://localhost:3000 --openai-api-key YOUR_OPENAI_KEY
+```
+
+#### Option 2: Using Custom Actions (ChatGPT Plus/Enterprise)
+Create a custom GPT with these server endpoints:
+
+**Base URL**: `http://localhost:3000` (or your deployed server URL)
+
+**Available Actions** (sample endpoints to configure):
+- `POST /tools/csf_lookup` - Look up CSF elements
+- `POST /tools/quick_assessment` - Perform rapid assessments  
+- `POST /tools/generate_report` - Generate comprehensive reports
+- `POST /tools/create_profile` - Create organization profiles
+
+**Authentication**: 
+- For development: No authentication required (`AUTH_MODE=disabled`)
+- For production: Use API key authentication (`AUTH_MODE=simple`)
+
+#### Option 3: Using Zapier or Make.com
+1. Create a webhook integration pointing to your server
+2. Configure triggers for specific NIST CSF assessment workflows
+3. Connect to ChatGPT via their respective ChatGPT integrations
+
+### Other AI Assistants
+
+#### Google Gemini Integration
+Use the same MCP Bridge approach or create custom connectors using the server's REST-like interface.
+
+#### Microsoft Copilot Integration  
+Configure using Microsoft's connector framework with the MCP server endpoints.
+
+### Enterprise Integration
+
+For enterprise deployments with multiple AI assistants:
+
+#### 1. Deploy with Authentication
+```env
+AUTH_MODE=oauth
+OAUTH_ISSUER=https://your-identity-provider.com
+OAUTH_AUDIENCE=nist-csf-mcp-server
+```
+
+#### 2. Use API Gateway
+Deploy behind an API gateway for centralized authentication, rate limiting, and monitoring:
+```
+AI Clients → API Gateway → NIST CSF 2.0 MCP Server → SQLite Database
+```
+
+#### 3. Load Balancing
+For high availability:
+```bash
+# Multiple server instances
+npm start --port 3001
+npm start --port 3002
+npm start --port 3003
+```
+
+### Troubleshooting Connection Issues
+
+#### Common Issues:
+- **Connection Refused**: Ensure server is running on correct port
+- **Authentication Errors**: Check `AUTH_MODE` configuration matches client setup
+- **Tool Not Found**: Verify server build completed successfully (`npm run build`)
+- **Permission Errors**: Check file permissions for database and log files
+
+#### Debug Mode:
+```bash
+# Start server with debug logging
+LOG_LEVEL=debug npm start
+
+# Check server health
+curl http://localhost:3000/health
+```
+
+#### Testing Tools:
+```bash
+# Test individual tools via HTTP (for debugging)
+curl -X POST http://localhost:3000/tools/csf_lookup \
+  -H "Content-Type: application/json" \
+  -d '{"element_id": "GV.OC-01", "include_examples": true}'
+```
+
 ## 🛠️ Complete MCP Tools Suite (36 Tools)
 
 ### Framework Query & Search Tools (3 tools)
@@ -428,7 +585,14 @@ NODE_ENV=production npm start
 - **Security**: Full OAuth 2.1 with JWT validation
 
 ## 📚 Documentation Resources
-Export assessment and progress data in various formats.
+
+### Integration Guides
+- **🔌 [MCP Client Integration](#-mcp-client-integration)**: Connect to Claude Desktop, ChatGPT, and other AI assistants
+- **📝 [PROMPTS.md](./PROMPTS.md)**: LLM integration examples and optimized prompts for all 36 tools
+- **🛠️ [CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and development standards
+- **🔒 [Security Configuration](#-security-configuration)**: Multi-tier authentication setup guide
+
+### Sample Data Export
 ```json
 {
   "profile_id": "PROF-123",
@@ -733,9 +897,10 @@ npm run security:audit            # Security configuration audit
 ## 🆘 Support & Community
 
 ### Documentation & Resources
-- 📚 **[PROMPTS.md](./PROMPTS.md)**: LLM integration examples
-- 🛠️ **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines  
-- 🔒 **Security Configuration**: Multi-tier authentication setup
+- 🔌 **[MCP Client Integration](#-mcp-client-integration)**: Connect to Claude Desktop, ChatGPT, and other AI assistants
+- 📚 **[PROMPTS.md](./PROMPTS.md)**: LLM integration examples and optimized prompts
+- 🛠️ **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and development standards
+- 🔒 **[Security Configuration](#-security-configuration)**: Multi-tier authentication setup
 - 📊 **API Documentation**: Complete tool reference with examples
 
 ### Community Support
