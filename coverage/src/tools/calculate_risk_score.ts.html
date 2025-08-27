@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.2% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/129</span>
+                <span class='fraction'>0/129</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.77% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/118</span>
+                <span class='fraction'>0/118</span>
             </div>
         
             
@@ -570,13 +570,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -644,7 +644,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -654,7 +654,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -666,7 +666,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1073,13 +1073,13 @@
  * Calculate Risk Score Tool - Calculate risk based on unimplemented subcategories
  */
 &nbsp;
-import { z } from 'zod';
-import { getDatabase } from '../db/database.js';
-import { getFrameworkLoader } from '../services/framework-loader.js';
-import { logger } from '../utils/logger.js';
+<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
+<span class="cstat-no" title="statement not covered" >import { getDatabase } from '../db/database.js';</span>
+<span class="cstat-no" title="statement not covered" >import { getFrameworkLoader } from '../services/framework-loader.js';</span>
+<span class="cstat-no" title="statement not covered" >import { logger } from '../utils/logger.js';</span>
 &nbsp;
 // Input schema for the tool
-export const CalculateRiskScoreSchema = z.object({
+export const <span class="cstat-no" title="statement not covered" >CalculateRiskScoreSchema = z.object({</span>
   profile_id: z.string().min(1),
   threat_weights: z.object({
     govern: z.number().min(0).max(2).default(1.5),
@@ -1147,7 +1147,7 @@ interface RiskScoreResult {
 }
 &nbsp;
 // Default threat weights by function
-const DEFAULT_THREAT_WEIGHTS: Record&lt;string, number&gt; = {
+const DEFAULT_THREAT_WEIGHTS: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{</span>
   'GV': 1.5,  // Govern is most critical
   'ID': 1.3,  // Identify is very important
   'PR': 1.4,  // Protect is very important
@@ -1157,7 +1157,7 @@ const DEFAULT_THREAT_WEIGHTS: Record&lt;string, number&gt; = {
 };
 &nbsp;
 // Function names mapping
-const FUNCTION_NAMES: Record&lt;string, string&gt; = {
+const FUNCTION_NAMES: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{</span>
   'GV': 'Govern',
   'ID': 'Identify',
   'PR': 'Protect',
@@ -1169,7 +1169,7 @@ const FUNCTION_NAMES: Record&lt;string, string&gt; = {
 /**
  * Main function to calculate risk score
  */
-export async function <span class="fstat-no" title="function not covered" >calculateRiskScore(</span>params: CalculateRiskScoreParams): Promise&lt;RiskScoreResult&gt; {
+<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >calculateRiskScore(</span>params: CalculateRiskScoreParams): Promise&lt;RiskScoreResult&gt; {
   const db = <span class="cstat-no" title="statement not covered" >getDatabase();</span>
   const framework = <span class="cstat-no" title="statement not covered" >getFrameworkLoader();</span>
   
@@ -1579,7 +1579,7 @@ function <span class="fstat-no" title="function not covered" >createErrorResult(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-27T03:47:46.799Z
+                at 2025-08-27T11:23:44.003Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

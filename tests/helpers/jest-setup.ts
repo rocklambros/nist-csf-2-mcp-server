@@ -5,8 +5,221 @@
 import { jest } from '@jest/globals';
 import type { CSFDatabase } from '../../src/db/database.js';
 
-// Mock the database module at the top level
-jest.mock('../../src/db/database.js');
+// Mock the database module at the top level with proper implementation
+jest.mock('../../src/db/database.js', () => {
+  // Import the actual better-sqlite3 for the mock implementation
+  const Database = jest.requireActual('better-sqlite3');
+  const path = jest.requireActual('path');
+  
+  let mockDatabaseInstance: any = null;
+  
+  const createMockDatabase = (dbPath?: string) => {
+    const testPath = dbPath || path.join(process.cwd(), 'test-mock.db');
+    const db = new Database(testPath, { readonly: false, fileMustExist: false });
+    
+    // Enable foreign key constraints
+    db.pragma('foreign_keys = ON');
+    
+    // Initialize comprehensive schema for testing
+    db.exec(`
+      -- Core organization and profile tables
+      CREATE TABLE IF NOT EXISTS organization_profiles (
+        org_id TEXT PRIMARY KEY,
+        org_name TEXT NOT NULL,
+        industry TEXT,
+        size TEXT,
+        current_tier TEXT,
+        target_tier TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      CREATE TABLE IF NOT EXISTS profiles (
+        profile_id TEXT PRIMARY KEY,
+        org_id TEXT NOT NULL,
+        profile_name TEXT NOT NULL,
+        profile_type TEXT,
+        description TEXT,
+        created_by TEXT,
+        parent_profile_id TEXT,
+        is_active INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (org_id) REFERENCES organization_profiles(org_id)
+      );
+
+      -- Framework structure tables
+      CREATE TABLE IF NOT EXISTS functions (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS categories (
+        id TEXT PRIMARY KEY,
+        function_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT,
+        FOREIGN KEY (function_id) REFERENCES functions(id)
+      );
+
+      CREATE TABLE IF NOT EXISTS subcategories (
+        id TEXT PRIMARY KEY,
+        category_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT,
+        FOREIGN KEY (category_id) REFERENCES categories(id)
+      );
+
+      -- Assessment and tracking tables
+      CREATE TABLE IF NOT EXISTS assessments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        profile_id TEXT NOT NULL,
+        subcategory_id TEXT NOT NULL,
+        implementation_level TEXT,
+        maturity_score INTEGER,
+        notes TEXT,
+        assessed_by TEXT,
+        assessed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
+      );
+
+      CREATE TABLE IF NOT EXISTS progress_tracking (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        profile_id TEXT NOT NULL,
+        subcategory_id TEXT NOT NULL,
+        current_score INTEGER,
+        target_score INTEGER,
+        progress_percentage REAL,
+        last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
+      );
+
+      CREATE TABLE IF NOT EXISTS audit_evidence (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        profile_id TEXT NOT NULL,
+        subcategory_id TEXT,
+        evidence_type TEXT,
+        file_path TEXT,
+        description TEXT,
+        uploaded_by TEXT,
+        uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
+      );
+
+      CREATE TABLE IF NOT EXISTS gap_analysis (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        profile_id TEXT NOT NULL,
+        analysis_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+        overall_maturity_score REAL,
+        priority_recommendations TEXT,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
+      );
+
+      CREATE TABLE IF NOT EXISTS implementation_plans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        profile_id TEXT NOT NULL,
+        plan_name TEXT,
+        timeline TEXT,
+        budget_estimate REAL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
+      );
+    `);
+    
+    return {
+      prepare: (sql: string) => db.prepare(sql),
+      transaction: (fn: () => any) => {
+        try {
+          return db.transaction(fn)();
+        } catch (error) {
+          throw error;
+        }
+      },
+      close: () => db.close(),
+      
+      // Organization methods
+      getOrganization: jest.fn((orgId: string) => {
+        try {
+          const stmt = db.prepare('SELECT * FROM organization_profiles WHERE org_id = ?');
+          return stmt.get(orgId);
+        } catch (error) {
+          return null;
+        }
+      }),
+      createOrganization: jest.fn((org: any) => {
+        try {
+          const stmt = db.prepare(`
+            INSERT OR REPLACE INTO organization_profiles (org_id, org_name, industry, size, current_tier, target_tier)
+            VALUES (?, ?, ?, ?, ?, ?)
+          `);
+          return stmt.run(org.org_id, org.org_name, org.industry, org.size, org.current_tier, org.target_tier);
+        } catch (error) {
+          throw error;
+        }
+      }),
+      
+      // Profile methods
+      createProfile: jest.fn((profile: any) => {
+        try {
+          const stmt = db.prepare(`
+            INSERT OR REPLACE INTO profiles (profile_id, org_id, profile_name, profile_type, description, created_by, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+          `);
+          return stmt.run(
+            profile.profile_id, 
+            profile.org_id, 
+            profile.profile_name,
+            profile.profile_type || 'current', 
+            profile.description || null, 
+            profile.created_by || null,
+            profile.is_active !== undefined ? profile.is_active : 1
+          );
+        } catch (error) {
+          throw error;
+        }
+      }),
+      getProfile: jest.fn((profileId: string) => {
+        try {
+          const stmt = db.prepare('SELECT * FROM profiles WHERE profile_id = ?');
+          return stmt.get(profileId);
+        } catch (error) {
+          return null;
+        }
+      }),
+      
+      // Assessment methods
+      createBulkAssessments: jest.fn((profileId: string, assessments: any[]) => {
+        try {
+          const stmt = db.prepare(`
+            INSERT INTO assessments (profile_id, subcategory_id, implementation_level, maturity_score, notes, assessed_by)
+            VALUES (?, ?, ?, ?, ?, ?)
+          `);
+          const insertMany = db.transaction((assessments: any[]) => {
+            for (const assessment of assessments) {
+              stmt.run(profileId, assessment.subcategory_id, assessment.implementation_level, 
+                      assessment.maturity_score, assessment.notes, assessment.assessed_by);
+            }
+          });
+          insertMany(assessments);
+          return { changes: assessments.length };
+        } catch (error) {
+          throw error;
+        }
+      })
+    };
+  };
+  
+  return {
+    CSFDatabase: jest.fn().mockImplementation(createMockDatabase),
+    getDatabase: jest.fn(() => {
+      if (!mockDatabaseInstance) {
+        mockDatabaseInstance = createMockDatabase();
+      }
+      return mockDatabaseInstance;
+    })
+  };
+});
 
 // Mock the logger module to prevent console output during tests
 jest.mock('../../src/utils/logger.js', () => ({

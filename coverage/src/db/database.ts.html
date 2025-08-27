@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">2.09% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/334</span>
+                <span class='fraction'>0/334</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">2.16% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/324</span>
+                <span class='fraction'>0/324</span>
             </div>
         
             
@@ -3285,8 +3285,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3351,9 +3351,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -6485,16 +6485,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -6503,8 +6503,8 @@
  * Database connection and query wrapper for NIST CSF MCP Server
  */
 &nbsp;
-import Database from 'better-sqlite3';
-import { logger } from '../utils/logger.js';
+<span class="cstat-no" title="statement not covered" >import Database from 'better-sqlite3';</span>
+<span class="cstat-no" title="statement not covered" >import { logger } from '../utils/logger.js';</span>
 import type { 
   OrganizationProfile, 
   SubcategoryImplementation, 
@@ -6569,9 +6569,9 @@ interface ImplementationPlan {
 interface DatabaseRow {
   [key: string]: unknown;
 }
-import path from 'path';
+<span class="cstat-no" title="statement not covered" >import path from 'path';</span>
 &nbsp;
-export class CSFDatabase {
+<span class="cstat-no" title="statement not covered" >export class C</span>SFDatabase {
   private db: Database.Database;
   private readonly dbPath: string;
 &nbsp;
@@ -9703,16 +9703,16 @@ export class CSFDatabase {
 }
 &nbsp;
 // Singleton instance
-let dbInstance: CSFDatabase | null = null;
+let dbInstance: CSFDatabase | null = <span class="cstat-no" title="statement not covered" >null;</span>
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >getDatabase(</span>dbPath?: string): CSFDatabase {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >g</span>etDatabase(</span>dbPath?: string): CSFDatabase {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!dbInstance) {</span>
 <span class="cstat-no" title="statement not covered" >    dbInstance = new CSFDatabase(dbPath);</span>
   }
 <span class="cstat-no" title="statement not covered" >  return dbInstance;</span>
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >closeDatabase(</span>): void {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >c</span>loseDatabase(</span>): void {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (dbInstance) {</span>
 <span class="cstat-no" title="statement not covered" >    dbInstance.close();</span>
 <span class="cstat-no" title="statement not covered" >    dbInstance = null;</span>
@@ -9724,7 +9724,7 @@ export function <span class="fstat-no" title="function not covered" >closeDataba
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-27T03:47:46.799Z
+                at 2025-08-27T11:23:44.003Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

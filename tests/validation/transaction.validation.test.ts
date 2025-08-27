@@ -31,14 +31,14 @@ describe('Transaction and Response Validation Tests', () => {
         const initialProfileCount = getTableCount('profiles');
 
         // Valid profile creation should be fully atomic
-        const result = await createProfile.execute({
+        const result = await createProfile({
           org_name: 'Atomic Test Organization',
           profile_name: 'Atomic Test Profile',
-          industry: 'Technology',
+          sector: 'Technology',
           size: 'medium',
           current_tier: 'Tier1',
           target_tier: 'Tier3'
-        }, testDb);
+        });
 
         if (result.success) {
           // Both organization and profile should be created

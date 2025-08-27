@@ -16,14 +16,12 @@ export let testDb: CSFDatabase;
 
 // Setup test environment
 beforeAll(async () => {
-  // Silence logger during tests
-  logger.silent = true;
-  
   // Create test database
   if (fs.existsSync(TEST_DB_PATH)) {
     fs.unlinkSync(TEST_DB_PATH);
   }
   
+  // Create database instance (will use the Jest mock)
   testDb = new CSFDatabase(TEST_DB_PATH);
   
   // Initialize with test data if needed
@@ -33,7 +31,8 @@ beforeAll(async () => {
 // Clean up after all tests
 afterAll(async () => {
   if (testDb) {
-    testDb.close();
+    // CSFDatabase doesn't have a close method, using internal db if needed
+    // testDb.close();
   }
   
   // Clean up test database
@@ -59,6 +58,7 @@ afterEach(() => {
  * Initialize test data
  */
 async function initializeTestData(): Promise<void> {
+  
   // Add framework data
   const functions = [
     { id: 'GV', name: 'GOVERN', description: 'Establish and monitor cybersecurity governance' },
