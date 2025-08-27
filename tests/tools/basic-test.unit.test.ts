@@ -4,6 +4,9 @@
 
 import { describe, it, expect } from '@jest/globals';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 describe('Basic Test Suite', () => {
   describe('Jest Configuration', () => {
     it('should run tests successfully', () => {

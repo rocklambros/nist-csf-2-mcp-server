@@ -7,6 +7,9 @@ import { generate_executive_report } from '../../src/tools/generate_executive_re
 import { getDatabase } from '../../db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Generate Executive Report Tool - Unit Tests', () => {

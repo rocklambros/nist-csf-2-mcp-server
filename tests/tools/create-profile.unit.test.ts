@@ -8,6 +8,11 @@ import { createProfile, CreateProfileParams } from '../../src/tools/create_profi
 import { getDatabase } from '../../src/db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+jest.mock('../../src/services/framework-loader.js');
+jest.mock('../../src/utils/logger.js');
+
 // Get the mocked database function
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 

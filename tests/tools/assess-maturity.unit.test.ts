@@ -7,6 +7,9 @@ import { assessMaturity } from '../../src/tools/assess_maturity.js';
 import { getDatabase } from '../../src/db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Assess Maturity Tool - Unit Tests', () => {

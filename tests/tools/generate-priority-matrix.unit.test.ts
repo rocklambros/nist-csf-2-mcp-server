@@ -7,6 +7,9 @@ import { generate_priority_matrix } from '../../src/tools/generate_priority_matr
 import { getDatabase } from '../../db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Generate Priority Matrix Tool - Unit Tests', () => {

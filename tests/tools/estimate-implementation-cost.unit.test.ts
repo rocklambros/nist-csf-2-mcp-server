@@ -7,6 +7,9 @@ import { estimate_implementation_cost } from '../../src/tools/estimate_implement
 import { getDatabase } from '../../db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Estimate Implementation Cost Tool - Unit Tests', () => {

@@ -7,6 +7,9 @@ import { get_industry_benchmarks } from '../../src/tools/get_industry_benchmarks
 import { getDatabase } from '../../db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Get Industry Benchmarks Tool - Unit Tests', () => {

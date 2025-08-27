@@ -5,20 +5,33 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { csfLookup, CSFLookupParams } from '../../src/tools/csf_lookup.js';
-import { getFrameworkLoader } from '../../src/services/framework-loader.js';
 import { testUtils } from '../helpers/jest-setup.js';
 
-// Get the mocked framework loader function
-const mockGetFrameworkLoader = getFrameworkLoader as jest.MockedFunction<typeof getFrameworkLoader>;
+// Mock the framework loader service
+jest.mock('../../src/services/framework-loader.js');
+jest.mock('../../src/utils/logger.js');
+
+const mockFrameworkLoader = {
+  isLoaded: jest.fn(),
+  load: jest.fn(),
+  getFunction: jest.fn(),
+  getCategory: jest.fn(),
+  getSubcategory: jest.fn(),
+  getCategoriesForFunction: jest.fn(),
+  getSubcategoriesForCategory: jest.fn(),
+  searchElements: jest.fn()
+};
 
 describe('CSF Lookup Tool - Simple Unit Tests', () => {
-  let mockFrameworkLoader: any;
-
   beforeEach(() => {
     jest.clearAllMocks();
     
-    // Get the existing mock from the module mock
-    mockFrameworkLoader = mockGetFrameworkLoader();
+    // Mock the framework loader
+    const { getFrameworkLoader } = require('../../src/services/framework-loader.js');
+    getFrameworkLoader.mockReturnValue(mockFrameworkLoader);
+    
+    // Setup default mocks
+    mockFrameworkLoader.isLoaded.mockReturnValue(true);
   });
 
   describe('function lookup', () => {

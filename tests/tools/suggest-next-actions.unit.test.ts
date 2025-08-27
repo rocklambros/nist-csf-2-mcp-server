@@ -7,6 +7,9 @@ import { suggest_next_actions } from '../../src/tools/suggest_next_actions.js';
 import { getDatabase } from '../../db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Suggest Next Actions Tool - Unit Tests', () => {

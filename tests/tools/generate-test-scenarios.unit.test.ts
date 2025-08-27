@@ -7,6 +7,9 @@ import { generate_test_scenarios } from '../../src/tools/generate_test_scenarios
 import { getDatabase } from '../../db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Generate Test Scenarios Tool - Unit Tests', () => {

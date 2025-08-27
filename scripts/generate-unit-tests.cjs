@@ -66,24 +66,41 @@ describe('${testClassName} - Unit Tests', () => {
 
 function getImportPattern(category) {
   if (['framework', 'assessment', 'analysis'].includes(category)) {
-    return `import { getDatabase } from '../../db/database.js';
-import { getFrameworkLoader } from '../../services/framework-loader.js';`;
+    return `import { getDatabase } from '../../src/db/database.js';
+
+// Mock the framework loader service and database
+jest.mock('../../src/services/framework-loader.js');
+jest.mock('../../src/utils/logger.js');
+jest.mock('../../src/db/database.js');`;
   }
-  return `import { getDatabase } from '../../db/database.js';`;
+  return `import { getDatabase } from '../../src/db/database.js';
+
+// Mock the database
+jest.mock('../../src/db/database.js');`;
 }
 
 function getMockDeclarations(category) {
   if (['framework', 'assessment', 'analysis'].includes(category)) {
     return `const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
-const mockGetFrameworkLoader = getFrameworkLoader as jest.MockedFunction<typeof getFrameworkLoader>;`;
+
+const mockFrameworkLoader = {
+  isLoaded: jest.fn(),
+  load: jest.fn(),
+  getFunction: jest.fn(),
+  getCategory: jest.fn(),
+  getSubcategory: jest.fn(),
+  getCategoriesForFunction: jest.fn(),
+  getSubcategoriesForCategory: jest.fn(),
+  searchElements: jest.fn(),
+  getElementsByType: jest.fn()
+};`;
   }
   return `const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;`;
 }
 
 function getMockSetup(category) {
   if (['framework', 'assessment', 'analysis'].includes(category)) {
-    return `let mockDb: ReturnType<typeof createMockDatabase>;
-  let mockFrameworkLoader: any;`;
+    return `let mockDb: ReturnType<typeof createMockDatabase>;`;
   }
   return `let mockDb: ReturnType<typeof createMockDatabase>;`;
 }
@@ -92,7 +109,13 @@ function getMockInitialization(category) {
   if (['framework', 'assessment', 'analysis'].includes(category)) {
     return `mockDb = createMockDatabase();
     mockGetDatabase.mockReturnValue(mockDb as any);
-    mockFrameworkLoader = mockGetFrameworkLoader();`;
+    
+    // Mock the framework loader
+    const { getFrameworkLoader } = require('../../src/services/framework-loader.js');
+    getFrameworkLoader.mockReturnValue(mockFrameworkLoader);
+    
+    // Setup default framework loader mocks
+    mockFrameworkLoader.isLoaded.mockReturnValue(true);`;
   }
   return `mockDb = createMockDatabase();
     mockGetDatabase.mockReturnValue(mockDb as any);`;
@@ -150,6 +173,9 @@ function getSuccessTestCase(category, toolName) {
           title: 'GOVERN'
         })
       ]);
+      mockFrameworkLoader.getFunction.mockReturnValue(testUtils.createMockFrameworkElement('function'));
+      mockFrameworkLoader.getCategory.mockReturnValue(testUtils.createMockFrameworkElement('category'));
+      mockFrameworkLoader.getSubcategory.mockReturnValue(testUtils.createMockFrameworkElement('subcategory'));
 
       const result = await ${toolName}(params);
       testUtils.assertSuccessResponse(result);`;

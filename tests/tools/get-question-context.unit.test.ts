@@ -7,6 +7,9 @@ import { get_question_context } from '../../src/tools/get_question_context.js';
 import { getDatabase } from '../../db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Get Question Context Tool - Unit Tests', () => {

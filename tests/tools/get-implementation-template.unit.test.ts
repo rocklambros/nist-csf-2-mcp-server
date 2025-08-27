@@ -7,6 +7,9 @@ import { get_implementation_template } from '../../src/tools/get_implementation_
 import { getDatabase } from '../../db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Get Implementation Template Tool - Unit Tests', () => {

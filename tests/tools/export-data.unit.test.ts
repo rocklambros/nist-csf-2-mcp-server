@@ -7,6 +7,9 @@ import { export_data } from '../../src/tools/export_data.js';
 import { getDatabase } from '../../db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Export Data Tool - Unit Tests', () => {

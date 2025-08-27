@@ -8,6 +8,11 @@ import { getDatabase } from '../../db/database.js';
 import { getFrameworkLoader } from '../../services/framework-loader.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
+// Mock the database
+jest.mock('../../src/db/database.js');
+jest.mock('../../src/services/framework-loader.js');
+jest.mock('../../src/utils/logger.js');
+
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 const mockGetFrameworkLoader = getFrameworkLoader as jest.MockedFunction<typeof getFrameworkLoader>;
 
