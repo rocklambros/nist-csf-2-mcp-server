@@ -53,7 +53,7 @@ export const mockProfile = {
   profile_type: 'current',
   description: 'Test profile for unit testing',
   created_by: 'test-user',
-  created_date: new Date().toISOString(),
+  created_at: new Date().toISOString(),
   is_active: true
 };
 
@@ -66,7 +66,7 @@ export const mockAssessment = {
   maturity_score: 2,
   notes: 'Test assessment notes',
   assessed_by: 'test-assessor',
-  assessment_date: new Date().toISOString()
+  assessed_at: new Date().toISOString()
 };
 
 // Implementation mock data
@@ -166,7 +166,7 @@ export function generateMockProfiles(count: number) {
     profile_id: `test-profile-${i}`,
     profile_name: `Test Profile ${i}`,
     profile_type: ['current', 'target', 'baseline'][i % 3],
-    created_date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString()
+    created_at: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString()
   }));
 }
 
@@ -182,7 +182,7 @@ export function generateMockAssessments(count: number, profileId?: string) {
     maturity_score: (i % 5) + 1,
     notes: `Assessment notes ${i}`,
     assessed_by: `assessor-${i % 3}`,
-    assessment_date: new Date(Date.now() - i * 7 * 24 * 60 * 60 * 1000).toISOString()
+    assessed_at: new Date(Date.now() - i * 7 * 24 * 60 * 60 * 1000).toISOString()
   }));
 }
 

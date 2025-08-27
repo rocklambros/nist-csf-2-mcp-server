@@ -92,21 +92,21 @@ async function initializeTestData(): Promise<void> {
   try {
     // Insert framework data
     for (const func of functions) {
-      testDb.db.prepare(`
+      testDb.prepare(`
         INSERT OR REPLACE INTO functions (id, name, description)
         VALUES (?, ?, ?)
       `).run(func.id, func.name, func.description);
     }
 
     for (const category of categories) {
-      testDb.db.prepare(`
+      testDb.prepare(`
         INSERT OR REPLACE INTO categories (id, function_id, name, description)
         VALUES (?, ?, ?, ?)
       `).run(category.id, category.function_id, category.name, category.description);
     }
 
     for (const subcategory of subcategories) {
-      testDb.db.prepare(`
+      testDb.prepare(`
         INSERT OR REPLACE INTO subcategories (id, category_id, name, description)
         VALUES (?, ?, ?, ?)
       `).run(subcategory.id, subcategory.category_id, subcategory.name, subcategory.description);
@@ -133,21 +133,21 @@ function cleanTestData(): void {
   ];
 
   try {
-    testDb.db.prepare('BEGIN TRANSACTION').run();
+    testDb.prepare('BEGIN TRANSACTION').run();
     
     for (const table of tablesToClean) {
       try {
         // Skip views as they can't be modified directly
         if (table === 'organizations') continue;
-        testDb.db.prepare(`DELETE FROM ${table}`).run();
+        testDb.prepare(`DELETE FROM ${table}`).run();
       } catch (error) {
         // Table might not exist, continue
       }
     }
     
-    testDb.db.prepare('COMMIT').run();
+    testDb.prepare('COMMIT').run();
   } catch (error) {
-    testDb.db.prepare('ROLLBACK').run();
+    testDb.prepare('ROLLBACK').run();
     console.error('Failed to clean test data:', error);
   }
 }
@@ -162,7 +162,7 @@ export const testUtils = {
     const profileId = `test-profile-${Date.now()}`;
 
     // Create organization
-    testDb.db.prepare(`
+    testDb.prepare(`
       INSERT INTO organization_profiles (org_id, org_name, industry, size, current_tier, target_tier)
       VALUES (?, ?, ?, ?, ?, ?)
     `).run(orgId, 'Test Organization', 'Technology', 'medium', 'Tier1', 'Tier3');
@@ -179,7 +179,7 @@ export const testUtils = {
       ...overrides
     };
 
-    testDb.db.prepare(`
+    testDb.prepare(`
       INSERT INTO profiles (profile_id, org_id, profile_name, profile_type, description, created_by, is_active)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(
@@ -213,7 +213,7 @@ export const testUtils = {
         assessed_by: 'test-user'
       };
 
-      testDb.db.prepare(`
+      testDb.prepare(`
         INSERT INTO assessments (profile_id, subcategory_id, implementation_level, maturity_score, notes, assessed_by)
         VALUES (?, ?, ?, ?, ?, ?)
       `).run(

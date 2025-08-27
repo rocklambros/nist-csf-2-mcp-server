@@ -3,8 +3,8 @@
  */
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { clone_profile } from '../../src/tools/clone_profile.js';
-import { getDatabase } from '../../db/database.js';
+import { cloneProfile } from '../../src/tools/clone_profile.js';
+import { getDatabase } from '../../src/db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
 // Mock the database
@@ -27,26 +27,26 @@ describe('Clone Profile Tool - Unit Tests', () => {
       
       mockDb.transaction!.mockImplementation((callback: () => any) => callback());
       
-      const result = await clone_profile(params);
+      const result = await cloneProfile(params);
       testUtils.assertSuccessResponse(result);
     });
 
     it('should handle missing required parameters', async () => {
-      const result = await clone_profile({});
+      const result = await cloneProfile({});
       testUtils.assertErrorResponse(result);
     });
   });
 
   describe('input validation', () => {
     it('should validate required parameters', async () => {
-      const result = await clone_profile({
+      const result = await cloneProfile({
         invalid_param: 'test'
       });
       testUtils.assertErrorResponse(result);
     });
 
     it('should validate parameter types', async () => {
-      const result = await clone_profile({
+      const result = await cloneProfile({
         param: null
       });
       testUtils.assertErrorResponse(result);
@@ -59,7 +59,7 @@ describe('Clone Profile Tool - Unit Tests', () => {
     throw new Error('Database connection failed');
   });
 
-  const result = await clone_profile({ id: 'test-123' });
+  const result = await cloneProfile({ id: 'test-123' });
   testUtils.assertErrorResponse(result, 'Database connection failed');
     });
 
@@ -69,7 +69,7 @@ describe('Clone Profile Tool - Unit Tests', () => {
     throw new Error('Unexpected database error');
   });
 
-  const result = await clone_profile({ profile_id: 'test-123' });
+  const result = await cloneProfile({ profile_id: 'test-123' });
   testUtils.assertErrorResponse(result);
     });
   });

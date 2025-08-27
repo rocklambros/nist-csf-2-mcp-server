@@ -121,7 +121,7 @@ export class TestDatabase {
         description TEXT,
         created_by TEXT,
         parent_profile_id TEXT,
-        created_date TEXT DEFAULT CURRENT_TIMESTAMP,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         is_active INTEGER DEFAULT 1,
         FOREIGN KEY (org_id) REFERENCES organization_profiles(org_id),
         FOREIGN KEY (parent_profile_id) REFERENCES profiles(profile_id)
