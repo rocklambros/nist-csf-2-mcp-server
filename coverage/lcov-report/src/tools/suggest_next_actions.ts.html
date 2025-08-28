@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.83% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/186</span>
+                <span class='fraction'>0/181</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.94% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/182</span>
+                <span class='fraction'>0/177</span>
             </div>
         
             
@@ -832,17 +832,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -925,8 +924,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -949,7 +949,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -987,7 +987,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1551,7 +1551,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1603,7 +1603,7 @@ import { getFrameworkLoader } from '../services/framework-loader.js';
 import { logger } from '../utils/logger.js';
 &nbsp;
 // Input schema for the tool
-export const SuggestNextActionsSchema = z.object({
+export const SuggestNextActionsSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   profile_id: z.string().min(1),
   capacity_hours_per_week: z.number().min(1).max(168),
   time_horizon_weeks: z.number().min(1).max(12).default(4),
@@ -1690,7 +1690,7 @@ interface NextActionsResult {
 }
 &nbsp;
 // Effort estimation based on implementation level
-const EFFORT_ESTIMATES: Record&lt;string, any&gt; = {
+const EFFORT_ESTIMATES: Record&lt;string, any&gt; = <span class="cstat-no" title="statement not covered" >{</span>
   'not_implemented': {
     base_hours: 40,
     complexity: 'High',
@@ -1714,7 +1714,7 @@ const EFFORT_ESTIMATES: Record&lt;string, any&gt; = {
 };
 &nbsp;
 // Function priorities for different optimization goals
-const FUNCTION_PRIORITIES: Record&lt;string, Record&lt;string, number&gt;&gt; = {
+const FUNCTION_PRIORITIES: Record&lt;string, Record&lt;string, number&gt;&gt; = <span class="cstat-no" title="statement not covered" >{</span>
   'quick_wins': {
     'GV': 0.8,
     'ID': 1.0,
@@ -2316,7 +2316,7 @@ function <span class="fstat-no" title="function not covered" >getComplexity(</sp
 }
 &nbsp;
 // Function dependencies
-const FUNCTION_DEPENDENCIES: Record&lt;string, string[]&gt; = {
+const FUNCTION_DEPENDENCIES: Record&lt;string, string[]&gt; = <span class="cstat-no" title="statement not covered" >{</span>
   'GV': [],
   'ID': ['GV'],
   'PR': ['GV', 'ID'],
@@ -2365,7 +2365,7 @@ function <span class="fstat-no" title="function not covered" >createErrorResult(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-27T11:23:43.905Z
+                at 2025-08-28T12:37:02.160Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

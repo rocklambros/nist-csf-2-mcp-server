@@ -48,7 +48,7 @@ import { importAssessmentTool } from './tools/import_assessment.js';
 import { validateEvidenceTool } from './tools/validate_evidence.js';
 import { getImplementationTemplateTool } from './tools/get_implementation_template.js';
 import { generatePolicyTemplateTool } from './tools/generate_policy_template.js';
-import { generateTestScenariosTool } from './tools/generate_test_scenarios.js';
+// import { generateTestScenariosTool } from './tools/generate_test_scenarios.js'; // DOCKER WORKAROUND
 
 // Question Bank Tools
 import { getAssessmentQuestions, getAssessmentQuestionsTool } from './tools/get_assessment_questions.js';
@@ -1445,7 +1445,8 @@ async function main() {
         }
 
         case 'generate_test_scenarios': {
-          const result = await generateTestScenariosTool.execute(args as any, db, framework);
+          // DOCKER WORKAROUND - Temporarily disabled due to TypeScript module resolution issue in Docker
+          const result = { status: "temporarily_disabled", message: "generate_test_scenarios temporarily disabled for Docker compatibility - will be restored in future update" };
           
           return {
             content: [

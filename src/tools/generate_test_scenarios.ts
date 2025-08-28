@@ -1,5 +1,5 @@
-import { CSFDatabase } from "../db/database.js";
-import { FrameworkLoader } from "../services/framework-loader.js";
+import { CSFDatabase } from "../db/database";
+import { FrameworkLoader } from "../services/framework-loader";
 
 interface TestScenarioOptions {
   subcategory_id: string;

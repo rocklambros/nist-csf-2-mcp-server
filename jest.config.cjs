@@ -1,6 +1,7 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
+  extensionsToTreatAsEsm: ['.ts'],
   testEnvironment: 'node',
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   testMatch: [
@@ -27,16 +28,17 @@ module.exports = {
     'html',
     'json-summary'
   ],
-  // Simple module name mapping
+  // ES module compatible module name mapping
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   testTimeout: 30000,
-  // Transform configuration for CommonJS compatibility
+  // Transform configuration for ES module compatibility
   transform: {
     '^.+\\.ts$': ['ts-jest', {
+      useESM: true,
       tsconfig: {
-        module: 'commonjs',
+        module: 'esnext',
         target: 'es2020',
         moduleResolution: 'node',
         allowSyntheticDefaultImports: true,

@@ -1,0 +1,115 @@
+{
+  "family": "nist-csf-2-mcp-server",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskRole",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "nist-csf-mcp-server",
+      "image": "ghcr.io/rocklambros/nist-csf-2-mcp-server:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp",
+          "name": "http"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "SERVER_PORT",
+          "value": "8080"
+        },
+        {
+          "name": "SERVER_HOST",
+          "value": "0.0.0.0"
+        },
+        {
+          "name": "ENABLE_MONITORING",
+          "value": "true"
+        },
+        {
+          "name": "LOG_LEVEL",
+          "value": "info"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:nist-csf/api-key"
+        }
+      ],
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:8080/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/nist-csf-2-mcp-server",
+          "awslogs-region": "REGION",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "user": "10001:10001",
+      "readonlyRootFilesystem": true,
+      "linuxParameters": {
+        "capabilities": {
+          "drop": ["ALL"]
+        },
+        "tmpfs": [
+          {
+            "containerPath": "/tmp",
+            "size": 104857600,
+            "mountOptions": ["noexec", "nosuid", "nodev"]
+          }
+        ]
+      },
+      "mountPoints": [
+        {
+          "sourceVolume": "logs",
+          "containerPath": "/app/logs",
+          "readOnly": false
+        }
+      ]
+    }
+  ],
+  "volumes": [
+    {
+      "name": "logs",
+      "dockerVolumeConfiguration": {
+        "scope": "task",
+        "autoprovision": true,
+        "driver": "local"
+      }
+    }
+  ],
+  "placementConstraints": [],
+  "tags": [
+    {
+      "key": "Application",
+      "value": "nist-csf-2-mcp-server"
+    },
+    {
+      "key": "Environment",
+      "value": "production"
+    },
+    {
+      "key": "ManagedBy",
+      "value": "terraform"
+    }
+  ]
+}

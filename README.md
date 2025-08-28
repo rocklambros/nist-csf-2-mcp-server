@@ -5,12 +5,12 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18.x+-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
-[![Security](https://img.shields.io/badge/Security-Enterprise%20Grade-red.svg)](#-security-architecture)
-[![MCP Tools](https://img.shields.io/badge/MCP%20Tools-24-purple.svg)](#-complete-mcp-tools-suite-24-tools)
+[![Security](https://img.shields.io/badge/Security-Multi%20Tier-red.svg)](#-security-architecture)
+[![MCP Tools](https://img.shields.io/badge/MCP%20Tools-36-purple.svg)](#-complete-mcp-tools-suite-36-tools)
 
-A comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**, providing programmatic access to all framework elements with **24 specialized MCP tools**, enterprise-grade security, comprehensive assessment capabilities, and advanced reporting features. Built for seamless integration with Claude, ChatGPT, and other AI assistants.
+A comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**, providing programmatic access to all framework elements with **36 specialized MCP tools**, multi-tier security, comprehensive assessment capabilities, and advanced reporting features. Built for seamless integration with Claude, ChatGPT, and other AI assistants.
 
-**⚡ Deploy in 0.4 seconds** | **🛡️ Enterprise-ready security** | **📊 424 assessment questions** | **🔧 24 specialized MCP tools** | **🏗️ Production-grade monitoring**
+**⚡ Deploy in 0.4 seconds** | **🛡️ Multi-tier security** | **📊 424 assessment questions** | **🔧 36 specialized MCP tools** | **🏗️ Production-grade monitoring**
 
 ## 🚀 Features
 
@@ -20,7 +20,7 @@ A comprehensive **Model Context Protocol (MCP) server** implementation for the *
 - 📊 **Comprehensive Assessment Suite**: From quick organizational assessments to detailed maturity evaluations
 - 💡 **424-Question Assessment Bank**: Complete question coverage for all subcategories with 4 assessment dimensions each
 - 📈 **Risk & Maturity Scoring**: Advanced algorithms for organizational cybersecurity posture measurement
-- 🤖 **24 Specialized MCP Tools**: Complete cybersecurity assessment and management toolkit
+- 🤖 **36 Specialized MCP Tools**: Complete cybersecurity assessment and management toolkit
 
 ### Planning & Implementation
 - 🎯 **Gap Analysis & Priority Matrices**: Intelligent prioritization based on risk, effort, and business impact
@@ -46,9 +46,9 @@ A comprehensive **Model Context Protocol (MCP) server** implementation for the *
   - **Performance Testing**: Sub-100ms benchmarks, concurrent operation testing
   - **Integration Testing**: End-to-end workflow validation, database transaction testing
 - 📖 **Complete Documentation**: API docs, sample prompts, and integration guides
-- 🔧 **Claude Code Ready**: Optimized for AI development workflows with [PROMPTS.md](./PROMPTS.md)
+- 🔧 **Claude Code Ready**: Optimized for AI development workflows with comprehensive [LLM prompt examples](./PROMPTS.md)
 - ⚡ **Performance Optimized**: Sub-100ms response times with intelligent caching
-- 🎯 **Production Ready**: Enterprise-grade TypeScript with strict validation and error handling
+- 🎯 **Production Ready**: Production-ready TypeScript with strict validation and error handling
 
 ## 🚀 Quick Start (Recommended: Docker)
 
@@ -61,12 +61,12 @@ docker-compose up -d
 
 # 🎉 Server ready in ~0.4 seconds on http://localhost:8080
 # ✅ Complete NIST CSF 2.0 framework (6 functions, 34 categories, 185 subcategories)
-# ✅ All 24 specialized MCP tools immediately available
+# ✅ All 36 specialized MCP tools immediately available
 # ✅ 424 assessment questions pre-loaded and verified
 # ✅ Production security, monitoring, and audit logging enabled
 ```
 
-**Instant deployment.** Your comprehensive NIST CSF 2.0 MCP Server is running with complete framework data, enterprise security, and all tools ready for AI integration.
+**Instant deployment.** Your comprehensive NIST CSF 2.0 MCP Server is running with complete framework data, multi-tier security, and all tools ready for AI integration.
 
 ### Alternative: Native Installation (5+ minutes)
 ```bash
@@ -127,8 +127,8 @@ npm ci --production && npm run build && NODE_ENV=production npm start
 # Check server health (should return {"status":"healthy"})
 curl http://localhost:8080/health
 
-# View all 24 MCP tools available
-curl http://localhost:8080/tools | jq '.tools | length'  # Should return: 24
+# View all 36 MCP tools available
+curl http://localhost:8080/tools | jq '.tools | length'  # Should return: 36
 
 # Test a sample tool (CSF lookup)
 curl -X POST http://localhost:8080/tools/csf_lookup \
@@ -148,7 +148,7 @@ docker-compose exec mcp-server npm test
 ### 3. Documentation & Integration
 - **📖 [Docker Guide](./DOCKER.md)**: Comprehensive Docker deployment documentation
 - **🔌 [MCP Integration](#-mcp-client-integration)**: Connect to Claude Desktop, ChatGPT
-- **📝 [API Reference](./PROMPTS.md)**: All 24 MCP tools with examples
+- **📝 [API Reference](./PROMPTS.md)**: All 36 MCP tools with examples and optimized prompts
 - **🔒 [Security Setup](#-security-configuration)**: Authentication configuration
 
 ## 🔧 Environment Configuration
@@ -337,7 +337,7 @@ curl -X POST http://localhost:3000/tools/csf_lookup \
   -d '{"element_id": "GV.OC-01", "include_examples": true}'
 ```
 
-## 🛠️ Complete MCP Tools Suite (24 Tools)
+## 🛠️ Complete MCP Tools Suite (36 Tools)
 
 ### Framework Query & Search Tools (3 tools)
 
@@ -361,7 +361,7 @@ Clone existing profiles for target state planning or comparative analysis with s
 #### 6. `compare_profiles`
 Compare multiple profiles side-by-side with detailed gap analysis and recommendations.
 
-### Assessment & Scoring Tools (5 tools)
+### Assessment & Scoring Tools (8 tools)
 
 #### 7. `quick_assessment`
 Rapid organizational assessment using simplified yes/no/partial questionnaire for all six CSF functions.
@@ -375,55 +375,93 @@ Advanced risk scoring with customizable threat weights and heat map visualizatio
 #### 10. `calculate_maturity_trend`
 Track maturity progression over time with statistical analysis and future projections.
 
-#### 11. `import_assessment`
-Import assessment data from external systems with validation and normalization.
-
-### Planning & Analysis Tools (5 tools)
-
-#### 12. `generate_gap_analysis`
-Comprehensive gap analysis between current and target states with priority matrices and cost estimates.
-
-#### 13. `generate_priority_matrix`
+#### 11. `generate_priority_matrix`
 Create implementation priority matrices based on effort, impact, risk, and available resources.
 
-#### 14. `estimate_implementation_cost`
+#### 12. `estimate_implementation_cost`
 Detailed financial modeling for cybersecurity implementations with labor, tools, and ongoing costs.
 
-#### 15. `create_implementation_plan`
-Generate phased implementation roadmaps with timelines, dependencies, and resource allocation.
-
-#### 16. `suggest_next_actions`
+#### 13. `suggest_next_actions`
 AI-powered recommendations for next implementation steps based on risk, effort, and business impact.
 
-### Progress Tracking & Monitoring Tools (2 tools)
-
-#### 17. `track_progress`
+#### 14. `track_progress`
 Update and track implementation progress across subcategories with milestone tracking.
 
-#### 18. `get_industry_benchmarks`
+### Analysis & Planning Tools (4 tools)
+
+#### 15. `generate_gap_analysis`
+Comprehensive gap analysis between current and target states with priority matrices and cost estimates.
+
+#### 16. `create_implementation_plan`
+Generate phased implementation roadmaps with timelines, dependencies, and resource allocation.
+
+#### 17. `get_industry_benchmarks`
 Access industry-specific benchmarks and best practices for comparative analysis.
 
-### Reporting & Analytics Tools (3 tools)
-
-#### 19. `generate_report`
-Create comprehensive cybersecurity assessment reports with executive summaries.
-
-#### 20. `export_data`
-Export assessment data in multiple formats (JSON, CSV, Excel, PDF).
-
-#### 21. `validate_evidence`
-Validate and manage evidence files for audit and compliance purposes.
-
-### Template & Policy Tools (3 tools)
-
-#### 22. `get_implementation_template`
-Generate detailed implementation guides for specific subcategories with examples and tools.
-
-#### 23. `generate_policy_template`
-Create policy document templates based on NIST CSF subcategories.
-
-#### 24. `generate_test_scenarios`
+#### 18. `generate_test_scenarios`
 Generate security testing scenarios and validation checklists.
+
+### Assessment Question Tools (4 tools)
+
+#### 19. `get_assessment_questions`
+Access the comprehensive 424-question assessment bank with detailed guidance for all subcategories.
+
+#### 20. `get_question_context`
+Get detailed context and implementation guidance for specific assessment questions.
+
+#### 21. `validate_assessment_responses`
+Validate assessment responses for consistency and completeness across all framework functions.
+
+#### 22. `import_assessment`
+Import assessment data from external systems with validation and normalization.
+
+### Evidence & Audit Tools (4 tools)
+
+#### 23. `upload_evidence`
+Upload and manage evidence files for audit and compliance purposes with metadata tracking.
+
+#### 24. `validate_evidence`
+Validate uploaded evidence for completeness and compliance requirements.
+
+#### 25. `track_audit_trail`
+Track and manage comprehensive audit trails for all assessment activities and changes.
+
+#### 26. `get_implementation_guidance`
+Get detailed implementation guidance for specific subcategories and security controls.
+
+### Reporting Tools (7 tools)
+
+#### 27. `generate_report`
+Create comprehensive cybersecurity assessment reports with executive summaries and detailed analysis.
+
+#### 28. `generate_executive_report`
+Create executive-level reports for leadership with business-focused insights and strategic recommendations.
+
+#### 29. `generate_compliance_report`
+Generate multi-framework compliance reports mapping to ISO27001, PCI DSS, HIPAA, GDPR, and SOX.
+
+#### 30. `generate_audit_report`
+Generate detailed audit reports with findings, recommendations, and evidence citations.
+
+#### 31. `generate_dashboard`
+Create real-time cybersecurity dashboards with key metrics, KPIs, and trend analysis.
+
+#### 32. `create_custom_report`
+Build custom reports tailored to specific stakeholder needs and organizational requirements.
+
+#### 33. `generate_milestone`
+Generate project milestones with deliverables, success criteria, and progress tracking mechanisms.
+
+### Utility & Integration Tools (3 tools)
+
+#### 34. `export_data`
+Export assessment data in multiple formats (JSON, CSV, Excel, PDF) for external system integration.
+
+#### 35. `get_implementation_template`
+Generate detailed implementation guides for specific subcategories with examples, tools, and best practices.
+
+#### 36. `generate_policy_template`
+Create comprehensive policy document templates based on NIST CSF subcategories and organizational context.
 
 ## 🚀 Common Usage Patterns
 
@@ -627,7 +665,7 @@ docker run -p 8080:8080 \
 #### Why Choose Docker?
 - ✅ **5-second deployment** vs 5+ minute native setup
 - ✅ **Identical environment** across development, staging, production
-- ✅ **Enterprise security** with container isolation
+- ✅ **Multi-tier security** with container isolation
 - ✅ **Auto-scaling ready** for high-availability deployments
 - ✅ **Zero dependency conflicts** - everything included
 
@@ -653,7 +691,7 @@ NODE_ENV=production npm start
 
 ### Integration Guides
 - **🔌 [MCP Client Integration](#-mcp-client-integration)**: Connect to Claude Desktop, ChatGPT, and other AI assistants
-- **📝 [PROMPTS.md](./PROMPTS.md)**: LLM integration examples and optimized prompts for all 36 tools
+- **📝 [PROMPTS.md](./PROMPTS.md)**: Comprehensive LLM integration examples and optimized prompts for all 36 tools
 - **🛠️ [CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and development standards
 - **🔒 [Security Configuration](#-security-configuration)**: Multi-tier authentication setup guide
 
@@ -711,7 +749,7 @@ nist-csf-2-mcp-server/
 │   │   ├── create_profile.ts     # Profile management
 │   │   ├── quick_assessment.ts   # Quick assessments
 │   │   ├── generate_report.ts    # Report generation
-│   │   └── [33 more tools...]    # Complete tool suite
+│   │   └── [32 more tools...]    # Complete 36-tool suite
 │   ├── utils/                     # Utility functions
 │   │   ├── enhanced-logger.ts    # Structured logging
 │   │   ├── metrics.ts           # Performance metrics
@@ -889,11 +927,12 @@ calculate_maturity_trend → generate_executive_report → compare_profiles → 
 
 For comprehensive LLM prompt examples and integration guidance, see **[PROMPTS.md](./PROMPTS.md)** which includes:
 
-- **Optimized prompts for all 36 MCP tools**
-- **Complete workflow examples**
-- **Integration patterns for Claude, ChatGPT, and Gemini**
-- **Best practices for cybersecurity assessments**
-- **Advanced use case scenarios**
+- **Optimized prompts for all 36 MCP tools** organized by category
+- **Complete workflow examples** for assessment, planning, and reporting
+- **Integration patterns** for Claude, ChatGPT, and Gemini with best practices
+- **Industry-specific examples** for healthcare, financial services, and manufacturing
+- **Continuous improvement workflows** and advanced use case scenarios
+- **Pro tips** for maximizing assessment accuracy and stakeholder communication
 
 ## 🤝 Contributing
 
@@ -963,7 +1002,7 @@ npm run security:audit            # Security configuration audit
 
 ### Documentation & Resources
 - 🔌 **[MCP Client Integration](#-mcp-client-integration)**: Connect to Claude Desktop, ChatGPT, and other AI assistants
-- 📚 **[PROMPTS.md](./PROMPTS.md)**: LLM integration examples and optimized prompts
+- 📚 **[PROMPTS.md](./PROMPTS.md)**: Comprehensive LLM integration examples and optimized prompts for all 36 tools
 - 🛠️ **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and development standards
 - 🔒 **[Security Configuration](#-security-configuration)**: Multi-tier authentication setup
 - 📊 **API Documentation**: Complete tool reference with examples

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/103</span>
+                <span class='fraction'>0/97</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/98</span>
+                <span class='fraction'>0/92</span>
             </div>
         
             
@@ -378,9 +378,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -390,7 +387,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -672,14 +672,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -689,9 +689,9 @@
  * Framework loader service for caching and accessing NIST CSF 2.0 data
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { readFileSync } from 'fs';</span>
-<span class="cstat-no" title="statement not covered" >import path from 'path';</span>
-<span class="cstat-no" title="statement not covered" >import { logger } from '../utils/logger.js';</span>
+import { readFileSync } from 'fs';
+import path from 'path';
+import { logger } from '../utils/logger.js';
 import type {
   CSFFrameworkResponse,
   CSFFrameworkData,
@@ -701,7 +701,7 @@ import type {
   ElementType
 } from '../types/index.js';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export class F</span>rameworkLoader {
+export class FrameworkLoader {
   private <span class="cstat-no" title="statement not covered" >frameworkData: CSFFrameworkData | null = null;</span>
   private readonly jsonPath: string;
   
@@ -983,14 +983,14 @@ import type {
 // Singleton instance
 let loaderInstance: FrameworkLoader | null = <span class="cstat-no" title="statement not covered" >null;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >g</span>etFrameworkLoader(</span>jsonPath?: string): FrameworkLoader {
+export function <span class="fstat-no" title="function not covered" >getFrameworkLoader(</span>jsonPath?: string): FrameworkLoader {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!loaderInstance) {</span>
 <span class="cstat-no" title="statement not covered" >    loaderInstance = new FrameworkLoader(jsonPath);</span>
   }
 <span class="cstat-no" title="statement not covered" >  return loaderInstance;</span>
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >initializeFramework(</span>jsonPath?: string): Promise&lt;FrameworkLoader&gt; {
+export async function <span class="fstat-no" title="function not covered" >initializeFramework(</span>jsonPath?: string): Promise&lt;FrameworkLoader&gt; {
   const loader = <span class="cstat-no" title="statement not covered" >getFrameworkLoader(jsonPath);</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!loader.isLoaded()) {</span>
 <span class="cstat-no" title="statement not covered" >    await loader.load();</span>
@@ -1003,7 +1003,7 @@ let loaderInstance: FrameworkLoader | null = <span class="cstat-no" title="state
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-27T11:23:43.905Z
+                at 2025-08-28T12:37:02.160Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

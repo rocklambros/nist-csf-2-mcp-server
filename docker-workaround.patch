@@ -1,0 +1,2 @@
+# Temporary Docker build workaround for generate_test_scenarios import issue
+# This tool will be restored once we resolve the Docker TypeScript module resolution

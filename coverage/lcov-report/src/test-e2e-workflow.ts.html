@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/201</span>
+                <span class='fraction'>0/186</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/45</span>
+                <span class='fraction'>0/44</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/198</span>
+                <span class='fraction'>0/183</span>
             </div>
         
             
@@ -848,25 +848,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1607,7 +1607,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">#!/usr/bin/env node
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">#!/usr/bin/env node
 /**
  * End-to-End Test Script for NIST CSF MCP Server
  * 
@@ -1620,25 +1620,25 @@
  * 6. Executive report generation
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { getDatabase, closeDatabase } from './db/database.js';</span>
-<span class="cstat-no" title="statement not covered" >import { getMonitoredDatabase, closeMonitoredDatabase } from './db/monitored-database.js';</span>
+import { getDatabase, closeDatabase } from './db/database.js';
+import { getMonitoredDatabase, closeMonitoredDatabase } from './db/monitored-database.js';
 // import { initializeFramework } from './services/framework-loader.js';
 // import { logger } from './utils/enhanced-logger.js';
-<span class="cstat-no" title="statement not covered" >import { toolAnalytics } from './utils/analytics.js';</span>
+import { toolAnalytics } from './utils/analytics.js';
 &nbsp;
 // Tool imports
-<span class="cstat-no" title="statement not covered" >import { createProfile } from './tools/create_profile.js';</span>
-<span class="cstat-no" title="statement not covered" >import { quickAssessment } from './tools/quick_assessment.js';</span>
-<span class="cstat-no" title="statement not covered" >import { assessMaturity } from './tools/assess_maturity.js';</span>
-<span class="cstat-no" title="statement not covered" >import { calculateRiskScore } from './tools/calculate_risk_score.js';</span>
-<span class="cstat-no" title="statement not covered" >import { generateGapAnalysis } from './tools/generate_gap_analysis.js';</span>
-<span class="cstat-no" title="statement not covered" >import { generatePriorityMatrix } from './tools/generate_priority_matrix.js';</span>
-<span class="cstat-no" title="statement not covered" >import { createImplementationPlan } from './tools/create_implementation_plan.js';</span>
-<span class="cstat-no" title="statement not covered" >import { estimateImplementationCost } from './tools/estimate_implementation_cost.js';</span>
-<span class="cstat-no" title="statement not covered" >import { trackProgressTool } from './tools/track_progress.js';</span>
-<span class="cstat-no" title="statement not covered" >import { generateReportTool } from './tools/generate_report.js';</span>
+import { createProfile } from './tools/create_profile.js';
+import { quickAssessment } from './tools/quick_assessment.js';
+import { assessMaturity } from './tools/assess_maturity.js';
+import { calculateRiskScore } from './tools/calculate_risk_score.js';
+import { generateGapAnalysis } from './tools/generate_gap_analysis.js';
+import { generatePriorityMatrix } from './tools/generate_priority_matrix.js';
+import { createImplementationPlan } from './tools/create_implementation_plan.js';
+import { estimateImplementationCost } from './tools/estimate_implementation_cost.js';
+import { trackProgressTool } from './tools/track_progress.js';
+import { generateReportTool } from './tools/generate_report.js';
 // import { compareProfilesTool } from './tools/compare_profiles.js';
-<span class="cstat-no" title="statement not covered" >import { exportDataTool } from './tools/export_data.js';</span>
+import { exportDataTool } from './tools/export_data.js';
 &nbsp;
 // Test data and configuration
 const TEST_CONFIG = <span class="cstat-no" title="statement not covered" >{</span>
@@ -2355,7 +2355,7 @@ async function <span class="fstat-no" title="function not covered" >main(</span>
 <span class="cstat-no" title="statement not covered" >    testRunner.displayReport();</span>
     
     // Write report to file
-    const fs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>fs');</span>
+    const fs = <span class="cstat-no" title="statement not covered" >await import('fs');</span>
     const reportPath = <span class="cstat-no" title="statement not covered" >`./test-reports/e2e-test-report-${Date.now()}.json`;</span>
 <span class="cstat-no" title="statement not covered" >    fs.mkdirSync('./test-reports', { recursive: true });</span>
 <span class="cstat-no" title="statement not covered" >    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));</span>
@@ -2379,14 +2379,14 @@ async function <span class="fstat-no" title="function not covered" >main(</span>
 }
 &nbsp;
 export type { TestReport, TestResult };
-export { <span class="cstat-no" title="statement not covered" >E2ETestRunner </span>};</pre></td></tr></table></pre>
+export { E2ETestRunner };</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-27T11:23:43.905Z
+                at 2025-08-28T12:37:02.160Z
             </div>
         <script src="../prettify.js"></script>
         <script>

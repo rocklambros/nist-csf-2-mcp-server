@@ -8,7 +8,7 @@ import { createProfile } from '../../src/tools/create_profile.js';
 import { quickAssessment } from '../../src/tools/quick_assessment.js';
 import { generateGapAnalysis } from '../../src/tools/generate_gap_analysis.js';
 import { generateReport } from '../../src/tools/generate_report.js';
-import Database from '../../src/db/database.js';
+import * as database from '../../src/db/database.js';
 
 // Mock dependencies
 jest.mock('../../src/db/database.js');
@@ -49,7 +49,7 @@ describe('End-to-End Assessment Workflow Tests', () => {
     jest.clearAllMocks();
     
     // Mock database
-    (Database.getInstance as jest.MockedFunction<typeof Database.getInstance>).mockReturnValue(mockDb as any);
+    (database.getDatabase as jest.MockedFunction<typeof database.getDatabase>).mockReturnValue(mockDb as any);
     
     // Mock framework loader
     const { getFrameworkLoader } = require('../../src/services/framework-loader.js');

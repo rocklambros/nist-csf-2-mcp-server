@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/82</span>
+                <span class='fraction'>0/77</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/77</span>
+                <span class='fraction'>0/72</span>
             </div>
         
             
@@ -370,23 +370,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -410,10 +393,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -672,10 +672,10 @@
  * Validates assessment responses for completeness, consistency, and data integrity
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
-<span class="cstat-no" title="statement not covered" >import { getDatabase } from '../db/database.js';</span>
-<span class="cstat-no" title="statement not covered" >import { questionBankService } from '../services/question-bank.js';</span>
-<span class="cstat-no" title="statement not covered" >import { logger } from '../utils/enhanced-logger.js';</span>
+import { z } from 'zod';
+import { getDatabase } from '../db/database.js';
+import { questionBankService } from '../services/question-bank.js';
+import { logger } from '../utils/enhanced-logger.js';
 &nbsp;
 // Input validation schemas
 const QuestionResponseSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
@@ -715,7 +715,7 @@ type ValidateAssessmentResponsesParams = z.infer&lt;typeof ValidateAssessmentRes
 /**
  * Validate assessment responses for completeness and consistency
  */
-<span class="cstat-no" title="statement not covered" >export a</span>sync function <span class="fstat-no" title="function not covered" >validateAssessmentResponses(</span>params: ValidateAssessmentResponsesParams, db = <span class="branch-0 cbranch-no" title="branch not covered" >getDatabase())</span> {
+export async function <span class="fstat-no" title="function not covered" >validateAssessmentResponses(</span>params: ValidateAssessmentResponsesParams, db = <span class="branch-0 cbranch-no" title="branch not covered" >getDatabase())</span> {
   const startTime = <span class="cstat-no" title="statement not covered" >Date.now();</span>
   
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -965,7 +965,7 @@ async function <span class="fstat-no" title="function not covered" >getProfile(<
 }
 &nbsp;
 // Export tool definition for MCP server
-export const <span class="cstat-no" title="statement not covered" >validateAssessmentResponsesTool = {</span>
+export const validateAssessmentResponsesTool = <span class="cstat-no" title="statement not covered" >{</span>
   name: 'validate_assessment_responses',
   description: 'Validate assessment responses for completeness, consistency, and data integrity with comprehensive error reporting',
   inputSchema: ValidateAssessmentResponsesSchema
@@ -976,7 +976,7 @@ export const <span class="cstat-no" title="statement not covered" >validateAsses
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-27T11:23:44.003Z
+                at 2025-08-28T12:37:02.240Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

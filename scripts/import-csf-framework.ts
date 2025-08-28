@@ -101,7 +101,7 @@ class CSFFrameworkImporter {
    * Load and validate framework JSON file
    */
   private async loadFrameworkFile(): Promise<void> {
-    const frameworkPath = './csf-2.0-framework.json';
+    const frameworkPath = './data/csf-2.0-framework.json';
     
     try {
       logger.info('📖 Loading framework file...');

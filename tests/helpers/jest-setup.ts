@@ -6,16 +6,16 @@ import { jest } from '@jest/globals';
 import type { CSFDatabase } from '../../src/db/database.js';
 
 // Mock the database module at the top level with proper implementation
-jest.mock('../../src/db/database.js', () => {
+jest.mock('../../src/db/database.js', async () => {
   // Import the actual better-sqlite3 for the mock implementation
-  const Database = jest.requireActual('better-sqlite3');
-  const path = jest.requireActual('path');
+  const Database = await import('better-sqlite3');
+  const path = await import('path');
   
   let mockDatabaseInstance: any = null;
   
   const createMockDatabase = (dbPath?: string) => {
-    const testPath = dbPath || path.join(process.cwd(), 'test-mock.db');
-    const db = new Database(testPath, { readonly: false, fileMustExist: false });
+    const testPath = dbPath || path.default.join(process.cwd(), 'test-mock.db');
+    const db = new Database.default(testPath, { readonly: false, fileMustExist: false });
     
     // Enable foreign key constraints
     db.pragma('foreign_keys = ON');

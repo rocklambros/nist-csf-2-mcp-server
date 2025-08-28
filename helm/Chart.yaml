@@ -1,0 +1,26 @@
+apiVersion: v2
+name: nist-csf-2-mcp-server
+description: A Helm chart for NIST Cybersecurity Framework 2.0 MCP Server
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+keywords:
+  - cybersecurity
+  - nist
+  - csf
+  - mcp
+  - framework
+  - assessment
+
+home: https://github.com/rocklambros/nist-csf-2-mcp-server
+sources:
+  - https://github.com/rocklambros/nist-csf-2-mcp-server
+
+maintainers:
+  - name: RockCyber Team
+    email: support@rockcyber.com
+
+annotations:
+  category: Security
+  licenses: MIT

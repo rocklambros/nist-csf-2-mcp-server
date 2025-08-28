@@ -257,10 +257,16 @@ describe('Performance Benchmarks', () => {
           'bulk_assessments',
           async () => {
             const promises = Array.from({ length: 5 }, (_, i) =>
-              quickAssessment.execute({
+              quickAssessment({
                 profile_id: testProfileId,
-                subcategory_id: `BULK-${Date.now()}-${i}`,
-                implementation_level: 'Partially Implemented',
+                simplified_answers: {
+                  govern: 'partial',
+                  identify: 'partial',
+                  protect: 'partial',
+                  detect: 'partial',
+                  respond: 'partial',
+                  recover: 'partial'
+                },
                 maturity_score: 2
               }, testDb)
             );
@@ -278,7 +284,7 @@ describe('Performance Benchmarks', () => {
         await testUtils.createTestAssessments(largeProfileId, 100);
 
         const { result, duration } = await performanceUtils.measureTime(async () => {
-          return await assessMaturity.execute({
+          return await assessMaturity({
             profile_id: largeProfileId,
             include_subcategory_breakdown: true,
             include_trends: true
@@ -297,7 +303,7 @@ describe('Performance Benchmarks', () => {
         const benchmark = await performanceUtils.benchmark(
           'evidence_upload',
           async () => {
-            await uploadEvidence.execute({
+            await uploadEvidence({
               profile_id: testProfileId,
               subcategory_id: 'GV.OC-01',
               file_name: `perf-evidence-${Date.now()}.pdf`,
@@ -317,7 +323,7 @@ describe('Performance Benchmarks', () => {
         const startTime = Date.now();
         
         const promises = Array.from({ length: concurrentUploads }, (_, i) =>
-          uploadEvidence.execute({
+          uploadEvidence({
             profile_id: testProfileId,
             subcategory_id: `CONCURRENT-EVIDENCE-${i}`,
             file_name: `concurrent-${i}.pdf`,
@@ -343,7 +349,7 @@ describe('Performance Benchmarks', () => {
         await testUtils.createTestAssessments(targetProfileId, 20);
 
         const { result, duration } = await performanceUtils.measureTime(async () => {
-          return await generateGapAnalysis.execute({
+          return await generateGapAnalysis({
             current_profile_id: testProfileId,
             target_profile_id: targetProfileId,
             include_recommendations: true,
@@ -361,7 +367,7 @@ describe('Performance Benchmarks', () => {
         const benchmark = await performanceUtils.benchmark(
           'risk_calculation',
           async () => {
-            await calculateRiskScore.execute({
+            await calculateRiskScore({
               profile_id: testProfileId,
               include_subcategory_risks: true,
               include_recommendations: true
@@ -379,9 +385,9 @@ describe('Performance Benchmarks', () => {
         await testUtils.createTestAssessments(largeProfileId, 150);
         
         const analysisOperations = [
-          () => calculateRiskScore.execute({ profile_id: largeProfileId }, testDb),
-          () => assessMaturity.execute({ profile_id: largeProfileId }, testDb),
-          () => generateGapAnalysis.execute({ 
+          () => calculateRiskScore({ profile_id: largeProfileId }, testDb),
+          () => assessMaturity({ profile_id: largeProfileId }, testDb),
+          () => generateGapAnalysis({ 
             current_profile_id: largeProfileId, 
             baseline_tier: 'Tier2' 
           }, testDb)
@@ -403,7 +409,7 @@ describe('Performance Benchmarks', () => {
         const benchmark = await performanceUtils.benchmark(
           'dashboard_generation',
           async () => {
-            await generateDashboard.execute({
+            await generateDashboard({
               profile_id: testProfileId,
               dashboard_type: 'executive',
               include_trends: true
@@ -418,7 +424,7 @@ describe('Performance Benchmarks', () => {
 
       test('should export data efficiently', async () => {
         const { result, duration } = await performanceUtils.measureTime(async () => {
-          return await exportData.execute({
+          return await exportData({
             profile_id: testProfileId,
             export_format: 'json',
             include_assessments: true,
@@ -434,7 +440,7 @@ describe('Performance Benchmarks', () => {
 
       test('should generate comprehensive audit report within threshold', async () => {
         const { result, duration } = await performanceUtils.measureTime(async () => {
-          return await generateAuditReport.execute({
+          return await generateAuditReport({
             profile_id: testProfileId,
             audit_type: 'comprehensive',
             include_evidence_summary: true,
@@ -457,7 +463,7 @@ describe('Performance Benchmarks', () => {
           'framework_search',
           async () => {
             const term = searchTerms[Math.floor(Math.random() * searchTerms.length)];
-            await searchFramework.execute({
+            await searchFramework({
               keyword: term,
               limit: 20
             }, testDb);
@@ -479,7 +485,7 @@ describe('Performance Benchmarks', () => {
         const results = [];
         for (const query of complexQueries) {
           const { result, duration } = await performanceUtils.measureTime(async () => {
-            return await searchFramework.execute(query, testDb);
+            return await searchFramework(query, testDb);
           });
           
           expect(result.success).toBe(true);
@@ -495,19 +501,19 @@ describe('Performance Benchmarks', () => {
   describe('Stress Testing', () => {
     test('should handle high-load concurrent operations', async () => {
       const operationTypes = [
-        () => quickAssessment.execute({
+        () => quickAssessment({
           profile_id: testProfileId,
           subcategory_id: `STRESS-${Date.now()}-${Math.random()}`,
           implementation_level: 'Partially Implemented'
         }, testDb),
-        () => uploadEvidence.execute({
+        () => uploadEvidence({
           profile_id: testProfileId,
           subcategory_id: 'GV.OC-01',
           file_name: `stress-${Date.now()}.pdf`,
           file_hash: `stresshash${Date.now()}${Math.random()}`,
           evidence_type: 'document'
         }, testDb),
-        () => calculateRiskScore.execute({
+        () => calculateRiskScore({
           profile_id: testProfileId
         }, testDb)
       ];
@@ -543,7 +549,7 @@ describe('Performance Benchmarks', () => {
       
       for (let i = 0; i < totalAssessments; i += batchSize) {
         const batch = Array.from({ length: Math.min(batchSize, totalAssessments - i) }, (_, j) =>
-          quickAssessment.execute({
+          quickAssessment({
             profile_id: largeDataProfile.profile_id,
             subcategory_id: `LARGE-DATASET-${String(i + j).padStart(4, '0')}`,
             implementation_level: 'Partially Implemented',
@@ -556,9 +562,9 @@ describe('Performance Benchmarks', () => {
 
       // Test performance with large dataset
       const operations = [
-        () => assessMaturity.execute({ profile_id: largeDataProfile.profile_id }, testDb),
-        () => calculateRiskScore.execute({ profile_id: largeDataProfile.profile_id }, testDb),
-        () => exportData.execute({ 
+        () => assessMaturity({ profile_id: largeDataProfile.profile_id }, testDb),
+        () => calculateRiskScore({ profile_id: largeDataProfile.profile_id }, testDb),
+        () => exportData({ 
           profile_id: largeDataProfile.profile_id, 
           export_format: 'json' 
         }, testDb)
@@ -587,7 +593,7 @@ describe('Performance Benchmarks', () => {
 
       // Perform many operations
       for (let i = 0; i < iterations; i++) {
-        await quickAssessment.execute({
+        await quickAssessment({
           profile_id: testProfileId,
           subcategory_id: `MEMORY-TEST-${i}`,
           implementation_level: 'Partially Implemented'
@@ -618,7 +624,7 @@ describe('Performance Benchmarks', () => {
       // Test many concurrent database operations
       const connectionTests = Array.from({ length: 20 }, (_, i) =>
         performanceUtils.measureTime(async () => {
-          return await searchFramework.execute({
+          return await searchFramework({
             keyword: `test-${i}`,
             limit: 10
           }, testDb);
@@ -644,20 +650,20 @@ describe('Performance Benchmarks', () => {
     test('should detect performance regressions in core operations', async () => {
       // Baseline measurements for key operations
       const baselineOperations = {
-        createProfile: async () => createProfile.execute({
+        createProfile: async () => createProfile({
           org_name: `Baseline Org ${Date.now()}`,
           profile_name: `Baseline Profile ${Date.now()}`,
           industry: 'Technology',
           size: 'medium'
         }, testDb),
         
-        createAssessment: async () => quickAssessment.execute({
+        createAssessment: async () => quickAssessment({
           profile_id: testProfileId,
           subcategory_id: `BASELINE-${Date.now()}`,
           implementation_level: 'Partially Implemented'
         }, testDb),
         
-        searchFramework: async () => searchFramework.execute({
+        searchFramework: async () => searchFramework({
           keyword: 'governance',
           limit: 20
         }, testDb)
@@ -696,7 +702,7 @@ describe('Performance Benchmarks', () => {
 
         // Test maturity assessment performance
         const { result, duration } = await performanceUtils.measureTime(async () => {
-          return await assessMaturity.execute({
+          return await assessMaturity({
             profile_id: scaleProfile.profile_id,
             include_subcategory_breakdown: true
           }, testDb);
@@ -733,7 +739,7 @@ async function setupPerformanceTestData() {
   // Insert framework data if needed
   for (const func of scenario.assessments.slice(0, 10)) {
     try {
-      await quickAssessment.execute({
+      await quickAssessment({
         profile_id: testProfileId,
         subcategory_id: func.subcategory_id,
         implementation_level: func.implementation_level,
@@ -747,7 +753,7 @@ async function setupPerformanceTestData() {
   // Add some evidence
   for (const evidence of scenario.evidence.slice(0, 5)) {
     try {
-      await uploadEvidence.execute({
+      await uploadEvidence({
         profile_id: testProfileId,
         subcategory_id: evidence.subcategory_id,
         file_name: evidence.file_name,

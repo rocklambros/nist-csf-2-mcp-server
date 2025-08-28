@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mcp-server:
     build:
@@ -40,7 +38,7 @@ services:
     
     # Network configuration
     ports:
-      - "127.0.0.1:8080:8080"  # Bind only to localhost
+      - "8080:8080"  # Changed to bind all interfaces for easier access
     
     networks:
       - mcp-network

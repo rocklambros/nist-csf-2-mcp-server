@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/75</span>
+                <span class='fraction'>0/68</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/74</span>
+                <span class='fraction'>0/67</span>
             </div>
         
             
@@ -400,14 +400,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -416,11 +416,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -682,7 +682,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -714,7 +714,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -723,7 +723,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -732,13 +732,13 @@
  * Implements comprehensive validation for all tool parameters
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import * as path from 'path';</span>
-<span class="cstat-no" title="statement not covered" >import { z } from 'zod';</span>
+import * as path from 'path';
+import { z } from 'zod';
 &nbsp;
 /**
  * Security error class for validation failures
  */
-<span class="cstat-no" title="statement not covered" >export class S</span>ecurityError extends Error {
+export class SecurityError extends Error {
 <span class="fstat-no" title="function not covered" >  constructor(m</span>essage: string) {
 <span class="cstat-no" title="statement not covered" >    super(message);</span>
 <span class="cstat-no" title="statement not covered" >    this.name = 'SecurityError';</span>
@@ -748,7 +748,7 @@
 /**
  * Base validator class for all tools
  */
-<span class="cstat-no" title="statement not covered" >export abstract class B</span>aseTool {
+export abstract class BaseTool {
   protected baseDir: string;
   protected maxSize: number;
   
@@ -893,7 +893,7 @@
  */
 &nbsp;
 // Assessment tool validators
-export const <span class="cstat-no" title="statement not covered" >AssessmentSchema = z.object({</span>
+export const AssessmentSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   profile_id: z.string().max(100),
   function: z.enum(['GOVERN', 'IDENTIFY', 'PROTECT', 'DETECT', 'RESPOND', 'RECOVER']).optional(),
   category: z.string().max(100).optional(),
@@ -903,7 +903,7 @@ export const <span class="cstat-no" title="statement not covered" >AssessmentSch
 });
 &nbsp;
 // Import tool validators
-export const <span class="cstat-no" title="statement not covered" >ImportSchema = z.object({</span>
+export const ImportSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   file_path: z.string().max(500),
   format: z.enum(['csv', 'excel', 'json']),
   profile_id: z.string().max(100),
@@ -912,7 +912,7 @@ export const <span class="cstat-no" title="statement not covered" >ImportSchema 
 });
 &nbsp;
 // Evidence validation schema
-export const <span class="cstat-no" title="statement not covered" >EvidenceSchema = z.object({</span>
+export const EvidenceSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   file_path: z.string().max(500),
   evidence_type: z.enum(['screenshot', 'document', 'log', 'report', 'scan_result', 'configuration', 'other']),
   profile_id: z.string().max(100),
@@ -922,7 +922,7 @@ export const <span class="cstat-no" title="statement not covered" >EvidenceSchem
 });
 &nbsp;
 // Policy generation schema
-export const <span class="cstat-no" title="statement not covered" >PolicySchema = z.object({</span>
+export const PolicySchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   policy_type: z.enum([
     'information_security',
     'access_control',
@@ -950,7 +950,7 @@ export const <span class="cstat-no" title="statement not covered" >PolicySchema 
 });
 &nbsp;
 // Template generation schema
-export const <span class="cstat-no" title="statement not covered" >TemplateSchema = z.object({</span>
+export const TemplateSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   subcategory_id: z.string().max(100),
   industry: z.enum([
     'financial_services',
@@ -970,7 +970,7 @@ export const <span class="cstat-no" title="statement not covered" >TemplateSchem
 });
 &nbsp;
 // Test scenario schema
-export const <span class="cstat-no" title="statement not covered" >TestScenarioSchema = z.object({</span>
+export const TestScenarioSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   subcategory_id: z.string().max(100),
   scenario_type: z.enum([
     'validation',
@@ -987,7 +987,7 @@ export const <span class="cstat-no" title="statement not covered" >TestScenarioS
 });
 &nbsp;
 // Report generation schema
-export const <span class="cstat-no" title="statement not covered" >ReportSchema = z.object({</span>
+export const ReportSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   profile_id: z.string().max(100),
   report_type: z.enum([
     'executive_summary',
@@ -1004,7 +1004,7 @@ export const <span class="cstat-no" title="statement not covered" >ReportSchema 
 });
 &nbsp;
 // Profile comparison schema
-export const <span class="cstat-no" title="statement not covered" >CompareSchema = z.object({</span>
+export const CompareSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   profile1_id: z.string().max(100),
   profile2_id: z.string().max(100),
   comparison_type: z.enum(['gap', 'maturity', 'coverage']).optional(),
@@ -1014,7 +1014,7 @@ export const <span class="cstat-no" title="statement not covered" >CompareSchema
 /**
  * Validate tool parameters based on tool name
  */
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >v</span>alidateToolParams(</span>toolName: string, params: Record&lt;string, any&gt;): Record&lt;string, any&gt; {
+export function <span class="fstat-no" title="function not covered" >validateToolParams(</span>toolName: string, params: Record&lt;string, any&gt;): Record&lt;string, any&gt; {
   const validators: Record&lt;string, z.ZodSchema&gt; = <span class="cstat-no" title="statement not covered" >{</span>
     'create_assessment': AssessmentSchema,
     'update_assessment': AssessmentSchema.partial().extend({ assessment_id: z.string() }),
@@ -1046,7 +1046,7 @@ export const <span class="cstat-no" title="statement not covered" >CompareSchema
 /**
  * File size validation
  */
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >v</span>alidateFileSize(</span>size: number, maxSize: number = <span class="branch-0 cbranch-no" title="branch not covered" >10 * 1024 * 1024)</span>: void {
+export function <span class="fstat-no" title="function not covered" >validateFileSize(</span>size: number, maxSize: number = <span class="branch-0 cbranch-no" title="branch not covered" >10 * 1024 * 1024)</span>: void {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (size &gt; maxSize) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new SecurityError(`File size ${size} exceeds maximum allowed size of ${maxSize} bytes`);</span>
   }
@@ -1055,7 +1055,7 @@ export const <span class="cstat-no" title="statement not covered" >CompareSchema
 /**
  * MIME type validation
  */
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >v</span>alidateMimeType(</span>mimeType: string, allowedTypes: string[]): void {
+export function <span class="fstat-no" title="function not covered" >validateMimeType(</span>mimeType: string, allowedTypes: string[]): void {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!allowedTypes.includes(mimeType)) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new SecurityError(`MIME type ${mimeType} not allowed. Allowed types: ${allowedTypes.join(', ')}`);</span>
   }
@@ -1066,7 +1066,7 @@ export const <span class="cstat-no" title="statement not covered" >CompareSchema
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-27T11:23:43.905Z
+                at 2025-08-28T12:37:02.160Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

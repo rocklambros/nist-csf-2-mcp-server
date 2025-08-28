@@ -1,0 +1,300 @@
+# Default values for nist-csf-2-mcp-server
+# This is a YAML-formatted file.
+
+# Image configuration
+image:
+  repository: ghcr.io/rocklambros/nist-csf-2-mcp-server
+  pullPolicy: Always
+  tag: "latest"
+
+# Image pull secrets for private registries
+imagePullSecrets: []
+
+# Service account configuration
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+# Pod annotations
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080" 
+  prometheus.io/path: "/metrics"
+
+# Pod labels
+podLabels: {}
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
+
+# Application configuration
+config:
+  # Server configuration
+  nodeEnv: production
+  serverPort: 8080
+  serverHost: "0.0.0.0"
+  logLevel: info
+  
+  # Feature toggles
+  enableMonitoring: true
+  analyticsEnabled: true
+  rateLimitEnabled: true
+  
+  # Authentication mode: disabled, simple, oauth
+  authMode: disabled
+  
+  # Custom configuration (mounted as ConfigMap)
+  custom: {}
+
+# Secrets configuration
+secrets:
+  # API key for simple authentication
+  apiKey: ""
+  
+  # JWT secrets for OAuth mode
+  jwtSecret: ""
+  jwtIssuer: ""
+  
+  # Custom secrets
+  custom: {}
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: http
+  annotations: {}
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: nist-csf.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+    # - secretName: nist-csf-tls
+    #   hosts:
+    #     - nist-csf.local
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 500m
+    memory: 256Mi
+    ephemeral-storage: 512Mi
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: false
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Vertical Pod Autoscaler (if available)
+verticalPodAutoscaler:
+  enabled: false
+  updateMode: Auto
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Deployment configuration
+replicaCount: 3
+
+# Rolling update strategy
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations:
+  - key: node-role.kubernetes.io/master
+    operator: Equal
+    effect: NoSchedule
+
+# Affinity rules
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - nist-csf-2-mcp-server
+        topologyKey: kubernetes.io/hostname
+
+# Health check configuration
+healthcheck:
+  enabled: true
+  path: /health
+  port: http
+  
+  # Liveness probe
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    
+  # Readiness probe
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 2
+    
+  # Startup probe
+  startupProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 30
+
+# Persistence configuration
+persistence:
+  # Enable persistent volume for logs
+  logs:
+    enabled: false
+    size: 1Gi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    
+  # Enable persistent volume for data (if needed)
+  data:
+    enabled: false
+    size: 1Gi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+
+# Network policy
+networkPolicy:
+  enabled: false
+  ingress: []
+  egress: []
+
+# Monitoring configuration
+monitoring:
+  # ServiceMonitor for Prometheus
+  serviceMonitor:
+    enabled: false
+    namespace: ""
+    interval: 30s
+    path: /metrics
+    labels: {}
+    
+  # Grafana dashboard
+  grafanaDashboard:
+    enabled: false
+    namespace: ""
+    labels: {}
+
+# RBAC configuration
+rbac:
+  create: true
+
+# Pod security policy
+podSecurityPolicy:
+  enabled: false
+
+# Priority class
+priorityClassName: ""
+
+# Environment variables from existing ConfigMaps/Secrets
+envFrom: []
+  # - configMapRef:
+  #     name: existing-config
+  # - secretRef:
+  #     name: existing-secret
+
+# Additional environment variables
+env: []
+  # - name: CUSTOM_VAR
+  #   value: "custom-value"
+
+# Additional volumes
+extraVolumes: []
+  # - name: custom-volume
+  #   configMap:
+  #     name: custom-config
+
+# Additional volume mounts
+extraVolumeMounts: []
+  # - name: custom-volume
+  #   mountPath: /custom/path
+  #   readOnly: true
+
+# Init containers
+initContainers: []
+
+# Sidecar containers
+sidecars: []
+
+# Additional containers
+extraContainers: []
+
+# Pod lifecycle hooks
+lifecycle: {}
+
+# Topology spread constraints
+topologySpreadConstraints: []
+
+# Runtime class name
+runtimeClassName: ""
+
+# DNS configuration
+dnsConfig: {}
+
+# DNS policy
+dnsPolicy: ClusterFirst
+
+# Host aliases
+hostAliases: []
+
+# Termination grace period
+terminationGracePeriodSeconds: 30
+
+# Test configuration
+tests:
+  enabled: true
+  image:
+    repository: curlimages/curl
+    tag: latest
+    pullPolicy: IfNotPresent

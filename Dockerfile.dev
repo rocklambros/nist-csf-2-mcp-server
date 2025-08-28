@@ -1,0 +1,58 @@
+# Development Dockerfile with hot-reload and debugging
+FROM node:20-alpine
+
+# Install development tools
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    sqlite \
+    curl \
+    git \
+    bash
+
+# Create app user (same as production for consistency)
+RUN addgroup -g 10001 -S mcp-server && \
+    adduser -u 10001 -S -G mcp-server -h /app mcp-server
+
+# Set working directory
+WORKDIR /app
+
+# Create necessary directories
+RUN mkdir -p /app/data /app/logs /app/src /app/tests && \
+    chown -R mcp-server:mcp-server /app
+
+# Copy package files
+COPY --chown=mcp-server:mcp-server package*.json ./
+COPY --chown=mcp-server:mcp-server tsconfig.json ./
+
+# Install ALL dependencies (including dev dependencies)
+RUN npm ci && \
+    npm cache clean --force
+
+# Copy source code and framework data
+COPY --chown=mcp-server:mcp-server src/ ./src/
+COPY --chown=mcp-server:mcp-server data/ ./data/
+COPY --chown=mcp-server:mcp-server tests/ ./tests/
+
+# Initialize database if needed
+RUN npm run build && npm run db:init || true
+
+# Development environment variables
+ENV NODE_ENV=development \
+    LOG_LEVEL=debug \
+    ENABLE_MONITORING=true \
+    PORT=3000
+
+# Switch to app user
+USER mcp-server
+
+# Expose development ports
+EXPOSE 3000 9229
+
+# Health check for development
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
+
+# Default command (can be overridden)
+CMD ["npm", "run", "dev"]
