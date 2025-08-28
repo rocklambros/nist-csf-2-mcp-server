@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  mcp-server-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: nist-csf-mcp-server:dev
+    container_name: mcp-server-dev
+    restart: unless-stopped
+    
+    # Development-specific configurations
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+      - ENABLE_MONITORING=true
+      - ANALYTICS_ENABLED=false
+      - AUTH_MODE=disabled
+    
+    # Volume mounts for development
+    volumes:
+      - ./src:/app/src:ro                    # Source code hot-reload
+      - ./data:/app/data:rw                  # Framework data
+      - ./logs:/app/logs:rw                  # Application logs
+      - ./tests:/app/tests:ro                # Test files
+      - /app/node_modules                    # Prevent local node_modules override
+    
+    # Network configuration
+    ports:
+      - "3000:3000"    # Development port
+      - "9229:9229"    # Node.js debugger port
+    
+    networks:
+      - mcp-dev-network
+    
+    # Command override for development
+    command: ["npm", "run", "dev"]
+    
+    # Development health check (more frequent)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    
+    # Logging for development
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+  # Optional development database viewer
+  db-viewer:
+    image: sosedoff/pgweb:latest
+    container_name: mcp-db-viewer
+    restart: unless-stopped
+    depends_on:
+      - mcp-server-dev
+    ports:
+      - "8081:8081"
+    environment:
+      - PGWEB_DATABASE_URL=sqlite:///app/data/nist_csf.db
+    volumes:
+      - ./nist_csf.db:/app/data/nist_csf.db:ro
+    networks:
+      - mcp-dev-network
+
+  # Development reverse proxy (optional)
+  nginx-dev:
+    image: nginx:alpine
+    container_name: mcp-nginx-dev
+    restart: unless-stopped
+    depends_on:
+      - mcp-server-dev
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - mcp-dev-network
+
+networks:
+  mcp-dev-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
