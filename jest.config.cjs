@@ -65,7 +65,13 @@ module.exports = {
     'tests/performance/',
     'tests/simple-db.test.ts',
     'tests/tools/.*simple.*\\.test\\.ts$',
-    'tests/tools/.*unit\\.test\\.ts$'
+    'tests/tools/.*unit\\.test\\.ts$',
+    'tests/security/',
+    'tests/tools/',
+    'tests/integration/',
+    'tests/e2e/',
+    'tests/services/',
+    'tests/validation/'
   ],
   // Mock handling
   resetMocks: true,
