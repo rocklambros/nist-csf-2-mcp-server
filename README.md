@@ -104,8 +104,15 @@ git clone https://github.com/rocklambros/nist-csf-2-mcp-server.git && cd nist-cs
 
 #### Option 2: Pre-built Image (Registry Deploy)
 ```bash
-# Pull and run from container registry
-docker run -p 8080:8080 ghcr.io/rocklambros/nist-csf-2-mcp-server:latest
+# Pull and run from container registry (background mode)
+docker run -d -p 8080:8080 --name nist-csf-mcp-server ghcr.io/rocklambros/nist-csf-2-mcp-server:latest
+
+# Container management commands
+docker ps                           # Check if container is running
+docker logs nist-csf-mcp-server     # View container logs  
+docker stop nist-csf-mcp-server     # Stop the container
+docker start nist-csf-mcp-server    # Start the container
+docker rm nist-csf-mcp-server       # Remove the container
 ```
 
 #### Option 3: Development Environment
@@ -640,9 +647,12 @@ npm run test:performance # Performance benchmarks
 # Production deployment with persistence and monitoring
 docker-compose up -d
 
-# Check status and logs
-docker-compose ps
-docker-compose logs -f mcp-server
+# Container management commands
+docker-compose ps                    # Check container status
+docker-compose logs -f mcp-server    # Follow logs in real-time
+docker-compose logs mcp-server       # View logs  
+docker-compose stop                  # Stop all services
+docker-compose down                  # Stop and remove containers
 ```
 
 #### Advanced Docker Options
@@ -650,8 +660,9 @@ docker-compose logs -f mcp-server
 # Development with hot-reload
 docker-compose -f docker-compose.dev.yml up -d
 
-# Custom environment
-docker run -p 8080:8080 \
+# Custom environment (background mode)
+docker run -d -p 8080:8080 \
+  --name nist-csf-mcp-server \
   -e AUTH_MODE=simple \
   -e API_KEY=your-key \
   ghcr.io/rocklambros/nist-csf-2-mcp-server:latest
