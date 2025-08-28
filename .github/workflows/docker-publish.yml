@@ -69,6 +69,41 @@ jobs:
             body: body,
             labels: ['ci/cd', 'build-failure', 'bug']
           });
+    
+    - name: Notify on build success
+      if: success()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const workflow = '${{ github.workflow }}';
+          const repo = '${{ github.repository }}';
+          const sha = '${{ github.sha }}';
+          const runId = '${{ github.run_id }}';
+          const actor = '${{ github.actor }}';
+          const branch = '${{ github.ref_name }}';
+          
+          const title = `✅ Build Successful: ${workflow}`;
+          const body = `
+          **Repository:** ${repo}
+          **Branch:** ${branch}
+          **Commit:** ${sha.substring(0, 7)}
+          **Actor:** ${actor}
+          **Workflow:** ${workflow}
+          **Run ID:** ${runId}
+          
+          **Actions Link:** https://github.com/${repo}/actions/runs/${runId}
+          
+          The build and test process completed successfully. All tests passed and code quality checks were successful.
+          `;
+          
+          // Create an issue to notify about the success
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['ci/cd', 'build-success']
+          });
 
   build-and-push:
     needs: build-and-test
@@ -134,6 +169,48 @@ jobs:
         docker run --rm --name test-container ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest timeout 10s node dist/index.js || true
         echo "✅ Docker image test completed - MCP server starts successfully"
 
+    - name: Notify on Docker build and push success
+      if: success() && github.event_name != 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const workflow = '${{ github.workflow }}';
+          const repo = '${{ github.repository }}';
+          const sha = '${{ github.sha }}';
+          const runId = '${{ github.run_id }}';
+          const actor = '${{ github.actor }}';
+          const branch = '${{ github.ref_name }}';
+          
+          const title = `📦 Docker Images Published: ${workflow}`;
+          const body = `
+          **Repository:** ${repo}
+          **Branch:** ${branch}
+          **Commit:** ${sha.substring(0, 7)}
+          **Actor:** ${actor}
+          **Workflow:** ${workflow}
+          **Run ID:** ${runId}
+          
+          **Actions Link:** https://github.com/${repo}/actions/runs/${runId}
+          
+          Docker images have been successfully built, tested, and published to container registries.
+          
+          **Published Images:**
+          - \`ghcr.io/${repo.toLowerCase()}:latest\`
+          - \`ghcr.io/${repo.toLowerCase()}:${sha.substring(0, 7)}\`
+          - \`dockerhub/nist-csf-mcp-server:latest\` (if configured)
+          
+          **Supported Architectures:** linux/amd64, linux/arm64
+          `;
+          
+          // Create an issue to notify about the success
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['ci/cd', 'docker-publish-success', 'deployment']
+          });
+
   security-scan:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -184,4 +261,43 @@ jobs:
             title: title,
             body: body,
             labels: ['ci/cd', 'docker-failure', 'bug']
+          });
+    
+    - name: Notify on Docker build success
+      if: success()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const workflow = '${{ github.workflow }}';
+          const repo = '${{ github.repository }}';
+          const sha = '${{ github.sha }}';
+          const runId = '${{ github.run_id }}';
+          const actor = '${{ github.actor }}';
+          const branch = '${{ github.ref_name }}';
+          
+          const title = `🐳 Docker Build Successful: ${workflow}`;
+          const body = `
+          **Repository:** ${repo}
+          **Branch:** ${branch}
+          **Commit:** ${sha.substring(0, 7)}
+          **Actor:** ${actor}
+          **Workflow:** ${workflow}
+          **Run ID:** ${runId}
+          
+          **Actions Link:** https://github.com/${repo}/actions/runs/${runId}
+          
+          The Docker build, push, and security scan completed successfully. Images are available in the container registry and have passed security validation.
+          
+          **Container Images:**
+          - \`ghcr.io/${repo.toLowerCase()}:latest\`
+          - \`ghcr.io/${repo.toLowerCase()}:${sha.substring(0, 7)}\`
+          `;
+          
+          // Create an issue to notify about the success
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['ci/cd', 'docker-success', 'deployment']
           });
