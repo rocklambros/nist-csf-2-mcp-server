@@ -46,7 +46,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.5.0",
+    "@modelcontextprotocol/sdk": "^0.7.0",
     "@types/uuid": "^10.0.0",
     "better-sqlite3": "^11.3.0",
     "cors": "^2.8.5",
