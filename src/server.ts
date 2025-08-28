@@ -62,7 +62,7 @@ import { importAssessmentTool } from './tools/import_assessment.js';
 import { validateEvidenceTool } from './tools/validate_evidence.js';
 import { getImplementationTemplateTool } from './tools/get_implementation_template.js';
 import { generatePolicyTemplateTool } from './tools/generate_policy_template.js';
-import { generateTestScenariosTool } from './tools/generate_test_scenarios.js';
+// import { generateTestScenariosTool } from './tools/generate_test_scenarios.js'; // DOCKER WORKAROUND
 
 // Environment configuration
 const PORT = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 8080;
@@ -258,7 +258,8 @@ function registerTools() {
   });
   
   TOOL_REGISTRY.set('generate_test_scenarios', {
-    handler: async (args, db, framework) => generateTestScenariosTool.execute(args, db, framework),
+    // DOCKER WORKAROUND - Temporarily disabled due to TypeScript module resolution issue in Docker
+    handler: async (_args, _db, _framework) => ({ status: "temporarily_disabled", message: "generate_test_scenarios temporarily disabled for Docker compatibility" }),
     requiresAuth: true,
     requiredScope: 'test:generate',
     rateLimit: { requests: 10, window: 60 }
@@ -656,7 +657,7 @@ async function main() {
 }
 
 // Run the server
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch((error) => {
     logger.error('Fatal error:', error);
     process.exit(1);

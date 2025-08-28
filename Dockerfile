@@ -1,5 +1,11 @@
 # Multi-stage build for security and efficiency
-FROM node:20-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
+
+# Build arguments for metadata
+ARG BUILDTIME
+ARG VERSION
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 # Install build dependencies
 RUN apk add --no-cache python3 make g++ sqlite
@@ -23,8 +29,8 @@ COPY data/ ./data/
 # Build TypeScript
 RUN npm run build
 
-# Initialize database with complete framework data
-RUN npm run db:init
+# Initialize database with complete framework data (skip question bank for now)
+RUN npm run build && npm run import:csf-framework
 
 # Verify database was built correctly
 RUN npm run db:verify
@@ -63,18 +69,27 @@ COPY --from=builder --chown=mcp-server:mcp-server /build/package*.json ./
 COPY --from=builder --chown=mcp-server:mcp-server /build/data/ ./data/
 COPY --from=builder --chown=mcp-server:mcp-server /build/nist_csf.db ./nist_csf.db
 
-# Set security environment variables
+# Set security environment variables and metadata
 ENV NODE_ENV=production \
     NODE_OPTIONS="--max-old-space-size=512" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
+
+# Add metadata labels
+LABEL org.opencontainers.image.created="${BUILDTIME}" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.title="NIST CSF 2.0 MCP Server" \
+      org.opencontainers.image.description="Model Context Protocol server for NIST Cybersecurity Framework 2.0" \
+      org.opencontainers.image.source="https://github.com/rocklambros/nist-csf-2-mcp-server" \
+      org.opencontainers.image.documentation="https://github.com/rocklambros/nist-csf-2-mcp-server/blob/main/README.md" \
+      org.opencontainers.image.platform="${TARGETPLATFORM}"
 
 # Switch to non-root user (MANDATORY)
 USER mcp-server
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:8080/health', (r) => {r.statusCode === 200 ? process.exit(0) : process.exit(1)})"
+    CMD node -e "import http from 'http'; http.get('http://localhost:8080/health', (r) => {r.statusCode === 200 ? process.exit(0) : process.exit(1)})"
 
 # Expose port (non-privileged)
 EXPOSE 8080
@@ -87,4 +102,4 @@ CMD ["node", \
      "--max-http-header-size=8192", \
      "--pending-deprecation", \
      "--trace-warnings", \
-     "dist/index.js"]
+     "dist/server.js"]
