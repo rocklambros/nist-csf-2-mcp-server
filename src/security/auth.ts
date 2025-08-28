@@ -73,7 +73,8 @@ export class AuthMiddleware {
       });
     }
 
-    console.log(`🔒 Authentication mode: ${this.config.mode.toUpperCase()}`);
+    // Write to stderr for MCP compatibility
+    process.stderr.write(`🔒 Authentication mode: ${this.config.mode.toUpperCase()}\n`);
   }
 
   /**
@@ -133,7 +134,7 @@ export class AuthMiddleware {
    */
   private validateApiKey(token: string): SimpleAuthToken | null {
     if (!this.config.apiKey) {
-      console.warn('⚠️  Simple auth enabled but no API_KEY configured');
+      process.stderr.write('⚠️  Simple auth enabled but no API_KEY configured\n');
       return null;
     }
 
@@ -231,7 +232,7 @@ export class AuthMiddleware {
         }
         
         // Don't expose internal error details
-        console.error('Authentication error:', error);
+        process.stderr.write(`Authentication error: ${error}\n`);
         return res.status(401).json({ error: 'Unauthorized' });
       }
     };

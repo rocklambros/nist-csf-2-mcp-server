@@ -42,15 +42,39 @@ const fileFormat = winston.format.combine(
   winston.format.json()
 );
 
+// Determine if we're running as an MCP server (stdio transport)
+const isMcpServer = process.argv.includes('--mcp') || 
+                   process.env.MCP_SERVER === 'true' || 
+                   process.stdin.isTTY === false;
+
 // Create the logger
 export const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   levels,
   transports: [
-    // Console transport
-    new winston.transports.Console({
-      format: consoleFormat,
-    }),
+    // Console transport - only if NOT running as MCP server
+    // MCP servers must reserve stdout for JSON protocol
+    ...(isMcpServer ? [] : [
+      new winston.transports.Console({
+        format: consoleFormat,
+      })
+    ]),
+    // Stderr transport for MCP servers (optional, for debugging)
+    ...(isMcpServer ? [
+      new winston.transports.Console({
+        stderrLevels: ['error', 'warn', 'info', 'debug'],
+        format: winston.format.combine(
+          winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+          winston.format.printf(({ timestamp, level, message, ...meta }) => {
+            let msg = `${timestamp} [MCP] [${level}]: ${message}`;
+            if (Object.keys(meta).length > 0) {
+              msg += ` ${JSON.stringify(meta)}`;
+            }
+            return msg;
+          })
+        ),
+      })
+    ] : []),
     // File transport for errors
     new winston.transports.File({
       filename: path.join(process.cwd(), 'logs/error.log'),

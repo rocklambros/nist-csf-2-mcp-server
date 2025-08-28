@@ -126,15 +126,39 @@ class EnhancedLogger {
     // Determine if we should use JSON or console format
     const useJsonFormat = process.env.LOG_FORMAT === 'json' || process.env.NODE_ENV === 'production';
     
+    // Determine if we're running as an MCP server (stdio transport)
+    const isMcpServer = process.argv.includes('--mcp') || 
+                       process.env.MCP_SERVER === 'true' || 
+                       process.stdin.isTTY === false;
+    
     this.logger = winston.createLogger({
       level: process.env.LOG_LEVEL || 'info',
       levels,
       defaultMeta: systemMetadata,
       transports: [
-        // Console transport
-        new winston.transports.Console({
-          format: useJsonFormat ? structuredFormat : consoleFormat,
-        }),
+        // Console transport - only if NOT running as MCP server
+        // MCP servers must reserve stdout for JSON protocol
+        ...(isMcpServer ? [] : [
+          new winston.transports.Console({
+            format: useJsonFormat ? structuredFormat : consoleFormat,
+          })
+        ]),
+        // Stderr transport for MCP servers (optional, for debugging)
+        ...(isMcpServer ? [
+          new winston.transports.Console({
+            stderrLevels: ['error', 'warn', 'info', 'debug', 'trace', 'fatal'],
+            format: winston.format.combine(
+              winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+              winston.format.printf(({ timestamp, level, message, ...meta }) => {
+                let msg = `${timestamp} [MCP-ENHANCED] [${level}]: ${message}`;
+                if (Object.keys(meta).length > 0) {
+                  msg += ` ${JSON.stringify(meta)}`;
+                }
+                return msg;
+              })
+            ),
+          })
+        ] : []),
         // File transport for errors (always JSON)
         new winston.transports.File({
           filename: path.join(process.cwd(), 'logs/error.log'),

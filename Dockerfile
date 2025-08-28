@@ -73,7 +73,8 @@ COPY --from=builder --chown=mcp-server:mcp-server /build/nist_csf.db ./nist_csf.
 ENV NODE_ENV=production \
     NODE_OPTIONS="--max-old-space-size=512" \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    MCP_SERVER=true
 
 # Add metadata labels
 LABEL org.opencontainers.image.created="${BUILDTIME}" \
