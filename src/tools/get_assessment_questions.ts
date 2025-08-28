@@ -137,5 +137,54 @@ export function estimateCompletionTime(questionCount: number, assessmentType: st
 export const getAssessmentQuestionsTool = {
   name: 'get_assessment_questions',
   description: 'Retrieve comprehensive assessment questions based on NIST CSF 2.0 subcategories with context-aware customization',
-  inputSchema: GetAssessmentQuestionsSchema
+  inputSchema: {
+    type: 'object',
+    properties: {
+      function: {
+        type: 'string',
+        enum: ['GV', 'ID', 'PR', 'DE', 'RS', 'RC'],
+        description: 'CSF function to focus on'
+      },
+      category: {
+        type: 'string',
+        description: 'Specific category ID (e.g., GV.OC, ID.AM)'
+      },
+      subcategory_ids: {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'Specific subcategory IDs to include'
+      },
+      assessment_type: {
+        type: 'string',
+        enum: ['detailed', 'quick', 'custom'],
+        default: 'detailed',
+        description: 'Type of assessment - affects question depth and options'
+      },
+      organization_size: {
+        type: 'string',
+        enum: ['small', 'medium', 'large', 'enterprise'],
+        description: 'Organization size for context-appropriate questions'
+      },
+      include_conditional: {
+        type: 'boolean',
+        default: false,
+        description: 'Include questions with conditional logic'
+      },
+      include_examples: {
+        type: 'boolean',
+        default: true,
+        description: 'Include implementation examples with questions'
+      },
+      include_references: {
+        type: 'boolean',
+        default: false,
+        description: 'Include reference links and documentation'
+      },
+      language: {
+        type: 'string',
+        default: 'en',
+        description: 'Language for question text (currently only en supported)'
+      }
+    }
+  }
 };

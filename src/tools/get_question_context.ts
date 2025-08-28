@@ -380,5 +380,56 @@ function getRelatedFrameworks(subcategoryId: string): string[] {
 export const getQuestionContextTool = {
   name: 'get_question_context',
   description: 'Retrieve detailed context, guidance, and examples for specific NIST CSF assessment questions with sector and size-specific recommendations',
-  inputSchema: GetQuestionContextSchema
+  inputSchema: {
+    type: 'object',
+    properties: {
+      subcategory_id: {
+        type: 'string',
+        minLength: 1,
+        description: 'NIST CSF subcategory ID (e.g., GV.OC-01)'
+      },
+      include_implementation_examples: {
+        type: 'boolean',
+        default: true,
+        description: 'Include official NIST implementation examples'
+      },
+      include_references: {
+        type: 'boolean',
+        default: true,
+        description: 'Include reference links and documentation'
+      },
+      organization_context: {
+        type: 'object',
+        properties: {
+          sector: {
+            type: 'string',
+            description: 'Organization sector (e.g., healthcare, finance, technology)'
+          },
+          size: {
+            type: 'string',
+            enum: ['small', 'medium', 'large', 'enterprise'],
+            description: 'Organization size for context-appropriate guidance'
+          }
+        },
+        required: ['sector', 'size'],
+        description: 'Optional organization context for personalized guidance'
+      },
+      include_risk_factors: {
+        type: 'boolean',
+        default: true,
+        description: 'Include common risk factors and challenges'
+      },
+      include_best_practices: {
+        type: 'boolean',
+        default: true,
+        description: 'Include implementation best practices'
+      },
+      language: {
+        type: 'string',
+        default: 'en',
+        description: 'Language for context text (currently only en supported)'
+      }
+    },
+    required: ['subcategory_id']
+  }
 };

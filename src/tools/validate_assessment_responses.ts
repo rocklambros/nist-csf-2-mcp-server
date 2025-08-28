@@ -299,5 +299,80 @@ async function getProfile(profileId: string, db: any) {
 export const validateAssessmentResponsesTool = {
   name: 'validate_assessment_responses',
   description: 'Validate assessment responses for completeness, consistency, and data integrity with comprehensive error reporting',
-  inputSchema: ValidateAssessmentResponsesSchema
+  inputSchema: {
+    type: 'object',
+    properties: {
+      profile_id: {
+        type: 'string',
+        minLength: 1,
+        description: 'Profile ID for the organization being assessed'
+      },
+      responses: {
+        type: 'array',
+        minItems: 1,
+        items: {
+          type: 'object',
+          properties: {
+            subcategory_id: {
+              type: 'string',
+              minLength: 1,
+              description: 'NIST CSF subcategory ID (e.g., GV.OC-01)'
+            },
+            response_value: {
+              oneOf: [
+                { type: 'number' },
+                { type: 'string' }
+              ],
+              description: 'Response value - number for ratings, string for text responses'
+            },
+            confidence_level: {
+              type: 'string',
+              enum: ['low', 'medium', 'high'],
+              description: 'Confidence in the assessment response'
+            },
+            evidence: {
+              type: 'string',
+              description: 'Supporting evidence or documentation for the response'
+            },
+            notes: {
+              type: 'string',
+              description: 'Additional notes or context for the response'
+            },
+            assessed_by: {
+              type: 'string',
+              description: 'Person or team who performed the assessment'
+            },
+            assessment_date: {
+              type: 'string',
+              description: 'Date of assessment (ISO format)'
+            }
+          },
+          required: ['subcategory_id', 'response_value']
+        },
+        description: 'Array of assessment responses to validate'
+      },
+      assessment_type: {
+        type: 'string',
+        enum: ['detailed', 'quick', 'custom'],
+        default: 'detailed',
+        description: 'Type of assessment for validation context'
+      },
+      require_all_questions: {
+        type: 'boolean',
+        default: false,
+        description: 'Whether all questions must be answered for validation to pass'
+      },
+      validate_against_previous: {
+        type: 'boolean',
+        default: true,
+        description: 'Compare responses against previous assessments for consistency'
+      },
+      check_evidence_requirements: {
+        type: 'boolean',
+        default: false,
+        description: 'Require evidence for certain critical responses'
+      }
+    },
+    required: ['profile_id', 'responses']
+  }
 };
