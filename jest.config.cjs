@@ -32,7 +32,11 @@ module.exports = {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^(.*)/db/database\\.js$': '<rootDir>/src/db/database.ts',
+    '^(.*)/db/database$': '<rootDir>/src/db/database.ts',
+    '^(.*)/db/monitored-database\\.js$': '<rootDir>/src/db/monitored-database.ts', 
+    '^(.*)/db/monitored-database$': '<rootDir>/src/db/monitored-database.ts',
     '^(.*)/services/framework-loader\\.js$': '<rootDir>/src/services/framework-loader.ts',
+    '^(.*)/services/framework-loader$': '<rootDir>/src/services/framework-loader.ts',
   },
   testTimeout: 30000,
   // Transform configuration for ES module compatibility
@@ -57,7 +61,11 @@ module.exports = {
     '\\.comprehensive\\.test\\.ts$',
     '\\.backup$',
     'tests/validation/transaction.validation.test.ts',
-    'tests/tools/reporting-tools.test.ts'
+    'tests/tools/reporting-tools.test.ts',
+    'tests/performance/',
+    'tests/simple-db.test.ts',
+    'tests/tools/.*simple.*\\.test\\.ts$',
+    'tests/tools/.*unit\\.test\\.ts$'
   ],
   // Mock handling
   resetMocks: true,

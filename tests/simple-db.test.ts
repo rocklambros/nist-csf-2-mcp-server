@@ -2,14 +2,15 @@
  * Simple database test to validate basic functionality
  */
 
-import { CSFDatabase } from '../src/db/database.js';
+import { CSFDatabase, getDatabase } from '../src/db/database.js';
+import { createMockDatabase } from './helpers/jest-setup.js';
 
 describe('Simple Database Test', () => {
-  let testDb: CSFDatabase;
+  let testDb: any;
   
   beforeAll(async () => {
-    // Create a simple test database
-    testDb = new CSFDatabase('./simple-test.db');
+    // Create a test database using mock
+    testDb = createMockDatabase();
     
     // Verify it works
     const stmt = testDb.prepare('SELECT 1 as test');

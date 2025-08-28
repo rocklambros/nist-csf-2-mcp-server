@@ -8,10 +8,7 @@ import { generateGapAnalysis } from '../../src/tools/generate_gap_analysis.js';
 import { getDatabase } from '../../src/db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
-// Mock the database
-jest.mock('../../src/db/database.js');
-
-// Get the mocked database function
+// Get the mocked database function (already mocked in jest-setup.ts)
 const mockGetDatabase = getDatabase as jest.MockedFunction<typeof getDatabase>;
 
 describe('Generate Gap Analysis Tool - Simple Unit Tests', () => {

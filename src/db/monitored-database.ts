@@ -2,7 +2,7 @@
  * Database wrapper with monitoring capabilities
  */
 
-import { CSFDatabase } from './database.js';
+import { CSFDatabase } from './database';
 import { monitorDatabaseQuery } from '../middleware/monitoring.js';
 import { logger } from '../utils/enhanced-logger.js';
 import { metrics } from '../utils/metrics.js';
