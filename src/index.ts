@@ -1540,6 +1540,11 @@ async function main() {
     await server.close();
     process.exit(0);
   });
+
+  // Keep the process alive - wait indefinitely for MCP messages
+  await new Promise(() => {
+    // This promise never resolves, keeping the server running
+  });
 }
 
 // Run the server
