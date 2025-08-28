@@ -12,6 +12,8 @@ A comprehensive **Model Context Protocol (MCP) server** implementation for the *
 
 **⚡ Deploy in 0.4 seconds** | **🛡️ Multi-tier security** | **📊 424 assessment questions** | **🔧 36 specialized MCP tools** | **🏗️ Production-grade monitoring**
 
+> **📡 Connection Status**: Claude Desktop MCP integration fully operational with resolved container naming conflicts
+
 ## 🚀 Features
 
 ### Framework & Assessment
