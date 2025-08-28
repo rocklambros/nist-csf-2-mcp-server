@@ -3,7 +3,8 @@
  */
 
 import { describe, test, expect, beforeAll } from '@jest/globals';
-import { testDb, testUtils } from '../setup.js';
+import { testUtils } from '../helpers/jest-setup.js';
+import { getDatabase } from '../../src/db/database.js';
 import { createProfile } from '../../src/tools/create_profile.js';
 import { quickAssessment } from '../../src/tools/quick_assessment.js';
 import { uploadEvidence } from '../../src/tools/upload_evidence.js';
@@ -15,10 +16,16 @@ describe('Security and Validation Tests', () => {
   let testProfileId: string;
 
   beforeAll(async () => {
-    const profile = await testUtils.createTestProfile({
+    const profile = await createProfile({
+      org_name: 'Security Test Org',
+      sector: 'Technology',
+      size: 'medium',
       profile_name: 'Security Test Profile'
     });
-    testProfileId = profile.profile_id;
+    
+    if (profile.success) {
+      testProfileId = profile.profile_id;
+    }
   });
 
   describe('Input Validation Tests', () => {
@@ -36,7 +43,7 @@ describe('Security and Validation Tests', () => {
 
       test('should prevent SQL injection in profile creation', async () => {
         for (const payload of sqlInjectionPayloads) {
-          const result = await createProfile.execute({
+          const result = await createProfile({
             org_name: payload,
             profile_name: 'Test Profile',
             industry: 'Technology',
@@ -57,7 +64,7 @@ describe('Security and Validation Tests', () => {
 
       test('should prevent SQL injection in assessment queries', async () => {
         for (const payload of sqlInjectionPayloads) {
-          const result = await quickAssessment.execute({
+          const result = await quickAssessment({
             profile_id: payload,
             subcategory_id: 'GV.OC-01',
             implementation_level: 'Partially Implemented'
@@ -70,7 +77,7 @@ describe('Security and Validation Tests', () => {
 
       test('should prevent SQL injection in search queries', async () => {
         for (const payload of sqlInjectionPayloads) {
-          const result = await searchFramework.execute({
+          const result = await searchFramework({
             keyword: payload,
             limit: 10
           }, testDb);
@@ -102,7 +109,7 @@ describe('Security and Validation Tests', () => {
 
       test('should sanitize XSS attempts in profile data', async () => {
         for (const payload of xssPayloads) {
-          const result = await createProfile.execute({
+          const result = await createProfile({
             org_name: 'Test Organization',
             profile_name: payload,
             industry: 'Technology',
@@ -121,7 +128,7 @@ describe('Security and Validation Tests', () => {
 
       test('should sanitize XSS attempts in assessment notes', async () => {
         for (const payload of xssPayloads) {
-          const result = await quickAssessment.execute({
+          const result = await quickAssessment({
             profile_id: testProfileId,
             subcategory_id: 'XSS-TEST-' + Date.now(),
             implementation_level: 'Partially Implemented',
@@ -138,7 +145,7 @@ describe('Security and Validation Tests', () => {
 
       test('should sanitize XSS attempts in evidence descriptions', async () => {
         for (const payload of xssPayloads) {
-          const result = await uploadEvidence.execute({
+          const result = await uploadEvidence({
             profile_id: testProfileId,
             subcategory_id: 'GV.OC-01',
             file_name: 'test-evidence.pdf',
@@ -169,7 +176,7 @@ describe('Security and Validation Tests', () => {
 
       test('should prevent path traversal in file uploads', async () => {
         for (const payload of pathTraversalPayloads) {
-          const result = await uploadEvidence.execute({
+          const result = await uploadEvidence({
             profile_id: testProfileId,
             subcategory_id: 'GV.OC-01',
             file_name: 'test.pdf',
@@ -185,7 +192,7 @@ describe('Security and Validation Tests', () => {
 
       test('should prevent path traversal in file names', async () => {
         for (const payload of pathTraversalPayloads) {
-          const result = await uploadEvidence.execute({
+          const result = await uploadEvidence({
             profile_id: testProfileId,
             subcategory_id: 'GV.OC-01',
             file_name: payload,
@@ -219,7 +226,7 @@ describe('Security and Validation Tests', () => {
 
       test('should prevent command injection in all text inputs', async () => {
         for (const payload of commandInjectionPayloads) {
-          const result = await quickAssessment.execute({
+          const result = await quickAssessment({
             profile_id: testProfileId,
             subcategory_id: 'CMD-TEST-' + Date.now(),
             implementation_level: 'Partially Implemented',
@@ -250,7 +257,7 @@ describe('Security and Validation Tests', () => {
 
       test('should prevent LDAP injection in user fields', async () => {
         for (const payload of ldapInjectionPayloads) {
-          const result = await trackAuditTrail.execute({
+          const result = await trackAuditTrail({
             profile_id: testProfileId,
             action: 'test_action',
             resource_type: 'test',
@@ -271,7 +278,7 @@ describe('Security and Validation Tests', () => {
     test('should validate string length limits', async () => {
       const oversizedString = 'x'.repeat(10000); // Very long string
 
-      const result = await createProfile.execute({
+      const result = await createProfile({
         org_name: 'Test Org',
         profile_name: oversizedString,
         industry: 'Technology',
@@ -286,7 +293,7 @@ describe('Security and Validation Tests', () => {
       const invalidScores = [-1, 0, 6, 100, 999];
 
       for (const score of invalidScores) {
-        const result = await quickAssessment.execute({
+        const result = await quickAssessment({
           profile_id: testProfileId,
           subcategory_id: 'RANGE-TEST-' + score,
           implementation_level: 'Partially Implemented',
@@ -310,7 +317,7 @@ describe('Security and Validation Tests', () => {
       ];
 
       for (const email of invalidEmails) {
-        const result = await createProfile.execute({
+        const result = await createProfile({
           org_name: 'Test Org',
           profile_name: 'Test Profile',
           industry: 'Technology',
@@ -335,7 +342,7 @@ describe('Security and Validation Tests', () => {
       ];
 
       for (const date of invalidDates) {
-        const result = await quickAssessment.execute({
+        const result = await quickAssessment({
           profile_id: testProfileId,
           subcategory_id: 'DATE-TEST-' + Date.now(),
           implementation_level: 'Partially Implemented',
@@ -359,7 +366,7 @@ describe('Security and Validation Tests', () => {
       ];
 
       for (const level of invalidImplementationLevels) {
-        const result = await quickAssessment.execute({
+        const result = await quickAssessment({
           profile_id: testProfileId,
           subcategory_id: 'ENUM-TEST-' + Date.now(),
           implementation_level: level
@@ -374,7 +381,7 @@ describe('Security and Validation Tests', () => {
   describe('Business Logic Validation', () => {
     test('should validate profile relationships', async () => {
       // Try to create assessment for non-existent profile
-      const result = await quickAssessment.execute({
+      const result = await quickAssessment({
         profile_id: 'non-existent-profile-id',
         subcategory_id: 'GV.OC-01',
         implementation_level: 'Partially Implemented'
@@ -385,7 +392,7 @@ describe('Security and Validation Tests', () => {
     });
 
     test('should validate subcategory existence', async () => {
-      const result = await quickAssessment.execute({
+      const result = await quickAssessment({
         profile_id: testProfileId,
         subcategory_id: 'INVALID.SUBCATEGORY',
         implementation_level: 'Partially Implemented'
@@ -397,7 +404,7 @@ describe('Security and Validation Tests', () => {
 
     test('should validate data consistency', async () => {
       // Try to create assessment with mismatched maturity score
-      const result = await quickAssessment.execute({
+      const result = await quickAssessment({
         profile_id: testProfileId,
         subcategory_id: 'CONSISTENCY-TEST',
         implementation_level: 'Not Implemented',
@@ -418,7 +425,7 @@ describe('Security and Validation Tests', () => {
       ];
 
       for (const hash of invalidHashes) {
-        const result = await uploadEvidence.execute({
+        const result = await uploadEvidence({
           profile_id: testProfileId,
           subcategory_id: 'GV.OC-01',
           file_name: 'test.pdf',
@@ -432,7 +439,7 @@ describe('Security and Validation Tests', () => {
     });
 
     test('should validate export parameters', async () => {
-      const result = await exportData.execute({
+      const result = await exportData({
         profile_id: testProfileId,
         export_format: 'invalid_format',
         date_range: {
@@ -449,7 +456,7 @@ describe('Security and Validation Tests', () => {
   describe('Rate Limiting and Resource Protection', () => {
     test('should handle rapid successive requests gracefully', async () => {
       const rapidRequests = Array.from({ length: 100 }, (_, i) =>
-        searchFramework.execute({
+        searchFramework({
           keyword: `rapid-test-${i}`,
           limit: 5
         }, testDb)
@@ -465,7 +472,7 @@ describe('Security and Validation Tests', () => {
 
     test('should protect against resource exhaustion', async () => {
       // Try to export extremely large dataset
-      const result = await exportData.execute({
+      const result = await exportData({
         profile_id: testProfileId,
         export_format: 'json',
         max_records: 1000000, // Very large number
@@ -482,7 +489,7 @@ describe('Security and Validation Tests', () => {
 
     test('should limit query complexity', async () => {
       // Complex search query that could be expensive
-      const result = await searchFramework.execute({
+      const result = await searchFramework({
         keyword: 'a', // Very broad search
         limit: 10000, // Very large limit
         include_all_fields: true,
@@ -500,20 +507,20 @@ describe('Security and Validation Tests', () => {
     test('should not expose sensitive information in error messages', async () => {
       // Create scenarios that cause various errors
       const errorScenarios = [
-        () => createProfile.execute({
+        () => createProfile({
           org_name: 'Test',
           profile_name: null as any,
           industry: 'Technology',
           size: 'medium'
         }, testDb),
         
-        () => quickAssessment.execute({
+        () => quickAssessment({
           profile_id: 'invalid-id',
           subcategory_id: 'GV.OC-01',
           implementation_level: 'Partially Implemented'
         }, testDb),
         
-        () => uploadEvidence.execute({
+        () => uploadEvidence({
           profile_id: testProfileId,
           subcategory_id: null as any,
           file_name: 'test.pdf',
@@ -550,7 +557,7 @@ describe('Security and Validation Tests', () => {
         })
       };
 
-      const result = await createProfile.execute({
+      const result = await createProfile({
         org_name: 'Test Org',
         profile_name: 'Test Profile',
         industry: 'Technology',
@@ -575,7 +582,7 @@ describe('Security and Validation Tests', () => {
         notes: 'data:text/html,<script>alert("XSS")</script>'
       };
 
-      const result = await quickAssessment.execute(maliciousContent, testDb);
+      const result = await quickAssessment(maliciousContent, testDb);
 
       if (result.success) {
         expect(result.assessment.notes).not.toContain('data:text/html');
@@ -592,7 +599,7 @@ describe('Security and Validation Tests', () => {
       ];
 
       for (const file of dangerousFiles) {
-        const result = await uploadEvidence.execute({
+        const result = await uploadEvidence({
           profile_id: testProfileId,
           subcategory_id: 'GV.OC-01',
           file_name: file.name,
@@ -620,7 +627,7 @@ describe('Security and Validation Tests', () => {
       });
 
       // Try to access assessments from different profile
-      const result = await quickAssessment.execute({
+      const result = await quickAssessment({
         profile_id: otherProfile.profile_id,
         subcategory_id: 'CROSS-ACCESS-TEST',
         implementation_level: 'Partially Implemented'
@@ -634,7 +641,7 @@ describe('Security and Validation Tests', () => {
     test('should validate resource ownership', async () => {
       // In a real system with user authentication, test that users can only access their own resources
       // For now, we test basic resource validation
-      const result = await exportData.execute({
+      const result = await exportData({
         profile_id: 'non-existent-profile',
         export_format: 'json'
       }, testDb);

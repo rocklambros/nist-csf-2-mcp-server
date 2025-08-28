@@ -7,6 +7,9 @@ import { createProfile } from '../../src/tools/create_profile.js';
 import { quickAssessment } from '../../src/tools/quick_assessment.js';
 import { testUtils } from '../helpers/jest-setup.js';
 
+// Import the mocked database to ensure mocks are properly initialized
+import { getDatabase } from '../../src/db/database.js';
+
 describe('Input Validation Security Tests', () => {
   let testProfileId: string;
 

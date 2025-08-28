@@ -6,13 +6,14 @@ import Database from 'better-sqlite3';
 import { join } from 'path';
 import { mkdtempSync, rmSync } from 'fs';
 import { tmpdir } from 'os';
-import { CSFDatabase, getDatabase } from '../../src/db/database';
+import { CSFDatabase, getDatabase } from '../../src/db/database.js';
 import { testFrameworkData, testImplementationExamples } from './csf-reference-data';
 
 export class TestDatabase {
   private db: Database.Database;
   private tempDir: string;
   private dbPath: string;
+  private appDbInstances: CSFDatabase[] = [];
   
   constructor() {
     // Create temporary directory for test database
@@ -583,19 +584,23 @@ export class TestDatabase {
   }
   
   /**
-   * Insert test data
+   * Insert test data with foreign key constraint handling
    */
   insertTestData(table: string, data: any | any[]) {
-    const items = Array.isArray(data) ? data : [data];
+    // Temporarily disable foreign keys for data insertion
+    this.db.pragma('foreign_keys = OFF');
     
-    for (const item of items) {
-      const keys = Object.keys(item);
-      const values = Object.values(item).map(value => {
-        // Convert non-primitive values to JSON strings
-        if (value === null || value === undefined) {
-          return null;
-        }
-        if (typeof value === 'object') {
+    try {
+      const items = Array.isArray(data) ? data : [data];
+      
+      for (const item of items) {
+        const keys = Object.keys(item);
+        const values = Object.values(item).map(value => {
+          // Convert non-primitive values to JSON strings
+          if (value === null || value === undefined) {
+            return null;
+          }
+          if (typeof value === 'object') {
           return JSON.stringify(value);
         }
         if (typeof value === 'boolean') {
@@ -605,11 +610,15 @@ export class TestDatabase {
       });
       const placeholders = keys.map(() => '?').join(', ');
       
-      const stmt = this.db.prepare(
-        `INSERT OR REPLACE INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`
-      );
-      
-      stmt.run(...values);
+        const stmt = this.db.prepare(
+          `INSERT OR REPLACE INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`
+        );
+        
+        stmt.run(...values);
+      }
+    } finally {
+      // Re-enable foreign keys
+      this.db.pragma('foreign_keys = ON');
     }
   }
   
@@ -689,7 +698,20 @@ export class TestDatabase {
    * Close database and cleanup
    */
   close() {
+    // Close all app database instances
+    this.appDbInstances.forEach(appDb => {
+      try {
+        appDb.close();
+      } catch (err) {
+        console.error('Failed to close app database instance:', err);
+      }
+    });
+    this.appDbInstances = [];
+    
+    // Close the raw database connection
     this.db.close();
+    
+    // Clean up temporary files
     try {
       rmSync(this.tempDir, { recursive: true, force: true });
     } catch (err) {
@@ -701,7 +723,11 @@ export class TestDatabase {
    * Create app database instance for testing
    */
   createAppDatabase(): CSFDatabase {
-    return getDatabase(this.dbPath);
+    // For testing, we need to create a new CSFDatabase instance directly
+    // rather than using the singleton getDatabase() function
+    const appDb = new CSFDatabase(this.dbPath);
+    this.appDbInstances.push(appDb);
+    return appDb;
   }
 }
 

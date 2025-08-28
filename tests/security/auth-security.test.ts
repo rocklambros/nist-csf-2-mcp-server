@@ -4,6 +4,8 @@
 
 import { describe, test, expect } from '@jest/globals';
 import { createProfile } from '../../src/tools/create_profile.js';
+import { testUtils } from '../helpers/jest-setup.js';
+import { getDatabase } from '../../src/db/database.js';
 
 describe('Authentication and Authorization Security Tests', () => {
 
