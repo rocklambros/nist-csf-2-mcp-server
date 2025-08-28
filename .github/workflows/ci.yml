@@ -83,7 +83,7 @@ jobs:
         run: npm run build
 
       - name: Initialize database
-        run: npm run db:init
+        run: npm run import:csf-framework
 
       - name: Run integration tests
         run: npm run test:integration

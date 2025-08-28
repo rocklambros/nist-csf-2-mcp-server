@@ -37,6 +37,7 @@ jobs:
     
     - name: Notify on build failure
       if: failure()
+      continue-on-error: true
       uses: actions/github-script@v7
       with:
         script: |
@@ -72,6 +73,7 @@ jobs:
     
     - name: Notify on build success
       if: success()
+      continue-on-error: true
       uses: actions/github-script@v7
       with:
         script: |
@@ -171,6 +173,7 @@ jobs:
 
     - name: Notify on Docker build and push success
       if: success() && github.event_name != 'pull_request'
+      continue-on-error: true
       uses: actions/github-script@v7
       with:
         script: |
@@ -230,6 +233,7 @@ jobs:
     
     - name: Notify on Docker build failure
       if: failure()
+      continue-on-error: true
       uses: actions/github-script@v7
       with:
         script: |
@@ -265,6 +269,7 @@ jobs:
     
     - name: Notify on Docker build success
       if: success()
+      continue-on-error: true
       uses: actions/github-script@v7
       with:
         script: |
