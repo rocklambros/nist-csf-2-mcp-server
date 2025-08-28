@@ -1,5 +1,5 @@
 # Multi-stage build for security and efficiency
-FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
+FROM --platform=$TARGETPLATFORM node:20-alpine AS builder
 
 # Build arguments for metadata
 ARG BUILDTIME
@@ -42,11 +42,12 @@ RUN npm prune --production && \
 # Final stage - minimal runtime image
 FROM node:20-alpine
 
-# Install security updates
+# Install security updates and build tools for better-sqlite3 native compilation
 RUN apk update && \
     apk upgrade && \
     apk add --no-cache \
     dumb-init \
+    python3 make g++ sqlite \
     && rm -rf /var/cache/apk/*
 
 # Create non-root user with specific UID/GID
@@ -68,6 +69,10 @@ COPY --from=builder --chown=mcp-server:mcp-server /build/package*.json ./
 # Copy framework data and pre-built database
 COPY --from=builder --chown=mcp-server:mcp-server /build/data/ ./data/
 COPY --from=builder --chown=mcp-server:mcp-server /build/nist_csf.db ./nist_csf.db
+
+# Rebuild better-sqlite3 for target platform compatibility
+USER root
+RUN npm rebuild better-sqlite3 && chown -R mcp-server:mcp-server /app
 
 # Set security environment variables and metadata
 ENV NODE_ENV=production \
