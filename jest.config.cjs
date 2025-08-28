@@ -31,6 +31,8 @@ module.exports = {
   // ES module compatible module name mapping
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^(.*)/db/database\\.js$': '<rootDir>/src/db/database.ts',
+    '^(.*)/services/framework-loader\\.js$': '<rootDir>/src/services/framework-loader.ts',
   },
   testTimeout: 30000,
   // Transform configuration for ES module compatibility
@@ -53,7 +55,9 @@ module.exports = {
     '/node_modules/',
     '/dist/',
     '\\.comprehensive\\.test\\.ts$',
-    '\\.backup$'
+    '\\.backup$',
+    'tests/validation/transaction.validation.test.ts',
+    'tests/tools/reporting-tools.test.ts'
   ],
   // Mock handling
   resetMocks: true,

@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { get_question_context } from '../../src/tools/get_question_context.js';
-import { getDatabase } from '../../db/database.js';
+import { getDatabase } from '../../src/db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
 // Mock the database

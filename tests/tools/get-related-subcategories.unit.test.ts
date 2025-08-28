@@ -4,8 +4,8 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { get_related_subcategories } from '../../src/tools/get_related_subcategories.js';
-import { getDatabase } from '../../db/database.js';
-import { getFrameworkLoader } from '../../services/framework-loader.js';
+import { getDatabase } from '../../src/db/database.js';
+import { getFrameworkLoader } from '../../src/services/framework-loader.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
 // Mock the database

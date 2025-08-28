@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { upload_evidence } from '../../src/tools/upload_evidence.js';
-import { getDatabase } from '../../db/database.js';
+import { getDatabase } from '../../src/db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
 // Mock the database

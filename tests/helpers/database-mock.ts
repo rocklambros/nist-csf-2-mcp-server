@@ -114,7 +114,31 @@ export function createToolTestHelper(toolName: string) {
     afterEachCleanup,
     getDatabase,
     getAppDatabase,
-    toolName
+    toolName,
+    // Add expected test methods
+    resetDatabase: async () => {
+      testDb = initializeTestDatabase();
+      return testDb;
+    },
+    createTestOrganization: async () => {
+      const testData = testDb.loadRealisticTestData();
+      return testData.organizations[0];
+    },
+    createSampleAssessment: async () => {
+      const testData = testDb.loadRealisticTestData();
+      return testData.assessments[0];
+    },
+    createSampleReportData: async () => {
+      const testData = testDb.loadRealisticTestData();
+      return {
+        profiles: testData.profiles,
+        assessments: testData.assessments,
+        organizations: testData.organizations
+      };
+    },
+    cleanup: async () => {
+      afterEachCleanup();
+    }
   };
 }
 

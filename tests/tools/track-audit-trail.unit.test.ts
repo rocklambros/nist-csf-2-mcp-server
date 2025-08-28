@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { track_audit_trail } from '../../src/tools/track_audit_trail.js';
-import { getDatabase } from '../../db/database.js';
+import { getDatabase } from '../../src/db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
 // Mock the database

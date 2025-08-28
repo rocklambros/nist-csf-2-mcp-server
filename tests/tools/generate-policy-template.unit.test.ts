@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { generate_policy_template } from '../../src/tools/generate_policy_template.js';
-import { getDatabase } from '../../db/database.js';
+import { getDatabase } from '../../src/db/database.js';
 import { createMockDatabase, testUtils } from '../helpers/jest-setup.js';
 
 // Mock the database

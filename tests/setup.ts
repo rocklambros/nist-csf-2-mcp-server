@@ -3,19 +3,28 @@
  */
 
 import { beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
-import { CSFDatabase } from '../src/db/database.js';
-import { logger } from '../src/utils/logger.js';
 import fs from 'fs';
 import path from 'path';
+
+// Dynamic imports to handle ES module issues
+let CSFDatabase: any;
+let logger: any;
 
 // Test database path
 const TEST_DB_PATH = path.join(process.cwd(), 'test.db');
 
 // Global test database instance
-export let testDb: CSFDatabase;
+export let testDb: any;
 
 // Setup test environment
 beforeAll(async () => {
+  // Dynamic import to handle ES module issues
+  const dbModule = await import('../src/db/database.js');
+  const loggerModule = await import('../src/utils/logger.js');
+  
+  CSFDatabase = dbModule.CSFDatabase;
+  logger = loggerModule.logger;
+  
   // Create test database
   if (fs.existsSync(TEST_DB_PATH)) {
     fs.unlinkSync(TEST_DB_PATH);
