@@ -346,6 +346,12 @@ curl -X POST http://localhost:3000/tools/csf_lookup \
   -d '{"element_id": "GV.OC-01", "include_examples": true}'
 ```
 
+#### Still Having Issues?
+If you encounter problems not covered here:
+- 🐛 **Report bugs**: [GitHub Issues](https://github.com/rocklambros/nist-csf-2-mcp-server/issues)
+- 💬 **Get help**: [GitHub Discussions](https://github.com/rocklambros/nist-csf-2-mcp-server/discussions)
+- 📖 **Check examples**: [PROMPTS.md](./PROMPTS.md) for tool usage examples
+
 ## 🛠️ Complete MCP Tools Suite (36 Tools)
 
 ### Framework Query & Search Tools (3 tools)
@@ -1021,9 +1027,23 @@ npm run security:audit            # Security configuration audit
 - 📊 **API Documentation**: Complete tool reference with examples
 
 ### Community Support
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/rocklambros/nist-csf-2-mcp-server/issues)
-- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/rocklambros/nist-csf-2-mcp-server/discussions)
-- 📧 **Enterprise Support**: Contact enterprise@rockcyber.com
+
+**🐛 Found a Bug?**
+Please report bugs and issues via [GitHub Issues](https://github.com/rocklambros/nist-csf-2-mcp-server/issues). Include:
+- Error messages and logs
+- Steps to reproduce the issue
+- Your environment details (OS, Node.js version, Docker version)
+- Expected vs actual behavior
+
+**💡 Have an Enhancement Idea?**
+Request new features or improvements via [GitHub Discussions](https://github.com/rocklambros/nist-csf-2-mcp-server/discussions). We welcome:
+- New tool suggestions
+- UI/UX improvements
+- Integration requests
+- Performance optimizations
+
+**📧 Enterprise Support**
+For enterprise deployments and custom implementations: enterprise@rockcyber.com
 
 ### External Resources
 - [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)
