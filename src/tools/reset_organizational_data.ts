@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Tool } from '../types';
 import { getDatabase } from '../db/database.js';
-import { logger } from '../utils/enhanced-logger';
+import { logger } from '../utils/enhanced-logger.js';
 
 const ResetOrganizationalDataSchema = z.object({
   confirmation: z.literal('CONFIRM_RESET_ALL_ORGANIZATIONAL_DATA').describe('Must be exactly "CONFIRM_RESET_ALL_ORGANIZATIONAL_DATA" to proceed')
