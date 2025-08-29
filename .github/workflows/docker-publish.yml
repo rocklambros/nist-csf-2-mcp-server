@@ -16,6 +16,9 @@ env:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -113,6 +116,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      issues: write
 
     steps:
     - name: Checkout repository
@@ -218,6 +222,10 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      issues: write
+      security-events: write
     steps:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
