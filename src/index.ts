@@ -17,6 +17,11 @@ import { z } from 'zod';
 import { logger } from './utils/logger.js';
 import { getDatabase, closeDatabase } from './db/database.js';
 import { initializeFramework } from './services/framework-loader.js';
+import { 
+  initializeInstanceManager, 
+  setupShutdownHandlers, 
+  removeLockFile 
+} from './utils/instance-manager.js';
 import type { 
   SubcategoryImplementation,
   RiskAssessment,
@@ -122,6 +127,13 @@ const GetAssessmentSchema = z.object({
 
 async function main() {
   logger.info('Starting NIST CSF 2.0 MCP Server...');
+
+  // Initialize instance management and prevent duplicates
+  const forceTerminate = process.env.FORCE_TERMINATE === 'true';
+  if (!initializeInstanceManager(forceTerminate)) {
+    logger.error('Failed to initialize - another instance is running');
+    process.exit(1);
+  }
 
   // Initialize services
   const framework = await initializeFramework();
@@ -1552,19 +1564,17 @@ async function main() {
   await server.connect(transport);
   logger.info('NIST CSF 2.0 MCP Server running on stdio transport');
 
-  // Graceful shutdown
-  process.on('SIGINT', async () => {
-    logger.info('Shutting down server...');
-    closeDatabase();
-    await server.close();
-    process.exit(0);
-  });
-
-  process.on('SIGTERM', async () => {
-    logger.info('Shutting down server...');
-    closeDatabase();
-    await server.close();
-    process.exit(0);
+  // Setup graceful shutdown handlers
+  setupShutdownHandlers(async () => {
+    logger.info('Cleaning up resources...');
+    try {
+      closeDatabase();
+      await server.close();
+      logger.info('Resources cleaned up successfully');
+    } catch (error) {
+      logger.error('Error during cleanup', { error });
+      throw error;
+    }
   });
 
   // Keep the process alive - wait indefinitely for MCP messages
@@ -1576,5 +1586,6 @@ async function main() {
 // Run the server
 main().catch((error) => {
   logger.error('Fatal error:', error);
+  removeLockFile();
   process.exit(1);
 });

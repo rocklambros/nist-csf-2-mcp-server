@@ -70,6 +70,10 @@ COPY --from=builder --chown=mcp-server:mcp-server /build/package*.json ./
 COPY --from=builder --chown=mcp-server:mcp-server /build/data/ ./data/
 COPY --from=builder --chown=mcp-server:mcp-server /build/nist_csf.db ./nist_csf.db
 
+# Copy Docker entrypoint script
+COPY --chown=mcp-server:mcp-server docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
+
 # Rebuild better-sqlite3 for target platform compatibility
 USER root
 RUN npm rebuild better-sqlite3 && chown -R mcp-server:mcp-server /app
@@ -100,12 +104,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Expose port (non-privileged)
 EXPOSE 8080
 
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+# Use dumb-init to handle signals properly and our custom entrypoint
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "./docker-entrypoint.sh"]
 
-# Run with security limits and monitoring
-CMD ["node", \
-     "--max-http-header-size=8192", \
-     "--pending-deprecation", \
-     "--trace-warnings", \
-     "dist/server.js"]
+# Default CMD - runs the MCP server
+CMD []
