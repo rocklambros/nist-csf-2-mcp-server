@@ -145,9 +145,9 @@ export async function getImplementationTemplate(
     }
 
     // Get category and function details
-    const categoryId = options.subcategory_id.split('.')[0]!;
-    const category = framework.getCategory(categoryId)!;
-    const functionId = categoryId.split('-')[0]!;
+    const categoryId = options.subcategory_id.substring(0, options.subcategory_id.lastIndexOf('-'));
+    const category = framework.getCategory(categoryId);
+    const functionId = categoryId.split('.')[0]!;
     const func = framework.getFunction(functionId);
 
     if (!category || !func) {
@@ -207,16 +207,17 @@ export async function getImplementationTemplate(
 }
 
 function generateOverview(subcategory: any, category: any, func: any): string {
-  return `This implementation guide provides a structured approach to implementing ${subcategory.title} ` +
-    `as part of the ${category.title} category within the ${func.title} function of the NIST CSF 2.0 framework. ` +
-    `\n\n${subcategory.description}\n\n` +
-    `This control is essential for establishing ${func.description.toLowerCase()} and supports ` +
-    `the broader objective of ${category.description.toLowerCase()}.`;
+  return `This implementation guide provides a structured approach to implementing ${subcategory.title || subcategory.text || subcategory.element_identifier} ` +
+    `as part of the ${category.title || category.text || 'category'} within the ${func.title || func.text || 'function'} of the NIST CSF 2.0 framework. ` +
+    `\n\n${subcategory.text || 'This subcategory defines security controls and requirements.'}\n\n` +
+    `This control is essential for establishing ${func.title || 'cybersecurity'} capabilities and supports ` +
+    `the broader objective of ${category.title || 'organizational security'}.`;
 }
 
 function generateObjectives(subcategory: any): string[] {
+  const title = (subcategory.title || subcategory.text || subcategory.element_identifier || 'subcategory').toLowerCase();
   const objectives = [
-    `Establish and maintain ${subcategory.title.toLowerCase()} capabilities`,
+    `Establish and maintain ${title} capabilities`,
     `Ensure alignment with organizational risk management strategy`,
     `Meet regulatory and compliance requirements`,
     `Enable continuous monitoring and improvement`,
@@ -224,19 +225,19 @@ function generateObjectives(subcategory: any): string[] {
   ];
 
   // Add subcategory-specific objectives based on keywords
-  const title = subcategory.title.toLowerCase();
-  if (title.includes('policy')) {
+  const subcategoryTitle = (subcategory.title || subcategory.text || subcategory.element_identifier || '').toLowerCase();
+  if (subcategoryTitle.includes('policy')) {
     objectives.push('Develop and communicate clear policies and procedures');
   }
-  if (title.includes('risk')) {
+  if (subcategoryTitle.includes('risk')) {
     objectives.push('Identify and assess relevant risks');
     objectives.push('Implement appropriate risk mitigation measures');
   }
-  if (title.includes('monitor')) {
+  if (subcategoryTitle.includes('monitor')) {
     objectives.push('Establish continuous monitoring capabilities');
     objectives.push('Define alerting thresholds and response procedures');
   }
-  if (title.includes('incident')) {
+  if (subcategoryTitle.includes('incident')) {
     objectives.push('Establish incident response procedures');
     objectives.push('Ensure timely detection and response');
   }
@@ -430,7 +431,7 @@ function getEffortEstimate(orgSize: string, phase: string): string {
 
 function generateExampleConfigurations(subcategory: any, _industry: string): any[] {
   const examples = [];
-  const title = subcategory.title.toLowerCase();
+  const title = (subcategory.title || subcategory.text || subcategory.element_identifier || '').toLowerCase();
 
   // Add relevant example configurations based on subcategory
   if (title.includes('access') || title.includes('authentication')) {
@@ -507,7 +508,7 @@ function generateSuccessCriteria(subcategory: any): string[] {
     'Compliance requirements are met'
   ];
 
-  const title = subcategory.title.toLowerCase();
+  const title = (subcategory.title || subcategory.text || subcategory.element_identifier || '').toLowerCase();
   if (title.includes('policy')) {
     criteria.push('Policies are approved and communicated');
     criteria.push('Policy exceptions are documented and approved');
@@ -526,7 +527,7 @@ function generateSuccessCriteria(subcategory: any): string[] {
 
 function generateMetrics(subcategory: any): any[] {
   const metrics = [];
-  const title = subcategory.title.toLowerCase();
+  const title = (subcategory.title || subcategory.text || subcategory.element_identifier || '').toLowerCase();
 
   // Add general metrics
   metrics.push({
