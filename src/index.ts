@@ -109,7 +109,7 @@ const RecordGapSchema = z.object({
 });
 
 const GetAssessmentSchema = z.object({
-  org_id: z.string(),
+  profile_id: z.string(),
   assessment_type: z.enum(['implementations', 'risks', 'gaps']).optional()
 });
 
@@ -252,18 +252,18 @@ async function main() {
       },
       {
         name: 'get_assessment',
-        description: 'Get assessment data for an organization',
+        description: 'Get assessment data for a profile',
         inputSchema: {
           type: 'object',
           properties: {
-            org_id: { type: 'string', description: 'Organization ID' },
+            profile_id: { type: 'string', description: 'Profile ID to assess' },
             assessment_type: { 
               type: 'string', 
               enum: ['implementations', 'risks', 'gaps'],
               description: 'Type of assessment to retrieve'
             }
           },
-          required: ['org_id']
+          required: ['profile_id']
         }
       },
       {
@@ -1084,21 +1084,26 @@ async function main() {
         case 'get_assessment': {
           const params = GetAssessmentSchema.parse(args);
           
-          const org = db.getOrganization(params.org_id);
+          const profile = db.getProfile(params.profile_id);
+          if (!profile) {
+            throw new McpError(ErrorCode.InvalidRequest, `Profile not found: ${params.profile_id}`);
+          }
+          
+          const org = db.getOrganization((profile as any).org_id);
           if (!org) {
-            throw new McpError(ErrorCode.InvalidRequest, `Organization not found: ${params.org_id}`);
+            throw new McpError(ErrorCode.InvalidRequest, `Organization not found for profile: ${params.profile_id}`);
           }
 
-          const data: any = { organization: org };
+          const data: any = { organization: org, profile };
           
           if (!params.assessment_type || params.assessment_type === 'implementations') {
-            data.implementations = db.getImplementations(params.org_id);
+            data.implementations = db.getProfileAssessments(params.profile_id);
           }
           if (!params.assessment_type || params.assessment_type === 'risks') {
-            data.risks = db.getRiskAssessments(params.org_id);
+            data.risks = db.getRiskAssessments((profile as any).org_id);
           }
           if (!params.assessment_type || params.assessment_type === 'gaps') {
-            data.gaps = db.getGapAnalyses(params.org_id);
+            data.gaps = db.getGapAnalyses(params.profile_id);
           }
           
           return {
