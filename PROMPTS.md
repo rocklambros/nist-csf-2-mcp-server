@@ -54,7 +54,7 @@ I'm working on implementing access control measures. Please:
 - Identify supporting subcategories that should be implemented together
 ```
 
-## 🏢 Organization & Profile Management Tools (3 Tools)
+## 🏢 Organization & Profile Management Tools (4 Tools)
 
 ### 4. Create Profile (`create_profile`)
 ```
@@ -84,9 +84,41 @@ Compare our current state profile (PROF-123) with our target state profile (PROF
 - Provide visual comparison data for executive presentation
 ```
 
+### 7. Reset Organizational Data (`reset_organizational_data`)
+```
+⚠️ DESTRUCTIVE OPERATION - Use with extreme caution!
+
+I need to completely reset all organizational assessment data while preserving the NIST CSF framework:
+
+{
+  "confirmation": "CONFIRM_RESET_ALL_ORGANIZATIONAL_DATA"
+}
+
+This will permanently delete:
+- All organization profiles and associated metadata
+- All assessment results and maturity scores
+- All gap analyses, priority matrices, and implementation plans
+- All reports, evidence, and audit trail records
+- All custom configurations and organizational settings
+
+This will preserve:
+- NIST CSF 2.0 framework structure (functions, categories, subcategories)
+- Question bank and assessment templates
+- Implementation examples and guidance materials
+- System configuration and baseline information
+
+Use only when:
+- Migrating to a new organizational structure
+- Cleaning test/demo data before production deployment
+- Starting fresh after major organizational changes
+- Decommissioning old assessment data
+
+⚠️ This action cannot be undone. Ensure you have backups if needed.
+```
+
 ## 🎯 Assessment & Scoring Tools (8 Tools)
 
-### 7. Quick Assessment (`quick_assessment`)
+### 8. Quick Assessment (`quick_assessment`)
 ```
 Perform a quick assessment for profile PROF-123 with these simplified responses:
 - Govern: We have basic policies but limited governance structure (partial)
@@ -99,7 +131,7 @@ Perform a quick assessment for profile PROF-123 with these simplified responses:
 Analyze the results and provide immediate recommendations for improvement.
 ```
 
-### 8. Assess Maturity (`assess_maturity`)
+### 9. Assess Maturity (`assess_maturity`)
 ```
 Conduct a comprehensive maturity assessment for profile PROF-456. I want to:
 - Evaluate maturity across all 6 NIST CSF functions
@@ -109,7 +141,7 @@ Conduct a comprehensive maturity assessment for profile PROF-456. I want to:
 - Provide benchmarking against industry standards
 ```
 
-### 9. Calculate Risk Score (`calculate_risk_score`)
+### 10. Calculate Risk Score (`calculate_risk_score`)
 ```
 Calculate the overall cybersecurity risk score for our organization using profile PROF-123:
 - Assess risk across all framework subcategories
@@ -118,7 +150,7 @@ Calculate the overall cybersecurity risk score for our organization using profil
 - Provide both quantitative scores and qualitative risk descriptions
 ```
 
-### 10. Calculate Maturity Trend (`calculate_maturity_trend`)
+### 11. Calculate Maturity Trend (`calculate_maturity_trend`)
 ```
 I want to track our cybersecurity maturity progress over time. Please:
 - Calculate maturity trends across the last 12 months using multiple assessment points
@@ -127,7 +159,7 @@ I want to track our cybersecurity maturity progress over time. Please:
 - Highlight any concerning downward trends that need attention
 ```
 
-### 11. Generate Priority Matrix (`generate_priority_matrix`)
+### 12. Generate Priority Matrix (`generate_priority_matrix`)
 ```
 Create a comprehensive priority matrix for our cybersecurity improvements:
 - Rank all gap areas by business impact and implementation difficulty
@@ -136,7 +168,7 @@ Create a comprehensive priority matrix for our cybersecurity improvements:
 - Provide clear implementation sequencing recommendations
 ```
 
-### 12. Estimate Implementation Cost (`estimate_implementation_cost`)
+### 13. Estimate Implementation Cost (`estimate_implementation_cost`)
 ```
 I need detailed cost estimates for implementing priority cybersecurity improvements:
 - Focus on the top 10 gaps identified in our assessment
@@ -145,7 +177,7 @@ I need detailed cost estimates for implementing priority cybersecurity improveme
 - Consider ROI and cost savings from improved security posture
 ```
 
-### 13. Suggest Next Actions (`suggest_next_actions`)
+ Suggest Next Actions (`suggest_next_actions`)
 ```
 Based on our current assessment results, what should be our immediate next actions? Please:
 - Identify the top 5 most critical actions for the next 30 days
@@ -154,7 +186,7 @@ Based on our current assessment results, what should be our immediate next actio
 - Prioritize based on risk reduction and quick wins
 ```
 
-### 14. Track Progress (`track_progress`)
+ Track Progress (`track_progress`)
 ```
 Help me track our cybersecurity improvement progress for profile PROF-123:
 - Compare current scores against our baseline from 6 months ago
@@ -165,7 +197,7 @@ Help me track our cybersecurity improvement progress for profile PROF-123:
 
 ## 📊 Analysis & Planning Tools (4 Tools)
 
-### 15. Generate Gap Analysis (`generate_gap_analysis`)
+ Generate Gap Analysis (`generate_gap_analysis`)
 ```
 Perform a comprehensive gap analysis between our current and target security posture:
 - Compare current maturity levels against industry best practices
@@ -174,7 +206,7 @@ Perform a comprehensive gap analysis between our current and target security pos
 - Provide actionable recommendations with implementation timelines
 ```
 
-### 16. Create Implementation Plan (`create_implementation_plan`)
+ Create Implementation Plan (`create_implementation_plan`)
 ```
 Create a detailed cybersecurity implementation plan based on our assessment results:
 - Develop a 24-month phased approach to address all critical gaps
@@ -183,7 +215,7 @@ Create a detailed cybersecurity implementation plan based on our assessment resu
 - Align with business objectives and compliance requirements
 ```
 
-### 17. Get Industry Benchmarks (`get_industry_benchmarks`)
+ Get Industry Benchmarks (`get_industry_benchmarks`)
 ```
 I need to understand how our cybersecurity maturity compares to industry peers:
 - Provide benchmarking data for technology companies with 1,000-5,000 employees
@@ -192,7 +224,7 @@ I need to understand how our cybersecurity maturity compares to industry peers:
 - Include regional and sector-specific benchmarking insights
 ```
 
-### 18. Generate Test Scenarios (`generate_test_scenarios`)
+ Generate Test Scenarios (`generate_test_scenarios`)
 ```
 Generate comprehensive test scenarios to validate our cybersecurity controls:
 - Create test scenarios for each NIST CSF function we've implemented
@@ -203,7 +235,7 @@ Generate comprehensive test scenarios to validate our cybersecurity controls:
 
 ## 📋 Assessment Question Tools (4 Tools)
 
-### 19. Get Assessment Questions (`get_assessment_questions`)
+ Get Assessment Questions (`get_assessment_questions`)
 ```
 I need comprehensive assessment questions for a detailed cybersecurity evaluation:
 - Provide questions for all subcategories under the PROTECT function
@@ -212,7 +244,7 @@ I need comprehensive assessment questions for a detailed cybersecurity evaluatio
 - Include guidance on evidence collection for each question
 ```
 
-### 20. Get Question Context (`get_question_context`)
+ Get Question Context (`get_question_context`)
 ```
 Help me understand the context and intent behind assessment question Q-GV-001:
 - Explain why this question is important for cybersecurity governance
@@ -221,7 +253,7 @@ Help me understand the context and intent behind assessment question Q-GV-001:
 - Suggest evidence that would support a high-quality answer
 ```
 
-### 21. Validate Assessment Responses (`validate_assessment_responses`)
+ Validate Assessment Responses (`validate_assessment_responses`)
 ```
 Please validate our assessment responses for consistency and completeness:
 - Review responses for the IDENTIFY function across all subcategories
@@ -230,7 +262,7 @@ Please validate our assessment responses for consistency and completeness:
 - Ensure responses align with our stated maturity goals
 ```
 
-### 22. Import Assessment (`import_assessment`)
+ Import Assessment (`import_assessment`)
 ```
 I have assessment data from our previous security audit that I'd like to import:
 - Import assessment results from our external security assessment
@@ -241,7 +273,7 @@ I have assessment data from our previous security audit that I'd like to import:
 
 ## 🔒 Evidence & Audit Tools (4 Tools)
 
-### 23. Upload Evidence (`upload_evidence`)
+ Upload Evidence (`upload_evidence`)
 ```
 I need to upload supporting evidence for our cybersecurity assessment:
 - Upload policy documents supporting our governance maturity claims
@@ -250,7 +282,7 @@ I need to upload supporting evidence for our cybersecurity assessment:
 - Organize evidence by subcategory for easy audit trail review
 ```
 
-### 24. Validate Evidence (`validate_evidence`)
+ Validate Evidence (`validate_evidence`)
 ```
 Please validate the evidence we've uploaded for our assessment:
 - Check that evidence adequately supports our maturity claims
@@ -259,7 +291,7 @@ Please validate the evidence we've uploaded for our assessment:
 - Ensure evidence meets audit and compliance requirements
 ```
 
-### 25. Track Audit Trail (`track_audit_trail`)
+ Track Audit Trail (`track_audit_trail`)
 ```
 Generate a comprehensive audit trail for our cybersecurity assessment process:
 - Document all assessment activities, changes, and decisions
@@ -268,7 +300,7 @@ Generate a comprehensive audit trail for our cybersecurity assessment process:
 - Create audit-ready documentation for compliance purposes
 ```
 
-### 26. Get Implementation Guidance (`get_implementation_guidance`)
+ Get Implementation Guidance (`get_implementation_guidance`)
 ```
 I need detailed implementation guidance for improving our cybersecurity posture:
 - Provide specific guidance for implementing PR.AC controls (access management)
@@ -279,7 +311,7 @@ I need detailed implementation guidance for improving our cybersecurity posture:
 
 ## 📊 Reporting Tools (7 Tools)
 
-### 27. Generate Report (`generate_report`)
+ Generate Report (`generate_report`)
 ```
 Generate a comprehensive cybersecurity assessment report for our organization:
 - Include executive summary with key findings and recommendations
@@ -288,7 +320,7 @@ Generate a comprehensive cybersecurity assessment report for our organization:
 - Format for presentation to the board of directors
 ```
 
-### 28. Generate Executive Report (`generate_executive_report`)
+ Generate Executive Report (`generate_executive_report`)
 ```
 Create an executive-level cybersecurity report for our CEO and board:
 - Focus on business impact and strategic cybersecurity positioning
@@ -297,7 +329,7 @@ Create an executive-level cybersecurity report for our CEO and board:
 - Present cybersecurity as a business enabler, not just a cost center
 ```
 
-### 29. Generate Compliance Report (`generate_compliance_report`)
+ Generate Compliance Report (`generate_compliance_report`)
 ```
 Generate a comprehensive compliance report showing our adherence to regulatory requirements:
 - Map our NIST CSF implementation to SOC 2, ISO 27001, and GDPR requirements
@@ -306,7 +338,7 @@ Generate a comprehensive compliance report showing our adherence to regulatory r
 - Format for submission to regulators and auditors
 ```
 
-### 30. Generate Audit Report (`generate_audit_report`)
+ Generate Audit Report (`generate_audit_report`)
 ```
 Create a detailed audit report of our cybersecurity program:
 - Document all assessment findings and supporting evidence
@@ -315,7 +347,7 @@ Create a detailed audit report of our cybersecurity program:
 - Ensure report meets internal audit and external audit requirements
 ```
 
-### 31. Generate Dashboard (`generate_dashboard`)
+ Generate Dashboard (`generate_dashboard`)
 ```
 Create a cybersecurity dashboard for ongoing monitoring and reporting:
 - Include key metrics and KPIs for each NIST CSF function
@@ -324,7 +356,7 @@ Create a cybersecurity dashboard for ongoing monitoring and reporting:
 - Design for monthly executive reporting and operational monitoring
 ```
 
-### 32. Create Custom Report (`create_custom_report`)
+ Create Custom Report (`create_custom_report`)
 ```
 I need a custom report tailored for our specific stakeholder needs:
 - Create a technical report for our IT security team focusing on implementation details
@@ -333,7 +365,7 @@ I need a custom report tailored for our specific stakeholder needs:
 - Format for technical audience with detailed technical specifications
 ```
 
-### 33. Generate Milestone (`generate_milestone`)
+ Generate Milestone (`generate_milestone`)
 ```
 Generate project milestones for our cybersecurity improvement initiative:
 - Create milestones based on our 18-month implementation plan
@@ -344,7 +376,7 @@ Generate project milestones for our cybersecurity improvement initiative:
 
 ## 🔧 Utility & Integration Tools (5 Tools)
 
-### 34. Export Data (`export_data`)
+ Export Data (`export_data`)
 ```
 Export our cybersecurity assessment data for integration with other systems:
 - Export assessment results in CSV format for analysis in Excel
@@ -353,7 +385,7 @@ Export our cybersecurity assessment data for integration with other systems:
 - Ensure exported data maintains referential integrity
 ```
 
-### 35. Get Implementation Template (`get_implementation_template`)
+ Get Implementation Template (`get_implementation_template`)
 ```
 Provide implementation templates for cybersecurity control deployment:
 - Generate templates for implementing access control procedures
@@ -362,7 +394,7 @@ Provide implementation templates for cybersecurity control deployment:
 - Include examples and best practices from similar organizations
 ```
 
-### 36. Generate Policy Template (`generate_policy_template`)
+ Generate Policy Template (`generate_policy_template`)
 ```
 Generate comprehensive cybersecurity policy templates based on our assessment:
 - Create policy templates addressing our identified gaps
