@@ -215,13 +215,18 @@ Add the MCP server to your Claude Desktop configuration file:
 ```json
 {
   "mcpServers": {
-    "nist-csf-2": {
+    "nist-csf": {
       "command": "docker",
-      "args": ["exec", "nist-csf-mcp-server", "node", "/app/dist/index.js"],
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "ghcr.io/rocklambros/nist-csf-2-mcp-server:latest",
+        "node",
+        "dist/index.js"
+      ],
       "env": {
-        "NODE_ENV": "production",
-        "AUTH_MODE": "disabled",
-        "SERVER_PORT": "8080"
+        "MCP_SERVER": "true"
       }
     }
   }
