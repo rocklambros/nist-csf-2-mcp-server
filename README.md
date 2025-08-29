@@ -6,11 +6,11 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18.x+-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 [![Security](https://img.shields.io/badge/Security-Multi%20Tier-red.svg)](#-security-architecture)
-[![MCP Tools](https://img.shields.io/badge/MCP%20Tools-36-purple.svg)](#-complete-mcp-tools-suite-36-tools)
+[![MCP Tools](https://img.shields.io/badge/MCP%20Tools-37-purple.svg)](#-complete-mcp-tools-suite-37-tools)
 
-A comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**, providing programmatic access to all framework elements with **36 specialized MCP tools**, multi-tier security, comprehensive assessment capabilities, and advanced reporting features. Built for seamless integration with Claude, ChatGPT, and other AI assistants.
+A comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**, providing programmatic access to all framework elements with **37 specialized MCP tools**, multi-tier security, comprehensive assessment capabilities, and advanced reporting features. Built for seamless integration with Claude, ChatGPT, and other AI assistants.
 
-**⚡ Deploy in 0.4 seconds** | **🛡️ Multi-tier security** | **📊 424 assessment questions** | **🔧 36 specialized MCP tools** | **🏗️ Production-grade monitoring**
+**⚡ Deploy in 0.4 seconds** | **🛡️ Multi-tier security** | **📊 424 assessment questions** | **🔧 37 specialized MCP tools** | **🏗️ Production-grade monitoring**
 
 > **📡 Connection Status**: Claude Desktop MCP integration fully operational with resolved container naming conflicts
 
@@ -22,7 +22,7 @@ A comprehensive **Model Context Protocol (MCP) server** implementation for the *
 - 📊 **Comprehensive Assessment Suite**: From quick organizational assessments to detailed maturity evaluations
 - 💡 **424-Question Assessment Bank**: Complete question coverage for all subcategories with 4 assessment dimensions each
 - 📈 **Risk & Maturity Scoring**: Advanced algorithms for organizational cybersecurity posture measurement
-- 🤖 **36 Specialized MCP Tools**: Complete cybersecurity assessment and management toolkit
+- 🤖 **37 Specialized MCP Tools**: Complete cybersecurity assessment and management toolkit
 
 ### Planning & Implementation
 - 🎯 **Gap Analysis & Priority Matrices**: Intelligent prioritization based on risk, effort, and business impact
@@ -136,8 +136,8 @@ npm ci --production && npm run build && NODE_ENV=production npm start
 # Check server health (should return {"status":"healthy"})
 curl http://localhost:8080/health
 
-# View all 36 MCP tools available
-curl http://localhost:8080/tools | jq '.tools | length'  # Should return: 36
+# View all 37 MCP tools available
+curl http://localhost:8080/tools | jq '.tools | length'  # Should return: 37
 
 # Test a sample tool (CSF lookup)
 curl -X POST http://localhost:8080/tools/csf_lookup \
@@ -477,6 +477,49 @@ Generate detailed implementation guides for specific subcategories with examples
 
 #### 36. `generate_policy_template`
 Create comprehensive policy document templates based on NIST CSF subcategories and organizational context.
+
+### Data Management Tools (1 tool)
+
+#### 37. `reset_organizational_data` ⚠️ **DESTRUCTIVE**
+**WARNING**: This tool permanently removes ALL organizational data while preserving framework data.
+
+**Purpose**: Clean slate data reset for development, testing, or fresh deployments.
+
+**What gets deleted**:
+- All organization profiles and metadata
+- All assessment data and responses  
+- All gap analyses and implementation plans
+- All reports, evidence, and audit trails
+- All milestones and cost estimates
+
+**What gets preserved**:
+- Complete NIST CSF 2.0 framework data (functions, categories, subcategories)
+- 424-question assessment bank and guidance
+- Implementation examples and templates
+- All baseline framework information
+
+**Usage**:
+```bash
+# REQUIRED: Explicit confirmation parameter
+{
+  "confirmation": "CONFIRM_RESET_ALL_ORGANIZATIONAL_DATA"
+}
+```
+
+**Safety Features**:
+- Requires exact confirmation string - no shortcuts allowed
+- Not exposed to other tools - must be called explicitly
+- Transaction-based deletion ensures atomicity
+- Comprehensive logging of all operations
+- Detailed before/after counts for verification
+
+**Use Cases**:
+- 🧪 **Development/Testing**: Clean environment for testing workflows
+- 🔄 **Fresh Deployments**: Clean slate for new organizational deployments  
+- 🏗️ **Demo Environments**: Reset demo data between presentations
+- 🧹 **Data Cleanup**: Remove all organizational data while keeping framework intact
+
+> **⚠️ CRITICAL WARNING**: This action is irreversible. All organizational data will be permanently deleted. Only framework data (NIST CSF elements, questions, examples) will remain. Always backup data before using this tool.
 
 ## 🚀 Common Usage Patterns
 

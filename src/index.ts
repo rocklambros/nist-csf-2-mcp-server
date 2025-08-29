@@ -55,6 +55,9 @@ import { getAssessmentQuestions, getAssessmentQuestionsTool } from './tools/get_
 import { validateAssessmentResponses, validateAssessmentResponsesTool } from './tools/validate_assessment_responses.js';
 import { getQuestionContext, getQuestionContextTool } from './tools/get_question_context.js';
 
+// Data Management Tools
+import { resetOrganizationalData, resetOrganizationalDataTool } from './tools/reset_organizational_data.js';
+
 // ============================================================================
 // TOOL SCHEMAS
 // ============================================================================
@@ -904,6 +907,11 @@ async function main() {
         name: 'get_question_context',
         description: 'Retrieve detailed context, guidance, and examples for specific NIST CSF assessment questions with sector and size-specific recommendations',
         inputSchema: getQuestionContextTool.inputSchema
+      },
+      {
+        name: 'reset_organizational_data',
+        description: resetOrganizationalDataTool.description,
+        inputSchema: resetOrganizationalDataTool.inputSchema
       }
     ],
   }));
@@ -1492,6 +1500,19 @@ async function main() {
 
         case 'get_question_context': {
           const result = await getQuestionContext(args as any);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'reset_organizational_data': {
+          const result = await resetOrganizationalData(args as any);
           
           return {
             content: [
