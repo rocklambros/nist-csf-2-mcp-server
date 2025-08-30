@@ -58,11 +58,15 @@ A comprehensive **Model Context Protocol (MCP) server** implementation for the *
 - 📝 **Audit Logging**: Complete audit trails with security event monitoring
 - ⚡ **Rate Limiting**: Configurable DDoS protection and resource management
 
-### Developer Experience
+### Developer Experience & Integration
 - 🧪 **Comprehensive Testing**: 95%+ test coverage with integration, performance, and security tests (70+ test files)
   - **Security Testing**: SQL injection prevention, XSS protection, authentication validation
   - **Performance Testing**: Sub-100ms benchmarks, concurrent operation testing
   - **Integration Testing**: End-to-end workflow validation, database transaction testing
+- 🔗 **Dual-Mode Support**: **NEW** - Run both MCP (Claude) and HTTP REST API (ChatGPT) simultaneously
+  - **MCP Protocol**: Native Claude Desktop integration via stdio
+  - **HTTP REST API**: Direct ChatGPT integration with all 39 tools as endpoints
+  - **Concurrent Operation**: Both modes can run simultaneously on the same server
 - 📖 **Complete Documentation**: API docs, sample prompts, and integration guides
 - 🔧 **Claude Code Ready**: Optimized for AI development workflows with comprehensive [LLM prompt examples](./PROMPTS.md)
 - ⚡ **Performance Optimized**: Sub-100ms response times with intelligent caching
@@ -94,8 +98,19 @@ cd nist-csf-2-mcp-server
 npm install          # Downloads 180+ packages (~2-3 minutes)
 npm run build        # TypeScript compilation (~30 seconds)
 npm run db:init      # Database setup (~1-2 minutes)
-npm start           # Server runs on http://localhost:3000
+
+# Choose your deployment mode:
+npm start            # MCP only (Claude Desktop)
+npm run start:http   # HTTP REST API only (ChatGPT)
+npm run start:dual   # Both MCP + HTTP (recommended)
 ```
+
+**🆕 Deployment Mode Options**:
+| Mode | Command | Port | Usage |
+|------|---------|------|-------|
+| **MCP Only** | `npm start` | stdio | Claude Desktop |
+| **HTTP Only** | `npm run start:http` | 8080 | ChatGPT/REST API |
+| **Dual Mode** | `npm run start:dual` | stdio + 8080 | Both Claude + ChatGPT |
 
 **Docker vs Native Setup:**
 | Method | Time | Prerequisites | Reliability | 
@@ -281,9 +296,57 @@ Start a comprehensive NIST CSF assessment for my organization using start_assess
 - Timeline: 8 weeks
 ```
 
-### ChatGPT Integration (via MCP Connectors)
+### ChatGPT Integration (Built-in HTTP REST API) 🆕
 
-To connect this server to ChatGPT, you'll need an MCP-to-OpenAI connector:
+**NEW**: The server now includes **built-in HTTP REST API support** for direct ChatGPT integration!
+
+#### Option 1: HTTP REST API Mode (Recommended)
+```bash
+# Start HTTP server only
+npm run start:http
+
+# Or start dual-mode (MCP + HTTP simultaneously)
+npm run start:dual
+```
+
+**ChatGPT Integration URLs**:
+- **Base URL**: `http://localhost:8080`
+- **API Documentation**: `http://localhost:8080/api/tools`
+- **Health Check**: `http://localhost:8080/health`
+
+**Example API Calls**:
+```bash
+# Get CSF information
+curl -X POST http://localhost:8080/api/tools/csf_lookup \
+  -H "Content-Type: application/json" \
+  -d '{"subcategory_id": "GV.OC-01"}'
+
+# Start assessment workflow
+curl -X POST http://localhost:8080/api/tools/start_assessment_workflow \
+  -H "Content-Type: application/json" \
+  -d '{
+    "org_name": "Acme Corp",
+    "sector": "Technology", 
+    "size": "medium",
+    "contact_name": "John Doe",
+    "contact_email": "john@acme.com"
+  }'
+
+# Generate maturity assessment
+curl -X POST http://localhost:8080/api/tools/assess_maturity \
+  -H "Content-Type: application/json" \
+  -d '{"profile_id": "your-profile-id"}'
+```
+
+#### Option 2: Custom GPT Configuration
+Create a Custom GPT with these endpoints:
+- **Base URL**: `http://localhost:8080/api/tools/`
+- **Available Endpoints**: All 39 MCP tools available as HTTP endpoints
+- **Authentication**: None required (configurable)
+
+### Legacy: ChatGPT Integration (via MCP Connectors)
+
+For older integration methods, you can still use MCP-to-OpenAI connectors:
 
 #### Option 1: Using MCP Bridge
 ```bash
