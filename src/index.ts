@@ -63,6 +63,14 @@ import { getQuestionContext, getQuestionContextTool } from './tools/get_question
 // Data Management Tools
 import { resetOrganizationalData, resetOrganizationalDataTool } from './tools/reset_organizational_data.js';
 
+// Comprehensive Assessment Workflow Tools
+import { 
+  startAssessmentWorkflow, 
+  StartAssessmentWorkflowSchema,
+  checkAssessmentWorkflowStatus,
+  CheckAssessmentWorkflowSchema
+} from './tools/comprehensive_assessment_workflow.js';
+
 // ============================================================================
 // TOOL SCHEMAS
 // ============================================================================
@@ -924,6 +932,55 @@ async function main() {
         name: 'reset_organizational_data',
         description: resetOrganizationalDataTool.description,
         inputSchema: resetOrganizationalDataTool.inputSchema
+      },
+      {
+        name: 'start_assessment_workflow',
+        description: 'Start a comprehensive NIST CSF 2.0 assessment workflow with proper data collection',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            org_name: { type: 'string', description: 'Organization name' },
+            sector: { type: 'string', description: 'Industry sector' },
+            size: { 
+              type: 'string', 
+              enum: ['small', 'medium', 'large', 'enterprise'],
+              description: 'Organization size'
+            },
+            contact_name: { type: 'string', description: 'Contact person name' },
+            contact_email: { type: 'string', description: 'Contact email address' },
+            description: { type: 'string', description: 'Organization description' },
+            assessment_scope: {
+              type: 'string',
+              enum: ['full', 'specific_functions'],
+              default: 'full',
+              description: 'Scope of assessment'
+            },
+            target_functions: {
+              type: 'array',
+              items: { type: 'string', enum: ['GV', 'ID', 'PR', 'DE', 'RS', 'RC'] },
+              description: 'Target functions for specific scope'
+            },
+            timeline_weeks: {
+              type: 'number',
+              minimum: 1,
+              maximum: 52,
+              default: 8,
+              description: 'Timeline in weeks'
+            }
+          },
+          required: ['org_name', 'sector', 'size', 'contact_name', 'contact_email']
+        }
+      },
+      {
+        name: 'check_assessment_workflow_status',
+        description: 'Check the status of an assessment workflow',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            workflow_id: { type: 'string', description: 'Workflow ID to check' }
+          },
+          required: ['workflow_id']
+        }
       }
     ],
   }));
@@ -1525,6 +1582,34 @@ async function main() {
 
         case 'reset_organizational_data': {
           const result = await resetOrganizationalData(args as any);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'start_assessment_workflow': {
+          const params = StartAssessmentWorkflowSchema.parse(args);
+          const result = await startAssessmentWorkflow(params);
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'check_assessment_workflow_status': {
+          const params = CheckAssessmentWorkflowSchema.parse(args);
+          const result = await checkAssessmentWorkflowStatus(params);
           
           return {
             content: [

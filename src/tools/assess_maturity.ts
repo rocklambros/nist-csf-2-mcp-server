@@ -136,6 +136,17 @@ export async function assessMaturity(params: AssessMaturityParams): Promise<Matu
       return createErrorResult(params.profile_id, `Profile not found: ${params.profile_id}`);
     }
     
+    // CRITICAL: Check if assessment data is from real user responses, not fake data
+    const assessmentDataValidation = db.validateAssessmentDataAuthenticity(params.profile_id);
+    if (!assessmentDataValidation.isAuthentic) {
+      return createErrorResult(
+        params.profile_id, 
+        `Cannot perform maturity assessment: ${assessmentDataValidation.reason}. ` +
+        `Use the comprehensive_assessment_workflow to collect real organizational data first. ` +
+        `This profile contains ${assessmentDataValidation.fakeDataSources.join(', ')} which are not suitable for accurate maturity assessment.`
+      );
+    }
+    
     // Get maturity data by function using complex SQL
     const functionMaturityData = db.getMaturityByFunction(params.profile_id);
     
