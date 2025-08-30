@@ -129,7 +129,7 @@ class EnhancedLogger {
     // Determine if we're running as an MCP server (stdio transport)
     const isMcpServer = process.argv.includes('--mcp') || 
                        process.env.MCP_SERVER === 'true' || 
-                       process.stdin.isTTY === false;
+                       !process.stdin.isTTY;
     
     this.logger = winston.createLogger({
       level: process.env.LOG_LEVEL || 'info',
