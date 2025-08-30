@@ -832,9 +832,198 @@ export class CSFDatabase {
     );
   }
 
+  /**
+   * Create assessment workflow tracking record
+   */
+  createAssessmentWorkflow(workflow: {
+    workflow_id: string;
+    profile_id: string;
+    org_id: string;
+    state: string;
+    assessment_scope: string;
+    target_functions?: string[];
+    timeline_weeks: number;
+    started_at: string;
+    contact_name: string;
+    contact_email: string;
+  }): void {
+    // Create workflow_tracking table if it doesn't exist
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS workflow_tracking (
+        workflow_id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        org_id TEXT NOT NULL,
+        state TEXT NOT NULL,
+        assessment_scope TEXT NOT NULL,
+        target_functions TEXT,
+        timeline_weeks INTEGER NOT NULL,
+        started_at TEXT NOT NULL,
+        completed_at TEXT,
+        estimated_completion TEXT,
+        contact_name TEXT NOT NULL,
+        contact_email TEXT NOT NULL,
+        last_updated TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
+        FOREIGN KEY (org_id) REFERENCES organization_profiles(org_id)
+      )
+    `);
+
+    const stmt = this.db.prepare(`
+      INSERT INTO workflow_tracking (
+        workflow_id, profile_id, org_id, state, assessment_scope,
+        target_functions, timeline_weeks, started_at, contact_name, contact_email
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    stmt.run(
+      workflow.workflow_id,
+      workflow.profile_id,
+      workflow.org_id,
+      workflow.state,
+      workflow.assessment_scope,
+      workflow.target_functions ? JSON.stringify(workflow.target_functions) : null,
+      workflow.timeline_weeks,
+      workflow.started_at,
+      workflow.contact_name,
+      workflow.contact_email
+    );
+  }
+
+  /**
+   * Get assessment workflow by workflow ID
+   */
+  getAssessmentWorkflow(workflowId: string): DatabaseRow | undefined {
+    const stmt = this.db.prepare('SELECT * FROM workflow_tracking WHERE workflow_id = ?');
+    return stmt.get(workflowId) as DatabaseRow | undefined;
+  }
+
+  /**
+   * Get count of answered questions for a profile
+   */
+  getAnsweredQuestionsCount(profileId: string): number {
+    // Count assessments that have real user responses (not synthetic data)
+    const stmt = this.db.prepare(`
+      SELECT COUNT(*) as count 
+      FROM assessments 
+      WHERE profile_id = ? 
+        AND assessed_by IS NOT NULL 
+        AND assessed_by != 'quick_assessment_tool'
+        AND assessed_by != 'system'
+        AND (notes IS NULL OR notes NOT LIKE '%Quick assessment%')
+        AND (notes IS NULL OR notes NOT LIKE '%Baseline assessment%')
+    `);
+    
+    const result = stmt.get(profileId) as { count: number };
+    return result?.count || 0;
+  }
+
   getProfile(profileId: string): DatabaseRow | undefined {
     const stmt = this.db.prepare('SELECT * FROM profiles WHERE profile_id = ?');
     return stmt.get(profileId) as DatabaseRow | undefined;
+  }
+
+  /**
+   * Validate that assessment data is from real user responses, not fake/synthetic data
+   */
+  validateAssessmentDataAuthenticity(profileId: string): {
+    isAuthentic: boolean;
+    reason: string;
+    fakeDataSources: string[];
+  } {
+    try {
+      // Check if profile exists
+      const profile = this.getProfile(profileId);
+      if (!profile) {
+        return {
+          isAuthentic: false,
+          reason: 'Profile not found',
+          fakeDataSources: []
+        };
+      }
+
+      // Get all assessments for this profile
+      const assessments = this.getProfileAssessments(profileId);
+      if (!assessments || assessments.length === 0) {
+        return {
+          isAuthentic: false,
+          reason: 'No assessment data found',
+          fakeDataSources: []
+        };
+      }
+
+      const fakeDataSources: string[] = [];
+      let hasRealData = false;
+
+      for (const assessment of assessments) {
+        // Check for indicators of fake/synthetic data
+        if (assessment.assessed_by === 'quick_assessment_tool') {
+          fakeDataSources.push('quick_assessment');
+        }
+        
+        if (assessment.assessed_by === 'system' && assessment.notes?.includes('Baseline assessment')) {
+          fakeDataSources.push('baseline_template');
+        }
+        
+        // Look for evidence of synthetic data in evidence field
+        if (assessment.evidence) {
+          try {
+            const evidence = JSON.parse(assessment.evidence);
+            if (evidence.quick_assessment === true) {
+              fakeDataSources.push('quick_assessment_evidence');
+            }
+          } catch {
+            // Invalid JSON, could be real user data
+          }
+        }
+
+        // Check for real user responses
+        if (assessment.assessed_by && 
+            assessment.assessed_by !== 'quick_assessment_tool' && 
+            assessment.assessed_by !== 'system' &&
+            assessment.notes && 
+            !assessment.notes.includes('Quick assessment') &&
+            !assessment.notes.includes('Baseline assessment')) {
+          hasRealData = true;
+        }
+      }
+
+      // Profile is considered authentic if:
+      // 1. No fake data sources detected, OR
+      // 2. Has real data mixed with some fake data (but mostly real)
+      const fakeDataPercentage = fakeDataSources.length > 0 ? (fakeDataSources.length / assessments.length) * 100 : 0;
+      
+      if (fakeDataSources.length === 0) {
+        return {
+          isAuthentic: true,
+          reason: 'All assessment data appears to be from real user responses',
+          fakeDataSources: []
+        };
+      }
+
+      if (hasRealData && fakeDataPercentage < 50) {
+        return {
+          isAuthentic: true,
+          reason: 'Majority of assessment data is from real user responses',
+          fakeDataSources: []
+        };
+      }
+
+      // Too much fake data detected
+      const uniqueFakeSources = [...new Set(fakeDataSources)];
+      return {
+        isAuthentic: false,
+        reason: `Assessment data contains ${fakeDataPercentage.toFixed(1)}% synthetic/fake responses`,
+        fakeDataSources: uniqueFakeSources
+      };
+
+    } catch (error) {
+      logger.error('Error validating assessment data authenticity:', error);
+      return {
+        isAuthentic: false,
+        reason: 'Error validating assessment data',
+        fakeDataSources: ['validation_error']
+      };
+    }
   }
 
   getOrganizationProfiles(orgId: string): DatabaseRow[] {
