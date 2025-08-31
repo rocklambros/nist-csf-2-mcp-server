@@ -1,6 +1,7 @@
 /**
  * Minimal test to verify Jest infrastructure works
  */
+import { describe, test, expect } from '@jest/globals';
 
 describe('Minimal Test Suite', () => {
   test('should pass basic JavaScript functionality', () => {

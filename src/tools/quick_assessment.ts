@@ -7,9 +7,10 @@ import { getDatabase } from '../db/database.js';
 import { getFrameworkLoader } from '../services/framework-loader.js';
 import { logger } from '../utils/logger.js';
 
-// Input schema for the tool
+// Input schema for the tool - now supports both interactive and pre-answered modes
 export const QuickAssessmentSchema = z.object({
   profile_id: z.string().min(1),
+  // Make simplified_answers optional to enable interactive mode
   simplified_answers: z.object({
     govern: z.enum(['yes', 'no', 'partial']),
     identify: z.enum(['yes', 'no', 'partial']),
@@ -17,7 +18,7 @@ export const QuickAssessmentSchema = z.object({
     detect: z.enum(['yes', 'no', 'partial']),
     respond: z.enum(['yes', 'no', 'partial']),
     recover: z.enum(['yes', 'no', 'partial'])
-  }),
+  }).optional(),
   assessed_by: z.string().optional(),
   confidence_level: z.enum(['low', 'medium', 'high']).default('medium'),
   notes: z.object({
@@ -27,7 +28,9 @@ export const QuickAssessmentSchema = z.object({
     detect: z.string().optional(),
     respond: z.string().optional(),
     recover: z.string().optional()
-  }).optional()
+  }).optional(),
+  // Add interactive mode flag
+  interactive: z.boolean().default(true)
 });
 
 export type QuickAssessmentParams = z.infer<typeof QuickAssessmentSchema>;
@@ -51,7 +54,17 @@ interface QuickAssessmentResult {
   success: boolean;
   profile_id: string;
   message: string;
-  initial_maturity_scores: {
+  // Add interactive questioning support
+  requires_input?: boolean;
+  questions?: Array<{
+    function: string;
+    function_name: string;
+    question: string;
+    examples: string[];
+    valid_answers: string[];
+  }>;
+  // Keep existing structure for completed assessments
+  initial_maturity_scores?: {
     govern: number;
     identify: number;
     protect: number;
@@ -69,6 +82,8 @@ interface QuickAssessmentResult {
       subcategory_count: number;
     }>;
   };
+  // Add next steps guidance
+  next_steps?: string;
 }
 
 // Maturity mappings for each function based on simplified answers
@@ -115,6 +130,64 @@ const FUNCTION_ID_MAP: Record<string, string> = {
   recover: 'RC'
 };
 
+// Interactive assessment questions for each function
+const ASSESSMENT_QUESTIONS = {
+  govern: {
+    function_name: "GOVERN (GV)",
+    question: "Does your organization have established cybersecurity governance, policies, and risk management processes in place?",
+    examples: [
+      "✅ YES: We have documented cybersecurity policies, assigned roles/responsibilities, and regular risk assessments",
+      "🔄 PARTIAL: We have some policies and processes but they're not comprehensive or consistently applied", 
+      "❌ NO: We lack formal cybersecurity governance, policies, or risk management processes"
+    ]
+  },
+  identify: {
+    function_name: "IDENTIFY (ID)",
+    question: "Has your organization identified and documented its assets, business environment, vulnerabilities, and threats?",
+    examples: [
+      "✅ YES: We have comprehensive asset inventories, vulnerability assessments, and threat intelligence",
+      "🔄 PARTIAL: We know most of our assets and some vulnerabilities but documentation is incomplete",
+      "❌ NO: We lack visibility into our assets, vulnerabilities, or threat landscape"
+    ]
+  },
+  protect: {
+    function_name: "PROTECT (PR)", 
+    question: "Are appropriate safeguards in place to ensure delivery of critical infrastructure services and protect against cybersecurity events?",
+    examples: [
+      "✅ YES: We have strong access controls, data protection, security training, and protective technologies",
+      "🔄 PARTIAL: We have basic protections but gaps exist in access control, training, or technology",
+      "❌ NO: We have minimal cybersecurity protections and significant security gaps"
+    ]
+  },
+  detect: {
+    function_name: "DETECT (DE)",
+    question: "Do you have appropriate activities and technologies to identify cybersecurity events in a timely manner?",
+    examples: [
+      "✅ YES: We have comprehensive monitoring, logging, and detection capabilities with trained staff",
+      "🔄 PARTIAL: We have some monitoring and logging but limited detection capabilities or coverage",
+      "❌ NO: We have minimal monitoring and would struggle to detect cybersecurity incidents"
+    ]
+  },
+  respond: {
+    function_name: "RESPOND (RS)",
+    question: "Are appropriate activities in place to take action regarding detected cybersecurity incidents?",
+    examples: [
+      "✅ YES: We have tested incident response plans, trained teams, and established communication procedures",
+      "🔄 PARTIAL: We have basic incident response procedures but limited testing or training",
+      "❌ NO: We lack formal incident response capabilities or procedures"
+    ]
+  },
+  recover: {
+    function_name: "RECOVER (RC)",
+    question: "Are appropriate activities in place to maintain plans for resilience and restore services impaired by cybersecurity incidents?",
+    examples: [
+      "✅ YES: We have tested recovery plans, backup systems, and business continuity procedures",
+      "🔄 PARTIAL: We have some recovery capabilities but limited testing or incomplete coverage",
+      "❌ NO: We lack comprehensive recovery and business continuity plans"
+    ]
+  }
+};
+
 /**
  * Main function to perform quick assessment
  */
@@ -134,14 +207,53 @@ export async function quickAssessment(params: QuickAssessmentParams): Promise<Qu
       return {
         success: false,
         profile_id: params.profile_id,
-        message: `Profile not found: ${params.profile_id}`,
-        initial_maturity_scores: {
-          govern: 0, identify: 0, protect: 0, detect: 0, respond: 0, recover: 0, overall_average: 0
-        }
+        message: `Profile not found: ${params.profile_id}`
       };
     }
     
-    // Generate assessments for all subcategories based on simplified answers
+    // INTERACTIVE MODE: If no answers provided, present questions
+    if (!params.simplified_answers && params.interactive !== false) {
+      return {
+        success: true,
+        profile_id: params.profile_id,
+        message: `Ready to begin quick assessment for profile: ${profile.profile_name}`,
+        requires_input: true,
+        questions: Object.entries(ASSESSMENT_QUESTIONS).map(([key, data]) => ({
+          function: key,
+          function_name: data.function_name,
+          question: data.question,
+          examples: data.examples,
+          valid_answers: ['yes', 'partial', 'no']
+        })),
+        next_steps: `Please provide your answers using the quick_assessment tool again with the 'simplified_answers' parameter. For each function (govern, identify, protect, detect, respond, recover), answer 'yes', 'partial', or 'no' based on the questions above.
+
+Example:
+{
+  "profile_id": "${params.profile_id}",
+  "simplified_answers": {
+    "govern": "partial",
+    "identify": "yes", 
+    "protect": "partial",
+    "detect": "no",
+    "respond": "partial",
+    "recover": "no"
+  },
+  "assessed_by": "Your Name",
+  "confidence_level": "medium"
+}`
+      };
+    }
+
+    // VALIDATION: Ensure we have answers
+    if (!params.simplified_answers) {
+      return {
+        success: false,
+        profile_id: params.profile_id,
+        message: "Assessment answers are required. Please provide simplified_answers or use interactive mode."
+      };
+    }
+    
+    // ASSESSMENT PROCESSING: Generate assessments for all subcategories based on provided answers
     const assessments = generateAssessments(
       framework,
       params.simplified_answers,
@@ -171,9 +283,10 @@ export async function quickAssessment(params: QuickAssessmentParams): Promise<Qu
     return {
       success: true,
       profile_id: params.profile_id,
-      message: `Quick assessment completed successfully for profile: ${profile.profile_name}`,
+      message: `Quick assessment completed successfully for profile: ${profile.profile_name}. Assessment based on your responses to ${Object.keys(params.simplified_answers).length} framework functions.`,
       initial_maturity_scores: maturityScores,
-      details: result
+      details: result,
+      next_steps: "You can now use generate_gap_analysis, generate_report, or other analysis tools to review your assessment results."
     };
     
   } catch (error) {
@@ -182,10 +295,7 @@ export async function quickAssessment(params: QuickAssessmentParams): Promise<Qu
     return {
       success: false,
       profile_id: params.profile_id,
-      message: error instanceof Error ? error.message : 'Unknown error occurred',
-      initial_maturity_scores: {
-        govern: 0, identify: 0, protect: 0, detect: 0, respond: 0, recover: 0, overall_average: 0
-      }
+      message: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
 }

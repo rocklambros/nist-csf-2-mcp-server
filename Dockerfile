@@ -16,6 +16,8 @@ WORKDIR /build
 # Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY tsconfig.build.json ./
+COPY build-docker.cjs ./
 
 # Install ALL dependencies (including dev dependencies for build and scripts)
 RUN npm ci && \
@@ -26,11 +28,11 @@ COPY src/ ./src/
 COPY scripts/ ./scripts/
 COPY data/ ./data/
 
-# Build TypeScript
-RUN npm run build
+# Build TypeScript with Docker-compatible fallback
+RUN node build-docker.cjs
 
 # Initialize database with complete framework data (skip question bank for now)
-RUN npm run build && npm run import:csf-framework
+RUN npm run import:csf-framework
 
 # Verify database was built correctly
 RUN npm run db:verify

@@ -404,14 +404,14 @@ async function main() {
       },
       {
         name: 'quick_assessment',
-        description: 'Perform simplified assessment using yes/no/partial answers for each CSF function',
+        description: 'Interactive cybersecurity assessment - presents questions for each CSF function and collects real user responses. Call with only profile_id to see questions, then call again with your answers.',
         inputSchema: {
           type: 'object',
           properties: {
             profile_id: { type: 'string', description: 'Profile ID to assess' },
             simplified_answers: {
               type: 'object',
-              description: 'Simplified answers for each function',
+              description: 'Your answers for each function (optional - if not provided, questions will be presented)',
               properties: {
                 govern: { type: 'string', enum: ['yes', 'no', 'partial'] },
                 identify: { type: 'string', enum: ['yes', 'no', 'partial'] },
@@ -419,9 +419,9 @@ async function main() {
                 detect: { type: 'string', enum: ['yes', 'no', 'partial'] },
                 respond: { type: 'string', enum: ['yes', 'no', 'partial'] },
                 recover: { type: 'string', enum: ['yes', 'no', 'partial'] }
-              },
-              required: ['govern', 'identify', 'protect', 'detect', 'respond', 'recover']
+              }
             },
+            interactive: { type: 'boolean', description: 'Enable interactive question mode (default: true)', default: true },
             assessed_by: { type: 'string', description: 'Assessor name' },
             confidence_level: { type: 'string', enum: ['low', 'medium', 'high'], description: 'Confidence level', default: 'medium' },
             notes: {
@@ -1064,7 +1064,10 @@ async function main() {
           
           try {
             db.createOrganization({
-              ...params,
+              org_id: params.org_id!,
+              org_name: params.org_name!,
+              industry: params.industry!,
+              size: params.size!,
               current_tier: params.current_tier as ImplementationTier | undefined,
               target_tier: params.target_tier as ImplementationTier | undefined
             });
@@ -1080,7 +1083,7 @@ async function main() {
               ]
             };
           } catch (error: any) {
-            if (error.message.includes('UNIQUE constraint')) {
+            if (error.message && error.message.includes('UNIQUE constraint')) {
               throw new McpError(ErrorCode.InvalidRequest, `Organization ${params.org_id} already exists`);
             }
             throw error;
@@ -1091,7 +1094,12 @@ async function main() {
           const params = RecordImplementationSchema.parse(args);
           
           const impl: SubcategoryImplementation = {
-            ...params,
+            org_id: params.org_id!,
+            subcategory_id: params.subcategory_id!,
+            implementation_status: params.implementation_status!,
+            maturity_level: params.maturity_level!,
+            notes: params.notes,
+            assessed_by: params.assessed_by,
             last_assessed: new Date()
           };
           
@@ -1114,8 +1122,14 @@ async function main() {
           const params = RecordRiskSchema.parse(args);
           
           const risk: RiskAssessment = {
-            ...params,
-            risk_score: (params.likelihood * params.impact) / 5.0,
+            org_id: params.org_id!,
+            element_id: params.element_id!,
+            risk_level: params.risk_level!,
+            likelihood: params.likelihood!,
+            impact: params.impact!,
+            mitigation_status: params.mitigation_status!,
+            mitigation_plan: params.mitigation_plan,
+            risk_score: (params.likelihood! * params.impact!) / 5.0,
             assessment_date: new Date()
           };
           
@@ -1138,8 +1152,13 @@ async function main() {
           const params = RecordGapSchema.parse(args);
           
           const gap: GapAnalysis = {
-            ...params,
-            gap_score: params.target_score - params.current_score,
+            org_id: params.org_id!,
+            category_id: params.category_id!,
+            current_score: params.current_score!,
+            target_score: params.target_score!,
+            priority: params.priority!,
+            estimated_effort: params.estimated_effort,
+            gap_score: params.target_score! - params.current_score!,
             analysis_date: new Date()
           };
           
@@ -1609,7 +1628,9 @@ async function main() {
 
         case 'check_assessment_workflow_status': {
           const params = CheckAssessmentWorkflowSchema.parse(args);
-          const result = await checkAssessmentWorkflowStatus(params);
+          const result = await checkAssessmentWorkflowStatus({ 
+            workflow_id: params.workflow_id!
+          });
           
           return {
             content: [
