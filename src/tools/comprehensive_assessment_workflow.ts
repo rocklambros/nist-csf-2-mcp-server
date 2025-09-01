@@ -36,6 +36,45 @@ export const StartAssessmentWorkflowSchema = z.object({
 
 export type StartAssessmentWorkflowParams = z.infer<typeof StartAssessmentWorkflowSchema>;
 
+// Workflow database record interface
+interface WorkflowRecord {
+  workflow_id: string;
+  profile_id: string;
+  state: AssessmentWorkflowStateType;
+  started_at: string;
+  timeline_weeks: number;
+  assessment_scope: string;
+  target_functions?: string;
+  org_id: string;
+}
+
+// Progress data interface
+interface ProgressData {
+  current_step: number;
+  total_steps: number;
+  questions_answered: number;
+  questions_remaining: number;
+  completion_percentage: number;
+}
+
+// Next action data interface
+interface NextActionData {
+  description: string;
+  required_data?: {
+    profile_id?: string;
+    responses?: string;
+    workflow_id?: string;
+    message?: string;
+    assessment_type?: string;
+    parameters?: {
+      assessment_type?: string;
+      organization_size?: string;
+      subcategory_ids?: string[];
+    };
+  };
+  tool_to_use?: string;
+}
+
 // Assessment workflow status response
 interface AssessmentWorkflowStatus {
   success: boolean;
@@ -49,11 +88,7 @@ interface AssessmentWorkflowStatus {
     questions_remaining: number;
     completion_percentage: number;
   };
-  next_action: {
-    description: string;
-    required_data?: any;
-    tool_to_use?: string;
-  };
+  next_action: NextActionData;
   organization: {
     org_id: string;
     org_name: string;
@@ -255,10 +290,10 @@ export async function checkAssessmentWorkflowStatus(params: { workflow_id: strin
     }
     
     // Calculate progress
-    const progress = await calculateWorkflowProgress(workflow);
+    const progress = await calculateWorkflowProgress(workflow as WorkflowRecord);
     
     // Determine next action
-    const nextAction = determineNextAction(workflow, progress);
+    const nextAction = determineNextAction(workflow as WorkflowRecord, progress, organization);
     
     return {
       success: true,
@@ -348,7 +383,7 @@ async function calculateTotalQuestions(
   return 424; // Default to full assessment
 }
 
-async function calculateWorkflowProgress(workflow: any): Promise<any> {
+async function calculateWorkflowProgress(workflow: WorkflowRecord): Promise<ProgressData> {
   const db = getDatabase();
   
   // Get answered questions count
@@ -381,7 +416,7 @@ async function calculateWorkflowProgress(workflow: any): Promise<any> {
   };
 }
 
-function determineNextAction(workflow: any, progress: any): any {
+function determineNextAction(workflow: WorkflowRecord, progress: ProgressData, organization?: any): NextActionData {
   switch (workflow.state) {
     case 'organization_setup':
       return {
@@ -389,7 +424,10 @@ function determineNextAction(workflow: any, progress: any): any {
         tool_to_use: 'get_assessment_questions',
         required_data: {
           assessment_type: 'detailed',
-          organization_size: workflow.organization_size
+          parameters: {
+            assessment_type: 'detailed',
+            organization_size: organization?.size
+          }
         }
       };
       
@@ -447,3 +485,79 @@ function calculateTimeRemaining(startedAt: string, timelineWeeks: number): numbe
   
   return Math.max(0, remainingWeeks);
 }
+
+// ============================================================================
+// TOOL EXPORTS
+// ============================================================================
+
+export const startAssessmentWorkflowTool = {
+  name: 'start_assessment_workflow',
+  description: 'Start a comprehensive NIST CSF 2.0 assessment workflow with authentic data collection. Prevents fake data generation and ensures real organizational responses.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      org_name: { 
+        type: 'string', 
+        description: 'Organization name (required)' 
+      },
+      sector: { 
+        type: 'string', 
+        description: 'Industry sector (required)' 
+      },
+      size: { 
+        type: 'string', 
+        enum: ['small', 'medium', 'large', 'enterprise'],
+        description: 'Organization size (required)' 
+      },
+      contact_name: { 
+        type: 'string', 
+        description: 'Contact person name (required)' 
+      },
+      contact_email: { 
+        type: 'string', 
+        description: 'Contact email address (required)' 
+      },
+      description: { 
+        type: 'string', 
+        description: 'Optional organization description' 
+      },
+      assessment_scope: { 
+        type: 'string', 
+        enum: ['full', 'specific_functions'],
+        description: 'Assessment scope - full framework or specific functions',
+        default: 'full'
+      },
+      target_functions: { 
+        type: 'array',
+        items: {
+          type: 'string',
+          enum: ['GV', 'ID', 'PR', 'DE', 'RS', 'RC']
+        },
+        description: 'Target functions for specific_functions scope (optional)' 
+      },
+      timeline_weeks: { 
+        type: 'number',
+        minimum: 1,
+        maximum: 52,
+        description: 'Expected timeline in weeks (1-52)',
+        default: 8
+      }
+    },
+    required: ['org_name', 'sector', 'size', 'contact_name', 'contact_email']
+  }
+};
+
+export const checkAssessmentWorkflowStatusTool = {
+  name: 'check_assessment_workflow_status',
+  description: 'Monitor and track assessment workflow progress with detailed status reporting. Provides comprehensive status updates on assessment workflows.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      workflow_id: { 
+        type: 'string', 
+        description: 'Workflow ID to check status for (required)' 
+      }
+    },
+    required: ['workflow_id']
+  }
+};

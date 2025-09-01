@@ -462,6 +462,24 @@ Initiates a complete assessment process that **prevents fake data generation** a
 - **Quality Gates**: Blocks progression without authentic user input
 - **Next Action Guidance**: Provides clear steps for assessment continuation
 
+**How to Use**:
+```javascript
+// Example call to start_assessment_workflow
+{
+  "org_name": "TechCorp Inc",
+  "sector": "Technology", 
+  "size": "medium",
+  "contact_name": "John Smith",
+  "contact_email": "john.smith@techcorp.com",
+  "description": "Software development company with 200 employees",
+  "assessment_scope": "full",
+  "timeline_weeks": 8
+}
+```
+
+**Required Parameters**: `org_name`, `sector`, `size`, `contact_name`, `contact_email`  
+**Optional Parameters**: `description`, `assessment_scope` (full|specific_functions), `target_functions`, `timeline_weeks`
+
 **Critical Fix**: This tool replaces problematic workflows that generated synthetic assessment data. Now **requires real organizational information** before any maturity calculations.
 
 #### 8. `check_assessment_workflow_status` 🆕
@@ -472,6 +490,18 @@ Provides comprehensive status updates on assessment workflows:
 - **Next Actions**: Clear guidance on what to do next in the assessment process
 - **Quality Validation**: Confirms assessment data authenticity before analysis
 - **Timeline Management**: Tracks estimated completion and time remaining
+
+**How to Use**:
+```javascript
+// Example call to check_assessment_workflow_status
+{
+  "workflow_id": "workflow_12345"
+}
+```
+
+**Required Parameters**: `workflow_id` (obtained from start_assessment_workflow response)
+
+**Note**: Use this tool to monitor progress after starting an assessment with `start_assessment_workflow`. It provides detailed status information and next steps guidance.
 
 ### Assessment & Scoring Tools (8 tools)
 
