@@ -345,16 +345,16 @@ curl -X POST http://localhost:8080/api/tools/assess_maturity \
 #### Option 2: Custom GPT Configuration
 Create a Custom GPT with action configuration:
 1. **Start HTTP Server**: Run `npm run start:http` to enable HTTP REST API mode
-2. **Base URL**: `http://localhost:8080/api/tools/`
+2. **Base URL**: `http://localhost`
 3. **Available Endpoints**: All 39 MCP tools available as HTTP endpoints
 4. **Authentication**: None required (configurable)
-5. **OpenAPI Schema**: Import the [openapi_3.1.0_actions.yaml](./openapi_3.1.0_actions.yaml) file when adding actions to your custom GPT
+5. **OpenAPI Schema**: Import the [openapi.yaml](./openapi.yaml) file when adding actions to your custom GPT
 
 ### Legacy: ChatGPT Integration (via MCP Connectors)
 
 For older integration methods, you can still use MCP-to-OpenAI connectors:
 
-#### Option 1: Using MCP Bridge
+#### Option 3: Using MCP Bridge
 ```bash
 # Install MCP Bridge (third-party connector)
 npm install -g @modelcontextprotocol/bridge
@@ -362,34 +362,12 @@ npm install -g @modelcontextprotocol/bridge
 # Start the bridge
 mcp-bridge --mcp-server http://localhost:3000 --openai-api-key YOUR_OPENAI_KEY
 ```
-
-#### Option 2: Using Custom Actions (ChatGPT Plus/Enterprise)
-Create a custom GPT with these server endpoints:
-
-**Base URL**: `http://localhost:3000` (or your deployed server URL)
-
-**Available Actions** (sample endpoints to configure):
-- `POST /tools/csf_lookup` - Look up CSF elements
-- `POST /tools/quick_assessment` - Perform rapid assessments  
-- `POST /tools/generate_report` - Generate comprehensive reports
-- `POST /tools/create_profile` - Create organization profiles
-
-**Authentication**: 
-- For development: No authentication required (`AUTH_MODE=disabled`)
-- For production: Use API key authentication (`AUTH_MODE=simple`)
-
-#### Option 3: Using Zapier or Make.com
+#### Option 4: Using Zapier or Make.com
 1. Create a webhook integration pointing to your server
 2. Configure triggers for specific NIST CSF assessment workflows
 3. Connect to ChatGPT via their respective ChatGPT integrations
 
 ### Other AI Assistants
-
-#### Google Gemini Integration
-Use the same MCP Bridge approach or create custom connectors using the server's REST-like interface.
-
-#### Microsoft Copilot Integration  
-Configure using Microsoft's connector framework with the MCP server endpoints.
 
 ### Enterprise Integration
 
@@ -412,15 +390,15 @@ AI Clients → API Gateway → NIST CSF 2.0 MCP Server → SQLite Database
 For high availability:
 ```bash
 # Multiple server instances
-npm start --port 3001
-npm start --port 3002
-npm start --port 3003
+npm start --port 8080
+npm start --port 8081
+npm start --port 8082
 ```
 
 ### Troubleshooting Connection Issues
 
 #### Common Issues:
-- **Connection Refused**: Ensure server is running on correct port
+- **Connection Refused**: Ensure server is running on the correct port
 - **Authentication Errors**: Check `AUTH_MODE` configuration matches client setup
 - **Tool Not Found**: Verify server build completed successfully (`npm run build`)
 - **Permission Errors**: Check file permissions for database and log files
