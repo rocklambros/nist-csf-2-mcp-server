@@ -306,7 +306,7 @@ Start a comprehensive NIST CSF assessment for my organization using start_assess
 
 #### Option 1: HTTP REST API Mode (Recommended)
 ```bash
-# Start HTTP server only
+# Start HTTP server only (required for ChatGPT integration)
 npm run start:http
 
 # Or start dual-mode (MCP + HTTP simultaneously)
@@ -344,10 +344,11 @@ curl -X POST http://localhost:8080/api/tools/assess_maturity \
 
 #### Option 2: Custom GPT Configuration
 Create a Custom GPT with action configuration:
-- **Base URL**: `http://localhost:8080/api/tools/`
-- **Available Endpoints**: All 39 MCP tools available as HTTP endpoints
-- **Authentication**: None required (configurable)
-- **OpenAPI Schema**: Import the [openapi_3.1.0_actions.yaml](./openapi_3.1.0_actions.yaml) file when adding actions to your custom GPT
+1. **Start HTTP Server**: Run `npm run start:http` to enable HTTP REST API mode
+2. **Base URL**: `http://localhost:8080/api/tools/`
+3. **Available Endpoints**: All 39 MCP tools available as HTTP endpoints
+4. **Authentication**: None required (configurable)
+5. **OpenAPI Schema**: Import the [openapi_3.1.0_actions.yaml](./openapi_3.1.0_actions.yaml) file when adding actions to your custom GPT
 
 ### Legacy: ChatGPT Integration (via MCP Connectors)
 
