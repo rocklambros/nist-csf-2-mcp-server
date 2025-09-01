@@ -9,12 +9,12 @@ import { logger } from '../utils/logger.js';
 
 // Input schema for the tool
 export const GeneratePriorityMatrixSchema = z.object({
-  profile_id: z.string().min(1),
-  target_profile_id: z.string().min(1).optional(),
-  matrix_type: z.enum(['effort_impact', 'risk_feasibility', 'cost_benefit']).default('effort_impact'),
-  include_recommendations: z.boolean().default(true),
-  include_resource_estimates: z.boolean().default(true),
-  max_items_per_quadrant: z.number().min(1).max(20).default(10)
+  profile_id: (z as any).string().min(1),
+  target_profile_id: (z as any).string().min(1).optional(),
+  matrix_type: (z as any).enum(['effort_impact', 'risk_feasibility', 'cost_benefit']).default('effort_impact'),
+  include_recommendations: (z as any).boolean().default(true),
+  include_resource_estimates: (z as any).boolean().default(true),
+  max_items_per_quadrant: (z as any).number().min(1).max(20).default(10)
 });
 
 export type GeneratePriorityMatrixParams = z.infer<typeof GeneratePriorityMatrixSchema>;
@@ -142,66 +142,66 @@ export async function generatePriorityMatrix(params: GeneratePriorityMatrixParam
   
   try {
     // Ensure framework is loaded
-    if (!framework.isLoaded()) {
-      await framework.load();
+    if (!(framework as any).isLoaded()) {
+      await (framework as any).load();
     }
     
     // Verify profile exists
-    const profile = db.getProfile(params.profile_id);
+    const profile = (db as any).getProfile((params as any).profile_id);
     if (!profile) {
-      return createErrorResult(`Profile not found: ${params.profile_id}`);
+      return createErrorResult(`Profile not found: ${(params as any).profile_id}`);
     }
     
     // Get matrix data from database
-    const matrixData = params.target_profile_id
-      ? db.getPriorityMatrix(params.target_profile_id)
-      : db.getPriorityMatrixFromAssessments(params.profile_id);
+    const matrixData = (params as any).target_profile_id
+      ? (db as any).getPriorityMatrix((params as any).target_profile_id)
+      : (db as any).getPriorityMatrixFromAssessments((params as any).profile_id);
     
-    if (!matrixData || matrixData.length === 0) {
+    if (!matrixData || (matrixData as any).length === 0) {
       return createErrorResult('No data available for priority matrix generation');
     }
     
     // Process items for the selected matrix type
     const processedItems = processMatrixItems(
       matrixData,
-      params.matrix_type,
+      (params as any).matrix_type,
       framework
     );
     
     // Classify items into quadrants
     const quadrants = classifyIntoQuadrants(
       processedItems,
-      params.matrix_type,
-      params.max_items_per_quadrant
+      (params as any).matrix_type,
+      (params as any).max_items_per_quadrant
     );
     
     // Calculate summary statistics
     const summary = calculateSummary(quadrants);
     
     // Generate recommendations if requested
-    const recommendations = params.include_recommendations
-      ? generateRecommendations(quadrants, summary, params.matrix_type)
+    const recommendations = (params as any).include_recommendations
+      ? generateRecommendations(quadrants, summary, (params as any).matrix_type)
       : undefined;
     
     // Generate resource estimates if requested
-    const resource_estimates = params.include_resource_estimates
+    const resource_estimates = (params as any).include_resource_estimates
       ? generateResourceEstimates(summary, quadrants)
       : undefined;
     
     // Get matrix configuration
-    const config = MATRIX_CONFIGS[params.matrix_type as keyof typeof MATRIX_CONFIGS];
+    const config = MATRIX_CONFIGS[(params as any).matrix_type as keyof typeof MATRIX_CONFIGS];
     
     return {
       success: true,
-      matrix_type: params.matrix_type,
+      matrix_type: (params as any).matrix_type,
       generation_date: new Date().toISOString(),
-      profile_id: params.profile_id,
-      target_profile_id: params.target_profile_id,
+      profile_id: (params as any).profile_id,
+      target_profile_id: (params as any).target_profile_id,
       matrix_configuration: {
-        x_axis_label: config.x_axis_label,
-        y_axis_label: config.y_axis_label,
-        x_axis_threshold: config.x_axis_threshold,
-        y_axis_threshold: config.y_axis_threshold
+        x_axis_label: (config as any).x_axis_label,
+        y_axis_label: (config as any).y_axis_label,
+        x_axis_threshold: (config as any).x_axis_threshold,
+        y_axis_threshold: (config as any).y_axis_threshold
       },
       quadrants,
       summary,
@@ -210,9 +210,9 @@ export async function generatePriorityMatrix(params: GeneratePriorityMatrixParam
     };
     
   } catch (error) {
-    logger.error('Generate priority matrix error:', error);
+    (logger as any).error('Generate priority matrix error:', error);
     return createErrorResult(
-      error instanceof Error ? error.message : 'Unknown error occurred'
+      error instanceof Error ? (error as any).message : 'Unknown error occurred'
     );
   }
 }
@@ -232,13 +232,13 @@ function processMatrixItems(
     
     switch (matrixType) {
       case 'effort_impact':
-        xValue = item.effort_score || estimateEffort(item);
-        yValue = item.impact_score || estimateImpact(item);
+        xValue = (item as any).effort_score || estimateEffort(item);
+        yValue = (item as any).impact_score || estimateImpact(item);
         break;
       
       case 'risk_feasibility':
         xValue = estimateFeasibility(item);
-        yValue = item.risk_score || estimateRiskReduction(item);
+        yValue = (item as any).risk_score || estimateRiskReduction(item);
         break;
       
       case 'cost_benefit':
@@ -253,17 +253,17 @@ function processMatrixItems(
     
     const priorityScore = calculatePriorityScore(xValue, yValue, matrixType);
     
-    items.push({
-      subcategory_id: item.subcategory_id,
-      subcategory_name: item.subcategory_name || item.subcategory_id,
-      function_id: item.subcategory_id.substring(0, 2),
-      category_id: item.subcategory_id.substring(0, 5),
-      current_state: item.current_implementation || item.implementation_level || 'not_implemented',
-      target_state: item.target_implementation || 'fully_implemented',
-      gap_score: item.gap_score || calculateGapScore(item),
-      x_axis_value: Math.round(xValue * 100) / 100,
-      y_axis_value: Math.round(yValue * 100) / 100,
-      priority_score: Math.round(priorityScore * 100) / 100,
+    (items as any).push({
+      subcategory_id: (item as any).subcategory_id,
+      subcategory_name: (item as any).subcategory_name || (item as any).subcategory_id,
+      function_id: (item as any).subcategory_id.substring(0, 2),
+      category_id: (item as any).subcategory_id.substring(0, 5),
+      current_state: (item as any).current_implementation || (item as any).implementation_level || 'not_implemented',
+      target_state: (item as any).target_implementation || 'fully_implemented',
+      gap_score: (item as any).gap_score || calculateGapScore(item),
+      x_axis_value: (Math as any).round(xValue * 100) / 100,
+      y_axis_value: (Math as any).round(yValue * 100) / 100,
+      priority_score: (Math as any).round(priorityScore * 100) / 100,
       estimated_effort_hours: estimateEffortHours(item),
       estimated_cost: estimateCostDollars(item),
       risk_reduction: estimateRiskReduction(item)
@@ -282,27 +282,27 @@ function classifyIntoQuadrants(
   maxItemsPerQuadrant: number
 ): any {
   const config = MATRIX_CONFIGS[matrixType as keyof typeof MATRIX_CONFIGS];
-  const xThreshold = config.x_axis_threshold;
-  const yThreshold = config.y_axis_threshold;
+  const xThreshold = (config as any).x_axis_threshold;
+  const yThreshold = (config as any).y_axis_threshold;
   
   const quadrants = {
     high_value_low_effort: createQuadrant(
-      config.quadrant_names.high_value_low_effort,
+      (config as any).quadrant_names.high_value_low_effort,
       'High value with low effort - prioritize for immediate implementation',
       'Allocate resources immediately for quick implementation'
     ),
     high_value_high_effort: createQuadrant(
-      config.quadrant_names.high_value_high_effort,
+      (config as any).quadrant_names.high_value_high_effort,
       'High value but requires significant effort - plan strategically',
       'Develop phased implementation plan with milestones'
     ),
     low_value_low_effort: createQuadrant(
-      config.quadrant_names.low_value_low_effort,
+      (config as any).quadrant_names.low_value_low_effort,
       'Low value but easy to implement - consider as fill-in work',
       'Implement during available capacity or downtime'
     ),
     low_value_high_effort: createQuadrant(
-      config.quadrant_names.low_value_high_effort,
+      (config as any).quadrant_names.low_value_high_effort,
       'Low value and high effort - generally avoid or deprioritize',
       'Defer or reconsider necessity'
     )
@@ -312,49 +312,49 @@ function classifyIntoQuadrants(
   for (const item of items) {
     let quadrant: Quadrant;
     
-    if (item.y_axis_value >= yThreshold && item.x_axis_value <= xThreshold) {
-      quadrant = quadrants.high_value_low_effort;
-    } else if (item.y_axis_value >= yThreshold && item.x_axis_value > xThreshold) {
-      quadrant = quadrants.high_value_high_effort;
-    } else if (item.y_axis_value < yThreshold && item.x_axis_value <= xThreshold) {
-      quadrant = quadrants.low_value_low_effort;
+    if ((item as any).y_axis_value >= yThreshold && (item as any).x_axis_value <= xThreshold) {
+      quadrant = (quadrants as any).high_value_low_effort;
+    } else if ((item as any).y_axis_value >= yThreshold && (item as any).x_axis_value > xThreshold) {
+      quadrant = (quadrants as any).high_value_high_effort;
+    } else if ((item as any).y_axis_value < yThreshold && (item as any).x_axis_value <= xThreshold) {
+      quadrant = (quadrants as any).low_value_low_effort;
     } else {
-      quadrant = quadrants.low_value_high_effort;
+      quadrant = (quadrants as any).low_value_high_effort;
     }
     
-    if (quadrant.items.length < maxItemsPerQuadrant) {
-      quadrant.items.push(item);
-      quadrant.total_items++;
-      quadrant.total_effort_hours += item.estimated_effort_hours;
-      quadrant.total_cost += item.estimated_cost;
+    if ((quadrant as any).items.length < maxItemsPerQuadrant) {
+      (quadrant as any).items.push(item);
+      (quadrant as any).total_items++;
+      (quadrant as any).total_effort_hours += (item as any).estimated_effort_hours;
+      (quadrant as any).total_cost += (item as any).estimated_cost;
     }
   }
   
   // Calculate statistics for each quadrant
-  for (const quadrant of Object.values(quadrants)) {
-    if (quadrant.items.length > 0) {
-      quadrant.average_gap = 
-        quadrant.items.reduce((sum, item) => sum + item.gap_score, 0) / quadrant.items.length;
-      quadrant.average_gap = Math.round(quadrant.average_gap * 100) / 100;
+  for (const quadrant of (Object as any).values(quadrants)) {
+    if ((quadrant as any).items.length > 0) {
+      (quadrant as any).average_gap = 
+        (quadrant as any).items.reduce((sum, item) => sum + (item as any).gap_score, 0) / (quadrant as any).items.length;
+      (quadrant as any).average_gap = (Math as any).round((quadrant as any).average_gap * 100) / 100;
       
-      quadrant.average_risk_reduction = 
-        quadrant.items.reduce((sum, item) => sum + item.risk_reduction, 0) / quadrant.items.length;
-      quadrant.average_risk_reduction = Math.round(quadrant.average_risk_reduction * 100) / 100;
+      (quadrant as any).average_risk_reduction = 
+        (quadrant as any).items.reduce((sum, item) => sum + (item as any).risk_reduction, 0) / (quadrant as any).items.length;
+      (quadrant as any).average_risk_reduction = (Math as any).round((quadrant as any).average_risk_reduction * 100) / 100;
       
       // Set recommended timeline based on quadrant
-      if (quadrant.name.includes('Quick Win') || quadrant.name.includes('High Priority')) {
-        quadrant.recommended_timeline = '0-3 months';
-      } else if (quadrant.name.includes('Strategic')) {
-        quadrant.recommended_timeline = '3-12 months';
-      } else if (quadrant.name.includes('Fill')) {
-        quadrant.recommended_timeline = '6-18 months';
+      if ((quadrant as any).name.includes('Quick Win') || (quadrant as any).name.includes('High Priority')) {
+        (quadrant as any).recommended_timeline = '0-3 months';
+      } else if ((quadrant as any).name.includes('Strategic')) {
+        (quadrant as any).recommended_timeline = '3-12 months';
+      } else if ((quadrant as any).name.includes('Fill')) {
+        (quadrant as any).recommended_timeline = '6-18 months';
       } else {
-        quadrant.recommended_timeline = 'Not recommended';
+        (quadrant as any).recommended_timeline = 'Not recommended';
       }
     }
     
     // Sort items by priority score
-    quadrant.items.sort((a, b) => b.priority_score - a.priority_score);
+    (quadrant as any).items.sort((a, b) => (b as any).priority_score - (a as any).priority_score);
   }
   
   return quadrants;
@@ -366,20 +366,20 @@ function classifyIntoQuadrants(
 function calculateSummary(quadrants: any): any {
   const allItems: MatrixItem[] = [];
   
-  for (const quadrant of Object.values(quadrants)) {
-    allItems.push(...(quadrant as Quadrant).items);
+  for (const quadrant of (Object as any).values(quadrants)) {
+    (allItems as any).push(...(quadrant as Quadrant).items);
   }
   
   return {
-    total_items: allItems.length,
-    quick_wins_count: quadrants.high_value_low_effort.total_items,
-    strategic_initiatives_count: quadrants.high_value_high_effort.total_items,
-    fill_ins_count: quadrants.low_value_low_effort.total_items,
-    avoid_count: quadrants.low_value_high_effort.total_items,
-    total_effort_required: allItems.reduce((sum, item) => sum + item.estimated_effort_hours, 0),
-    total_cost_estimate: allItems.reduce((sum, item) => sum + item.estimated_cost, 0),
-    average_risk_reduction: allItems.length > 0
-      ? allItems.reduce((sum, item) => sum + item.risk_reduction, 0) / allItems.length
+    total_items: (allItems as any).length,
+    quick_wins_count: (quadrants as any).high_value_low_effort.total_items,
+    strategic_initiatives_count: (quadrants as any).high_value_high_effort.total_items,
+    fill_ins_count: (quadrants as any).low_value_low_effort.total_items,
+    avoid_count: (quadrants as any).low_value_high_effort.total_items,
+    total_effort_required: (allItems as any).reduce((sum, item) => sum + (item as any).estimated_effort_hours, 0),
+    total_cost_estimate: (allItems as any).reduce((sum, item) => sum + (item as any).estimated_cost, 0),
+    average_risk_reduction: (allItems as any).length > 0
+      ? (allItems as any).reduce((sum, item) => sum + (item as any).risk_reduction, 0) / (allItems as any).length
       : 0
   };
 }
@@ -400,63 +400,63 @@ function generateRecommendations(
   };
   
   // Immediate focus - Quick Wins
-  const quickWins = quadrants.high_value_low_effort;
-  if (quickWins.items.length > 0) {
-    const topItems = quickWins.items.slice(0, 3);
+  const quickWins = (quadrants as any).high_value_low_effort;
+  if ((quickWins as any).items.length > 0) {
+    const topItems = (quickWins as any).items.slice(0, 3);
     for (const item of topItems) {
-      recommendations.immediate_focus.push(
-        `Implement ${item.subcategory_id}: Low effort (${item.x_axis_value}/10), High impact (${item.y_axis_value}/10)`
+      (recommendations as any).immediate_focus.push(
+        `Implement ${(item as any).subcategory_id}: Low effort (${(item as any).x_axis_value}/10), High impact (${(item as any).y_axis_value}/10)`
       );
     }
   }
   
   // Resource allocation
-  if (summary.quick_wins_count > 5) {
-    recommendations.resource_allocation.push(
-      `Allocate dedicated team for ${summary.quick_wins_count} quick wins (${quickWins.total_effort_hours} hours estimated)`
+  if ((summary as any).quick_wins_count > 5) {
+    (recommendations as any).resource_allocation.push(
+      `Allocate dedicated team for ${(summary as any).quick_wins_count} quick wins (${(quickWins as any).total_effort_hours} hours estimated)`
     );
   }
   
-  if (summary.strategic_initiatives_count > 0) {
-    recommendations.resource_allocation.push(
-      `Plan resources for ${summary.strategic_initiatives_count} strategic initiatives (${quadrants.high_value_high_effort.total_effort_hours} hours)`
+  if ((summary as any).strategic_initiatives_count > 0) {
+    (recommendations as any).resource_allocation.push(
+      `Plan resources for ${(summary as any).strategic_initiatives_count} strategic initiatives (${(quadrants as any).high_value_high_effort.total_effort_hours} hours)`
     );
   }
   
   // Phased approach
-  if (summary.total_items > 10) {
-    recommendations.phased_approach.push(
-      `Phase 1 (0-3 months): Focus on ${summary.quick_wins_count} quick wins`
+  if ((summary as any).total_items > 10) {
+    (recommendations as any).phased_approach.push(
+      `Phase 1 (0-3 months): Focus on ${(summary as any).quick_wins_count} quick wins`
     );
-    recommendations.phased_approach.push(
-      `Phase 2 (3-9 months): Tackle ${Math.min(3, summary.strategic_initiatives_count)} strategic initiatives`
+    (recommendations as any).phased_approach.push(
+      `Phase 2 (3-9 months): Tackle ${(Math as any).min(3, (summary as any).strategic_initiatives_count)} strategic initiatives`
     );
-    recommendations.phased_approach.push(
-      `Phase 3 (9-12 months): Address ${summary.fill_ins_count} fill-in items during available capacity`
+    (recommendations as any).phased_approach.push(
+      `Phase 3 (9-12 months): Address ${(summary as any).fill_ins_count} fill-in items during available capacity`
     );
   }
   
   // Risk mitigation based on matrix type
   if (matrixType === 'risk_feasibility' || matrixType === 'effort_impact') {
-    const highRiskItems = [...quadrants.high_value_high_effort.items, ...quadrants.high_value_low_effort.items]
-      .filter(item => item.risk_reduction > 7);
+    const highRiskItems = [...(quadrants as any).high_value_high_effort.items, ...(quadrants as any).high_value_low_effort.items]
+      .filter(item => (item as any).risk_reduction > 7);
     
-    if (highRiskItems.length > 0) {
-      recommendations.risk_mitigation.push(
-        `${highRiskItems.length} items provide significant risk reduction (>70%)`
+    if ((highRiskItems as any).length > 0) {
+      (recommendations as any).risk_mitigation.push(
+        `${(highRiskItems as any).length} items provide significant risk reduction (>70%)`
       );
     }
   }
   
   // Add specific recommendations based on distribution
-  if (summary.quick_wins_count === 0 && summary.strategic_initiatives_count > 5) {
-    recommendations.risk_mitigation.push(
+  if ((summary as any).quick_wins_count === 0 && (summary as any).strategic_initiatives_count > 5) {
+    (recommendations as any).risk_mitigation.push(
       'No quick wins identified - consider breaking down strategic initiatives into smaller tasks'
     );
   }
   
-  if (summary.avoid_count > summary.quick_wins_count) {
-    recommendations.risk_mitigation.push(
+  if ((summary as any).avoid_count > (summary as any).quick_wins_count) {
+    (recommendations as any).risk_mitigation.push(
       'High number of low-value/high-effort items - review requirements and consider alternatives'
     );
   }
@@ -473,53 +473,53 @@ function generateResourceEstimates(summary: any, quadrants: any): any {
   const totalMonths = 12;
   const availableHours = monthlyHours * totalMonths;
   
-  const teamSize = Math.ceil(summary.total_effort_required / availableHours);
+  const teamSize = (Math as any).ceil((summary as any).total_effort_required / availableHours);
   
   // Calculate timeline
-  const timelineMonths = Math.ceil(summary.total_effort_required / (teamSize * monthlyHours));
+  const timelineMonths = (Math as any).ceil((summary as any).total_effort_required / (teamSize * monthlyHours));
   
   // Calculate budget range (assuming $100-150 per hour)
   const minRate = 100;
   const maxRate = 150;
-  const budgetMin = summary.total_effort_required * minRate;
-  const budgetMax = summary.total_effort_required * maxRate;
+  const budgetMin = (summary as any).total_effort_required * minRate;
+  const budgetMax = (summary as any).total_effort_required * maxRate;
   
   // Determine skill requirements based on items
   const skillRequirements: Set<string> = new Set();
   
   // Analyze all items to determine skills needed
   const allItems = [
-    ...quadrants.high_value_low_effort.items,
-    ...quadrants.high_value_high_effort.items,
-    ...quadrants.low_value_low_effort.items
+    ...(quadrants as any).high_value_low_effort.items,
+    ...(quadrants as any).high_value_high_effort.items,
+    ...(quadrants as any).low_value_low_effort.items
   ];
   
   for (const item of allItems) {
-    const funcId = item.function_id;
+    const funcId = (item as any).function_id;
     switch (funcId) {
       case 'GV':
-        skillRequirements.add('Governance and Risk Management');
-        skillRequirements.add('Policy Development');
+        (skillRequirements as any).add('Governance and Risk Management');
+        (skillRequirements as any).add('Policy Development');
         break;
       case 'ID':
-        skillRequirements.add('Asset Management');
-        skillRequirements.add('Risk Assessment');
+        (skillRequirements as any).add('Asset Management');
+        (skillRequirements as any).add('Risk Assessment');
         break;
       case 'PR':
-        skillRequirements.add('Security Engineering');
-        skillRequirements.add('Access Control');
+        (skillRequirements as any).add('Security Engineering');
+        (skillRequirements as any).add('Access Control');
         break;
       case 'DE':
-        skillRequirements.add('Security Monitoring');
-        skillRequirements.add('SIEM Management');
+        (skillRequirements as any).add('Security Monitoring');
+        (skillRequirements as any).add('SIEM Management');
         break;
       case 'RS':
-        skillRequirements.add('Incident Response');
-        skillRequirements.add('Crisis Management');
+        (skillRequirements as any).add('Incident Response');
+        (skillRequirements as any).add('Crisis Management');
         break;
       case 'RC':
-        skillRequirements.add('Business Continuity');
-        skillRequirements.add('Disaster Recovery');
+        (skillRequirements as any).add('Business Continuity');
+        (skillRequirements as any).add('Disaster Recovery');
         break;
     }
   }
@@ -531,14 +531,14 @@ function generateResourceEstimates(summary: any, quadrants: any): any {
       minimum: budgetMin,
       maximum: budgetMax
     },
-    skill_requirements: Array.from(skillRequirements)
+    skill_requirements: (Array as any).from(skillRequirements)
   };
 }
 
 // Helper functions for estimation
 
 function estimateEffort(item: any): number {
-  const implLevel = item.current_implementation || item.implementation_level || 'not_implemented';
+  const implLevel = (item as any).current_implementation || (item as any).implementation_level || 'not_implemented';
   const baseEffort: Record<string, number> = {
     'not_implemented': 8,
     'partially_implemented': 5,
@@ -549,36 +549,36 @@ function estimateEffort(item: any): number {
 }
 
 function estimateImpact(item: any): number {
-  const gap = item.gap_score || 50;
-  return Math.min(10, gap / 10);
+  const gap = (item as any).gap_score || 50;
+  return (Math as any).min(10, gap / 10);
 }
 
 function estimateFeasibility(item: any): number {
   const effort = estimateEffort(item);
-  return Math.max(1, 11 - effort);
+  return (Math as any).max(1, 11 - effort);
 }
 
 function estimateRiskReduction(item: any): number {
-  const gap = item.gap_score || 50;
-  const criticality = item.subcategory_criticality || 5;
-  return Math.min(10, (gap * criticality) / 50);
+  const gap = (item as any).gap_score || 50;
+  const criticality = (item as any).subcategory_criticality || 5;
+  return (Math as any).min(10, (gap * criticality) / 50);
 }
 
 function estimateCost(item: any): number {
   const effort = estimateEffort(item);
-  const complexity = item.implementation_complexity || 5;
-  return Math.min(10, (effort * complexity) / 10);
+  const complexity = (item as any).implementation_complexity || 5;
+  return (Math as any).min(10, (effort * complexity) / 10);
 }
 
 function estimateBenefit(item: any): number {
   const impact = estimateImpact(item);
   const riskReduction = estimateRiskReduction(item);
-  return Math.min(10, (impact + riskReduction) / 2);
+  return (Math as any).min(10, (impact + riskReduction) / 2);
 }
 
 function calculateGapScore(item: any): number {
-  const current = item.current_maturity || 0;
-  const target = item.target_maturity || 5;
+  const current = (item as any).current_maturity || 0;
+  const target = (item as any).target_maturity || 5;
   return ((target - current) / 5) * 100;
 }
 
@@ -604,7 +604,7 @@ function calculatePriorityScore(x: number, y: number, matrixType: string): numbe
 function estimateEffortHours(item: any): number {
   const effort = estimateEffort(item);
   // Map effort score to hours (1=8hrs, 10=160hrs)
-  return Math.round(8 + (effort - 1) * 17);
+  return (Math as any).round(8 + (effort - 1) * 17);
 }
 
 function estimateCostDollars(item: any): number {

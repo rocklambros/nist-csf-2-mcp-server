@@ -100,6 +100,72 @@ export interface CSFRelationship {
 }
 
 // ============================================================================
+// DATABASE OPERATION TYPES
+// ============================================================================
+
+export interface DatabaseRow {
+  [key: string]: any;
+}
+
+export interface DatabaseResult {
+  changes?: number;
+  lastInsertRowid?: number;
+}
+
+export interface DatabaseStatement<T = DatabaseRow> {
+  get(params?: any[]): T | undefined;
+  all(params?: any[]): T[];
+  run(params?: any[]): DatabaseResult;
+  finalize(): void;
+}
+
+export interface DatabaseConnection {
+  prepare(sql: string): DatabaseStatement;
+  exec(sql: string): void;
+  close(): void;
+}
+
+// ============================================================================
+// HTTP SERVER TYPES
+// ============================================================================
+
+export interface HTTPRequest {
+  body?: any;
+  params?: Record<string, string>;
+  query?: Record<string, string>;
+  headers?: Record<string, string>;
+}
+
+export interface HTTPResponse {
+  json(data: any): void;
+  status(code: number): HTTPResponse;
+  send(data?: any): void;
+}
+
+export interface HTTPHandler {
+  (req: HTTPRequest, res: HTTPResponse): void | Promise<void>;
+}
+
+// ============================================================================
+// MCP TOOL TYPES
+// ============================================================================
+
+export interface MCPToolParams {
+  [key: string]: any;
+}
+
+export interface MCPToolResult {
+  success: boolean;
+  data?: any;
+  error?: string;
+  message?: string;
+}
+
+export interface MCPToolFunction {
+  (params: MCPToolParams): Promise<MCPToolResult> | MCPToolResult;
+}
+
+// ============================================================================
 // FRAMEWORK STRUCTURE
 // ============================================================================
 
@@ -185,7 +251,7 @@ export interface Tool {
   };
 }
 
-export interface ToolResponse<T = any> {
+export interface ToolResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -239,4 +305,117 @@ export function isSubcategory(element: BaseCSFElement): element is CSFSubcategor
 
 export function isImplementationExample(element: BaseCSFElement): element is CSFImplementationExample {
   return element.element_type === ElementType.IMPLEMENTATION_EXAMPLE;
+}
+
+// ============================================================================
+// DATABASE ENTITY INTERFACES
+// ============================================================================
+
+export interface ImplementationPlan {
+  id: string;
+  org_id: string;
+  plan_name: string;
+  description?: string;
+  start_date: string | Date;
+  target_completion_date: string | Date;
+  total_phases?: number;
+  total_effort_hours?: number;
+  estimated_cost?: number;
+  status?: string;
+  created_at?: string | Date;
+  updated_at?: string | Date;
+}
+
+export interface ImplementationPhase {
+  id: string;
+  plan_id: string;
+  phase_number: number;
+  phase_name: string;
+  start_month: number;
+  end_month: number;
+  effort_hours: number;
+  resource_count: number;
+  status?: string;
+}
+
+export interface ImplementationItem {
+  id: string;
+  phase_id: string;
+  subcategory_id: string;
+  priority_rank: number;
+  effort_hours: number;
+  dependencies?: string;
+  status?: string;
+  completion_percentage?: number;
+}
+
+export interface PhaseDependency {
+  id: string;
+  phase_id: string;
+  depends_on_phase_id: string;
+  dependency_type: string;
+  description?: string;
+}
+
+export interface CostEstimate {
+  id: string;
+  org_id: string;
+  assessment_scope: string;
+  labor_cost: number;
+  technology_cost: number;
+  training_cost: number;
+  consulting_cost: number;
+  other_costs: number;
+  total_cost: number;
+  confidence_level: string;
+}
+
+export interface ProgressUpdate {
+  id: string;
+  org_id: string;
+  subcategory_id: string;
+  previous_status: string;
+  new_status: string;
+  previous_maturity?: number;
+  new_maturity?: number;
+  update_type: string;
+  description?: string;
+  evidence_provided?: string;
+  updated_by?: string;
+  update_date: string | Date;
+  milestone_achieved?: string;
+  blockers_identified?: string;
+  next_steps?: string;
+  effort_spent_hours?: number;
+  completion_percentage?: number;
+}
+
+export interface Milestone {
+  id: string;
+  org_id: string;
+  milestone_name: string;
+  description?: string;
+  target_date: string | Date;
+  actual_date?: string | Date;
+  status: string;
+  deliverables?: string;
+  success_criteria?: string;
+  completion_percentage?: number;
+}
+
+export interface IndustryBenchmark {
+  id: string;
+  industry: string;
+  organization_size: string;
+  csf_function: string;
+  metric_name: string;
+  percentile_25: number;
+  percentile_50: number;
+  percentile_75: number;
+  percentile_90: number;
+  average_score: number;
+  sample_size: number;
+  data_year: number;
+  source: string;
+  notes?: string;
 }

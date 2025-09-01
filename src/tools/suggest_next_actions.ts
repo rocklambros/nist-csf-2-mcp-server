@@ -163,32 +163,32 @@ export async function suggestNextActions(params: SuggestNextActionsParams): Prom
   
   try {
     // Ensure framework is loaded
-    if (!framework.isLoaded()) {
-      await framework.load();
+    if (!(framework as any).isLoaded()) {
+      await (framework as any).load();
     }
     
     // Verify profile exists
-    const profile = db.getProfile(params.profile_id);
+    const profile = (db as any).getProfile((params as any).profile_id);
     if (!profile) {
-      return createErrorResult(`Profile not found: ${params.profile_id}`);
+      return createErrorResult(`Profile not found: ${(params as any).profile_id}`);
     }
     
     // Calculate total capacity
-    const totalCapacityHours = params.capacity_hours_per_week * params.time_horizon_weeks;
+    const totalCapacityHours = (params as any).capacity_hours_per_week * (params as any).time_horizon_weeks;
     
     // Get suggested actions from database
-    const dbSuggestions = db.getSuggestedActions(params.profile_id, totalCapacityHours);
+    const dbSuggestions = (db as any).getSuggestedActions((params as any).profile_id, totalCapacityHours);
     
-    if (!dbSuggestions || dbSuggestions.length === 0) {
+    if (!dbSuggestions || (dbSuggestions as any).length === 0) {
       return createErrorResult('No actionable items found for this profile');
     }
     
     // Filter by focus area if specified
     let filteredSuggestions = dbSuggestions;
-    if (params.focus_area !== 'all') {
-      const focusFunctionId = getFunctionId(params.focus_area);
-      filteredSuggestions = dbSuggestions.filter(
-        (s: any) => s.function_id === focusFunctionId
+    if ((params as any).focus_area !== 'all') {
+      const focusFunctionId = getFunctionId((params as any).focus_area);
+      filteredSuggestions = (dbSuggestions as any).filter(
+        (s: any) => (s as any).function_id === focusFunctionId
       );
     }
     
@@ -198,81 +198,81 @@ export async function suggestNextActions(params: SuggestNextActionsParams): Prom
     
     for (const suggestion of filteredSuggestions) {
       // Check capacity
-      if (allocatedHours + suggestion.estimated_hours > totalCapacityHours * 1.2) {
+      if (allocatedHours + (suggestion as any).estimated_hours > totalCapacityHours * 1.2) {
         break;  // Stop if we exceed capacity by more than 20%
       }
       
       // Get dependencies if requested
-      const dependencies = params.include_dependencies
-        ? await analyzeDependencies(suggestion.subcategory_id, params.profile_id, db, framework)
+      const dependencies = (params as any).include_dependencies
+        ? await analyzeDependencies((suggestion as any).subcategory_id, (params as any).profile_id, db, framework)
         : { blocking: [], recommended: [], status: 'Ready' as const };
       
       // Calculate impact scores
-      const impact = calculateImpact(suggestion, params.optimization_goal);
+      const impact = calculateImpact(suggestion, (params as any).optimization_goal);
       
       // Generate justification
-      const justification = params.include_justification
-        ? generateJustification(suggestion, dependencies, impact, params.optimization_goal)
-        : suggestion.justification || 'Recommended action';
+      const justification = (params as any).include_justification
+        ? generateJustification(suggestion, dependencies, impact, (params as any).optimization_goal)
+        : (suggestion as any).justification || 'Recommended action';
       
       // Create action object
       const action: SuggestedAction = {
-        rank: suggestedActions.length + 1,
-        subcategory_id: suggestion.subcategory_id,
-        subcategory_name: suggestion.subcategory_name,
-        function_id: suggestion.function_id,
-        function_name: getFunctionName(suggestion.function_id),
+        rank: (suggestedActions as any).length + 1,
+        subcategory_id: (suggestion as any).subcategory_id,
+        subcategory_name: (suggestion as any).subcategory_name,
+        function_id: (suggestion as any).function_id,
+        function_name: getFunctionName((suggestion as any).function_id),
         current_state: {
-          implementation_level: suggestion.implementation_level,
-          maturity_score: suggestion.maturity_score || 0,
-          gap_score: suggestion.gap_score || 0
+          implementation_level: (suggestion as any).implementation_level,
+          maturity_score: (suggestion as any).maturity_score || 0,
+          gap_score: (suggestion as any).gap_score || 0
         },
         estimated_effort: {
-          hours: suggestion.estimated_hours,
-          weeks: Math.ceil(suggestion.estimated_hours / params.capacity_hours_per_week),
-          complexity: getComplexity(suggestion.implementation_level)
+          hours: (suggestion as any).estimated_hours,
+          weeks: (Math as any).ceil((suggestion as any).estimated_hours / (params as any).capacity_hours_per_week),
+          complexity: getComplexity((suggestion as any).implementation_level)
         },
         impact,
         dependencies,
-        roi_score: suggestion.roi_score || 0,
+        roi_score: (suggestion as any).roi_score || 0,
         justification,
         implementation_tips: generateImplementationTips(suggestion, framework)
       };
       
-      suggestedActions.push(action);
-      allocatedHours += suggestion.estimated_hours;
+      (suggestedActions as any).push(action);
+      allocatedHours += (suggestion as any).estimated_hours;
     }
     
     // Create capacity analysis
     const capacityAnalysis: CapacityAnalysis = {
       total_capacity_hours: totalCapacityHours,
       allocated_hours: allocatedHours,
-      remaining_hours: Math.max(0, totalCapacityHours - allocatedHours),
-      utilization_percentage: Math.round((allocatedHours / totalCapacityHours) * 100),
-      feasible_actions: suggestedActions.filter(a => a.dependencies.status === 'Ready').length,
-      stretch_actions: suggestedActions.filter(a => a.dependencies.status === 'Partial').length
+      remaining_hours: (Math as any).max(0, totalCapacityHours - allocatedHours),
+      utilization_percentage: (Math as any).round((allocatedHours / totalCapacityHours) * 100),
+      feasible_actions: (suggestedActions as any).filter(a => (a as any).dependencies.status === 'Ready').length,
+      stretch_actions: (suggestedActions as any).filter(a => (a as any).dependencies.status === 'Partial').length
     };
     
     // Create action summary
     const actionSummary = {
-      total_actions: suggestedActions.length,
-      ready_to_start: suggestedActions.filter(a => a.dependencies.status === 'Ready').length,
-      blocked_by_dependencies: suggestedActions.filter(a => a.dependencies.status === 'Blocked').length,
+      total_actions: (suggestedActions as any).length,
+      ready_to_start: (suggestedActions as any).filter(a => (a as any).dependencies.status === 'Ready').length,
+      blocked_by_dependencies: (suggestedActions as any).filter(a => (a as any).dependencies.status === 'Blocked').length,
       total_effort_hours: allocatedHours,
-      expected_risk_reduction: suggestedActions.reduce((sum, a) => sum + a.impact.risk_reduction, 0),
-      expected_maturity_gain: suggestedActions.reduce((sum, a) => sum + a.impact.maturity_improvement, 0)
+      expected_risk_reduction: (suggestedActions as any).reduce((sum, a) => sum + (a as any).impact.risk_reduction, 0),
+      expected_maturity_gain: (suggestedActions as any).reduce((sum, a) => sum + (a as any).impact.maturity_improvement, 0)
     };
     
     // Identify dependencies to address
-    const dependenciesToAddress = params.include_dependencies
+    const dependenciesToAddress = (params as any).include_dependencies
       ? identifyBlockingDependencies(suggestedActions, db)
       : undefined;
     
     // Create timeline
     const timeline = createTimeline(
       suggestedActions,
-      params.capacity_hours_per_week,
-      params.time_horizon_weeks
+      (params as any).capacity_hours_per_week,
+      (params as any).time_horizon_weeks
     );
     
     // Generate recommendations
@@ -284,7 +284,7 @@ export async function suggestNextActions(params: SuggestNextActionsParams): Prom
     
     return {
       success: true,
-      profile_id: params.profile_id,
+      profile_id: (params as any).profile_id,
       assessment_date: new Date().toISOString(),
       capacity_analysis: capacityAnalysis,
       suggested_actions: suggestedActions,
@@ -295,9 +295,9 @@ export async function suggestNextActions(params: SuggestNextActionsParams): Prom
     };
     
   } catch (error) {
-    logger.error('Suggest next actions error:', error);
+    (logger as any).error('Suggest next actions error:', error);
     return createErrorResult(
-      error instanceof Error ? error.message : 'Unknown error occurred'
+      error instanceof Error ? (error as any).message : 'Unknown error occurred'
     );
   }
 }
@@ -312,47 +312,47 @@ async function analyzeDependencies(
   _framework: any
 ): Promise<any> {
   // Get formal dependencies from database
-  const dependencies = db.getSubcategoryDependencies(subcategoryId);
+  const dependencies = (db as any).getSubcategoryDependencies(subcategoryId);
   
   // Check implementation status of dependencies
-  const assessments = db.getProfileAssessments(profileId);
+  const assessments = (db as any).getProfileAssessments(profileId);
   const implementedMap = new Map(
-    assessments.map((a: any) => [a.subcategory_id, a.implementation_level])
+    (assessments as any).map((a: any) => [(a as any).subcategory_id, (a as any).implementation_level])
   );
   
   const blocking: string[] = [];
   const recommended: string[] = [];
   
   for (const dep of dependencies) {
-    const implLevel = implementedMap.get(dep.depends_on_subcategory_id);
+    const implLevel = (implementedMap as any).get((dep as any).depends_on_subcategory_id);
     
     if (!implLevel || implLevel === 'not_implemented') {
-      if (dep.dependency_strength >= 8) {
-        blocking.push(dep.depends_on_subcategory_id);
+      if ((dep as any).dependency_strength >= 8) {
+        (blocking as any).push((dep as any).depends_on_subcategory_id);
       } else {
-        recommended.push(dep.depends_on_subcategory_id);
+        (recommended as any).push((dep as any).depends_on_subcategory_id);
       }
     }
   }
   
   // Also check function-level dependencies
-  const functionId = subcategoryId.substring(0, 2);
+  const functionId = (subcategoryId as any).substring(0, 2);
   const functionDeps = FUNCTION_DEPENDENCIES[functionId] || [];
   
   for (const depFunc of functionDeps) {
     // Check if function has any implementation
-    const funcImplemented = assessments.some((a: any) => 
-      a.subcategory_id.startsWith(depFunc) && 
-      a.implementation_level !== 'not_implemented'
+    const funcImplemented = (assessments as any).some((a: any) => 
+      (a as any).subcategory_id.startsWith(depFunc) && 
+      (a as any).implementation_level !== 'not_implemented'
     );
     
     if (!funcImplemented) {
-      recommended.push(`${depFunc} function foundation`);
+      (recommended as any).push(`${depFunc} function foundation`);
     }
   }
   
-  const status = blocking.length > 0 ? 'Blocked' :
-                 recommended.length > 0 ? 'Partial' : 'Ready';
+  const status = (blocking as any).length > 0 ? 'Blocked' :
+                 (recommended as any).length > 0 ? 'Partial' : 'Ready';
   
   return { blocking, recommended, status };
 }
@@ -362,13 +362,13 @@ async function analyzeDependencies(
  */
 function calculateImpact(suggestion: any, optimizationGoal: string): any {
   const priorities = FUNCTION_PRIORITIES[optimizationGoal as keyof typeof FUNCTION_PRIORITIES];
-  const functionPriority = priorities?.[suggestion.function_id] || 1.0;
+  const functionPriority = priorities?.[(suggestion as any).function_id] || 1.0;
   
   // Risk reduction based on gap score and function priority
-  const riskReduction = (suggestion.gap_score / 100) * functionPriority * 10;
+  const riskReduction = ((suggestion as any).gap_score / 100) * functionPriority * 10;
   
   // Maturity improvement
-  const currentMaturity = suggestion.maturity_score || 0;
+  const currentMaturity = (suggestion as any).maturity_score || 0;
   const targetMaturity = 5;
   const maturityImprovement = ((targetMaturity - currentMaturity) / 5) * 5;
   
@@ -383,9 +383,9 @@ function calculateImpact(suggestion: any, optimizationGoal: string): any {
   };
   
   return {
-    risk_reduction: Math.round(riskReduction * 10) / 10,
-    maturity_improvement: Math.round(maturityImprovement * 10) / 10,
-    compliance_impact: complianceMap[suggestion.function_id] || 'Medium'
+    risk_reduction: (Math as any).round(riskReduction * 10) / 10,
+    maturity_improvement: (Math as any).round(maturityImprovement * 10) / 10,
+    compliance_impact: complianceMap[(suggestion as any).function_id] || 'Medium'
   };
 }
 
@@ -401,50 +401,50 @@ function generateJustification(
   const justifications: string[] = [];
   
   // Primary justification based on existing data
-  if (suggestion.justification) {
-    justifications.push(suggestion.justification);
+  if ((suggestion as any).justification) {
+    (justifications as any).push((suggestion as any).justification);
   }
   
   // Goal-specific justification
   switch (optimizationGoal) {
     case 'quick_wins':
-      if (suggestion.estimated_hours <= 20) {
-        justifications.push(`Quick implementation (${suggestion.estimated_hours}h) with immediate value`);
+      if ((suggestion as any).estimated_hours <= 20) {
+        (justifications as any).push(`Quick implementation (${(suggestion as any).estimated_hours}h) with immediate value`);
       }
       break;
       
     case 'risk_reduction':
-      if (impact.risk_reduction >= 5) {
-        justifications.push(`High risk reduction potential (${impact.risk_reduction}/10)`);
+      if ((impact as any).risk_reduction >= 5) {
+        (justifications as any).push(`High risk reduction potential (${(impact as any).risk_reduction}/10)`);
       }
       break;
       
     case 'compliance':
-      if (impact.compliance_impact === 'High') {
-        justifications.push('Critical for regulatory compliance');
+      if ((impact as any).compliance_impact === 'High') {
+        (justifications as any).push('Critical for regulatory compliance');
       }
       break;
       
     case 'balanced':
-      if (suggestion.roi_score >= 2) {
-        justifications.push(`Excellent ROI score (${suggestion.roi_score.toFixed(2)})`);
+      if ((suggestion as any).roi_score >= 2) {
+        (justifications as any).push(`Excellent ROI score (${(suggestion as any).roi_score.toFixed(2)})`);
       }
       break;
   }
   
   // Dependency status
-  if (dependencies.status === 'Ready') {
-    justifications.push('No blocking dependencies - ready to start');
-  } else if (dependencies.status === 'Blocked') {
-    justifications.push(`Blocked by ${dependencies.blocking.length} dependencies`);
+  if ((dependencies as any).status === 'Ready') {
+    (justifications as any).push('No blocking dependencies - ready to start');
+  } else if ((dependencies as any).status === 'Blocked') {
+    (justifications as any).push(`Blocked by ${(dependencies as any).blocking.length} dependencies`);
   }
   
   // Gap severity
-  if (suggestion.gap_score >= 80) {
-    justifications.push('Critical gap requiring immediate attention');
+  if ((suggestion as any).gap_score >= 80) {
+    (justifications as any).push('Critical gap requiring immediate attention');
   }
   
-  return justifications.join('. ') || 'Recommended based on assessment';
+  return (justifications as any).join('. ') || 'Recommended based on assessment';
 }
 
 /**
@@ -452,7 +452,7 @@ function generateJustification(
  */
 function generateImplementationTips(suggestion: any, framework: any): string[] {
   const tips: string[] = [];
-  const subcategory = framework.getSubcategory(suggestion.subcategory_id);
+  const subcategory = (framework as any).getSubcategory((suggestion as any).subcategory_id);
   
   // Function-specific tips
   const functionTips: Record<string, string[]> = {
@@ -488,27 +488,27 @@ function generateImplementationTips(suggestion: any, framework: any): string[] {
     ]
   };
   
-  const funcTips = functionTips[suggestion.function_id];
+  const funcTips = functionTips[(suggestion as any).function_id];
   if (funcTips) {
-    tips.push(...funcTips.slice(0, 2));
+    (tips as any).push(...(funcTips as any).slice(0, 2));
   }
   
   // Implementation level specific tips
-  if (suggestion.implementation_level === 'not_implemented') {
-    tips.push('Consider starting with a pilot or proof of concept');
-  } else if (suggestion.implementation_level === 'partially_implemented') {
-    tips.push('Build on existing foundation');
-    tips.push('Address identified gaps systematically');
+  if ((suggestion as any).implementation_level === 'not_implemented') {
+    (tips as any).push('Consider starting with a pilot or proof of concept');
+  } else if ((suggestion as any).implementation_level === 'partially_implemented') {
+    (tips as any).push('Build on existing foundation');
+    (tips as any).push('Address identified gaps systematically');
   }
   
   // Add implementation examples if available
   if (subcategory && 'implementation_examples' in subcategory && 
       Array.isArray((subcategory as any).implementation_examples) && 
       (subcategory as any).implementation_examples.length > 0) {
-    tips.push(`Reference: ${(subcategory as any).implementation_examples[0]}`);
+    (tips as any).push(`Reference: ${(subcategory as any).implementation_examples[0]}`);
   }
   
-  return tips.slice(0, 3);
+  return (tips as any).slice(0, 3);
 }
 
 /**
@@ -518,24 +518,24 @@ function identifyBlockingDependencies(actions: SuggestedAction[], _db: any): any
   const blockingMap = new Map<string, any>();
   
   for (const action of actions) {
-    for (const blockingId of action.dependencies.blocking) {
-      if (!blockingMap.has(blockingId)) {
-        blockingMap.set(blockingId, {
+    for (const blockingId of (action as any).dependencies.blocking) {
+      if (!(blockingMap as any).has(blockingId)) {
+        (blockingMap as any).set(blockingId, {
           subcategory_id: blockingId,
           subcategory_name: blockingId,  // Would need framework lookup for real name
           blocking_count: 0,
           reason: 'Prerequisite for other actions'
         });
       }
-      blockingMap.get(blockingId).blocking_count++;
+      (blockingMap as any).get(blockingId).blocking_count++;
     }
   }
   
   // Sort by blocking count
-  const result = Array.from(blockingMap.values());
-  result.sort((a, b) => b.blocking_count - a.blocking_count);
+  const result = (Array as any).from((blockingMap as any).values());
+  (result as any).sort((a, b) => (b as any).blocking_count - (a as any).blocking_count);
   
-  return result.slice(0, 5);  // Top 5 blockers
+  return (result as any).slice(0, 5);  // Top 5 blockers
 }
 
 /**
@@ -553,10 +553,10 @@ function createTimeline(
   
   for (const action of actions) {
     // Check if action fits in current week
-    if (weekHours + action.estimated_effort.hours > weeklyCapacity) {
+    if (weekHours + (action as any).estimated_effort.hours > weeklyCapacity) {
       // Save current week
-      if (weekActions.length > 0) {
-        timeline.push({
+      if ((weekActions as any).length > 0) {
+        (timeline as any).push({
           week: currentWeek,
           actions: [...weekActions],
           hours_allocated: weekHours,
@@ -575,13 +575,13 @@ function createTimeline(
     }
     
     // Add action to current week
-    weekActions.push(`${action.subcategory_id}: ${action.subcategory_name}`);
-    weekHours += action.estimated_effort.hours;
+    (weekActions as any).push(`${(action as any).subcategory_id}: ${(action as any).subcategory_name}`);
+    weekHours += (action as any).estimated_effort.hours;
   }
   
   // Add final week
-  if (weekActions.length > 0 && currentWeek <= horizonWeeks) {
-    timeline.push({
+  if ((weekActions as any).length > 0 && currentWeek <= horizonWeeks) {
+    (timeline as any).push({
       week: currentWeek,
       actions: weekActions,
       hours_allocated: weekHours,
@@ -599,15 +599,15 @@ function generateWeeklyMilestones(actions: string[], week: number): string[] {
   const milestones: string[] = [];
   
   if (week === 1) {
-    milestones.push('Implementation kickoff');
+    (milestones as any).push('Implementation kickoff');
   }
   
-  if (actions.some(a => a.includes('GV'))) {
-    milestones.push('Governance framework update');
+  if ((actions as any).some(a => (a as any).includes('GV'))) {
+    (milestones as any).push('Governance framework update');
   }
   
-  if (actions.length >= 3) {
-    milestones.push(`Complete ${actions.length} implementations`);
+  if ((actions as any).length >= 3) {
+    (milestones as any).push(`Complete ${(actions as any).length} implementations`);
   }
   
   return milestones;
@@ -629,16 +629,16 @@ function generateRecommendations(
   };
   
   // Immediate priorities
-  const readyActions = actions.filter(a => a.dependencies.status === 'Ready');
-  if (readyActions.length > 0) {
+  const readyActions = (actions as any).filter(a => (a as any).dependencies.status === 'Ready');
+  if ((readyActions as any).length > 0) {
     const firstAction = readyActions[0];
     if (firstAction) {
-      recommendations.immediate_priorities.push(
-        `Start with ${firstAction.subcategory_id}: ${firstAction.subcategory_name}`
+      (recommendations as any).immediate_priorities.push(
+        `Start with ${(firstAction as any).subcategory_id}: ${(firstAction as any).subcategory_name}`
       );
       
-      if (firstAction.estimated_effort.complexity === 'Low') {
-        recommendations.immediate_priorities.push(
+      if ((firstAction as any).estimated_effort.complexity === 'Low') {
+        (recommendations as any).immediate_priorities.push(
           'Low complexity - ideal for building momentum'
         );
       }
@@ -646,42 +646,42 @@ function generateRecommendations(
   }
   
   // Resource optimization
-  if (capacity.utilization_percentage > 90) {
-    recommendations.resource_optimization.push(
+  if ((capacity as any).utilization_percentage > 90) {
+    (recommendations as any).resource_optimization.push(
       'High utilization - consider increasing capacity or extending timeline'
     );
-  } else if (capacity.utilization_percentage < 60) {
-    recommendations.resource_optimization.push(
+  } else if ((capacity as any).utilization_percentage < 60) {
+    (recommendations as any).resource_optimization.push(
       'Capacity available - consider accelerating implementation'
     );
   }
   
-  if (capacity.remaining_hours > 20) {
-    recommendations.resource_optimization.push(
-      `${capacity.remaining_hours}h available for additional quick wins`
+  if ((capacity as any).remaining_hours > 20) {
+    (recommendations as any).resource_optimization.push(
+      `${(capacity as any).remaining_hours}h available for additional quick wins`
     );
   }
   
   // Dependency management
-  const blockedActions = actions.filter(a => a.dependencies.status === 'Blocked');
-  if (blockedActions.length > 0) {
-    recommendations.dependency_management.push(
-      `Address dependencies to unblock ${blockedActions.length} actions`
+  const blockedActions = (actions as any).filter(a => (a as any).dependencies.status === 'Blocked');
+  if ((blockedActions as any).length > 0) {
+    (recommendations as any).dependency_management.push(
+      `Address dependencies to unblock ${(blockedActions as any).length} actions`
     );
   }
   
   // Success factors
-  recommendations.success_factors.push(
+  (recommendations as any).success_factors.push(
     'Maintain regular progress tracking',
     'Adjust priorities based on learnings'
   );
   
-  if (params.optimization_goal === 'quick_wins') {
-    recommendations.success_factors.push(
+  if ((params as any).optimization_goal === 'quick_wins') {
+    (recommendations as any).success_factors.push(
       'Celebrate early wins to build momentum'
     );
-  } else if (params.optimization_goal === 'risk_reduction') {
-    recommendations.success_factors.push(
+  } else if ((params as any).optimization_goal === 'risk_reduction') {
+    (recommendations as any).success_factors.push(
       'Focus on highest risk areas first'
     );
   }

@@ -404,14 +404,14 @@ async function main() {
       },
       {
         name: 'quick_assessment',
-        description: 'Interactive cybersecurity assessment - presents questions for each CSF function and collects real user responses. Call with only profile_id to see questions, then call again with your answers.',
+        description: 'Perform simplified assessment using yes/no/partial answers for each CSF function',
         inputSchema: {
           type: 'object',
           properties: {
             profile_id: { type: 'string', description: 'Profile ID to assess' },
             simplified_answers: {
               type: 'object',
-              description: 'Your answers for each function (optional - if not provided, questions will be presented)',
+              description: 'Simplified answers for each function',
               properties: {
                 govern: { type: 'string', enum: ['yes', 'no', 'partial'] },
                 identify: { type: 'string', enum: ['yes', 'no', 'partial'] },
@@ -419,9 +419,9 @@ async function main() {
                 detect: { type: 'string', enum: ['yes', 'no', 'partial'] },
                 respond: { type: 'string', enum: ['yes', 'no', 'partial'] },
                 recover: { type: 'string', enum: ['yes', 'no', 'partial'] }
-              }
+              },
+              required: ['govern', 'identify', 'protect', 'detect', 'respond', 'recover']
             },
-            interactive: { type: 'boolean', description: 'Enable interactive question mode (default: true)', default: true },
             assessed_by: { type: 'string', description: 'Assessor name' },
             confidence_level: { type: 'string', enum: ['low', 'medium', 'high'], description: 'Confidence level', default: 'medium' },
             notes: {
@@ -993,7 +993,7 @@ async function main() {
       switch (name) {
         case 'query_framework': {
           const params = QueryFrameworkSchema.parse(args);
-          const results: any[] = [];
+          const results: unknown[] = [];
 
           if (params.keyword) {
             // Search by keyword
@@ -1429,7 +1429,7 @@ async function main() {
         }
 
         case 'track_progress': {
-          const result = await trackProgressTool.execute(args as any, db);
+          const result = await trackProgressTool.execute(args as unknown, db);
           
           return {
             content: [
@@ -1442,7 +1442,7 @@ async function main() {
         }
 
         case 'get_industry_benchmarks': {
-          const result = await getIndustryBenchmarksTool.execute(args as any, db);
+          const result = await getIndustryBenchmarksTool.execute(args as unknown, db);
           
           return {
             content: [
@@ -1455,7 +1455,7 @@ async function main() {
         }
 
         case 'generate_report': {
-          const result = await generateReportTool.execute(args as any, db);
+          const result = await generateReportTool.execute(args as unknown, db);
           
           return {
             content: [
@@ -1468,7 +1468,7 @@ async function main() {
         }
 
         case 'compare_profiles': {
-          const result = await compareProfilesTool.execute(args as any, db);
+          const result = await compareProfilesTool.execute(args as unknown, db);
           
           return {
             content: [
@@ -1481,7 +1481,7 @@ async function main() {
         }
 
         case 'export_data': {
-          const result = await exportDataTool.execute(args as any, db);
+          const result = await exportDataTool.execute(args as unknown, db);
           
           return {
             content: [
@@ -1494,7 +1494,7 @@ async function main() {
         }
 
         case 'import_assessment': {
-          const result = await importAssessmentTool.execute(args as any, db);
+          const result = await importAssessmentTool.execute(args as unknown, db);
           
           return {
             content: [
@@ -1507,7 +1507,7 @@ async function main() {
         }
 
         case 'validate_evidence': {
-          const result = await validateEvidenceTool.execute(args as any, db);
+          const result = await validateEvidenceTool.execute(args as unknown, db);
           
           return {
             content: [
@@ -1520,7 +1520,7 @@ async function main() {
         }
 
         case 'get_implementation_template': {
-          const result = await getImplementationTemplateTool.execute(args as any, db, framework);
+          const result = await getImplementationTemplateTool.execute(args as unknown, db, framework);
           
           return {
             content: [
@@ -1533,7 +1533,7 @@ async function main() {
         }
 
         case 'generate_policy_template': {
-          const result = await generatePolicyTemplateTool.execute(args as any, db, framework);
+          const result = await generatePolicyTemplateTool.execute(args as unknown, db, framework);
           
           return {
             content: [
@@ -1561,7 +1561,7 @@ async function main() {
 
         // Question Bank Tool Handlers
         case 'get_assessment_questions': {
-          const result = await getAssessmentQuestions(args as any);
+          const result = await getAssessmentQuestions(args as unknown);
           
           return {
             content: [
@@ -1574,7 +1574,7 @@ async function main() {
         }
 
         case 'validate_assessment_responses': {
-          const result = await validateAssessmentResponses(args as any, db);
+          const result = await validateAssessmentResponses(args as unknown, db);
           
           return {
             content: [
@@ -1587,7 +1587,7 @@ async function main() {
         }
 
         case 'get_question_context': {
-          const result = await getQuestionContext(args as any);
+          const result = await getQuestionContext(args as unknown);
           
           return {
             content: [
@@ -1600,7 +1600,7 @@ async function main() {
         }
 
         case 'reset_organizational_data': {
-          const result = await resetOrganizationalData(args as any);
+          const result = await resetOrganizationalData(args as unknown);
           
           return {
             content: [
@@ -1628,9 +1628,7 @@ async function main() {
 
         case 'check_assessment_workflow_status': {
           const params = CheckAssessmentWorkflowSchema.parse(args);
-          const result = await checkAssessmentWorkflowStatus({ 
-            workflow_id: params.workflow_id!
-          });
+          const result = await checkAssessmentWorkflowStatus(params);
           
           return {
             content: [

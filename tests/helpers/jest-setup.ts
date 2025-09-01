@@ -2,8 +2,9 @@
  * Jest Setup File - Global test configuration and mocking
  */
 
-import { jest } from '@jest/globals';
+import { jest, expect, beforeEach, afterEach } from '@jest/globals';
 import type { CSFDatabase } from '../../src/db/database.js';
+import type { OrganizationProfile, GapAnalysis, RiskAssessment } from '../../src/types/index.js';
 
 // Mock the database module at the top level with proper implementation
 jest.mock('../../src/db/database.js', async () => {
@@ -266,53 +267,30 @@ export function createMockDatabase(): Partial<CSFDatabase> {
     }),
     
     // Organization methods
-    getOrganization: jest.fn(),
+    getOrganization: jest.fn<(orgId: string) => OrganizationProfile | undefined>(),
     createOrganization: jest.fn(),
     updateOrganization: jest.fn(),
     
     // Profile methods
-    getProfile: jest.fn(),
     createProfile: jest.fn(),
-    updateProfile: jest.fn(),
-    getProfilesByOrganization: jest.fn(),
-    
-    // Assessment methods
-    createBulkAssessments: jest.fn(),
-    getAssessments: jest.fn(),
-    updateAssessment: jest.fn(),
-    
-    // Framework methods
-    getFunction: jest.fn(),
-    getCategory: jest.fn(),
-    getSubcategory: jest.fn(),
-    getAllSubcategories: jest.fn(),
     
     // Gap analysis methods
-    createGapAnalysis: jest.fn(),
-    getGapAnalysis: jest.fn(),
+    getGapAnalysis: jest.fn<(orgId: string, categoryId: string) => GapAnalysis | undefined>(),
+    upsertGapAnalysis: jest.fn(),
     
     // Risk assessment methods
-    calculateRiskScore: jest.fn(),
-    getRiskAssessment: jest.fn(),
+    getRiskAssessment: jest.fn<(orgId: string, elementId: string) => RiskAssessment | undefined>(),
+    upsertRiskAssessment: jest.fn(),
     
     // Implementation plan methods
-    createImplementationPlan: jest.fn(),
+    createImplementationPlan: jest.fn<(plan: any) => string>(),
     getImplementationPlan: jest.fn(),
     
     // Progress tracking methods
-    updateProgressTracking: jest.fn(),
-    getProgressTracking: jest.fn(),
-    
-    // Evidence methods
-    addEvidence: jest.fn(),
-    getEvidence: jest.fn(),
-    
-    // Report methods
-    generateReport: jest.fn(),
+    getProgressTracking: jest.fn<(profileId: string) => any[]>(),
     
     // Utility methods
     close: jest.fn(),
-    backup: jest.fn(),
   };
 }
 

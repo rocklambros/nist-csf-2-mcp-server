@@ -8,7 +8,7 @@ import type {
   OrganizationProfile, 
   SubcategoryImplementation, 
   RiskAssessment, 
-  GapAnalysis 
+  GapAnalysis
 } from '../types/index.js';
 
 // Database row interfaces for type safety
@@ -66,7 +66,105 @@ interface ImplementationPlan {
 // Additional type interfaces removed for compilation
 
 interface DatabaseRow {
-  [key: string]: unknown;
+  [key: string]: any;
+}
+
+interface ImplementationPhase {
+  id: string;
+  plan_id: string;
+  phase_number: number;
+  phase_name: string;
+  start_month: number;
+  end_month: number;
+  effort_hours: number;
+  resource_count: number;
+  status?: string;
+}
+
+interface ImplementationItem {
+  id: string;
+  phase_id: string;
+  subcategory_id: string;
+  priority_rank: number;
+  effort_hours: number;
+  dependencies?: string;
+  status?: string;
+  completion_percentage?: number;
+}
+
+interface PhaseDependency {
+  id: string;
+  subcategory_id: string;
+  depends_on_subcategory_id: string;
+  dependency_type: string;
+  dependency_strength?: number;
+  description?: string;
+}
+
+interface CostEstimate {
+  id: string;
+  subcategory_id: string;
+  organization_size: string;
+  labor_cost: number;
+  tools_cost: number;
+  training_cost: number;
+  total_cost: number;
+  effort_hours: number;
+  confidence_level?: string;
+}
+
+interface ProgressUpdate {
+  id: string;
+  profile_id: string;
+  subcategory_id: string;
+  baseline_implementation?: string;
+  current_implementation: string;
+  target_implementation?: string;
+  baseline_maturity?: number;
+  current_maturity: number;
+  target_maturity?: number;
+  completion_percentage?: number;
+  status?: string;
+  is_blocked?: boolean;
+  blocking_reason?: string;
+  trend?: string;
+  notes?: string;
+  last_updated?: Date;
+  update_notes?: string;
+  evidence_provided?: string;
+  next_review_date?: Date;
+  improvement_priority?: string;
+}
+
+interface Milestone {
+  id: string;
+  profile_id: string;
+  milestone_name: string;
+  target_date: Date;
+  completion_date?: Date;
+  status: string;
+  completion_percentage?: number;
+  subcategories_involved?: string;
+  success_criteria?: string;
+  deliverables?: string;
+  notes?: string;
+}
+
+interface IndustryBenchmark {
+  id: string;
+  industry: string;
+  organization_size: string;
+  csf_function: string;
+  metric_name: string;
+  percentile_25: number;
+  percentile_50: number;
+  percentile_75: number;
+  percentile_90: number;
+  average_score: number;
+  sample_size: number;
+  data_year: number;
+  source: string;
+  notes?: string;
 }
 import path from 'path';
 
@@ -1786,7 +1884,7 @@ export class CSFDatabase {
     return planId;
   }
 
-  createImplementationPhase(phase: any): void {
+  createImplementationPhase(phase: ImplementationPhase): void {
     const stmt = this.db.prepare(`
       INSERT INTO implementation_phases (
         id, plan_id, phase_number, phase_name, start_month,
@@ -1807,7 +1905,7 @@ export class CSFDatabase {
     );
   }
 
-  createImplementationItem(item: any): void {
+  createImplementationItem(item: ImplementationItem): void {
     const stmt = this.db.prepare(`
       INSERT INTO implementation_items (
         id, phase_id, subcategory_id, priority_rank,
@@ -1840,7 +1938,12 @@ export class CSFDatabase {
       ORDER BY phase_number
     `).all(planId);
     
-    for (const phase of phases as any[]) {
+    interface PhaseWithItems extends DatabaseRow {
+      id: string;
+      items?: DatabaseRow[];
+    }
+    
+    for (const phase of phases as PhaseWithItems[]) {
       phase.items = this.db.prepare(`
         SELECT 
           ii.*,
@@ -1850,10 +1953,14 @@ export class CSFDatabase {
         JOIN subcategories s ON ii.subcategory_id = s.id
         WHERE ii.phase_id = ?
         ORDER BY ii.priority_rank
-      `).all(phase.id);
+      `).all(phase.id) as DatabaseRow[];
     }
     
-    (plan as any).phases = phases;
+    interface PlanWithPhases extends DatabaseRow {
+      phases?: PhaseWithItems[];
+    }
+    
+    (plan as PlanWithPhases).phases = phases as PhaseWithItems[];
     return plan;
   }
 
@@ -1870,7 +1977,7 @@ export class CSFDatabase {
     `).all(subcategoryId);
   }
 
-  createSubcategoryDependency(dep: any): void {
+  createSubcategoryDependency(dep: PhaseDependency): void {
     const stmt = this.db.prepare(`
       INSERT INTO subcategory_dependencies (
         id, subcategory_id, depends_on_subcategory_id,
@@ -1894,7 +2001,7 @@ export class CSFDatabase {
     `).get(subcategoryId, organizationSize);
   }
 
-  createCostEstimate(estimate: any): void {
+  createCostEstimate(estimate: CostEstimate): void {
     const stmt = this.db.prepare(`
       INSERT INTO cost_estimates (
         id, subcategory_id, organization_size, labor_cost,
@@ -2018,6 +2125,15 @@ export class CSFDatabase {
   calculateDependencyGraph(subcategoryIds: string[]): any {
     const placeholders = subcategoryIds.map(() => '?').join(',');
     
+    interface DependencyRow extends DatabaseRow {
+      from_id: string;
+      to_id: string;
+      dependency_type: string;
+      dependency_strength: number;
+      from_name: string;
+      to_name: string;
+    }
+    
     const dependencies = this.db.prepare(`
       SELECT 
         sd.subcategory_id as from_id,
@@ -2031,10 +2147,10 @@ export class CSFDatabase {
       JOIN subcategories s2 ON sd.depends_on_subcategory_id = s2.id
       WHERE sd.subcategory_id IN (${placeholders})
          OR sd.depends_on_subcategory_id IN (${placeholders})
-    `).all(...subcategoryIds, ...subcategoryIds);
+    `).all(...subcategoryIds, ...subcategoryIds) as DependencyRow[];
     
     // Build adjacency list
-    const graph: Record<string, any[]> = {};
+    const graph: Record<string, DependencyRow[]> = {};
     const inDegree: Record<string, number> = {};
     
     for (const id of subcategoryIds) {
@@ -2042,7 +2158,7 @@ export class CSFDatabase {
       inDegree[id] = 0;
     }
     
-    for (const dep of dependencies as any[]) {
+    for (const dep of dependencies) {
       if (!graph[dep.from_id]) graph[dep.from_id] = [];
       graph[dep.from_id]!.push(dep);
       
@@ -2065,7 +2181,7 @@ export class CSFDatabase {
       const current = queue.shift()!;
       sorted.push(current);
       
-      for (const dep of (graph[current] || []) as any[]) {
+      for (const dep of (graph[current] || [])) {
         if (inDegree[dep.to_id] !== undefined) {
           inDegree[dep.to_id]!--;
           if (inDegree[dep.to_id] === 0) {
@@ -2087,7 +2203,7 @@ export class CSFDatabase {
   // PROGRESS TRACKING
   // ============================================================================
 
-  upsertProgressTracking(progress: any): void {
+  upsertProgressTracking(progress: ProgressUpdate): void {
     const stmt = this.db.prepare(`
       INSERT INTO progress_tracking (
         id, profile_id, subcategory_id, baseline_implementation,
@@ -2208,7 +2324,7 @@ export class CSFDatabase {
     this.db.prepare(sql).run(profileId, profileId, profileId);
   }
 
-  createProgressMilestone(milestone: any): void {
+  createProgressMilestone(milestone: Milestone): void {
     const stmt = this.db.prepare(`
       INSERT INTO progress_milestones (
         id, profile_id, milestone_name, target_date, completion_date,
@@ -2297,7 +2413,7 @@ export class CSFDatabase {
   // INDUSTRY BENCHMARK METHODS
   // ============================================================================
 
-  upsertIndustryBenchmark(benchmark: any): void {
+  upsertIndustryBenchmark(benchmark: IndustryBenchmark): void {
     const stmt = this.db.prepare(`
       INSERT INTO industry_benchmarks (
         id, industry, organization_size, csf_function, metric_name,
@@ -2786,11 +2902,18 @@ export class CSFDatabase {
           }
 
           // Check for existing assessment
+          interface ExistingAssessment extends DatabaseRow {
+            assessment_id?: string;
+            implementation_level?: string;
+            maturity_score?: number;
+            notes?: string;
+          }
+          
           const existing = this.db.prepare(`
             SELECT assessment_id, implementation_level, maturity_score, notes 
             FROM subcategory_assessments 
             WHERE profile_id = ? AND subcategory_id = ?
-          `).get(profileId, assessment.subcategory_id) as any;
+          `).get(profileId, assessment.subcategory_id) as ExistingAssessment | undefined;
 
           if (existing && conflictMode === 'skip') {
             result.skipped++;
@@ -2991,14 +3114,25 @@ export class CSFDatabase {
     _format: 'csv' | 'json' | 'excel'
   ): Array<{ row: number; field: string; error: string }> {
     const errors: Array<{ row: number; field: string; error: string }> = [];
+    
+    interface SubcategoryRow extends DatabaseRow {
+      subcategory_id: string;
+    }
+    
     const validSubcategories = new Set(
-      this.db.prepare('SELECT subcategory_id FROM csf_subcategories').all()
-        .map((row: any) => row.subcategory_id)
+      (this.db.prepare('SELECT subcategory_id FROM csf_subcategories').all() as SubcategoryRow[])
+        .map((row) => row.subcategory_id)
     );
 
     const validImplementationLevels = ['not_implemented', 'partially_implemented', 'fully_implemented'];
 
-    data.forEach((row, index) => {
+    interface ImportDataRow extends DatabaseRow {
+      subcategory_id?: string;
+      implementation_level?: string;
+      maturity_score?: number;
+    }
+
+    (data as ImportDataRow[]).forEach((row, index) => {
       // Check required fields
       if (!row.subcategory_id) {
         errors.push({ row: index + 1, field: 'subcategory_id', error: 'Required field missing' });
@@ -3207,12 +3341,18 @@ export class CSFDatabase {
 
     // Include options and examples if requested
     if (filters?.includeOptions || filters?.includeExamples) {
-      for (const question of questions as any[]) {
+      interface QuestionWithExtras extends DatabaseRow {
+        id: string;
+        options?: DatabaseRow[];
+        examples?: DatabaseRow[];
+      }
+      
+      for (const question of questions as QuestionWithExtras[]) {
         if (filters.includeOptions) {
-          question.options = this.getQuestionOptions(question.id);
+          question.options = this.getQuestionOptions(question.id) as DatabaseRow[];
         }
         if (filters.includeExamples) {
-          question.examples = this.getQuestionExamples(question.id);
+          question.examples = this.getQuestionExamples(question.id) as DatabaseRow[];
         }
       }
     }
@@ -3271,7 +3411,17 @@ export class CSFDatabase {
     if (!result) return null;
 
     // Parse JSON fields
-    const resultData = result as any;
+    interface QuestionContextRow extends DatabaseRow {
+      risk_factors?: string;
+      best_practices?: string;
+      common_challenges?: string;
+      sector_guidance?: string;
+      implementation_roadmap?: string;
+      related_subcategories?: string;
+      reference_materials?: string;
+    }
+    
+    const resultData = result as QuestionContextRow;
     return {
       ...resultData,
       risk_factors: JSON.parse(resultData.risk_factors || '[]'),
@@ -3349,7 +3499,11 @@ export class CSFDatabase {
     const responses = this.db.prepare(sql).all(...params);
 
     // Parse evidence JSON
-    return responses.map((response: any) => ({
+    interface ResponseRow extends DatabaseRow {
+      evidence?: string;
+    }
+    
+    return (responses as ResponseRow[]).map((response) => ({
       ...response,
       evidence: JSON.parse(response.evidence || '[]')
     }));
@@ -3366,12 +3520,21 @@ export class CSFDatabase {
    * Get question bank statistics
    */
   getQuestionBankStats(): any {
-    const totalQuestions = this.db.prepare('SELECT COUNT(*) as count FROM question_bank').get();
+    interface CountRow extends DatabaseRow {
+      count: number;
+    }
+    
+    interface TypeCountRow extends DatabaseRow {
+      question_type: string;
+      count: number;
+    }
+    
+    const totalQuestions = this.db.prepare('SELECT COUNT(*) as count FROM question_bank').get() as CountRow;
     const questionsByType = this.db.prepare(`
       SELECT question_type, COUNT(*) as count 
       FROM question_bank 
       GROUP BY question_type
-    `).all();
+    `).all() as TypeCountRow[];
     const questionsByFunction = this.db.prepare(`
       SELECT 
         SUBSTR(subcategory_id, 1, 2) as function_id,
@@ -3379,13 +3542,13 @@ export class CSFDatabase {
       FROM question_bank 
       GROUP BY SUBSTR(subcategory_id, 1, 2)
     `).all();
-    const totalResponses = this.db.prepare('SELECT COUNT(*) as count FROM question_responses').get();
+    const totalResponses = this.db.prepare('SELECT COUNT(*) as count FROM question_responses').get() as CountRow;
 
     return {
-      total_questions: (totalQuestions as any).count,
+      total_questions: totalQuestions.count,
       questions_by_type: questionsByType,
       questions_by_function: questionsByFunction,
-      total_responses: (totalResponses as any).count
+      total_responses: totalResponses.count
     };
   }
 }

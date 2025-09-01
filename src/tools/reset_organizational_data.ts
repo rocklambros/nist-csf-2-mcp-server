@@ -11,7 +11,7 @@ const ResetOrganizationalDataSchema = z.object({
  * Reset organizational data - removes all organization profiles, assessments, and related data
  * while preserving NIST CSF framework data, questions, and baseline information
  */
-export async function resetOrganizationalData(params: unknown): Promise<any> {
+export async function resetOrganizationalData(params: any): Promise<any> {
   try {
     // Validate confirmation parameter
     ResetOrganizationalDataSchema.parse(params);

@@ -94,7 +94,12 @@ export async function cloneProfile(params: CloneProfileParams): Promise<ClonePro
         modificationsApplied = applyAssessmentModifications(
           db,
           newProfileId,
-          params.modifications.adjustments
+          params.modifications.adjustments as Array<{
+            subcategory_id: string;
+            implementation_level?: string;
+            maturity_score?: number;
+            notes?: string;
+          }>
         );
       }
       

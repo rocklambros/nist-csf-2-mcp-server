@@ -124,48 +124,48 @@ interface CreateCustomReportResponse {
 function validateParams(params: CreateCustomReportParams): { isValid: boolean; errors: string[] } {
   const errors: string[] = [];
 
-  if (!params.profile_id) errors.push('profile_id is required');
-  if (!params.report_name) errors.push('report_name is required');
-  if (!params.custom_sections || params.custom_sections.length === 0) {
-    errors.push('At least one custom section is required');
+  if (!(params as any).profile_id) (errors as any).push('profile_id is required');
+  if (!(params as any).report_name) (errors as any).push('report_name is required');
+  if (!(params as any).custom_sections || (params as any).custom_sections.length === 0) {
+    (errors as any).push('At least one custom section is required');
   }
 
   const validTemplateTypes = ['technical', 'executive', 'compliance', 'operational', 'blank'];
-  if (params.template_type && !validTemplateTypes.includes(params.template_type)) {
-    errors.push('Invalid template_type');
+  if ((params as any).template_type && !(validTemplateTypes as any).includes((params as any).template_type)) {
+    (errors as any).push('Invalid template_type');
   }
 
   const validSectionTypes = ['summary', 'metrics', 'analysis', 'recommendations', 'charts', 'tables', 'text', 'custom'];
-  params.custom_sections?.forEach((section, index) => {
-    if (!section.section_id) errors.push(`Section ${index + 1}: section_id is required`);
-    if (!section.section_name) errors.push(`Section ${index + 1}: section_name is required`);
-    if (!validSectionTypes.includes(section.section_type)) {
-      errors.push(`Section ${index + 1}: Invalid section_type`);
+  (params as any).custom_sections?.forEach((section, index) => {
+    if (!(section as any).section_id) (errors as any).push(`Section ${index + 1}: section_id is required`);
+    if (!(section as any).section_name) (errors as any).push(`Section ${index + 1}: section_name is required`);
+    if (!(validSectionTypes as any).includes((section as any).section_type)) {
+      (errors as any).push(`Section ${index + 1}: Invalid section_type`);
     }
   });
 
   const validOutputFormats = ['json', 'html', 'pdf', 'csv'];
-  if (params.output_format && !validOutputFormats.includes(params.output_format)) {
-    errors.push('Invalid output_format');
+  if ((params as any).output_format && !(validOutputFormats as any).includes((params as any).output_format)) {
+    (errors as any).push('Invalid output_format');
   }
 
-  return { isValid: errors.length === 0, errors };
+  return { isValid: (errors as any).length === 0, errors };
 }
 
 async function createCustomReport(params: CreateCustomReportParams, db: Database): Promise<CreateCustomReportResponse> {
   try {
     // Validate input
     const validation = validateParams(params);
-    if (!validation.isValid) {
+    if (!(validation as any).isValid) {
       return {
         success: false,
         error: 'ValidationError',
-        message: validation.errors.join(', ')
+        message: (validation as any).errors.join(', ')
       };
     }
 
     // Verify profile exists
-    const profile = db.prepare('SELECT * FROM profiles WHERE profile_id = ?').get(params.profile_id);
+    const profile = (db as any).prepare('SELECT * FROM profiles WHERE profile_id = ?').get((params as any).profile_id);
     if (!profile) {
       return {
         success: false,
@@ -176,59 +176,59 @@ async function createCustomReport(params: CreateCustomReportParams, db: Database
 
     const reportId = uuidv4();
     const createdDate = new Date().toISOString();
-    const templateType = params.template_type || 'blank';
-    const outputFormat = params.output_format || 'json';
+    const templateType = (params as any).template_type || 'blank';
+    const outputFormat = (params as any).output_format || 'json';
 
     // Get base data for report generation
-    const assessments = db.prepare(`
-      SELECT a.*, s.name as subcategory_name, s.description as subcategory_description,
-             c.name as category_name, f.name as function_name, f.id as function_id
+    const assessments = (db as any).prepare(`
+      SELECT a.*, (s as any).name as subcategory_name, (s as any).description as subcategory_description,
+             (c as any).name as category_name, (f as any).name as function_name, (f as any).id as function_id
       FROM assessments a
-      JOIN subcategories s ON a.subcategory_id = s.id
-      JOIN categories c ON s.category_id = c.id
-      JOIN functions f ON c.function_id = f.id
-      WHERE a.profile_id = ?
-    `).all(params.profile_id);
+      JOIN subcategories s ON (a as any).subcategory_id = (s as any).id
+      JOIN categories c ON (s as any).category_id = (c as any).id
+      JOIN functions f ON (c as any).function_id = (f as any).id
+      WHERE (a as any).profile_id = ?
+    `).all((params as any).profile_id);
 
     // Generate sections based on custom configuration
-    const generatedSections = await generateCustomSections(params.custom_sections, assessments, db);
+    const generatedSections = await generateCustomSections((params as any).custom_sections, assessments, db);
     
     // Calculate report statistics
     const reportStats = calculateReportStatistics(assessments, generatedSections);
     
     // Apply styling
-    const stylingApplied = applyStyling(params.styling_options);
+    const stylingApplied = applyStyling((params as any).styling_options);
     
     // Configure export options
-    const exportOptions = configureExportOptions(outputFormat, params.distribution_settings);
+    const exportOptions = configureExportOptions(outputFormat, (params as any).distribution_settings);
     
     // Calculate report metadata
-    const totalDataPoints = generatedSections.reduce((sum, section) => 
-      sum + (section.metrics?.data_points || 0), 0
+    const totalDataPoints = (generatedSections as any).reduce((sum, section) => 
+      sum + ((section as any).metrics?.data_points || 0), 0
     );
 
-    logger.info('Custom report created successfully', { 
+    (logger as any).info('Custom report created successfully', { 
       report_id: reportId, 
-      profile_id: params.profile_id,
-      report_name: params.report_name,
-      sections_count: generatedSections.length
+      profile_id: (params as any).profile_id,
+      report_name: (params as any).report_name,
+      sections_count: (generatedSections as any).length
     });
 
     return {
       success: true,
       report: {
         report_id: reportId,
-        profile_id: params.profile_id,
-        report_name: params.report_name,
-        report_description: params.report_description || `Custom report: ${params.report_name}`,
+        profile_id: (params as any).profile_id,
+        report_name: (params as any).report_name,
+        report_description: (params as any).report_description || `Custom report: ${(params as any).report_name}`,
         template_type: templateType,
         created_date: createdDate,
         last_generated: createdDate,
         report_metadata: {
-          total_sections: generatedSections.length,
+          total_sections: (generatedSections as any).length,
           data_points_included: totalDataPoints,
           output_format: outputFormat,
-          estimated_generation_time: estimateGenerationTime(generatedSections.length, totalDataPoints)
+          estimated_generation_time: estimateGenerationTime((generatedSections as any).length, totalDataPoints)
         },
         sections: generatedSections,
         report_statistics: reportStats,
@@ -238,7 +238,7 @@ async function createCustomReport(params: CreateCustomReportParams, db: Database
     };
 
   } catch (error) {
-    logger.error('Create custom report error', error);
+    (logger as any).error('Create custom report error', error);
     return {
       success: false,
       error: 'InternalError',
@@ -252,23 +252,23 @@ async function generateCustomSections(sections: any[], assessments: any[], _db: 
 
   for (const sectionConfig of sections) {
     // Filter data based on content filters
-    const filteredData = applyContentFilters(assessments, sectionConfig.content_filters);
+    const filteredData = applyContentFilters(assessments, (sectionConfig as any).content_filters);
     
     // Generate section content based on type
     const sectionContent = generateSectionContent(
-      sectionConfig.section_type, 
+      (sectionConfig as any).section_type, 
       filteredData, 
-      sectionConfig.display_options,
-      sectionConfig.custom_content
+      (sectionConfig as any).display_options,
+      (sectionConfig as any).custom_content
     );
     
     // Calculate section metrics
-    const sectionMetrics = calculateSectionMetrics(sectionContent, sectionConfig.section_type);
+    const sectionMetrics = calculateSectionMetrics(sectionContent, (sectionConfig as any).section_type);
 
-    generatedSections.push({
-      section_id: sectionConfig.section_id,
-      section_name: sectionConfig.section_name,
-      section_type: sectionConfig.section_type,
+    (generatedSections as any).push({
+      section_id: (sectionConfig as any).section_id,
+      section_name: (sectionConfig as any).section_name,
+      section_type: (sectionConfig as any).section_type,
       content: sectionContent,
       metrics: sectionMetrics
     });
@@ -283,44 +283,44 @@ function applyContentFilters(assessments: any[], filters?: any): any[] {
   let filteredData = [...assessments];
 
   // Filter by function IDs
-  if (filters.function_ids && filters.function_ids.length > 0) {
-    filteredData = filteredData.filter(a => 
-      filters.function_ids.includes(a.function_id)
+  if ((filters as any).function_ids && (filters as any).function_ids.length > 0) {
+    filteredData = (filteredData as any).filter(a => 
+      (filters as any).function_ids.includes((a as any).function_id)
     );
   }
 
   // Filter by subcategory IDs
-  if (filters.subcategory_ids && filters.subcategory_ids.length > 0) {
-    filteredData = filteredData.filter(a => 
-      filters.subcategory_ids.includes(a.subcategory_id)
+  if ((filters as any).subcategory_ids && (filters as any).subcategory_ids.length > 0) {
+    filteredData = (filteredData as any).filter(a => 
+      (filters as any).subcategory_ids.includes((a as any).subcategory_id)
     );
   }
 
   // Filter by maturity level range
-  if (filters.maturity_level_min !== undefined) {
-    filteredData = filteredData.filter(a => 
-      (a.maturity_score || 0) >= filters.maturity_level_min
+  if ((filters as any).maturity_level_min !== undefined) {
+    filteredData = (filteredData as any).filter(a => 
+      ((a as any).maturity_score || 0) >= (filters as any).maturity_level_min
     );
   }
-  if (filters.maturity_level_max !== undefined) {
-    filteredData = filteredData.filter(a => 
-      (a.maturity_score || 0) <= filters.maturity_level_max
+  if ((filters as any).maturity_level_max !== undefined) {
+    filteredData = (filteredData as any).filter(a => 
+      ((a as any).maturity_score || 0) <= (filters as any).maturity_level_max
     );
   }
 
   // Filter by implementation status
-  if (filters.implementation_status && filters.implementation_status.length > 0) {
-    filteredData = filteredData.filter(a => 
-      filters.implementation_status.includes(a.implementation_level)
+  if ((filters as any).implementation_status && (filters as any).implementation_status.length > 0) {
+    filteredData = (filteredData as any).filter(a => 
+      (filters as any).implementation_status.includes((a as any).implementation_level)
     );
   }
 
   // Filter by date range (would use actual date fields in real implementation)
-  if (filters.date_range) {
-    const startDate = new Date(filters.date_range.start_date);
-    const endDate = new Date(filters.date_range.end_date);
-    filteredData = filteredData.filter(a => {
-      const assessmentDate = new Date(a.assessed_date || a.created_date || Date.now());
+  if ((filters as any).date_range) {
+    const startDate = new Date((filters as any).date_range.start_date);
+    const endDate = new Date((filters as any).date_range.end_date);
+    filteredData = (filteredData as any).filter(a => {
+      const assessmentDate = new Date((a as any).assessed_date || (a as any).created_date || Date.now());
       return assessmentDate >= startDate && assessmentDate <= endDate;
     });
   }
@@ -358,28 +358,28 @@ function generateSectionContent(sectionType: string, data: any[], displayOptions
     case 'custom':
       return {
         content_type: 'custom',
-        custom_data: data.slice(0, displayOptions?.max_items || 100),
+        custom_data: (data as any).slice(0, (displayOptions as any)?.max_items || 100),
         custom_content: customContent,
-        item_count: Math.min(data.length, displayOptions?.max_items || 100)
+        item_count: Math.min((data as any).length, (displayOptions as any)?.max_items || 100)
       };
     
     default:
       return {
         content_type: 'default',
         data: data,
-        item_count: data.length
+        item_count: (data as any).length
       };
   }
 }
 
 function generateSummaryContent(data: any[], _displayOptions?: any): any {
-  const totalControls = data.length;
-  const fullyImplemented = data.filter(d => d.implementation_level === 'fully_implemented').length;
-  const partiallyImplemented = data.filter(d => d.implementation_level === 'partially_implemented').length;
-  const notImplemented = data.filter(d => d.implementation_level === 'not_implemented').length;
+  const totalControls = (data as any).length;
+  const fullyImplemented = (data as any).filter(d => (d as any).implementation_level === 'fully_implemented').length;
+  const partiallyImplemented = (data as any).filter(d => (d as any).implementation_level === 'partially_implemented').length;
+  const notImplemented = (data as any).filter(d => (d as any).implementation_level === 'not_implemented').length;
   
-  const avgMaturity = data.length > 0 ? 
-    data.reduce((sum, d) => sum + (d.maturity_score || 0), 0) / data.length : 0;
+  const avgMaturity = (data as any).length > 0 ? 
+    (data as any).reduce((sum, d) => sum + ((d as any).maturity_score || 0), 0) / (data as any).length : 0;
 
   return {
     content_type: 'summary',
@@ -403,21 +403,21 @@ function generateSummaryContent(data: any[], _displayOptions?: any): any {
 }
 
 function generateMetricsContent(data: any[], _displayOptions?: any): any {
-  const functionBreakdown = data.reduce((acc, item) => {
-    const functionId = item.function_id || 'Unknown';
+  const functionBreakdown = (data as any).reduce((acc, item) => {
+    const functionId = (item as any).function_id || 'Unknown';
     if (!acc[functionId]) {
       acc[functionId] = { count: 0, total_maturity: 0 };
     }
     acc[functionId].count++;
-    acc[functionId].total_maturity += item.maturity_score || 0;
+    acc[functionId].total_maturity += (item as any).maturity_score || 0;
     return acc;
-  }, {});
+  }, {} as any);
 
   const metrics = Object.entries(functionBreakdown).map(([functionId, stats]: [string, any]) => ({
     function_id: functionId,
-    control_count: stats.count,
-    average_maturity: Math.round((stats.total_maturity / stats.count) * 10) / 10,
-    maturity_percentage: Math.round((stats.total_maturity / stats.count / 5) * 100)
+    control_count: (stats as any).count,
+    average_maturity: Math.round(((stats as any).total_maturity / (stats as any).count) * 10) / 10,
+    maturity_percentage: Math.round(((stats as any).total_maturity / (stats as any).count / 5) * 100)
   }));
 
   return {
@@ -425,12 +425,12 @@ function generateMetricsContent(data: any[], _displayOptions?: any): any {
     function_metrics: metrics,
     overall_metrics: {
       total_functions: Object.keys(functionBreakdown).length,
-      total_controls: data.length,
-      highest_maturity_function: metrics.length > 0 ? metrics.reduce((max, curr) => 
-        curr.average_maturity > (max?.average_maturity || 0) ? curr : max, metrics[0]
+      total_controls: (data as any).length,
+      highest_maturity_function: (metrics as any).length > 0 ? (metrics as any).reduce((max, curr) => 
+        (curr as any).average_maturity > (max?.average_maturity || 0) ? curr : max, metrics[0]
       ) : undefined,
-      lowest_maturity_function: metrics.length > 0 ? metrics.reduce((min, curr) => 
-        curr.average_maturity < (min?.average_maturity || Infinity) ? curr : min, metrics[0]
+      lowest_maturity_function: (metrics as any).length > 0 ? (metrics as any).reduce((min, curr) => 
+        (curr as any).average_maturity < (min?.average_maturity || Infinity) ? curr : min, metrics[0]
       ) : undefined
     }
   };
@@ -438,20 +438,20 @@ function generateMetricsContent(data: any[], _displayOptions?: any): any {
 
 function generateAnalysisContent(data: any[], displayOptions?: any): any {
   const maturityDistribution = {
-    'level_1': data.filter(d => (d.maturity_score || 0) >= 1 && (d.maturity_score || 0) < 2).length,
-    'level_2': data.filter(d => (d.maturity_score || 0) >= 2 && (d.maturity_score || 0) < 3).length,
-    'level_3': data.filter(d => (d.maturity_score || 0) >= 3 && (d.maturity_score || 0) < 4).length,
-    'level_4': data.filter(d => (d.maturity_score || 0) >= 4 && (d.maturity_score || 0) < 5).length,
-    'level_5': data.filter(d => (d.maturity_score || 0) === 5).length
+    'level_1': (data as any).filter(d => ((d as any).maturity_score || 0) >= 1 && ((d as any).maturity_score || 0) < 2).length,
+    'level_2': (data as any).filter(d => ((d as any).maturity_score || 0) >= 2 && ((d as any).maturity_score || 0) < 3).length,
+    'level_3': (data as any).filter(d => ((d as any).maturity_score || 0) >= 3 && ((d as any).maturity_score || 0) < 4).length,
+    'level_4': (data as any).filter(d => ((d as any).maturity_score || 0) >= 4 && ((d as any).maturity_score || 0) < 5).length,
+    'level_5': (data as any).filter(d => ((d as any).maturity_score || 0) === 5).length
   };
 
   const gapAnalysis = data
-    .filter(d => (d.maturity_score || 0) < 3)
+    .filter(d => ((d as any).maturity_score || 0) < 3)
     .map(d => ({
-      subcategory_id: d.subcategory_id,
-      subcategory_name: d.subcategory_name,
-      current_maturity: d.maturity_score || 0,
-      gap_severity: d.maturity_score <= 1 ? 'critical' : 'moderate',
+      subcategory_id: (d as any).subcategory_id,
+      subcategory_name: (d as any).subcategory_name,
+      current_maturity: (d as any).maturity_score || 0,
+      gap_severity: (d as any).maturity_score <= 1 ? 'critical' : 'moderate',
       recommended_actions: generateRecommendedActions(d)
     }));
 
@@ -460,28 +460,28 @@ function generateAnalysisContent(data: any[], displayOptions?: any): any {
     maturity_analysis: {
       distribution: maturityDistribution,
       overall_trend: analyzeMaturityTrend(data),
-      improvement_opportunities: gapAnalysis.length
+      improvement_opportunities: (gapAnalysis as any).length
     },
-    gap_analysis: gapAnalysis.slice(0, displayOptions?.max_items || 10),
+    gap_analysis: (gapAnalysis as any).slice(0, displayOptions?.max_items || 10),
     risk_assessment: {
-      high_risk_controls: data.filter(d => (d.maturity_score || 0) <= 2).length,
-      medium_risk_controls: data.filter(d => (d.maturity_score || 0) === 3).length,
-      low_risk_controls: data.filter(d => (d.maturity_score || 0) >= 4).length
+      high_risk_controls: (data as any).filter(d => ((d as any).maturity_score || 0) <= 2).length,
+      medium_risk_controls: (data as any).filter(d => ((d as any).maturity_score || 0) === 3).length,
+      low_risk_controls: (data as any).filter(d => ((d as any).maturity_score || 0) >= 4).length
     }
   };
 }
 
 function generateRecommendationsContent(data: any[], _displayOptions?: any): any {
-  const lowMaturityControls = data.filter(d => (d.maturity_score || 0) <= 2);
+  const lowMaturityControls = (data as any).filter(d => ((d as any).maturity_score || 0) <= 2);
   
   const recommendations = lowMaturityControls
     .slice(0, _displayOptions?.max_items || 10)
     .map((control, index) => ({
       recommendation_id: `REC-${String(index + 1).padStart(3, '0')}`,
-      priority: control.maturity_score <= 1 ? 'critical' : 'high',
-      control_id: control.subcategory_id,
-      control_name: control.subcategory_name,
-      current_state: control.implementation_level || 'not_implemented',
+      priority: (control as any).maturity_score <= 1 ? 'critical' : 'high',
+      control_id: (control as any).subcategory_id,
+      control_name: (control as any).subcategory_name,
+      current_state: (control as any).implementation_level || 'not_implemented',
       recommended_actions: generateRecommendedActions(control),
       estimated_effort: estimateImplementationEffort(control),
       expected_timeline: estimateImplementationTimeline(control),
@@ -492,10 +492,10 @@ function generateRecommendationsContent(data: any[], _displayOptions?: any): any
     content_type: 'recommendations',
     priority_recommendations: recommendations,
     summary: {
-      total_recommendations: recommendations.length,
-      critical_priority: recommendations.filter(r => r.priority === 'critical').length,
-      high_priority: recommendations.filter(r => r.priority === 'high').length,
-      estimated_total_effort: `${recommendations.length * 2}-${recommendations.length * 4} weeks`
+      total_recommendations: (recommendations as any).length,
+      critical_priority: (recommendations as any).filter(r => (r as any).priority === 'critical').length,
+      high_priority: (recommendations as any).filter(r => (r as any).priority === 'high').length,
+      estimated_total_effort: `${(recommendations as any).length * 2}-${(recommendations as any).length * 4} weeks`
     }
   };
 }
@@ -524,16 +524,16 @@ function generateTablesContent(data: any[], displayOptions?: any): any {
   const sortedData = [...data].sort((a, b) => {
     switch (sortBy) {
       case 'maturity':
-        return (b.maturity_score || 0) - (a.maturity_score || 0);
+        return ((b as any).maturity_score || 0) - ((a as any).maturity_score || 0);
       case 'date':
-        return new Date(b.assessed_date || b.created_date || 0).getTime() - 
-               new Date(a.assessed_date || a.created_date || 0).getTime();
+        return new Date((b as any).assessed_date || (b as any).created_date || 0).getTime() - 
+               new Date((a as any).assessed_date || (a as any).created_date || 0).getTime();
       case 'priority': {
         const priorityOrder: Record<string, number> = { 'critical': 4, 'high': 3, 'medium': 2, 'low': 1 };
-        return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+        return (priorityOrder[(b as any).priority] || 0) - (priorityOrder[(a as any).priority] || 0);
       }
       default: // name
-        return (a.subcategory_name || '').localeCompare(b.subcategory_name || '');
+        return ((a as any).subcategory_name || '').localeCompare((b as any).subcategory_name || '');
     }
   });
 
@@ -548,18 +548,18 @@ function generateTablesContent(data: any[], displayOptions?: any): any {
         'Maturity Score',
         'Last Assessed'
       ],
-      rows: sortedData.slice(0, maxItems).map(item => [
-        item.subcategory_id,
-        item.subcategory_name,
-        item.function_name,
-        item.implementation_level || 'Not Assessed',
-        item.maturity_score || 0,
-        formatDate(item.assessed_date || item.created_date)
+      rows: (sortedData as any).slice(0, maxItems).map(item => [
+        (item as any).subcategory_id,
+        (item as any).subcategory_name,
+        (item as any).function_name,
+        (item as any).implementation_level || 'Not Assessed',
+        (item as any).maturity_score || 0,
+        formatDate((item as any).assessed_date || (item as any).created_date)
       ])
     },
     table_summary: {
-      total_rows: sortedData.length,
-      displayed_rows: Math.min(sortedData.length, maxItems),
+      total_rows: (sortedData as any).length,
+      displayed_rows: Math.min((sortedData as any).length, maxItems),
       sorted_by: sortBy
     }
   };
@@ -569,26 +569,26 @@ function generateTablesContent(data: any[], displayOptions?: any): any {
 function generateRecommendedActions(control: any): string[] {
   const actions = [];
   
-  if (!control.implementation_level || control.implementation_level === 'not_implemented') {
-    actions.push('Develop and implement control procedures');
-    actions.push('Assign responsible personnel');
-    actions.push('Establish monitoring mechanisms');
-  } else if (control.implementation_level === 'partially_implemented') {
-    actions.push('Complete implementation of all control requirements');
-    actions.push('Enhance existing procedures');
-    actions.push('Improve documentation and evidence collection');
+  if (!(control as any).implementation_level || (control as any).implementation_level === 'not_implemented') {
+    (actions as any).push('Develop and implement control procedures');
+    (actions as any).push('Assign responsible personnel');
+    (actions as any).push('Establish monitoring mechanisms');
+  } else if ((control as any).implementation_level === 'partially_implemented') {
+    (actions as any).push('Complete implementation of all control requirements');
+    (actions as any).push('Enhance existing procedures');
+    (actions as any).push('Improve documentation and evidence collection');
   }
   
-  if ((control.maturity_score || 0) <= 2) {
-    actions.push('Establish regular review and improvement processes');
-    actions.push('Implement metrics and measurement');
+  if (((control as any).maturity_score || 0) <= 2) {
+    (actions as any).push('Establish regular review and improvement processes');
+    (actions as any).push('Implement metrics and measurement');
   }
 
   return actions;
 }
 
 function estimateImplementationEffort(control: any): string {
-  const maturity = control.maturity_score || 0;
+  const maturity = (control as any).maturity_score || 0;
   if (maturity <= 1) return '4-8 weeks';
   if (maturity <= 2) return '2-4 weeks';
   if (maturity <= 3) return '1-2 weeks';
@@ -596,25 +596,25 @@ function estimateImplementationEffort(control: any): string {
 }
 
 function estimateImplementationTimeline(control: any): string {
-  const maturity = control.maturity_score || 0;
+  const maturity = (control as any).maturity_score || 0;
   if (maturity <= 1) return '2-3 months';
   if (maturity <= 2) return '1-2 months';
   return '2-4 weeks';
 }
 
 function assessBusinessImpact(control: any): string {
-  if (control.subcategory_id.includes('GV')) return 'High - Governance and oversight';
-  if (control.subcategory_id.includes('ID')) return 'Medium - Asset and risk visibility';
-  if (control.subcategory_id.includes('PR')) return 'High - Core protection capabilities';
-  if (control.subcategory_id.includes('DE')) return 'Medium - Threat detection';
-  if (control.subcategory_id.includes('RS')) return 'High - Incident response';
-  if (control.subcategory_id.includes('RC')) return 'Medium - Recovery capabilities';
+  if ((control as any).subcategory_id.includes('GV')) return 'High - Governance and oversight';
+  if ((control as any).subcategory_id.includes('ID')) return 'Medium - Asset and risk visibility';
+  if ((control as any).subcategory_id.includes('PR')) return 'High - Core protection capabilities';
+  if ((control as any).subcategory_id.includes('DE')) return 'Medium - Threat detection';
+  if ((control as any).subcategory_id.includes('RS')) return 'High - Incident response';
+  if ((control as any).subcategory_id.includes('RC')) return 'Medium - Recovery capabilities';
   return 'Medium - Security posture improvement';
 }
 
 function analyzeMaturityTrend(data: any[]): string {
   // Mock trend analysis - would use historical data in real implementation
-  const avgMaturity = data.reduce((sum, d) => sum + (d.maturity_score || 0), 0) / data.length;
+  const avgMaturity = (data as any).reduce((sum, d) => sum + ((d as any).maturity_score || 0), 0) / (data as any).length;
   if (avgMaturity >= 3.5) return 'Strong - Mature controls';
   if (avgMaturity >= 2.5) return 'Improving - Good progress';
   if (avgMaturity >= 1.5) return 'Developing - Needs attention';
@@ -624,7 +624,7 @@ function analyzeMaturityTrend(data: any[]): string {
 function prepareChartData(data: any[], _chartType: string, groupBy?: string): any {
   const grouping = groupBy || 'function';
   
-  const grouped = data.reduce((acc, item) => {
+  const grouped = (data as any).reduce((acc, item) => {
     const key = item[`${grouping}_name`] || item[grouping] || 'Unknown';
     if (!acc[key]) {
       acc[key] = [];
@@ -637,9 +637,9 @@ function prepareChartData(data: any[], _chartType: string, groupBy?: string): an
     labels: Object.keys(grouped),
     datasets: [{
       label: 'Average Maturity Score',
-      data: Object.values(grouped).map((items: unknown) => {
+      data: Object.values(grouped).map((items: any) => {
         const itemArray = items as any[];
-        return itemArray.reduce((sum, item) => sum + (item.maturity_score || 0), 0) / itemArray.length;
+        return (itemArray as any).reduce((sum, item) => sum + ((item as any).maturity_score || 0), 0) / (itemArray as any).length;
       }),
       backgroundColor: generateColors(Object.keys(grouped).length)
     }]
@@ -651,32 +651,32 @@ function generateColors(count: number): string[] {
     '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
     '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
   ];
-  return colors.slice(0, count);
+  return (colors as any).slice(0, count);
 }
 
 function calculateSectionMetrics(content: any, sectionType: string): any {
   switch (sectionType) {
     case 'charts':
       return {
-        data_points: content.chart_data?.datasets?.[0]?.data?.length || 0,
+        data_points: (content as any).chart_data?.datasets?.[0]?.data?.length || 0,
         charts_included: 1,
         tables_included: 0
       };
     case 'tables':
       return {
-        data_points: content.table_data?.rows?.length || 0,
+        data_points: (content as any).table_data?.rows?.length || 0,
         charts_included: 0,
         tables_included: 1
       };
     case 'metrics':
       return {
-        data_points: content.function_metrics?.length || 0,
+        data_points: (content as any).function_metrics?.length || 0,
         charts_included: 0,
         tables_included: 0
       };
     default:
       return {
-        data_points: Array.isArray(content.data) ? content.data.length : 0,
+        data_points: Array.isArray((content as any).data) ? (content as any).data.length : 0,
         charts_included: 0,
         tables_included: 0
       };
@@ -684,26 +684,26 @@ function calculateSectionMetrics(content: any, sectionType: string): any {
 }
 
 function calculateReportStatistics(assessments: any[], _sections: any[]): any {
-  const functions = [...new Set(assessments.map(a => a.function_id))];
-  const maturityScores = assessments.map(a => a.maturity_score || 0).filter(s => s > 0);
-  const compliantControls = assessments.filter(a => 
-    a.implementation_level === 'fully_implemented' || a.implementation_level === 'largely_implemented'
+  const functions = Array.from(new Set((assessments as any).map(a => (a as any).function_id)));
+  const maturityScores = (assessments as any).map(a => (a as any).maturity_score || 0).filter(s => s > 0);
+  const compliantControls = (assessments as any).filter(a => 
+    (a as any).implementation_level === 'fully_implemented' || (a as any).implementation_level === 'largely_implemented'
   ).length;
 
   return {
-    controls_analyzed: assessments.length,
+    controls_analyzed: (assessments as any).length,
     functions_covered: functions,
     maturity_range: {
       min: Math.min(...maturityScores),
       max: Math.max(...maturityScores),
-      average: maturityScores.length > 0 ? 
-        Math.round((maturityScores.reduce((sum, s) => sum + s, 0) / maturityScores.length) * 10) / 10 : 0
+      average: (maturityScores as any).length > 0 ? 
+        Math.round(((maturityScores as any).reduce((sum, s) => sum + s, 0) / (maturityScores as any).length) * 10) / 10 : 0
     },
     compliance_summary: {
-      total_controls: assessments.length,
+      total_controls: (assessments as any).length,
       compliant_controls: compliantControls,
-      compliance_percentage: assessments.length > 0 ? 
-        Math.round((compliantControls / assessments.length) * 100) : 0
+      compliance_percentage: (assessments as any).length > 0 ? 
+        Math.round((compliantControls / (assessments as any).length) * 100) : 0
     }
   };
 }

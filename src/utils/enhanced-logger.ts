@@ -273,8 +273,8 @@ class EnhancedLogger {
   /**
    * Log HTTP response
    */
-  logResponse(req: any, res: any, duration: number, meta?: LogMetadata): void {
-    const level = res.statusCode >= 400 ? 'error' : 'info';
+  logResponse(req: { method?: string; path?: string }, res: { statusCode?: number }, duration: number, meta?: LogMetadata): void {
+    const level = (res.statusCode || 500) >= 400 ? 'error' : 'info';
     this.logger.log(level, 'HTTP Response', {
       method: req.method,
       path: req.path,
