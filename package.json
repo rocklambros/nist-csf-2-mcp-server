@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "dev": "tsx watch src/index.ts",
     "dev:secure": "tsx watch src/server.ts",
     "dev:http": "tsx watch src/http-server.ts",

@@ -2,7 +2,7 @@
  * Report Templates and Formatting Utilities
  */
 
-export function generateHTMLReport(data: any, reportType: string): string {
+export function generateHTMLReport(data: ReportData, reportType: string): string {
   const timestamp = new Date().toISOString();
   const styles = getHTMLStyles();
   
@@ -30,14 +30,14 @@ export function generateHTMLReport(data: any, reportType: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NIST CSF 2.0 ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report</title>
+  <title>NIST CSF 2.0 ${(reportType as any).charAt(0).toUpperCase() + (reportType as any).slice(1)} Report</title>
   <style>${styles}</style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="report-container">
     <header>
-      <h1>NIST CSF 2.0 ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report</h1>
+      <h1>NIST CSF 2.0 ${(reportType as any).charAt(0).toUpperCase() + (reportType as any).slice(1)} Report</h1>
       <p class="timestamp">Generated: ${new Date(timestamp).toLocaleString()}</p>
     </header>
     ${content}
@@ -154,23 +154,31 @@ function getHTMLStyles(): string {
   `;
 }
 
-function generateExecutiveHTML(data: any): string {
-  const functionSummary = JSON.parse(data.function_summary || '[]');
+interface ReportData {
+  function_summary?: string;
+  avg_risk_score?: number;
+  critical_risks?: number;
+  critical_gaps?: number;
+  [key: string]: any;
+}
+
+function generateExecutiveHTML(data: ReportData): string {
+  const functionSummary = (JSON as any).parse((data as any).function_summary || '[]');
   
   let html = `
     <section class="summary">
       <h2>Executive Summary</h2>
       <div class="metrics-grid">
         <div class="metric-card">
-          <div class="metric-value">${data.avg_risk_score?.toFixed(1) || '0'}</div>
+          <div class="metric-value">${(data as any).avg_risk_score?.toFixed(1) || '0'}</div>
           <div class="metric-label">Average Risk Score</div>
         </div>
         <div class="metric-card">
-          <div class="metric-value">${data.critical_risks || 0}</div>
+          <div class="metric-value">${(data as any).critical_risks || 0}</div>
           <div class="metric-label">Critical Risks</div>
         </div>
         <div class="metric-card">
-          <div class="metric-value">${data.critical_gaps || 0}</div>
+          <div class="metric-value">${(data as any).critical_gaps || 0}</div>
           <div class="metric-label">Critical Gaps</div>
         </div>
       </div>
@@ -190,12 +198,12 @@ function generateExecutiveHTML(data: any): string {
         <tbody>
   `;
   
-  functionSummary.forEach((func: any) => {
-    const percentage = func.maturity_percentage || 0;
+  (functionSummary as any).forEach((func: any) => {
+    const percentage = (func as any).maturity_percentage || 0;
     html += `
       <tr>
-        <td>${func.function_name}</td>
-        <td>${func.avg_maturity}</td>
+        <td>${(func as any).function_name}</td>
+        <td>${(func as any).avg_maturity}</td>
         <td>${percentage}%</td>
         <td>
           <div class="progress-bar">
@@ -223,10 +231,10 @@ function generateExecutiveHTML(data: any): string {
         new Chart(ctx, {
           type: 'radar',
           data: {
-            labels: ${JSON.stringify(functionSummary.map((f: any) => f.function_name))},
+            labels: ${JSON.stringify((functionSummary as any).map((f: any) => (f as any).function_name))},
             datasets: [{
               label: 'Current Maturity',
-              data: ${JSON.stringify(functionSummary.map((f: any) => f.avg_maturity))},
+              data: ${JSON.stringify((functionSummary as any).map((f: any) => (f as any).avg_maturity))},
               backgroundColor: 'rgba(0, 102, 204, 0.2)',
               borderColor: 'rgba(0, 102, 204, 1)',
               borderWidth: 2
@@ -248,8 +256,8 @@ function generateExecutiveHTML(data: any): string {
   return html;
 }
 
-function generateTechnicalHTML(data: any): string {
-  const assessments = JSON.parse(data.subcategory_assessments || '[]');
+function generateTechnicalHTML(data: ReportData): string {
+  const assessments = JSON.parse((data as any).subcategory_assessments || '[]');
   
   let html = `
     <section class="technical-details">
@@ -268,15 +276,15 @@ function generateTechnicalHTML(data: any): string {
         <tbody>
   `;
   
-  assessments.forEach((item: any) => {
+  (assessments as any).forEach((item: any) => {
     html += `
       <tr>
-        <td>${item.subcategory_id}</td>
-        <td>${item.subcategory_name}</td>
-        <td>${item.category_name}</td>
-        <td>${item.function_name}</td>
-        <td>${item.implementation_level || 'Not assessed'}</td>
-        <td>${item.maturity_score || 0}/5</td>
+        <td>${(item as any).subcategory_id}</td>
+        <td>${(item as any).subcategory_name}</td>
+        <td>${(item as any).category_name}</td>
+        <td>${(item as any).function_name}</td>
+        <td>${(item as any).implementation_level || 'Not assessed'}</td>
+        <td>${(item as any).maturity_score || 0}/5</td>
       </tr>
     `;
   });
@@ -290,9 +298,9 @@ function generateTechnicalHTML(data: any): string {
   return html;
 }
 
-function generateAuditHTML(data: any): string {
-  const auditLog = JSON.parse(data.audit_log || '[]');
-  const complianceSummary = JSON.parse(data.compliance_summary || '[]');
+function generateAuditHTML(data: ReportData): string {
+  const auditLog = JSON.parse((data as any).audit_log || '[]');
+  const complianceSummary = JSON.parse((data as any).compliance_summary || '[]');
   
   let html = `
     <section class="audit-trail">
@@ -310,14 +318,14 @@ function generateAuditHTML(data: any): string {
         <tbody>
   `;
   
-  auditLog.slice(0, 20).forEach((entry: any) => {
+  (auditLog as any).slice(0, 20).forEach((entry: any) => {
     html += `
       <tr>
-        <td>${new Date(entry.activity_date).toLocaleDateString()}</td>
-        <td>${entry.activity_type}</td>
-        <td>${entry.item_id}</td>
-        <td>${entry.performed_by}</td>
-        <td>${entry.details}</td>
+        <td>${new Date((entry as any).activity_date).toLocaleDateString()}</td>
+        <td>${(entry as any).activity_type}</td>
+        <td>${(entry as any).item_id}</td>
+        <td>${(entry as any).performed_by}</td>
+        <td>${(entry as any).details}</td>
       </tr>
     `;
   });
@@ -343,15 +351,15 @@ function generateAuditHTML(data: any): string {
         <tbody>
   `;
   
-  complianceSummary.forEach((comp: any) => {
+  (complianceSummary as any).forEach((comp: any) => {
     html += `
       <tr>
-        <td>${comp.framework}</td>
-        <td>${comp.coverage_percentage}%</td>
-        <td>${comp.mapped_controls}</td>
-        <td>${comp.fully_covered}</td>
-        <td>${comp.partially_covered}</td>
-        <td>${comp.not_covered}</td>
+        <td>${(comp as any).framework}</td>
+        <td>${(comp as any).coverage_percentage}%</td>
+        <td>${(comp as any).mapped_controls}</td>
+        <td>${(comp as any).fully_covered}</td>
+        <td>${(comp as any).partially_covered}</td>
+        <td>${(comp as any).not_covered}</td>
       </tr>
     `;
   });
@@ -365,27 +373,27 @@ function generateAuditHTML(data: any): string {
   return html;
 }
 
-function generateProgressHTML(data: any): string {
-  const recentUpdates = JSON.parse(data.recent_updates || '[]');
+function generateProgressHTML(data: ReportData): string {
+  const recentUpdates = JSON.parse((data as any).recent_updates || '[]');
   
   let html = `
     <section class="progress-overview">
       <h2>Progress Overview</h2>
       <div class="metrics-grid">
         <div class="metric-card">
-          <div class="metric-value">${Math.round(data.avg_completion || 0)}%</div>
+          <div class="metric-value">${Math.round((data as any).avg_completion || 0)}%</div>
           <div class="metric-label">Overall Completion</div>
         </div>
         <div class="metric-card">
-          <div class="metric-value">${data.completed || 0}</div>
+          <div class="metric-value">${(data as any).completed || 0}</div>
           <div class="metric-label">Completed Items</div>
         </div>
         <div class="metric-card">
-          <div class="metric-value">${data.on_track || 0}</div>
+          <div class="metric-value">${(data as any).on_track || 0}</div>
           <div class="metric-label">On Track</div>
         </div>
         <div class="metric-card">
-          <div class="metric-value">${data.blocked || 0}</div>
+          <div class="metric-value">${(data as any).blocked || 0}</div>
           <div class="metric-label">Blocked</div>
         </div>
       </div>
@@ -406,14 +414,14 @@ function generateProgressHTML(data: any): string {
         <tbody>
   `;
   
-  recentUpdates.forEach((update: any) => {
+  (recentUpdates as any).forEach((update: any) => {
     html += `
       <tr>
-        <td>${update.subcategory_id}</td>
-        <td><span class="status-badge status-${update.status}">${update.status}</span></td>
-        <td>${update.completion_percentage}%</td>
-        <td>${new Date(update.last_updated).toLocaleDateString()}</td>
-        <td>${update.notes || '-'}</td>
+        <td>${(update as any).subcategory_id}</td>
+        <td><span class="status-badge status-${(update as any).status}">${(update as any).status}</span></td>
+        <td>${(update as any).completion_percentage}%</td>
+        <td>${new Date((update as any).last_updated).toLocaleDateString()}</td>
+        <td>${(update as any).notes || '-'}</td>
       </tr>
     `;
   });
@@ -427,22 +435,22 @@ function generateProgressHTML(data: any): string {
   return html;
 }
 
-export function formatDataAsCSV(data: any): string {
+export function formatDataAsCSV(data: ReportData): string {
   const rows: string[] = [];
   
   // Convert JSON data to CSV rows
-  if (data.assessments) {
-    const assessments = JSON.parse(data.assessments);
-    rows.push('Subcategory ID,Implementation Level,Maturity Score,Notes,Assessed At,Assessed By');
-    assessments.forEach((a: any) => {
-      rows.push(`"${a.subcategory_id}","${a.implementation_level}",${a.maturity_score},"${a.notes || ''}","${a.assessed_at}","${a.assessed_by || ''}"`);
+  if ((data as any).assessments) {
+    const assessments = JSON.parse((data as any).assessments);
+    (rows as any).push('Subcategory ID,Implementation Level,Maturity Score,Notes,Assessed At,Assessed By');
+    (assessments as any).forEach((a: any) => {
+      (rows as any).push(`"${(a as any).subcategory_id}","${(a as any).implementation_level}",${(a as any).maturity_score},"${(a as any).notes || ''}","${(a as any).assessed_at}","${(a as any).assessed_by || ''}"`);
     });
   }
   
-  return rows.join('\n');
+  return (rows as any).join('\n');
 }
 
-export function formatDataAsJSON(data: any): string {
+export function formatDataAsJSON(data: ReportData): string {
   // Parse any stringified JSON fields
   const parsed: any = {};
   for (const key in data) {

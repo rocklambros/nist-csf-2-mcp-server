@@ -95,54 +95,54 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
   
   try {
     // Ensure framework is loaded
-    if (!framework.isLoaded()) {
-      await framework.load();
+    if (!(framework as any).isLoaded()) {
+      await (framework as any).load();
     }
     
     // Verify both profiles exist
-    const currentProfile = db.getProfile(params.current_profile_id);
-    const targetProfile = db.getProfile(params.target_profile_id);
+    const currentProfile = (db as any).getProfile((params as any).current_profile_id);
+    const targetProfile = (db as any).getProfile((params as any).target_profile_id);
     
     if (!currentProfile) {
-      return createErrorResult(`Current profile not found: ${params.current_profile_id}`);
+      return createErrorResult(`Current profile not found: ${(params as any).current_profile_id}`);
     }
     
     if (!targetProfile) {
-      return createErrorResult(`Target profile not found: ${params.target_profile_id}`);
+      return createErrorResult(`Target profile not found: ${(params as any).target_profile_id}`);
     }
     
     // Generate unique analysis ID
     const analysisId = uuidv4();
     
     // Perform gap analysis and store results in database
-    const analysisResult = db.generateGapAnalysis(
-      params.current_profile_id,
-      params.target_profile_id,
+    const analysisResult = (db as any).generateGapAnalysis(
+      (params as any).current_profile_id,
+      (params as any).target_profile_id,
       analysisId
     );
     
-    if (!analysisResult || !Array.isArray(analysisResult) || analysisResult.length === 0) {
+    if (!analysisResult || !(Array as any).isArray(analysisResult) || (analysisResult as any).length === 0) {
       return createErrorResult('Failed to generate gap analysis');
     }
     
     // Get detailed gap analysis data
-    const gapDetails = db.getGapAnalysisDetails(analysisId);
+    const gapDetails = (db as any).getGapAnalysisDetails(analysisId);
     
     // Filter by minimum gap score if specified
-    const filteredGaps = gapDetails.filter(
-      (gap: any) => gap.gap_score >= params.minimum_gap_score
+    const filteredGaps = (gapDetails as any).filter(
+      (gap: any) => (gap as any).gap_score >= (params as any).minimum_gap_score
     );
     
     // Calculate gap summary statistics
     const gapSummary = calculateGapSummary(filteredGaps);
     
     // Generate priority matrix if requested
-    const priorityMatrix = params.include_priority_matrix
+    const priorityMatrix = (params as any).include_priority_matrix
       ? generatePriorityMatrix(filteredGaps)
       : undefined;
     
     // Generate visualizations if requested
-    const visualizations = params.include_visualizations
+    const visualizations = (params as any).include_visualizations
       ? generateVisualizations(filteredGaps, currentProfile, targetProfile)
       : undefined;
     
@@ -154,8 +154,8 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
     );
     
     // Calculate profile summaries
-    const currentSummary = calculateProfileSummary(params.current_profile_id, db);
-    const targetSummary = calculateProfileSummary(params.target_profile_id, db);
+    const currentSummary = calculateProfileSummary((params as any).current_profile_id, db);
+    const targetSummary = calculateProfileSummary((params as any).target_profile_id, db);
     
     return {
       success: true,
@@ -164,26 +164,26 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
       current_profile: {
         id: (currentProfile as any).id,
         name: (currentProfile as any).name,
-        overall_maturity: currentSummary.maturity,
-        implementation_percentage: currentSummary.implementation
+        overall_maturity: (currentSummary as any).maturity,
+        implementation_percentage: (currentSummary as any).implementation
       },
       target_profile: {
         id: (targetProfile as any).id,
         name: (targetProfile as any).name,
-        overall_maturity: targetSummary.maturity,
-        implementation_percentage: targetSummary.implementation
+        overall_maturity: (targetSummary as any).maturity,
+        implementation_percentage: (targetSummary as any).implementation
       },
       gap_summary: gapSummary,
       priority_matrix: priorityMatrix,
-      gap_details: filteredGaps.map(formatGapItem),
+      gap_details: (filteredGaps as any).map(formatGapItem),
       recommendations,
       visualizations
     };
     
   } catch (error) {
-    logger.error('Generate gap analysis error:', error);
+    (logger as any).error('Generate gap analysis error:', error);
     return createErrorResult(
-      error instanceof Error ? error.message : 'Unknown error occurred'
+      error instanceof Error ? (error as any).message : 'Unknown error occurred'
     );
   }
 }
@@ -192,30 +192,30 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
  * Calculate gap summary statistics
  */
 function calculateGapSummary(gaps: any[]): any {
-  const criticalGaps = gaps.filter(g => g.gap_score >= 75).length;
-  const highGaps = gaps.filter(g => g.gap_score >= 50 && g.gap_score < 75).length;
-  const mediumGaps = gaps.filter(g => g.gap_score >= 25 && g.gap_score < 50).length;
-  const lowGaps = gaps.filter(g => g.gap_score < 25).length;
+  const criticalGaps = (gaps as any).filter(g => (g as any).gap_score >= 75).length;
+  const highGaps = (gaps as any).filter(g => (g as any).gap_score >= 50 && (g as any).gap_score < 75).length;
+  const mediumGaps = (gaps as any).filter(g => (g as any).gap_score >= 25 && (g as any).gap_score < 50).length;
+  const lowGaps = (gaps as any).filter(g => (g as any).gap_score < 25).length;
   
-  const avgGap = gaps.length > 0
-    ? gaps.reduce((sum, g) => sum + g.gap_score, 0) / gaps.length
+  const avgGap = (gaps as any).length > 0
+    ? (gaps as any).reduce((sum, g) => sum + (g as any).gap_score, 0) / (gaps as any).length
     : 0;
   
-  const maxGap = gaps.length > 0
-    ? Math.max(...gaps.map(g => g.gap_score))
+  const maxGap = (gaps as any).length > 0
+    ? (Math as any).max(...(gaps as any).map(g => (g as any).gap_score))
     : 0;
   
-  const totalEffort = gaps.reduce((sum, g) => sum + (g.effort_score || 0), 0);
+  const totalEffort = (gaps as any).reduce((sum, g) => sum + ((g as any).effort_score || 0), 0);
   
   return {
-    total_gaps: gaps.length,
+    total_gaps: (gaps as any).length,
     critical_gaps: criticalGaps,
     high_priority_gaps: highGaps,
     medium_priority_gaps: mediumGaps,
     low_priority_gaps: lowGaps,
-    average_gap_score: Math.round(avgGap * 100) / 100,
+    average_gap_score: (Math as any).round(avgGap * 100) / 100,
     maximum_gap_score: maxGap,
-    total_effort_required: Math.round(totalEffort * 100) / 100
+    total_effort_required: (Math as any).round(totalEffort * 100) / 100
   };
 }
 
@@ -260,8 +260,8 @@ function generatePriorityMatrix(gaps: any[]): PriorityMatrix[] {
   
   // Classify each gap into quadrants
   for (const gap of gaps) {
-    const impactScore = gap.risk_score || gap.gap_score / 10;
-    const effortScore = gap.effort_score || 5;
+    const impactScore = (gap as any).risk_score || (gap as any).gap_score / 10;
+    const effortScore = (gap as any).effort_score || 5;
     
     let quadrant: string;
     if (impactScore >= 5 && effortScore <= 5) {
@@ -282,21 +282,21 @@ function generatePriorityMatrix(gaps: any[]): PriorityMatrix[] {
   
   // Calculate statistics for each quadrant
   const result: PriorityMatrix[] = [];
-  for (const quadrant of Object.values(matrix)) {
-    if (quadrant.items.length > 0) {
-      quadrant.item_count = quadrant.items.length;
-      quadrant.average_gap_score = 
-        quadrant.items.reduce((sum, item) => sum + item.gap_score, 0) / quadrant.items.length;
-      quadrant.average_gap_score = Math.round(quadrant.average_gap_score * 100) / 100;
+  for (const quadrant of (Object as any).values(matrix)) {
+    if ((quadrant as any).items.length > 0) {
+      (quadrant as any).item_count = (quadrant as any).items.length;
+      (quadrant as any).average_gap_score = 
+        (quadrant as any).items.reduce((sum, item) => sum + (item as any).gap_score, 0) / (quadrant as any).items.length;
+      (quadrant as any).average_gap_score = (Math as any).round((quadrant as any).average_gap_score * 100) / 100;
       
-      result.push(quadrant);
+      (result as any).push(quadrant);
     }
   }
   
   // Sort by priority: Quick Win > Strategic Initiative > Fill In > Low Priority
   const priorityOrder = ['Quick Win', 'Strategic Initiative', 'Fill In', 'Low Priority'];
-  result.sort((a, b) => 
-    priorityOrder.indexOf(a.quadrant) - priorityOrder.indexOf(b.quadrant)
+  (result as any).sort((a, b) => 
+    (priorityOrder as any).indexOf((a as any).quadrant) - (priorityOrder as any).indexOf((b as any).quadrant)
   );
   
   return result;
@@ -309,7 +309,7 @@ function generateVisualizations(gaps: any[], currentProfile: any, targetProfile:
   // Gap by function
   const gapByFunction: Record<string, any> = {};
   for (const gap of gaps) {
-    const funcId = gap.subcategory_id.substring(0, 2);
+    const funcId = (gap as any).subcategory_id.substring(0, 2);
     if (!gapByFunction[funcId]) {
       gapByFunction[funcId] = {
         function_id: funcId,
@@ -318,48 +318,48 @@ function generateVisualizations(gaps: any[], currentProfile: any, targetProfile:
         gaps: []
       };
     }
-    gapByFunction[funcId].gaps.push(gap.gap_score);
+    gapByFunction[funcId].gaps.push((gap as any).gap_score);
     gapByFunction[funcId].total_gaps++;
   }
   
   // Calculate averages
   for (const func of Object.values(gapByFunction)) {
-    func.average_gap_score = 
-      func.gaps.reduce((sum: number, g: number) => sum + g, 0) / func.gaps.length;
-    func.average_gap_score = Math.round(func.average_gap_score * 100) / 100;
-    delete func.gaps;
+    (func as any).average_gap_score = 
+      (func as any).gaps.reduce((sum: number, g: number) => sum + g, 0) / (func as any).gaps.length;
+    (func as any).average_gap_score = Math.round((func as any).average_gap_score * 100) / 100;
+    delete (func as any).gaps;
   }
   
   // Priority heatmap
-  const priorityHeatmap = gaps.map(g => ({
-    subcategory: g.subcategory_id,
-    risk: g.risk_score || 0,
-    effort: g.effort_score || 0,
-    gap: g.gap_score,
-    priority: g.priority_rank || 0
+  const priorityHeatmap = (gaps as any).map(g => ({
+    subcategory: (g as any).subcategory_id,
+    risk: (g as any).risk_score || 0,
+    effort: (g as any).effort_score || 0,
+    gap: (g as any).gap_score,
+    priority: (g as any).priority_rank || 0
   }));
   
   // Maturity comparison
   const maturityComparison = {
     current: {
-      profile_name: currentProfile.name,
+      profile_name: (currentProfile as any).name,
       overall_maturity: 0,
       by_function: {} as Record<string, number>
     },
     target: {
-      profile_name: targetProfile.name,
+      profile_name: (targetProfile as any).name,
       overall_maturity: 0,
       by_function: {} as Record<string, number>
     }
   };
   
   // Effort vs Impact scatter plot data
-  const effortVsImpact = gaps.map(g => ({
-    subcategory: g.subcategory_id,
-    effort: g.effort_score || 5,
-    impact: g.risk_score || g.gap_score / 10,
-    gap_score: g.gap_score,
-    label: g.subcategory_name || g.subcategory_id
+  const effortVsImpact = (gaps as any).map(g => ({
+    subcategory: (g as any).subcategory_id,
+    effort: (g as any).effort_score || 5,
+    impact: (g as any).risk_score || (g as any).gap_score / 10,
+    gap_score: (g as any).gap_score,
+    label: (g as any).subcategory_name || (g as any).subcategory_id
   }));
   
   return {
@@ -386,33 +386,33 @@ function generateRecommendations(
   };
   
   // Immediate actions - Quick Wins and Critical Gaps
-  const quickWins = priorityMatrix?.find(m => m.quadrant === 'Quick Win');
-  if (quickWins && quickWins.items.length > 0) {
-    const topQuickWins = quickWins.items.slice(0, 3);
+  const quickWins = priorityMatrix?.find(m => (m as any).quadrant === 'Quick Win');
+  if (quickWins && (quickWins as any).items.length > 0) {
+    const topQuickWins = (quickWins as any).items.slice(0, 3);
     for (const item of topQuickWins) {
-      recommendations.immediate_actions.push(
-        `Implement ${item.subcategory_id}: ${item.improvement_required} (Gap: ${item.gap_score}%)`
+      (recommendations as any).immediate_actions.push(
+        `Implement ${(item as any).subcategory_id}: ${(item as any).improvement_required} (Gap: ${(item as any).gap_score}%)`
       );
     }
   }
   
   // Add critical gaps to immediate actions
-  const criticalGaps = gaps.filter(g => g.gap_score >= 75).slice(0, 3);
+  const criticalGaps = (gaps as any).filter(g => (g as any).gap_score >= 75).slice(0, 3);
   for (const gap of criticalGaps) {
-    if (!recommendations.immediate_actions.some(a => a.includes(gap.subcategory_id))) {
-      recommendations.immediate_actions.push(
-        `Address critical gap in ${gap.subcategory_id} (${gap.gap_score}% gap)`
+    if (!(recommendations as any).immediate_actions.some(a => (a as any).includes((gap as any).subcategory_id))) {
+      (recommendations as any).immediate_actions.push(
+        `Address critical gap in ${(gap as any).subcategory_id} (${(gap as any).gap_score}% gap)`
       );
     }
   }
   
   // Short-term goals - Strategic Initiatives
-  const strategic = priorityMatrix?.find(m => m.quadrant === 'Strategic Initiative');
-  if (strategic && strategic.items.length > 0) {
-    const topStrategic = strategic.items.slice(0, 3);
+  const strategic = priorityMatrix?.find(m => (m as any).quadrant === 'Strategic Initiative');
+  if (strategic && (strategic as any).items.length > 0) {
+    const topStrategic = (strategic as any).items.slice(0, 3);
     for (const item of topStrategic) {
-      recommendations.short_term_goals.push(
-        `Plan implementation of ${item.subcategory_id}: ${item.improvement_required}`
+      (recommendations as any).short_term_goals.push(
+        `Plan implementation of ${(item as any).subcategory_id}: ${(item as any).improvement_required}`
       );
     }
   }
@@ -420,11 +420,11 @@ function generateRecommendations(
   // Long-term objectives - Based on functions with highest gaps
   const functionGaps: Record<string, number> = {};
   for (const gap of gaps) {
-    const funcId = gap.subcategory_id.substring(0, 2);
-    functionGaps[funcId] = (functionGaps[funcId] || 0) + gap.gap_score;
+    const funcId = (gap as any).subcategory_id.substring(0, 2);
+    functionGaps[funcId] = (functionGaps[funcId] || 0) + (gap as any).gap_score;
   }
   
-  const sortedFunctions = Object.entries(functionGaps)
+  const sortedFunctions = (Object as any).entries(functionGaps)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 3);
   
@@ -439,32 +439,32 @@ function generateRecommendations(
   
   for (const [funcId, totalGap] of sortedFunctions) {
     const funcName = functionNames[funcId] || funcId;
-    recommendations.long_term_objectives.push(
-      `Strengthen ${funcName} function capabilities (Total gap: ${Math.round(totalGap)})`
+    (recommendations as any).long_term_objectives.push(
+      `Strengthen ${funcName} function capabilities (Total gap: ${(Math as any).round(totalGap)})`
     );
   }
   
   // Resource requirements based on effort scores
-  if (gapSummary.total_effort_required > 100) {
-    recommendations.resource_requirements.push(
+  if ((gapSummary as any).total_effort_required > 100) {
+    (recommendations as any).resource_requirements.push(
       'Significant resource allocation required (100+ effort points)'
     );
   }
   
-  if (gapSummary.critical_gaps > 5) {
-    recommendations.resource_requirements.push(
+  if ((gapSummary as any).critical_gaps > 5) {
+    (recommendations as any).resource_requirements.push(
       'Dedicated security team needed for critical gap remediation'
     );
   }
   
-  if (quickWins && quickWins.item_count > 10) {
-    recommendations.resource_requirements.push(
-      `${quickWins.item_count} quick wins available - allocate resources for rapid implementation`
+  if (quickWins && (quickWins as any).item_count > 10) {
+    (recommendations as any).resource_requirements.push(
+      `${(quickWins as any).item_count} quick wins available - allocate resources for rapid implementation`
     );
   }
   
-  if (strategic && strategic.total_effort > 50) {
-    recommendations.resource_requirements.push(
+  if (strategic && (strategic as any).total_effort > 50) {
+    (recommendations as any).resource_requirements.push(
       'Multi-phase project planning required for strategic initiatives'
     );
   }
@@ -476,23 +476,23 @@ function generateRecommendations(
  * Calculate profile summary
  */
 function calculateProfileSummary(profileId: string, db: any): any {
-  const assessments = db.getProfileAssessments(profileId);
+  const assessments = (db as any).getProfileAssessments(profileId);
   
-  if (!assessments || assessments.length === 0) {
+  if (!assessments || (assessments as any).length === 0) {
     return { maturity: 0, implementation: 0 };
   }
   
-  const implemented = assessments.filter(
-    (a: any) => a.implementation_level !== 'not_implemented'
+  const implemented = (assessments as any).filter(
+    (a: any) => (a as any).implementation_level !== 'not_implemented'
   ).length;
   
-  const totalMaturity = assessments.reduce(
-    (sum: number, a: any) => sum + (a.maturity_score || 0), 0
+  const totalMaturity = (assessments as any).reduce(
+    (sum: number, a: any) => sum + ((a as any).maturity_score || 0), 0
   );
   
   return {
-    maturity: Math.round((totalMaturity / assessments.length) * 20),
-    implementation: Math.round((implemented / assessments.length) * 100)
+    maturity: (Math as any).round((totalMaturity / (assessments as any).length) * 20),
+    implementation: (Math as any).round((implemented / (assessments as any).length) * 100)
   };
 }
 
@@ -501,18 +501,18 @@ function calculateProfileSummary(profileId: string, db: any): any {
  */
 function formatGapItem(gap: any): GapItem {
   return {
-    subcategory_id: gap.subcategory_id,
-    subcategory_name: gap.subcategory_name || gap.subcategory_id,
-    function_id: gap.subcategory_id.substring(0, 2),
-    category_id: gap.subcategory_id.substring(0, 5),
-    current_implementation: gap.current_implementation || 'not_implemented',
-    target_implementation: gap.target_implementation || 'fully_implemented',
-    current_maturity: gap.current_maturity || 0,
-    target_maturity: gap.target_maturity || 5,
-    gap_score: gap.gap_score || 0,
-    risk_score: gap.risk_score || 0,
-    effort_score: gap.effort_score || 5,
-    priority_rank: gap.priority_rank || 999,
+    subcategory_id: (gap as any).subcategory_id,
+    subcategory_name: (gap as any).subcategory_name || (gap as any).subcategory_id,
+    function_id: (gap as any).subcategory_id.substring(0, 2),
+    category_id: (gap as any).subcategory_id.substring(0, 5),
+    current_implementation: (gap as any).current_implementation || 'not_implemented',
+    target_implementation: (gap as any).target_implementation || 'fully_implemented',
+    current_maturity: (gap as any).current_maturity || 0,
+    target_maturity: (gap as any).target_maturity || 5,
+    gap_score: (gap as any).gap_score || 0,
+    risk_score: (gap as any).risk_score || 0,
+    effort_score: (gap as any).effort_score || 5,
+    priority_rank: (gap as any).priority_rank || 999,
     improvement_required: describeImprovement(gap)
   };
 }
@@ -521,8 +521,8 @@ function formatGapItem(gap: any): GapItem {
  * Describe the improvement required
  */
 function describeImprovement(gap: any): string {
-  const current = gap.current_implementation || 'not_implemented';
-  const target = gap.target_implementation || 'fully_implemented';
+  const current = (gap as any).current_implementation || 'not_implemented';
+  const target = (gap as any).target_implementation || 'fully_implemented';
   
   const improvements: Record<string, Record<string, string>> = {
     'not_implemented': {

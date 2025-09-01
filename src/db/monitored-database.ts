@@ -22,56 +22,56 @@ export class MonitoredDatabase extends CSFDatabase {
     this.getOrganization = monitorDatabaseQuery(
       'SELECT', 
       'organizations',
-      originalGetOrganization
+      originalGetOrganization as (...args: any[]) => any
     ) as any;
     
     const originalCreateOrganization = this.createOrganization.bind(this);
     this.createOrganization = monitorDatabaseQuery(
       'INSERT',
       'organizations', 
-      originalCreateOrganization
+      originalCreateOrganization as (...args: any[]) => any
     ) as any;
     
     const originalUpsertImplementation = this.upsertImplementation.bind(this);
     this.upsertImplementation = monitorDatabaseQuery(
       'UPSERT',
       'implementations',
-      originalUpsertImplementation
+      originalUpsertImplementation as (...args: any[]) => any
     ) as any;
     
     const originalGetImplementations = this.getImplementations.bind(this);
     this.getImplementations = monitorDatabaseQuery(
       'SELECT',
       'implementations',
-      originalGetImplementations
+      originalGetImplementations as (...args: any[]) => any
     ) as any;
     
     const originalUpsertRiskAssessment = this.upsertRiskAssessment.bind(this);
     this.upsertRiskAssessment = monitorDatabaseQuery(
       'UPSERT',
       'risk_assessments',
-      originalUpsertRiskAssessment
+      originalUpsertRiskAssessment as (...args: any[]) => any
     ) as any;
     
     const originalGetRiskAssessments = this.getRiskAssessments.bind(this);
     this.getRiskAssessments = monitorDatabaseQuery(
       'SELECT',
       'risk_assessments',
-      originalGetRiskAssessments
+      originalGetRiskAssessments as (...args: any[]) => any
     ) as any;
     
     const originalUpsertGapAnalysis = this.upsertGapAnalysis.bind(this);
     this.upsertGapAnalysis = monitorDatabaseQuery(
       'UPSERT',
       'gap_analyses',
-      originalUpsertGapAnalysis
+      originalUpsertGapAnalysis as (...args: any[]) => any
     ) as any;
     
     const originalGetGapAnalyses = this.getGapAnalyses.bind(this);
     this.getGapAnalyses = monitorDatabaseQuery(
       'SELECT',
       'gap_analyses',
-      originalGetGapAnalyses
+      originalGetGapAnalyses as (...args: any[]) => any
     ) as any;
   }
   
@@ -96,10 +96,18 @@ export class MonitoredDatabase extends CSFDatabase {
       });
       
       // Record current gauge values
-      metrics.gauge('db_organizations_count', (stats as any).organizations || 0);
-      metrics.gauge('db_implementations_count', (stats as any).implementations || 0);
-      metrics.gauge('db_risk_assessments_count', (stats as any).risk_assessments || 0);
-      metrics.gauge('db_gap_analyses_count', (stats as any).gaps || 0);
+      interface StatsResult {
+        organizations?: number;
+        implementations?: number;
+        risk_assessments?: number;
+        gaps?: number;
+      }
+      const typedStats = stats as StatsResult;
+      
+      metrics.gauge('db_organizations_count', typedStats.organizations || 0);
+      metrics.gauge('db_implementations_count', typedStats.implementations || 0);
+      metrics.gauge('db_risk_assessments_count', typedStats.risk_assessments || 0);
+      metrics.gauge('db_gap_analyses_count', typedStats.gaps || 0);
       
       return stats;
     } catch (error) {

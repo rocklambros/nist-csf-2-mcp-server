@@ -193,7 +193,10 @@ async function loadBenchmarkData(db: CSFDatabase, industry: string, organization
       // Adjust scores based on organization size
       similarBenchmarks.forEach(b => {
         const adjusted = adjustBenchmarkForSize(b, organizationSize);
-        db.upsertIndustryBenchmark(adjusted);
+        db.upsertIndustryBenchmark({
+          ...adjusted,
+          id: `${adjusted.industry}_${adjusted.organization_size}_${adjusted.csf_function}_${adjusted.metric_name}`
+        });
       });
     } else {
       // Use cross-industry average
@@ -202,7 +205,10 @@ async function loadBenchmarkData(db: CSFDatabase, industry: string, organization
   } else {
     // Load exact matches
     relevantBenchmarks.forEach(b => {
-      db.upsertIndustryBenchmark(b);
+      db.upsertIndustryBenchmark({
+        ...b,
+        id: `${b.industry}_${b.organization_size}_${b.csf_function}_${b.metric_name}`
+      });
     });
   }
 }
@@ -245,6 +251,7 @@ function createDefaultBenchmarks(db: CSFDatabase, industry: string, organization
   
   functions.forEach(func => {
     db.upsertIndustryBenchmark({
+      id: `${industry}_${organizationSize}_${func}_maturity_score`,
       industry,
       organization_size: organizationSize,
       csf_function: func,

@@ -50,7 +50,7 @@ export async function getQuestionContext(params: GetQuestionContextParams) {
     });
 
     // Get context from question bank service
-    const context = await questionBankService.getQuestionContext(validatedParams);
+    const context = await questionBankService.getQuestionContext(validatedParams as any);
 
     // Enhance context with additional guidance
     const enhancedContext = await enhanceContextWithGuidance(context, validatedParams);

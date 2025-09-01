@@ -64,7 +64,7 @@ export async function trackProgress(
         current_maturity: update.current_maturity,
         completion_percentage,
         status: update.status,
-        is_blocked: update.is_blocked ? 1 : 0,
+        is_blocked: update.is_blocked || false,
         blocking_reason: update.blocking_reason,
         notes: update.notes,
         trend: 'stable'

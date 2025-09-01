@@ -339,10 +339,11 @@ curl -X POST http://localhost:8080/api/tools/assess_maturity \
 ```
 
 #### Option 2: Custom GPT Configuration
-Create a Custom GPT with these endpoints:
+Create a Custom GPT with action configuration:
 - **Base URL**: `http://localhost:8080/api/tools/`
 - **Available Endpoints**: All 39 MCP tools available as HTTP endpoints
 - **Authentication**: None required (configurable)
+- **OpenAPI Schema**: Import the [openapi_3.1.0_actions.yaml](./openapi_3.1.0_actions.yaml) file when adding actions to your custom GPT
 
 ### Legacy: ChatGPT Integration (via MCP Connectors)
 
