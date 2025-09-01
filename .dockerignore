@@ -37,6 +37,7 @@ Thumbs.db
 # Logs
 logs/
 *.log
+caddy.log
 
 # Documentation (except README)
 docs/
