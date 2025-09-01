@@ -28,6 +28,38 @@ I want to conduct a comprehensive NIST CSF 2.0 assessment for my organization. P
 Walk me through each step and explain the results.
 ```
 
+### Authentic Assessment Workflow (New & Recommended)
+```
+I need to start an official NIST CSF 2.0 assessment for my organization that prevents synthetic data and ensures authentic responses. Please help me:
+
+1. Use start_assessment_workflow to begin a comprehensive assessment for:
+   - Organization: "Healthcare Solutions Inc"
+   - Sector: "Healthcare"
+   - Size: "large"
+   - Contact: "Sarah Johnson" (sarah.johnson@healthcaresolutions.com)
+   - Timeline: 12 weeks for full framework assessment
+
+2. Once started, use check_assessment_workflow_status to monitor progress
+3. Guide me through the authentic data collection process
+4. Help me understand what real organizational information is needed at each step
+
+This should create a proper audit trail and prevent any fake assessment data.
+```
+
+### Multi-Organization Assessment Management
+```
+I'm a consultant managing multiple client assessments. Help me:
+
+1. Start separate assessment workflows for three different organizations:
+   - Small retail company (4-week timeline, specific focus on PR and DE functions)
+   - Medium manufacturing company (8-week timeline, full framework)
+   - Large financial services firm (16-week timeline, full framework with compliance focus)
+
+2. Show me how to check status on all workflows and track progress
+3. Demonstrate how the workflow prevents data contamination between clients
+4. Guide me through proper handoff procedures for client-specific assessments
+```
+
 ## 🔍 Framework Query & Search Tools (3 Tools)
 
 ### 1. CSF Lookup Tool (`csf_lookup`)
@@ -116,9 +148,62 @@ Use only when:
 ⚠️ This action cannot be undone. Ensure you have backups if needed.
 ```
 
+## 🔄 Comprehensive Assessment Workflow Tools (2 Tools)
+
+### 7. Start Assessment Workflow (`start_assessment_workflow`)
+```
+Start a comprehensive NIST CSF 2.0 assessment with proper audit trail for my technology startup:
+
+{
+  "org_name": "InnovateNow Technologies",
+  "sector": "Technology",
+  "size": "small",
+  "contact_name": "Maria Rodriguez", 
+  "contact_email": "maria.rodriguez@innovatenow.tech",
+  "description": "Cloud-based software development company with 45 employees",
+  "assessment_scope": "full",
+  "timeline_weeks": 6
+}
+
+Expected outcome: Creates workflow ID, sets up authentic data collection, provides next steps for real assessment data gathering.
+```
+
+### 8. Check Assessment Workflow Status (`check_assessment_workflow_status`)
+```
+Monitor the progress of my assessment workflow:
+
+{
+  "workflow_id": "workflow_67890abc"
+}
+
+Show me:
+- Current completion percentage and questions answered
+- What specific information I need to provide next
+- Timeline status and expected completion date
+- Quality validation status and any data authenticity issues
+```
+
+### Advanced Workflow: Multi-Function Assessment
+```
+Start a targeted assessment focusing only on Identify and Protect functions for a healthcare organization:
+
+{
+  "org_name": "Regional Medical Center",
+  "sector": "Healthcare", 
+  "size": "large",
+  "contact_name": "Dr. James Wilson",
+  "contact_email": "j.wilson@regionalmedcenter.org",
+  "assessment_scope": "specific_functions",
+  "target_functions": ["ID", "PR"],
+  "timeline_weeks": 4
+}
+
+Then monitor with check_assessment_workflow_status and guide through function-specific data collection.
+```
+
 ## 🎯 Assessment & Scoring Tools (8 Tools)
 
-### 8. Quick Assessment (`quick_assessment`)
+### 9. Quick Assessment (`quick_assessment`)
 ```
 Perform a quick assessment for profile PROF-123 with these simplified responses:
 - Govern: We have basic policies but limited governance structure (partial)
