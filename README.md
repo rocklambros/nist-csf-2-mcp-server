@@ -84,11 +84,71 @@ docker-compose up -d
 # 🎉 Server ready in ~0.4 seconds on http://localhost:8080
 # ✅ Complete NIST CSF 2.0 framework (6 functions, 34 categories, 185 subcategories)
 # ✅ All 39 specialized MCP tools immediately available
-# ✅ 424 assessment questions pre-loaded and verified
+# ✅ 740 assessment questions pre-loaded and verified (4 per subcategory)
 # ✅ Production security, monitoring, and audit logging enabled
 ```
 
 **Instant deployment.** Your comprehensive NIST CSF 2.0 MCP Server is running with complete framework data, multi-tier security, and all tools ready for AI integration.
+
+## 🎯 Assessment Workflows (User-Friendly)
+
+### 🚀 Quick Assessment (6 Questions)
+Perfect for initial cybersecurity posture evaluation with interactive visual dashboards.
+
+**Simple Prompt:**
+```
+I want to run a quick cybersecurity assessment for my organization. Please walk me through 6 questions covering all NIST CSF functions (Govern, Identify, Protect, Detect, Respond, Recover). 
+
+Ask me the questions one by one and I'll describe our current capabilities. Then create a visual dashboard showing our maturity scores and priority recommendations.
+
+My organization profile ID is: [your-profile-id]
+```
+
+**What Happens:**
+1. System presents 6 interactive questions about your cybersecurity capabilities
+2. You respond conversationally (e.g., "We have basic policies but need improvement")
+3. Generates visual maturity dashboard with color-coded function scores
+4. Provides priority recommendations for immediate improvements
+
+### 🏢 Comprehensive Assessment (740 Questions)
+Complete enterprise-grade assessment across all NIST CSF subcategories with authentic data collection.
+
+**Simple Prompt:**
+```
+I need to conduct a comprehensive NIST CSF 2.0 assessment for my organization. Please start the full assessment process with:
+
+Company: TechCorp Solutions
+Industry: Technology Services
+Size: Medium (150 employees) 
+Contact: Sarah Johnson (sarah.johnson@techcorp.com)
+Timeline: 8 weeks
+
+Guide me through all 740 questions and create visual dashboards showing progress, maturity scores, gap analysis, and implementation roadmaps.
+```
+
+**What Happens:**
+1. **Organization Setup**: Creates authentic profile with your real company data
+2. **Interactive Questioning**: Guides you through 740 detailed questions across 4 assessment dimensions
+3. **Progress Tracking**: Visual dashboards show completion status and preliminary results
+4. **Comprehensive Analysis**: Generates executive dashboards, risk heat maps, and implementation timelines
+5. **Visual Reporting**: Interactive charts for leadership presentations
+
+### 📊 Visual Dashboard Features
+Both workflows generate rich, interactive visualizations:
+
+- **📈 Maturity Radar Charts**: Function-level scoring across all 6 NIST CSF areas
+- **🚦 Risk Heat Maps**: Color-coded priority matrices for implementation planning  
+- **📊 Progress Dashboards**: Real-time assessment completion tracking
+- **🎯 Gap Analysis Visuals**: Current vs. target state comparisons with improvement paths
+- **📅 Timeline Roadmaps**: Phased implementation plans with milestone tracking
+- **💼 Executive Summaries**: Business-ready presentations for leadership
+
+### 🔑 Key Benefits
+- **No Technical Knowledge Required**: Conversational prompts, no JSON or code
+- **Authentic Data Only**: System prevents fake data generation
+- **Interactive Process**: Guided step-by-step with clear explanations
+- **Visual Results**: Rich dashboards and charts for stakeholder communication
+- **Enterprise Ready**: Complete audit trails and compliance documentation
 
 ### Alternative: Native Installation (5+ minutes)
 ```bash
