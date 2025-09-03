@@ -59,14 +59,10 @@ interface AssessmentResponse {
  * Main persistent assessment function
  */
 export async function persistentComprehensiveAssessment(params: PersistentAssessmentParams): Promise<AssessmentResponse> {
-  const db = getDatabase();
   const progressManager = getProgressManager();
 
   try {
     const { workflow_id, action } = params;
-
-    // Get existing session or create new one
-    let session = progressManager.getAssessmentSession(workflow_id);
 
     switch (action) {
       case 'start':
@@ -132,7 +128,7 @@ async function startNewAssessment(workflowId: string, progressManager: any): Pro
   });
 
   // Initialize question progress
-  const questionList = questions.map((q: any, index: number) => ({
+  const questionList = questions.map((q: any) => ({
     id: q.id,
     subcategory_id: q.subcategory_id
   }));
