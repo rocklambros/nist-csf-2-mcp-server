@@ -211,11 +211,11 @@ export async function estimateImplementationCost(params: EstimateImplementationC
           id: uuidv4(),
           subcategory_id: subcategoryId,
           organization_size: params.organization_size,
-          labor_cost: estimate.labor_cost,
-          tools_cost: estimate.tools_cost,
-          training_cost: estimate.training_cost,
-          total_cost: estimate.total_cost,
-          effort_hours: estimate.effort_hours
+          labor_cost: Number(estimate.labor_cost) || 0,
+          tools_cost: Number(estimate.tools_cost) || 0,
+          training_cost: Number(estimate.training_cost) || 0,
+          total_cost: Number(estimate.total_cost) || 0,
+          effort_hours: Number(estimate.effort_hours) || 0
         });
       }
       
@@ -225,12 +225,12 @@ export async function estimateImplementationCost(params: EstimateImplementationC
         subcategory_id: subcategoryId,
         subcategory_name: (subcategory && 'name' in subcategory ? subcategory.name : subcategoryId) as string,
         function_id: subcategoryId.substring(0, 2),
-        labor_cost: estimate.labor_cost,
-        tools_cost: estimate.tools_cost,
-        training_cost: estimate.training_cost,
-        consulting_cost: estimate.labor_cost * costModel.consulting_percentage,
-        total_cost: estimate.total_cost,
-        effort_hours: estimate.effort_hours,
+        labor_cost: Number(estimate.labor_cost) || 0,
+        tools_cost: Number(estimate.tools_cost) || 0,
+        training_cost: Number(estimate.training_cost) || 0,
+        consulting_cost: (Number(estimate.labor_cost) || 0) * costModel.consulting_percentage,
+        total_cost: Number(estimate.total_cost) || 0,
+        effort_hours: Number(estimate.effort_hours) || 0,
         complexity_factor: COMPLEXITY_FACTORS[subcategoryId] || 1.0,
         risk_factor: calculateRiskFactor(subcategoryId)
       });

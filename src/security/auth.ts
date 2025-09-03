@@ -119,7 +119,7 @@ export class AuthMiddleware {
       return;
     }
     
-    this.client.getSigningKey(header.kid!, (err, key) => {
+    this.client.getSigningKey(header.kid || '', (err, key) => {
       if (err) {
         callback(err);
       } else {

@@ -290,10 +290,10 @@ export async function checkAssessmentWorkflowStatus(params: { workflow_id: strin
     }
     
     // Calculate progress
-    const progress = await calculateWorkflowProgress(workflow as WorkflowRecord);
+    const progress = await calculateWorkflowProgress(workflow as unknown as WorkflowRecord);
     
     // Determine next action
-    const nextAction = determineNextAction(workflow as WorkflowRecord, progress, organization);
+    const nextAction = determineNextAction(workflow as unknown as WorkflowRecord, progress, organization);
     
     return {
       success: true,

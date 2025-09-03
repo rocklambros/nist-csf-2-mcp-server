@@ -60,13 +60,13 @@ interface ImplementationPlan {
   total_effort_hours: number;
   estimated_cost: number;
   status: string;
-  phases?: any[];
+  phases?: ImplementationPhase[];
 }
 
 // Additional type interfaces removed for compilation
 
 interface DatabaseRow {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface ImplementationPhase {
@@ -1925,7 +1925,7 @@ export class CSFDatabase {
     );
   }
 
-  getImplementationPlan(planId: string): any {
+  getImplementationPlan(planId: string): DatabaseRow | null {
     const plan = this.db.prepare(`
       SELECT * FROM implementation_plans WHERE id = ?
     `).get(planId);
@@ -1961,10 +1961,10 @@ export class CSFDatabase {
     }
     
     (plan as PlanWithPhases).phases = phases as PhaseWithItems[];
-    return plan;
+    return plan as DatabaseRow;
   }
 
-  getSubcategoryDependencies(subcategoryId: string): any[] {
+  getSubcategoryDependencies(subcategoryId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT 
         sd.*,
@@ -1974,7 +1974,7 @@ export class CSFDatabase {
       JOIN subcategories s ON sd.depends_on_subcategory_id = s.id
       WHERE sd.subcategory_id = ?
       ORDER BY sd.dependency_strength DESC
-    `).all(subcategoryId);
+    `).all(subcategoryId) as DatabaseRow[];
   }
 
   createSubcategoryDependency(dep: PhaseDependency): void {
@@ -1994,11 +1994,11 @@ export class CSFDatabase {
     );
   }
 
-  getCostEstimate(subcategoryId: string, organizationSize: string): any {
+  getCostEstimate(subcategoryId: string, organizationSize: string): DatabaseRow | null {
     return this.db.prepare(`
       SELECT * FROM cost_estimates 
       WHERE subcategory_id = ? AND organization_size = ?
-    `).get(subcategoryId, organizationSize);
+    `).get(subcategoryId, organizationSize) as DatabaseRow | null;
   }
 
   createCostEstimate(estimate: CostEstimate): void {
@@ -2021,7 +2021,7 @@ export class CSFDatabase {
     );
   }
 
-  getSuggestedActions(profileId: string, capacityHours: number): any[] {
+  getSuggestedActions(profileId: string, capacityHours: number): DatabaseRow[] {
     const sql = `
       WITH current_state AS (
         SELECT 
@@ -2106,7 +2106,7 @@ export class CSFDatabase {
       LIMIT 5
     `;
     
-    return this.db.prepare(sql).all(profileId, profileId, capacityHours, capacityHours);
+    return this.db.prepare(sql).all(profileId, profileId, capacityHours, capacityHours) as DatabaseRow[];
   }
 
   getGapAnalysisItems(gapAnalysisId: string): any[] {
@@ -2119,10 +2119,10 @@ export class CSFDatabase {
       JOIN subcategories s ON g.subcategory_id = s.id
       WHERE g.id LIKE ? || '%'
       ORDER BY g.priority_rank
-    `).all(gapAnalysisId);
+    `).all(gapAnalysisId) as DatabaseRow[];
   }
 
-  calculateDependencyGraph(subcategoryIds: string[]): any {
+  calculateDependencyGraph(subcategoryIds: string[]): DatabaseRow {
     const placeholders = subcategoryIds.map(() => '?').join(',');
     
     interface DependencyRow extends DatabaseRow {
@@ -2160,7 +2160,7 @@ export class CSFDatabase {
     
     for (const dep of dependencies) {
       if (!graph[dep.from_id]) graph[dep.from_id] = [];
-      graph[dep.from_id]!.push(dep);
+      if (graph[dep.from_id]) graph[dep.from_id].push(dep);
       
       if (subcategoryIds.includes(dep.from_id)) {
         inDegree[dep.from_id] = (inDegree[dep.from_id] || 0) + 1;
@@ -2178,12 +2178,13 @@ export class CSFDatabase {
     }
     
     while (queue.length > 0) {
-      const current = queue.shift()!;
+      const current = queue.shift();
+      if (!current) break;
       sorted.push(current);
       
       for (const dep of (graph[current] || [])) {
         if (inDegree[dep.to_id] !== undefined) {
-          inDegree[dep.to_id]!--;
+          inDegree[dep.to_id] = (inDegree[dep.to_id] || 0) - 1;
           if (inDegree[dep.to_id] === 0) {
             queue.push(dep.to_id);
           }
@@ -2243,7 +2244,7 @@ export class CSFDatabase {
     );
   }
 
-  getProgressTracking(profileId: string): any[] {
+  getProgressTracking(profileId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT 
         pt.*,
@@ -2259,7 +2260,7 @@ export class CSFDatabase {
     `).all(profileId);
   }
 
-  getProgressSummary(profileId: string): any {
+  getProgressSummary(profileId: string): DatabaseRow | null {
     const sql = `
       WITH progress_stats AS (
         SELECT 
@@ -2345,7 +2346,7 @@ export class CSFDatabase {
     );
   }
 
-  getProgressMilestones(profileId: string): any[] {
+  getProgressMilestones(profileId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT 
         *,
@@ -2362,7 +2363,7 @@ export class CSFDatabase {
     `).all(profileId);
   }
 
-  calculateVelocity(profileId: string, daysBack: number = 30): any {
+  calculateVelocity(profileId: string, daysBack: number = 30): DatabaseRow | null {
     const sql = `
       WITH velocity_data AS (
         SELECT 
@@ -2449,7 +2450,7 @@ export class CSFDatabase {
     );
   }
 
-  getIndustryBenchmarks(industry: string, organizationSize: string): any[] {
+  getIndustryBenchmarks(industry: string, organizationSize: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT * FROM industry_benchmarks
       WHERE industry = ? AND organization_size = ?
@@ -2457,7 +2458,7 @@ export class CSFDatabase {
     `).all(industry, organizationSize);
   }
 
-  compareProfileToBenchmark(profileId: string, industry: string, organizationSize: string): any {
+  compareProfileToBenchmark(profileId: string, industry: string, organizationSize: string): DatabaseRow | null {
     const sql = `
       WITH profile_scores AS (
         SELECT 
@@ -2507,7 +2508,7 @@ export class CSFDatabase {
   // REPORTING METHODS
   // ============================================================================
 
-  getExecutiveReportData(profileId: string): any {
+  getExecutiveReportData(profileId: string): DatabaseRow | null {
     const sql = `
       WITH function_scores AS (
         SELECT 
@@ -2575,7 +2576,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(profileId, profileId, profileId, profileId);
   }
 
-  getTechnicalReportData(profileId: string): any {
+  getTechnicalReportData(profileId: string): DatabaseRow | null {
     const sql = `
       WITH subcategory_details AS (
         SELECT 
@@ -2640,7 +2641,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(profileId, profileId);
   }
 
-  getProgressReportData(profileId: string): any {
+  getProgressReportData(profileId: string): DatabaseRow | null {
     const sql = `
       WITH progress_overview AS (
         SELECT 
@@ -2710,7 +2711,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(profileId, profileId, profileId, profileId);
   }
 
-  getAuditReportData(profileId: string): any {
+  getAuditReportData(profileId: string): DatabaseRow | null {
     const sql = `
       WITH audit_trail AS (
         SELECT 
@@ -2746,7 +2747,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(profileId, profileId);
   }
 
-  compareProfiles(profileIds: string[]): any {
+  compareProfiles(profileIds: string[]): DatabaseRow | null {
     const placeholders = profileIds.map(() => '?').join(',');
     const sql = `
       WITH profile_comparisons AS (
@@ -2797,7 +2798,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(...profileIds, ...profileIds);
   }
 
-  exportProfileData(profileId: string): any {
+  exportProfileData(profileId: string): DatabaseRow | null {
     const sql = `
       SELECT 
         -- Profile Information
@@ -2857,7 +2858,7 @@ export class CSFDatabase {
   // DATA IMPORT AND EVIDENCE VALIDATION
   // ============================================================================
 
-  getAssessment(assessmentId: string): any {
+  getAssessment(assessmentId: string): DatabaseRow | null {
     return this.db.prepare(`
       SELECT * FROM subcategory_assessments 
       WHERE assessment_id = ?
@@ -3057,7 +3058,7 @@ export class CSFDatabase {
     `).run(status, notes, validatedBy, evidenceId);
   }
 
-  getEvidenceForAssessment(assessmentId: string): any[] {
+  getEvidenceForAssessment(assessmentId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT * FROM audit_evidence 
       WHERE assessment_id = ? 
@@ -3065,7 +3066,7 @@ export class CSFDatabase {
     `).all(assessmentId);
   }
 
-  getEvidenceValidationReport(profileId: string): any {
+  getEvidenceValidationReport(profileId: string): DatabaseRow | null {
     const stats = this.db.prepare(`
       SELECT 
         validation_status,
@@ -3110,7 +3111,7 @@ export class CSFDatabase {
   }
 
   getImportValidationErrors(
-    data: any[],
+    data: DatabaseRow[],
     _format: 'csv' | 'json' | 'excel'
   ): Array<{ row: number; field: string; error: string }> {
     const errors: Array<{ row: number; field: string; error: string }> = [];
@@ -3306,7 +3307,7 @@ export class CSFDatabase {
     sector?: string;
     includeOptions?: boolean;
     includeExamples?: boolean;
-  }): any[] {
+  }): DatabaseRow[] {
     let sql = `
       SELECT 
         qb.*,
@@ -3318,7 +3319,7 @@ export class CSFDatabase {
       WHERE qb.subcategory_id = ?
     `;
 
-    const params: any[] = [subcategoryId];
+    const params: unknown[] = [subcategoryId];
 
     if (filters?.questionType) {
       sql += ' AND qb.question_type = ?';
@@ -3363,7 +3364,7 @@ export class CSFDatabase {
   /**
    * Get question options
    */
-  getQuestionOptions(questionId: string): any[] {
+  getQuestionOptions(questionId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT * FROM question_options 
       WHERE question_id = ? 
@@ -3377,13 +3378,13 @@ export class CSFDatabase {
   getQuestionExamples(questionId: string, filters?: {
     organizationSize?: string;
     sector?: string;
-  }): any[] {
+  }): DatabaseRow[] {
     let sql = `
       SELECT * FROM question_examples 
       WHERE question_id = ?
     `;
 
-    const params: any[] = [questionId];
+    const params: unknown[] = [questionId];
 
     if (filters?.organizationSize) {
       sql += ' AND (organization_size IS NULL OR organization_size = ?)';
@@ -3403,7 +3404,7 @@ export class CSFDatabase {
   /**
    * Get question context for a subcategory
    */
-  getQuestionContext(subcategoryId: string): any {
+  getQuestionContext(subcategoryId: string): DatabaseRow | null {
     const result = this.db.prepare(`
       SELECT * FROM question_context WHERE subcategory_id = ?
     `).get(subcategoryId);
@@ -3473,7 +3474,7 @@ export class CSFDatabase {
   /**
    * Get question responses for a profile
    */
-  getQuestionResponses(profileId: string, subcategoryId?: string): any[] {
+  getQuestionResponses(profileId: string, subcategoryId?: string): DatabaseRow[] {
     let sql = `
       SELECT 
         qr.*,
@@ -3487,7 +3488,7 @@ export class CSFDatabase {
       WHERE qr.profile_id = ?
     `;
 
-    const params: any[] = [profileId];
+    const params: unknown[] = [profileId];
 
     if (subcategoryId) {
       sql += ' AND qr.subcategory_id = ?';
@@ -3512,14 +3513,14 @@ export class CSFDatabase {
   /**
    * Prepare SQL statement (expose prepare method for seeding)
    */
-  prepare(sql: string): any {
+  prepare(sql: string): DatabaseStatement {
     return this.db.prepare(sql);
   }
 
   /**
    * Get question bank statistics
    */
-  getQuestionBankStats(): any {
+  getQuestionBankStats(): DatabaseRow | null {
     interface CountRow extends DatabaseRow {
       count: number;
     }

@@ -5,6 +5,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { execSync } from 'child_process';
 import { logger } from './logger.js';
 
 const LOCK_FILE = path.join(os.tmpdir(), 'nist-csf-mcp-server.lock');
@@ -100,7 +101,7 @@ export function terminateExistingInstance(instance: ServerInstance): boolean {
       try {
         process.kill(instance.pid, 0);
         // Process still exists, wait a bit more
-        require('child_process').execSync('sleep 0.1');
+        execSync('sleep 0.1');
       } catch {
         // Process has terminated
         logger.info('Existing instance terminated gracefully', { pid: instance.pid });
