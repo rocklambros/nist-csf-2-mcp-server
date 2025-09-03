@@ -1,4 +1,5 @@
 import { CSFDatabase } from "../db/database.js";
+import { logger } from '../utils/logger.js';
 import { FrameworkLoader } from "../services/framework-loader.js";
 
 interface PolicyTemplateOptions {
@@ -305,7 +306,7 @@ export async function generatePolicyTemplate(
 
     return template;
   } catch (error) {
-    console.error('Error generating policy template:', error);
+    logger.error('Error generating policy template:', error);
     throw new Error(`Failed to generate policy template: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

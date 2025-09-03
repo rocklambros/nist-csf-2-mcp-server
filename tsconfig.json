@@ -19,18 +19,18 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     
-    // Type Checking - Completely disabled for build success  
+    // Type Checking - Gradual enablement for improved code quality
     "strict": false,
     "noImplicitAny": false,
     "strictNullChecks": false,
-    "strictFunctionTypes": false,
+    "strictFunctionTypes": true,
     "strictBindCallApply": false,
     "strictPropertyInitialization": false,
     "noImplicitThis": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": false,
+    "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": false,
     "noImplicitOverride": false,
     "noPropertyAccessFromIndexSignature": false,

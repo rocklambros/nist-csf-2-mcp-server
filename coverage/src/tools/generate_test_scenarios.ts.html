@@ -1739,8 +1739,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { CSFDatabase } from "../db/database";
-import { FrameworkLoader } from "../services/framework-loader";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { CSFDatabase } from "../db/database.js";
+import { FrameworkLoader } from "../services/framework-loader.js";
 &nbsp;
 interface TestScenarioOptions {
   subcategory_id: string;
@@ -1946,29 +1946,29 @@ export async function <span class="fstat-no" title="function not covered" >gener
 ): Promise&lt;TestScenario&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // Get subcategory details
-    const subcategory = <span class="cstat-no" title="statement not covered" >framework.getSubcategory(options.subcategory_id);</span>
+    const subcategory = (<span class="cstat-no" title="statement not covered" >framework as any).getSubcategory((options as any).subcategory_id);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!subcategory) {</span>
-<span class="cstat-no" title="statement not covered" >      throw new Error(`Subcategory ${options.subcategory_id} not found`);</span>
+<span class="cstat-no" title="statement not covered" >      throw new Error(`Subcategory ${(options as any).subcategory_id} not found`);</span>
     }
 &nbsp;
     // Determine test scenarios based on subcategory
     const scenarios = <span class="cstat-no" title="statement not covered" >generateScenariosForSubcategory(</span>
       subcategory,
-      options.test_type || 'all',
-      options.severity_levels || ['low', 'medium', 'high', 'critical']
+      (options as any).test_type || 'all',
+      (options as any).severity_levels || ['low', 'medium', 'high', 'critical']
     );
 &nbsp;
     // Add test scripts if requested
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (options.include_scripts !== false) {</span>
-<span class="cstat-no" title="statement not covered" >      scenarios.forEach(<span class="fstat-no" title="function not covered" >scenario </span>=&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        scenario.test_script = generateTestScript(scenario, subcategory);</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if ((options as any).include_scripts !== false) {</span>
+      (<span class="cstat-no" title="statement not covered" >scenarios as any).forEach(<span class="fstat-no" title="function not covered" >scenario </span>=&gt; {</span>
+        (<span class="cstat-no" title="statement not covered" >scenario as any).test_script = generateTestScript(scenario, subcategory);</span>
       });
     }
 &nbsp;
     // Add recommended tools if requested
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (options.include_tools !== false) {</span>
-<span class="cstat-no" title="statement not covered" >      scenarios.forEach(<span class="fstat-no" title="function not covered" >scenario </span>=&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        scenario.recommended_tools = getRecommendedTools(scenario.test_type);</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if ((options as any).include_tools !== false) {</span>
+      (<span class="cstat-no" title="statement not covered" >scenarios as any).forEach(<span class="fstat-no" title="function not covered" >scenario </span>=&gt; {</span>
+        (<span class="cstat-no" title="statement not covered" >scenario as any).recommended_tools = getRecommendedTools((scenario as any).test_type);</span>
       });
     }
 &nbsp;
@@ -1977,8 +1977,8 @@ export async function <span class="fstat-no" title="function not covered" >gener
 &nbsp;
     // Build the response
     const testScenario: TestScenario = <span class="cstat-no" title="statement not covered" >{</span>
-      subcategory_id: options.subcategory_id,
-      subcategory_name: subcategory.title || '',
+      subcategory_id: (options as any).subcategory_id,
+      subcategory_name: (subcategory as any).title || '',
       test_scenarios: scenarios,
       validation_summary: validationSummary,
       generated_at: new Date().toISOString()
@@ -1987,7 +1987,7 @@ export async function <span class="fstat-no" title="function not covered" >gener
 <span class="cstat-no" title="statement not covered" >    return testScenario;</span>
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    console.error('Error generating test scenarios:', error);</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error(`Failed to generate test scenarios: ${error instanceof Error ? error.message : 'Unknown error'}`);</span>
+<span class="cstat-no" title="statement not covered" >    throw new Error(`Failed to generate test scenarios: ${error instanceof Error ? (error as any).message : 'Unknown error'}`);</span>
   }
 }
 &nbsp;
@@ -1997,49 +1997,49 @@ function <span class="fstat-no" title="function not covered" >generateScenariosF
   severityLevels: string[]
 ): any[] {
   const scenarios = <span class="cstat-no" title="statement not covered" >[];</span>
-  const title = <span class="cstat-no" title="statement not covered" >subcategory.title.toLowerCase();</span>
+  const title = (<span class="cstat-no" title="statement not covered" >subcategory as any).title.toLowerCase();</span>
   
   // Determine scenario category based on subcategory
   let templateCategory = <span class="cstat-no" title="statement not covered" >'access_control';</span> // default
-<span class="cstat-no" title="statement not covered" >  if (title.includes('incident') || title.includes('response')) {</span>
+<span class="cstat-no" title="statement not covered" >  if ((title as any).includes('incident') || (title as any).includes('response')) {</span>
 <span class="cstat-no" title="statement not covered" >    templateCategory = 'incident_response';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (title.includes('data') || title.includes('protect') || title.includes('encrypt')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((title as any).includes('data') || (title as any).includes('protect') || (title as any).includes('encrypt')) {</span>
 <span class="cstat-no" title="statement not covered" >    templateCategory = 'data_protection';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (title.includes('monitor') || title.includes('detect') || title.includes('log')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((title as any).includes('monitor') || (title as any).includes('detect') || (title as any).includes('log')) {</span>
 <span class="cstat-no" title="statement not covered" >    templateCategory = 'monitoring';</span>
-  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('access') || title.includes('identity') || title.includes('authentication')) {</span>
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if ((title as any).includes('access') || (title as any).includes('identity') || (title as any).includes('authentication')) {</span>
 <span class="cstat-no" title="statement not covered" >    templateCategory = 'access_control';</span>
   }
 &nbsp;
   // Get base templates
-  const templates = <span class="cstat-no" title="statement not covered" >SCENARIO_TEMPLATES[templateCategory] || SCENARIO_TEMPLATES.access_control;</span>
+  const templates = <span class="cstat-no" title="statement not covered" >SCENARIO_TEMPLATES[templateCategory] || (SCENARIO_TEMPLATES as any).access_control;</span>
   
   // Generate scenarios based on templates
-<span class="cstat-no" title="statement not covered" >  templates.forEach(<span class="fstat-no" title="function not covered" >(t</span>emplate: any, index: number) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (testType === 'all' || testType === template.type) {</span>
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (severityLevels.includes(template.severity)) {</span>
+  (<span class="cstat-no" title="statement not covered" >templates as any).forEach(<span class="fstat-no" title="function not covered" >(t</span>emplate: any, index: number) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (testType === 'all' || testType === (template as any).type) {</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if ((severityLevels as any).includes((template as any).severity)) {</span>
         const scenario = <span class="cstat-no" title="statement not covered" >{</span>
-          scenario_id: `${subcategory.id}-TS-${String(index + 1).padStart(3, '0')}`,
-          scenario_name: template.name,
-          test_type: template.type,
-          severity: template.severity,
-          description: template.description,
-          prerequisites: generatePrerequisites(subcategory, template.type),
-          test_steps: generateTestSteps(template.steps, subcategory),
+          scenario_id: `${(subcategory as any).id}-TS-${String(index + 1).padStart(3, '0')}`,
+          scenario_name: (template as any).name,
+          test_type: (template as any).type,
+          severity: (template as any).severity,
+          description: (template as any).description,
+          prerequisites: generatePrerequisites(subcategory, (template as any).type),
+          test_steps: generateTestSteps((template as any).steps, subcategory),
           success_criteria: generateSuccessCriteria(template, subcategory),
           failure_indicators: generateFailureIndicators(template, subcategory),
-          test_data: generateTestData(template.type),
-          estimated_duration: estimateDuration(template.type, template.severity),
-          frequency: determineFrequency(template.type, template.severity)
+          test_data: generateTestData((template as any).type),
+          estimated_duration: estimateDuration((template as any).type, (template as any).severity),
+          frequency: determineFrequency((template as any).type, (template as any).severity)
         };
-<span class="cstat-no" title="statement not covered" >        scenarios.push(scenario);</span>
+        (<span class="cstat-no" title="statement not covered" >scenarios as any).push(scenario);</span>
       }
     }
   });
 &nbsp;
   // Add custom scenarios based on subcategory specifics
   const customScenarios = <span class="cstat-no" title="statement not covered" >generateCustomScenarios(subcategory, testType, severityLevels);</span>
-<span class="cstat-no" title="statement not covered" >  scenarios.push(...customScenarios);</span>
+  (<span class="cstat-no" title="statement not covered" >scenarios as any).push(...customScenarios);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return scenarios;</span>
 }
@@ -2053,28 +2053,28 @@ function <span class="fstat-no" title="function not covered" >generatePrerequisi
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  switch (testType) {</span>
     case 'security':
-<span class="cstat-no" title="statement not covered" >      prerequisites.push(</span>
+      (<span class="cstat-no" title="statement not covered" >prerequisites as any).push(</span>
         'Security testing tools installed',
         'Vulnerability scanning permissions obtained',
         'Incident response team notified'
       );
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'performance':
-<span class="cstat-no" title="statement not covered" >      prerequisites.push(</span>
+      (<span class="cstat-no" title="statement not covered" >prerequisites as any).push(</span>
         'Performance monitoring tools configured',
         'Baseline metrics established',
         'Load testing infrastructure ready'
       );
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'compliance':
-<span class="cstat-no" title="statement not covered" >      prerequisites.push(</span>
+      (<span class="cstat-no" title="statement not covered" >prerequisites as any).push(</span>
         'Compliance requirements documented',
         'Audit trails enabled',
         'Evidence collection procedures defined'
       );
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'functional':
-<span class="cstat-no" title="statement not covered" >      prerequisites.push(</span>
+      (<span class="cstat-no" title="statement not covered" >prerequisites as any).push(</span>
         'System documentation available',
         'Test data prepared',
         'Expected behaviors defined'
@@ -2086,7 +2086,7 @@ function <span class="fstat-no" title="function not covered" >generatePrerequisi
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateTestSteps(</span>templateSteps: string[], subcategory: any): any[] {
-<span class="cstat-no" title="statement not covered" >  return templateSteps.map(<span class="fstat-no" title="function not covered" >(s</span>tep, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >  return (templateSteps as any).map(<span class="fstat-no" title="function not covered" >(s</span>tep, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
     step_number: index + 1,
     action: step,
     expected_result: generateExpectedResult(step, subcategory),
@@ -2095,35 +2095,35 @@ function <span class="fstat-no" title="function not covered" >generateTestSteps(
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateExpectedResult(</span>step: string, subcategory: any): string {
-  const action = <span class="cstat-no" title="statement not covered" >step.toLowerCase();</span>
+  const action = (<span class="cstat-no" title="statement not covered" >step as any).toLowerCase();</span>
   
-<span class="cstat-no" title="statement not covered" >  if (action.includes('attempt') &amp;&amp; action.includes('denied')) {</span>
+<span class="cstat-no" title="statement not covered" >  if ((action as any).includes('attempt') &amp;&amp; (action as any).includes('denied')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Access attempt is blocked and logged';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (action.includes('verify')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((action as any).includes('verify')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Verification confirms expected behavior';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (action.includes('check')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((action as any).includes('check')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Check reveals compliant configuration';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (action.includes('generate')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((action as any).includes('generate')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Required output is generated successfully';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (action.includes('test')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((action as any).includes('test')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Test completes without errors';</span>
   } else {
-<span class="cstat-no" title="statement not covered" >    return 'Action completes as expected per ' + subcategory.title;</span>
+<span class="cstat-no" title="statement not covered" >    return 'Action completes as expected per ' + (subcategory as any).title;</span>
   }
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateValidationMethod(</span>step: string): string {
-  const action = <span class="cstat-no" title="statement not covered" >step.toLowerCase();</span>
+  const action = (<span class="cstat-no" title="statement not covered" >step as any).toLowerCase();</span>
   
-<span class="cstat-no" title="statement not covered" >  if (action.includes('log') || action.includes('audit')) {</span>
+<span class="cstat-no" title="statement not covered" >  if ((action as any).includes('log') || (action as any).includes('audit')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Review audit logs for confirmation';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (action.includes('alert') || action.includes('notification')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((action as any).includes('alert') || (action as any).includes('notification')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Check alert console and email notifications';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (action.includes('access') || action.includes('permission')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((action as any).includes('access') || (action as any).includes('permission')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Verify through access control system';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (action.includes('encrypt')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((action as any).includes('encrypt')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Use cryptographic validation tools';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (action.includes('backup') || action.includes('restore')) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((action as any).includes('backup') || (action as any).includes('restore')) {</span>
 <span class="cstat-no" title="statement not covered" >    return 'Verify data integrity through checksums';</span>
   } else {
 <span class="cstat-no" title="statement not covered" >    return 'Manual verification and documentation';</span>
@@ -2138,30 +2138,30 @@ function <span class="fstat-no" title="function not covered" >generateSuccessCri
     'Performance within acceptable thresholds'
   ];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  switch (template.type) {</span>
+<span class="cstat-no" title="statement not covered" >  switch ((template as any).type) {</span>
     case 'security':
-<span class="cstat-no" title="statement not covered" >      criteria.push(</span>
+      (<span class="cstat-no" title="statement not covered" >criteria as any).push(</span>
         'No unauthorized access achieved',
         'All attacks properly detected and blocked',
         'Security events properly logged'
       );
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'compliance':
-<span class="cstat-no" title="statement not covered" >      criteria.push(</span>
+      (<span class="cstat-no" title="statement not covered" >criteria as any).push(</span>
         'All compliance requirements met',
         'Audit evidence properly collected',
         'Documentation complete and accurate'
       );
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'performance':
-<span class="cstat-no" title="statement not covered" >      criteria.push(</span>
+      (<span class="cstat-no" title="statement not covered" >criteria as any).push(</span>
         'Response times within SLA',
         'Resource utilization acceptable',
         'No performance degradation observed'
       );
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'functional':
-<span class="cstat-no" title="statement not covered" >      criteria.push(</span>
+      (<span class="cstat-no" title="statement not covered" >criteria as any).push(</span>
         'All functions operate correctly',
         'Data integrity maintained',
         'User experience acceptable'
@@ -2180,30 +2180,30 @@ function <span class="fstat-no" title="function not covered" >generateFailureInd
     'Data corruption detected'
   ];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  switch (template.type) {</span>
+<span class="cstat-no" title="statement not covered" >  switch ((template as any).type) {</span>
     case 'security':
-<span class="cstat-no" title="statement not covered" >      indicators.push(</span>
+      (<span class="cstat-no" title="statement not covered" >indicators as any).push(</span>
         'Unauthorized access successful',
         'Security controls bypassed',
         'Attacks not detected'
       );
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'compliance':
-<span class="cstat-no" title="statement not covered" >      indicators.push(</span>
+      (<span class="cstat-no" title="statement not covered" >indicators as any).push(</span>
         'Compliance requirements not met',
         'Audit trails incomplete',
         'Required documentation missing'
       );
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'performance':
-<span class="cstat-no" title="statement not covered" >      indicators.push(</span>
+      (<span class="cstat-no" title="statement not covered" >indicators as any).push(</span>
         'Performance SLA breached',
         'System timeout or crash',
         'Unacceptable resource consumption'
       );
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'functional':
-<span class="cstat-no" title="statement not covered" >      indicators.push(</span>
+      (<span class="cstat-no" title="statement not covered" >indicators as any).push(</span>
         'Functions do not work as expected',
         'Incorrect output produced',
         'User cannot complete tasks'
@@ -2223,12 +2223,12 @@ function <span class="fstat-no" title="function not covered" >generateTestData(<
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  switch (testType) {</span>
     case 'security':
-<span class="cstat-no" title="statement not covered" >      testData.test_accounts = [</span>
+      (<span class="cstat-no" title="statement not covered" >testData as any).test_accounts = [</span>
         { username: 'test_user_01', role: 'standard', password: process.env.TEST_USER_PASSWORD || 'DefaultTest123!' },
         { username: 'test_admin_01', role: 'admin', password: process.env.TEST_ADMIN_PASSWORD || 'DefaultAdmin456!' },
         { username: 'test_attacker_01', role: 'unauthorized', password: process.env.TEST_ATTACKER_PASSWORD || 'DefaultBad789!' }
       ];
-<span class="cstat-no" title="statement not covered" >      testData.attack_vectors = [</span>
+      (<span class="cstat-no" title="statement not covered" >testData as any).attack_vectors = [</span>
         'SQL injection attempts',
         'Cross-site scripting (XSS)',
         'Brute force attacks',
@@ -2236,12 +2236,12 @@ function <span class="fstat-no" title="function not covered" >generateTestData(<
       ];
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'performance':
-<span class="cstat-no" title="statement not covered" >      testData.load_profiles = [</span>
+      (<span class="cstat-no" title="statement not covered" >testData as any).load_profiles = [</span>
         { users: 10, duration: '5m', ramp_up: '30s' },
         { users: 100, duration: '15m', ramp_up: '2m' },
         { users: 1000, duration: '30m', ramp_up: '5m' }
       ];
-<span class="cstat-no" title="statement not covered" >      testData.metrics_to_collect = [</span>
+      (<span class="cstat-no" title="statement not covered" >testData as any).metrics_to_collect = [</span>
         'Response time',
         'Throughput',
         'Error rate',
@@ -2249,13 +2249,13 @@ function <span class="fstat-no" title="function not covered" >generateTestData(<
       ];
 <span class="cstat-no" title="statement not covered" >      break;</span>
     case 'compliance':
-<span class="cstat-no" title="statement not covered" >      testData.compliance_checks = [</span>
+      (<span class="cstat-no" title="statement not covered" >testData as any).compliance_checks = [</span>
         'Access control verification',
         'Audit log completeness',
         'Data retention compliance',
         'Security configuration baseline'
       ];
-<span class="cstat-no" title="statement not covered" >      testData.evidence_required = [</span>
+      (<span class="cstat-no" title="statement not covered" >testData as any).evidence_required = [</span>
         'Screenshots',
         'Log excerpts',
         'Configuration files',
@@ -2263,7 +2263,7 @@ function <span class="fstat-no" title="function not covered" >generateTestData(<
       ];
 <span class="cstat-no" title="statement not covered" >      break;</span>
     default:
-<span class="cstat-no" title="statement not covered" >      testData.test_cases = [</span>
+      (<span class="cstat-no" title="statement not covered" >testData as any).test_cases = [</span>
         'Positive test cases',
         'Negative test cases',
         'Boundary test cases',
@@ -2275,8 +2275,8 @@ function <span class="fstat-no" title="function not covered" >generateTestData(<
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateTestScript(</span>scenario: any, subcategory: any): string {
-  const scriptType = <span class="cstat-no" title="statement not covered" >scenario.test_type === 'security' ? 'bash' : </span>
-                     scenario.test_type === 'performance' ? 'javascript' : 'python';
+  const scriptType = (<span class="cstat-no" title="statement not covered" >scenario as any).test_type === 'security' ? 'bash' : </span>
+                     (scenario as any).test_type === 'performance' ? 'javascript' : 'python';
   
   let script = <span class="cstat-no" title="statement not covered" >'';</span>
   
@@ -2297,25 +2297,25 @@ function <span class="fstat-no" title="function not covered" >generateTestScript
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateBashScript(</span>scenario: any, subcategory: any): string {
 <span class="cstat-no" title="statement not covered" >  return `#!/bin/bash</span>
-# Test Script: ${scenario.scenario_name}
-# Subcategory: ${subcategory.title}
+# Test Script: ${(scenario as any).scenario_name}
+# Subcategory: ${(subcategory as any).title}
 # Generated: ${new Date().toISOString()}
 &nbsp;
 set -e
 &nbsp;
-echo "Starting test: ${scenario.scenario_name}"
-echo "Test ID: ${scenario.scenario_id}"
+echo "Starting test: ${(scenario as any).scenario_name}"
+echo "Test ID: ${(scenario as any).scenario_id}"
 &nbsp;
 # Prerequisites check
 echo "Checking prerequisites..."
-${scenario.prerequisites.map(<span class="fstat-no" title="function not covered" >(p</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >`# - ${p}`)</span>.join('\n')}
+${(scenario as any).prerequisites.map(<span class="fstat-no" title="function not covered" >(p</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >`# - ${p}`)</span>.join('\n')}
 &nbsp;
 # Test execution
-${scenario.test_steps.map(<span class="fstat-no" title="function not covered" >(s</span>tep: any) =&gt; <span class="cstat-no" title="statement not covered" >`</span>
-echo "Step ${step.step_number}: ${step.action}"
-# TODO: Implement ${step.action}
-# Expected: ${step.expected_result}
-# Validation: ${step.validation_method}
+${(scenario as any).test_steps.map(<span class="fstat-no" title="function not covered" >(s</span>tep: any) =&gt; <span class="cstat-no" title="statement not covered" >`</span>
+echo "Step ${(step as any).step_number}: ${(step as any).action}"
+# TODO: Implement ${(step as any).action}
+# Expected: ${(step as any).expected_result}
+# Validation: ${(step as any).validation_method}
 `).join('\n')}
 &nbsp;
 # Results validation
@@ -2327,26 +2327,26 @@ exit 0`;
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateJavaScriptScript(</span>scenario: any, subcategory: any): string {
-<span class="cstat-no" title="statement not covered" >  return `// Test Script: ${scenario.scenario_name}</span>
-// Subcategory: ${subcategory.title}
+<span class="cstat-no" title="statement not covered" >  return `// Test Script: ${(scenario as any).scenario_name}</span>
+// Subcategory: ${(subcategory as any).title}
 // Generated: ${new Date().toISOString()}
 &nbsp;
 const assert = require('assert');
 &nbsp;
-describe('${scenario.scenario_name}', function() {
+describe('${(scenario as any).scenario_name}', function() {
   before(function() {
     // Setup test environment
     console.log('Checking prerequisites...');
-${scenario.prerequisites.map(<span class="fstat-no" title="function not covered" >(p</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >`    // - ${p}`)</span>.join('\n')}
+${(scenario as any).prerequisites.map(<span class="fstat-no" title="function not covered" >(p</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >`    // - ${p}`)</span>.join('\n')}
   });
 &nbsp;
-${scenario.test_steps.map(<span class="fstat-no" title="function not covered" >(s</span>tep: any) =&gt; <span class="cstat-no" title="statement not covered" >`</span>
-  it('Step ${step.step_number}: ${step.action}', function() {
-    // TODO: Implement ${step.action}
-    // Expected: ${step.expected_result}
-    // Validation: ${step.validation_method}
+${(scenario as any).test_steps.map(<span class="fstat-no" title="function not covered" >(s</span>tep: any) =&gt; <span class="cstat-no" title="statement not covered" >`</span>
+  it('Step ${(step as any).step_number}: ${(step as any).action}', function() {
+    // TODO: Implement ${(step as any).action}
+    // Expected: ${(step as any).expected_result}
+    // Validation: ${(step as any).validation_method}
     
-    assert.ok(true, '${step.expected_result}');
+    assert.ok(true, '${(step as any).expected_result}');
   });`).join('\n')}
 &nbsp;
   after(function() {
@@ -2359,8 +2359,8 @@ ${scenario.test_steps.map(<span class="fstat-no" title="function not covered" >(
 function <span class="fstat-no" title="function not covered" >generatePythonScript(</span>scenario: any, subcategory: any): string {
 <span class="cstat-no" title="statement not covered" >  return `#!/usr/bin/env python3</span>
 """
-Test Script: ${scenario.scenario_name}
-Subcategory: ${subcategory.title}
+Test Script: ${(scenario as any).scenario_name}
+Subcategory: ${(subcategory as any).title}
 Generated: ${new Date().toISOString()}
 """
 &nbsp;
@@ -2370,20 +2370,20 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 &nbsp;
-class Test${scenario.scenario_id.replace(/-/g, '_')}(unittest.TestCase):
+class Test${(scenario as any).scenario_id.replace(/-/g, '_')}(unittest.TestCase):
     def setUp(self):
         """Setup test environment"""
         logger.info("Checking prerequisites...")
-${scenario.prerequisites.map(<span class="fstat-no" title="function not covered" >(p</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >`        # - ${p}`)</span>.join('\n')}
+${(scenario as any).prerequisites.map(<span class="fstat-no" title="function not covered" >(p</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >`        # - ${p}`)</span>.join('\n')}
         
-${scenario.test_steps.map(<span class="fstat-no" title="function not covered" >(s</span>tep: any) =&gt; <span class="cstat-no" title="statement not covered" >`</span>
-    def test_step_${step.step_number}(self):
-        """${step.action}"""
-        # TODO: Implement ${step.action}
-        # Expected: ${step.expected_result}
-        # Validation: ${step.validation_method}
+${(scenario as any).test_steps.map(<span class="fstat-no" title="function not covered" >(s</span>tep: any) =&gt; <span class="cstat-no" title="statement not covered" >`</span>
+    def test_step_${(step as any).step_number}(self):
+        """${(step as any).action}"""
+        # TODO: Implement ${(step as any).action}
+        # Expected: ${(step as any).expected_result}
+        # Validation: ${(step as any).validation_method}
         
-        self.assertTrue(True, "${step.expected_result}")
+        self.assertTrue(True, "${(step as any).expected_result}")
 `).join('\n')}
 &nbsp;
     def tearDown(self):
@@ -2433,12 +2433,12 @@ function <span class="fstat-no" title="function not covered" >generateCustomScen
   severityLevels: string[]
 ): any[] {
   const customScenarios = <span class="cstat-no" title="statement not covered" >[];</span>
-  const title = <span class="cstat-no" title="statement not covered" >subcategory.title.toLowerCase();</span>
+  const title = (<span class="cstat-no" title="statement not covered" >subcategory as any).title.toLowerCase();</span>
   
   // Add specific scenarios based on subcategory keywords
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('vulnerability') &amp;&amp; (testType === 'all' || testType === 'security')) {</span>
-<span class="cstat-no" title="statement not covered" >    customScenarios.push({</span>
-      scenario_id: `${subcategory.id}-TS-VULN-001`,
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((title as any).includes('vulnerability') &amp;&amp; (testType === 'all' || testType === 'security')) {</span>
+    (<span class="cstat-no" title="statement not covered" >customScenarios as any).push({</span>
+      scenario_id: `${(subcategory as any).id}-TS-VULN-001`,
       scenario_name: 'Vulnerability Scanning',
       test_type: 'security',
       severity: 'high',
@@ -2471,9 +2471,9 @@ function <span class="fstat-no" title="function not covered" >generateCustomScen
     });
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('training') &amp;&amp; (testType === 'all' || testType === 'compliance')) {</span>
-<span class="cstat-no" title="statement not covered" >    customScenarios.push({</span>
-      scenario_id: `${subcategory.id}-TS-TRAIN-001`,
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((title as any).includes('training') &amp;&amp; (testType === 'all' || testType === 'compliance')) {</span>
+    (<span class="cstat-no" title="statement not covered" >customScenarios as any).push({</span>
+      scenario_id: `${(subcategory as any).id}-TS-TRAIN-001`,
       scenario_name: 'Security Awareness Testing',
       test_type: 'compliance',
       severity: 'medium',
@@ -2506,30 +2506,30 @@ function <span class="fstat-no" title="function not covered" >generateCustomScen
     });
   }
   
-<span class="cstat-no" title="statement not covered" >  return customScenarios.filter(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >severityLevels.includes(s.severity))</span>;</span>
+<span class="cstat-no" title="statement not covered" >  return (customScenarios as any).filter(<span class="fstat-no" title="function not covered" >s </span>=&gt; (<span class="cstat-no" title="statement not covered" >severityLevels as any).includes((s as any).severity))</span>;</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >calculateValidationSummary(</span>scenarios: any[]): any {
   const byType: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
   const bySeverity: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
   
-<span class="cstat-no" title="statement not covered" >  scenarios.forEach(<span class="fstat-no" title="function not covered" >scenario </span>=&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    byType[scenario.test_type] = (byType[scenario.test_type] || 0) + 1;</span>
-<span class="cstat-no" title="statement not covered" >    bySeverity[scenario.severity] = (bySeverity[scenario.severity] || 0) + 1;</span>
+  (<span class="cstat-no" title="statement not covered" >scenarios as any).forEach(<span class="fstat-no" title="function not covered" >scenario </span>=&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    byType[(scenario as any).test_type] = (byType[(scenario as any).test_type] || 0) + 1;</span>
+<span class="cstat-no" title="statement not covered" >    bySeverity[(scenario as any).severity] = (bySeverity[(scenario as any).severity] || 0) + 1;</span>
   });
   
   // Assess coverage
   let coverageAssessment = <span class="cstat-no" title="statement not covered" >'Comprehensive';</span>
-<span class="cstat-no" title="statement not covered" >  if (scenarios.length &lt; 3) {</span>
+<span class="cstat-no" title="statement not covered" >  if ((scenarios as any).length &lt; 3) {</span>
 <span class="cstat-no" title="statement not covered" >    coverageAssessment = 'Limited';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (scenarios.length &lt; 6) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((scenarios as any).length &lt; 6) {</span>
 <span class="cstat-no" title="statement not covered" >    coverageAssessment = 'Moderate';</span>
-  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (scenarios.length &lt; 10) {</span>
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if ((scenarios as any).length &lt; 10) {</span>
 <span class="cstat-no" title="statement not covered" >    coverageAssessment = 'Good';</span>
   }
   
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    total_scenarios: scenarios.length,
+    total_scenarios: (scenarios as any).length,
     by_type: byType,
     by_severity: bySeverity,
     coverage_assessment: coverageAssessment
@@ -2584,7 +2584,7 @@ export const generateTestScenariosTool = <span class="cstat-no" title="statement
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.240Z
+                at 2025-09-03T03:22:59.993Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

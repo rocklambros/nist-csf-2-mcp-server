@@ -504,7 +504,14 @@
 <a name='L439'></a><a href='#L439'>439</a>
 <a name='L440'></a><a href='#L440'>440</a>
 <a name='L441'></a><a href='#L441'>441</a>
-<a name='L442'></a><a href='#L442'>442</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L442'></a><a href='#L442'>442</a>
+<a name='L443'></a><a href='#L443'>443</a>
+<a name='L444'></a><a href='#L444'>444</a>
+<a name='L445'></a><a href='#L445'>445</a>
+<a name='L446'></a><a href='#L446'>446</a>
+<a name='L447'></a><a href='#L447'>447</a>
+<a name='L448'></a><a href='#L448'>448</a>
+<a name='L449'></a><a href='#L449'>449</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -703,15 +710,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -719,17 +717,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -748,9 +737,34 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1140,7 +1154,10 @@ async function <span class="fstat-no" title="function not covered" >loadBenchmar
       // Adjust scores based on organization size
 <span class="cstat-no" title="statement not covered" >      similarBenchmarks.forEach(<span class="fstat-no" title="function not covered" >b </span>=&gt; {</span>
         const adjusted = <span class="cstat-no" title="statement not covered" >adjustBenchmarkForSize(b, organizationSize);</span>
-<span class="cstat-no" title="statement not covered" >        db.upsertIndustryBenchmark(adjusted);</span>
+<span class="cstat-no" title="statement not covered" >        db.upsertIndustryBenchmark({</span>
+          ...adjusted,
+          id: `${adjusted.industry}_${adjusted.organization_size}_${adjusted.csf_function}_${adjusted.metric_name}`
+        });
       });
     } else {
       // Use cross-industry average
@@ -1149,7 +1166,10 @@ async function <span class="fstat-no" title="function not covered" >loadBenchmar
   } else {
     // Load exact matches
 <span class="cstat-no" title="statement not covered" >    relevantBenchmarks.forEach(<span class="fstat-no" title="function not covered" >b </span>=&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      db.upsertIndustryBenchmark(b);</span>
+<span class="cstat-no" title="statement not covered" >      db.upsertIndustryBenchmark({</span>
+        ...b,
+        id: `${b.industry}_${b.organization_size}_${b.csf_function}_${b.metric_name}`
+      });
     });
   }
 }
@@ -1192,6 +1212,7 @@ function <span class="fstat-no" title="function not covered" >createDefaultBench
   
 <span class="cstat-no" title="statement not covered" >  functions.forEach(<span class="fstat-no" title="function not covered" >func </span>=&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    db.upsertIndustryBenchmark({</span>
+      id: `${industry}_${organizationSize}_${func}_maturity_score`,
       industry,
       organization_size: organizationSize,
       csf_function: func,
@@ -1393,7 +1414,7 @@ export const getIndustryBenchmarksTool = <span class="cstat-no" title="statement
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.240Z
+                at 2025-09-03T03:22:59.993Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

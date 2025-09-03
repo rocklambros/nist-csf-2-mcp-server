@@ -1,4 +1,5 @@
 import { CSFDatabase } from "../db/database.js";
+import { logger } from '../utils/logger.js';
 import { 
   generateHTMLReport,
   formatDataAsJSON
@@ -133,7 +134,7 @@ export async function generateReport(
     
     return result;
   } catch (error) {
-    console.error('Error generating report:', error);
+    logger.error('Error generating report:', error);
     return {
       success: false,
       report_type: options.report_type,

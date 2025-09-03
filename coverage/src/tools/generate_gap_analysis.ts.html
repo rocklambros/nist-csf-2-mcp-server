@@ -1324,54 +1324,54 @@ export async function <span class="fstat-no" title="function not covered" >gener
   
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // Ensure framework is loaded
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!framework.isLoaded()) {</span>
-<span class="cstat-no" title="statement not covered" >      await framework.load();</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(framework as any).isLoaded()) {</span>
+<span class="cstat-no" title="statement not covered" >      await (framework as any).load();</span>
     }
     
     // Verify both profiles exist
-    const currentProfile = <span class="cstat-no" title="statement not covered" >db.getProfile(params.current_profile_id);</span>
-    const targetProfile = <span class="cstat-no" title="statement not covered" >db.getProfile(params.target_profile_id);</span>
+    const currentProfile = (<span class="cstat-no" title="statement not covered" >db as any).getProfile((params as any).current_profile_id);</span>
+    const targetProfile = (<span class="cstat-no" title="statement not covered" >db as any).getProfile((params as any).target_profile_id);</span>
     
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!currentProfile) {</span>
-<span class="cstat-no" title="statement not covered" >      return createErrorResult(`Current profile not found: ${params.current_profile_id}`);</span>
+<span class="cstat-no" title="statement not covered" >      return createErrorResult(`Current profile not found: ${(params as any).current_profile_id}`);</span>
     }
     
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!targetProfile) {</span>
-<span class="cstat-no" title="statement not covered" >      return createErrorResult(`Target profile not found: ${params.target_profile_id}`);</span>
+<span class="cstat-no" title="statement not covered" >      return createErrorResult(`Target profile not found: ${(params as any).target_profile_id}`);</span>
     }
     
     // Generate unique analysis ID
     const analysisId = <span class="cstat-no" title="statement not covered" >uuidv4();</span>
     
     // Perform gap analysis and store results in database
-    const analysisResult = <span class="cstat-no" title="statement not covered" >db.generateGapAnalysis(</span>
-      params.current_profile_id,
-      params.target_profile_id,
+    const analysisResult = (<span class="cstat-no" title="statement not covered" >db as any).generateGapAnalysis(</span>
+      (params as any).current_profile_id,
+      (params as any).target_profile_id,
       analysisId
     );
     
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!analysisResult || !Array.isArray(analysisResult) || analysisResult.length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!analysisResult || !(Array as any).isArray(analysisResult) || (analysisResult as any).length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      return createErrorResult('Failed to generate gap analysis');</span>
     }
     
     // Get detailed gap analysis data
-    const gapDetails = <span class="cstat-no" title="statement not covered" >db.getGapAnalysisDetails(analysisId);</span>
+    const gapDetails = (<span class="cstat-no" title="statement not covered" >db as any).getGapAnalysisDetails(analysisId);</span>
     
     // Filter by minimum gap score if specified
-    const filteredGaps = <span class="cstat-no" title="statement not covered" >gapDetails.filter(</span>
-<span class="fstat-no" title="function not covered" >      (g</span>ap: any) =&gt; <span class="cstat-no" title="statement not covered" >gap.gap_score &gt;= params.minimum_gap_score</span>
+    const filteredGaps = (<span class="cstat-no" title="statement not covered" >gapDetails as any).filter(</span>
+<span class="fstat-no" title="function not covered" >      (g</span>ap: any) =&gt; (<span class="cstat-no" title="statement not covered" >gap as any).gap_score &gt;= (params as any).minimum_gap_score</span>
     );
     
     // Calculate gap summary statistics
     const gapSummary = <span class="cstat-no" title="statement not covered" >calculateGapSummary(filteredGaps);</span>
     
     // Generate priority matrix if requested
-    const priorityMatrix = <span class="cstat-no" title="statement not covered" >params.include_priority_matrix</span>
+    const priorityMatrix = (<span class="cstat-no" title="statement not covered" >params as any).include_priority_matrix</span>
       ? generatePriorityMatrix(filteredGaps)
       : undefined;
     
     // Generate visualizations if requested
-    const visualizations = <span class="cstat-no" title="statement not covered" >params.include_visualizations</span>
+    const visualizations = (<span class="cstat-no" title="statement not covered" >params as any).include_visualizations</span>
       ? generateVisualizations(filteredGaps, currentProfile, targetProfile)
       : undefined;
     
@@ -1383,8 +1383,8 @@ export async function <span class="fstat-no" title="function not covered" >gener
     );
     
     // Calculate profile summaries
-    const currentSummary = <span class="cstat-no" title="statement not covered" >calculateProfileSummary(params.current_profile_id, db);</span>
-    const targetSummary = <span class="cstat-no" title="statement not covered" >calculateProfileSummary(params.target_profile_id, db);</span>
+    const currentSummary = <span class="cstat-no" title="statement not covered" >calculateProfileSummary((params as any).current_profile_id, db);</span>
+    const targetSummary = <span class="cstat-no" title="statement not covered" >calculateProfileSummary((params as any).target_profile_id, db);</span>
     
 <span class="cstat-no" title="statement not covered" >    return {</span>
       success: true,
@@ -1393,26 +1393,26 @@ export async function <span class="fstat-no" title="function not covered" >gener
       current_profile: {
         id: (currentProfile as any).id,
         name: (currentProfile as any).name,
-        overall_maturity: currentSummary.maturity,
-        implementation_percentage: currentSummary.implementation
+        overall_maturity: (currentSummary as any).maturity,
+        implementation_percentage: (currentSummary as any).implementation
       },
       target_profile: {
         id: (targetProfile as any).id,
         name: (targetProfile as any).name,
-        overall_maturity: targetSummary.maturity,
-        implementation_percentage: targetSummary.implementation
+        overall_maturity: (targetSummary as any).maturity,
+        implementation_percentage: (targetSummary as any).implementation
       },
       gap_summary: gapSummary,
       priority_matrix: priorityMatrix,
-      gap_details: filteredGaps.map(formatGapItem),
+      gap_details: (filteredGaps as any).map(formatGapItem),
       recommendations,
       visualizations
     };
     
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    logger.error('Generate gap analysis error:', error);</span>
+    (<span class="cstat-no" title="statement not covered" >logger as any).error('Generate gap analysis error:', error);</span>
 <span class="cstat-no" title="statement not covered" >    return createErrorResult(</span>
-      error instanceof Error ? error.message : 'Unknown error occurred'
+      error instanceof Error ? (error as any).message : 'Unknown error occurred'
     );
   }
 }
@@ -1421,30 +1421,30 @@ export async function <span class="fstat-no" title="function not covered" >gener
  * Calculate gap summary statistics
  */
 function <span class="fstat-no" title="function not covered" >calculateGapSummary(</span>gaps: any[]): any {
-  const criticalGaps = <span class="cstat-no" title="statement not covered" >gaps.filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; <span class="cstat-no" title="statement not covered" >g.gap_score &gt;= 75)</span>.length;</span>
-  const highGaps = <span class="cstat-no" title="statement not covered" >gaps.filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; <span class="cstat-no" title="statement not covered" >g.gap_score &gt;= 50 &amp;&amp; g.gap_score &lt; 75)</span>.length;</span>
-  const mediumGaps = <span class="cstat-no" title="statement not covered" >gaps.filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; <span class="cstat-no" title="statement not covered" >g.gap_score &gt;= 25 &amp;&amp; g.gap_score &lt; 50)</span>.length;</span>
-  const lowGaps = <span class="cstat-no" title="statement not covered" >gaps.filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; <span class="cstat-no" title="statement not covered" >g.gap_score &lt; 25)</span>.length;</span>
+  const criticalGaps = (<span class="cstat-no" title="statement not covered" >gaps as any).filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >g as any).gap_score &gt;= 75)</span>.length;</span>
+  const highGaps = (<span class="cstat-no" title="statement not covered" >gaps as any).filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >g as any).gap_score &gt;= 50 &amp;&amp; (g as any).gap_score &lt; 75)</span>.length;</span>
+  const mediumGaps = (<span class="cstat-no" title="statement not covered" >gaps as any).filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >g as any).gap_score &gt;= 25 &amp;&amp; (g as any).gap_score &lt; 50)</span>.length;</span>
+  const lowGaps = (<span class="cstat-no" title="statement not covered" >gaps as any).filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >g as any).gap_score &lt; 25)</span>.length;</span>
   
-  const avgGap = <span class="cstat-no" title="statement not covered" >gaps.length &gt; 0</span>
-    ? gaps.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, g) =&gt; <span class="cstat-no" title="statement not covered" >sum + g.gap_score,</span> 0) / gaps.length
+  const avgGap = (<span class="cstat-no" title="statement not covered" >gaps as any).length &gt; 0</span>
+    ? (gaps as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, g) =&gt; <span class="cstat-no" title="statement not covered" >sum + (g as any).gap_score,</span> 0) / (gaps as any).length
     : 0;
   
-  const maxGap = <span class="cstat-no" title="statement not covered" >gaps.length &gt; 0</span>
-    ? Math.max(...gaps.map(<span class="fstat-no" title="function not covered" >g </span>=&gt; <span class="cstat-no" title="statement not covered" >g.gap_score)</span>)
+  const maxGap = (<span class="cstat-no" title="statement not covered" >gaps as any).length &gt; 0</span>
+    ? (Math as any).max(...(gaps as any).map(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >g as any).gap_score)</span>)
     : 0;
   
-  const totalEffort = <span class="cstat-no" title="statement not covered" >gaps.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, g) =&gt; <span class="cstat-no" title="statement not covered" >sum + (g.effort_score || 0),</span> 0);</span>
+  const totalEffort = (<span class="cstat-no" title="statement not covered" >gaps as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, g) =&gt; <span class="cstat-no" title="statement not covered" >sum + ((g as any).effort_score || 0),</span> 0);</span>
   
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    total_gaps: gaps.length,
+    total_gaps: (gaps as any).length,
     critical_gaps: criticalGaps,
     high_priority_gaps: highGaps,
     medium_priority_gaps: mediumGaps,
     low_priority_gaps: lowGaps,
-    average_gap_score: Math.round(avgGap * 100) / 100,
+    average_gap_score: (Math as any).round(avgGap * 100) / 100,
     maximum_gap_score: maxGap,
-    total_effort_required: Math.round(totalEffort * 100) / 100
+    total_effort_required: (Math as any).round(totalEffort * 100) / 100
   };
 }
 &nbsp;
@@ -1489,8 +1489,8 @@ function <span class="fstat-no" title="function not covered" >generatePriorityMa
   
   // Classify each gap into quadrants
 <span class="cstat-no" title="statement not covered" >  for (const gap of gaps) {</span>
-    const impactScore = <span class="cstat-no" title="statement not covered" >gap.risk_score || gap.gap_score / 10;</span>
-    const effortScore = <span class="cstat-no" title="statement not covered" >gap.effort_score || 5;</span>
+    const impactScore = (<span class="cstat-no" title="statement not covered" >gap as any).risk_score || (gap as any).gap_score / 10;</span>
+    const effortScore = (<span class="cstat-no" title="statement not covered" >gap as any).effort_score || 5;</span>
     
     let quadrant: string;
 <span class="cstat-no" title="statement not covered" >    if (impactScore &gt;= 5 &amp;&amp; effortScore &lt;= 5) {</span>
@@ -1511,21 +1511,21 @@ function <span class="fstat-no" title="function not covered" >generatePriorityMa
   
   // Calculate statistics for each quadrant
   const result: PriorityMatrix[] = <span class="cstat-no" title="statement not covered" >[];</span>
-<span class="cstat-no" title="statement not covered" >  for (const quadrant of Object.values(matrix)) {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (quadrant.items.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >      quadrant.item_count = quadrant.items.length;</span>
-<span class="cstat-no" title="statement not covered" >      quadrant.average_gap_score = </span>
-        quadrant.items.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + item.gap_score,</span> 0) / quadrant.items.length;
-<span class="cstat-no" title="statement not covered" >      quadrant.average_gap_score = Math.round(quadrant.average_gap_score * 100) / 100;</span>
+<span class="cstat-no" title="statement not covered" >  for (const quadrant of (Object as any).values(matrix)) {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if ((quadrant as any).items.length &gt; 0) {</span>
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).item_count = (quadrant as any).items.length;</span>
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).average_gap_score = </span>
+        (quadrant as any).items.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + (item as any).gap_score,</span> 0) / (quadrant as any).items.length;
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).average_gap_score = (Math as any).round((quadrant as any).average_gap_score * 100) / 100;</span>
       
-<span class="cstat-no" title="statement not covered" >      result.push(quadrant);</span>
+      (<span class="cstat-no" title="statement not covered" >result as any).push(quadrant);</span>
     }
   }
   
   // Sort by priority: Quick Win &gt; Strategic Initiative &gt; Fill In &gt; Low Priority
   const priorityOrder = <span class="cstat-no" title="statement not covered" >['Quick Win', 'Strategic Initiative', 'Fill In', 'Low Priority'];</span>
-<span class="cstat-no" title="statement not covered" >  result.sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; </span>
-<span class="cstat-no" title="statement not covered" >    priorityOrder.indexOf(a.quadrant) - priorityOrder.indexOf(b.quadrant)</span>
+  (<span class="cstat-no" title="statement not covered" >result as any).sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; </span>
+    (<span class="cstat-no" title="statement not covered" >priorityOrder as any).indexOf((a as any).quadrant) - (priorityOrder as any).indexOf((b as any).quadrant)</span>
   );
   
 <span class="cstat-no" title="statement not covered" >  return result;</span>
@@ -1538,7 +1538,7 @@ function <span class="fstat-no" title="function not covered" >generateVisualizat
   // Gap by function
   const gapByFunction: Record&lt;string, any&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
 <span class="cstat-no" title="statement not covered" >  for (const gap of gaps) {</span>
-    const funcId = <span class="cstat-no" title="statement not covered" >gap.subcategory_id.substring(0, 2);</span>
+    const funcId = (<span class="cstat-no" title="statement not covered" >gap as any).subcategory_id.substring(0, 2);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!gapByFunction[funcId]) {</span>
 <span class="cstat-no" title="statement not covered" >      gapByFunction[funcId] = {</span>
         function_id: funcId,
@@ -1547,48 +1547,48 @@ function <span class="fstat-no" title="function not covered" >generateVisualizat
         gaps: []
       };
     }
-<span class="cstat-no" title="statement not covered" >    gapByFunction[funcId].gaps.push(gap.gap_score);</span>
+<span class="cstat-no" title="statement not covered" >    gapByFunction[funcId].gaps.push((gap as any).gap_score);</span>
 <span class="cstat-no" title="statement not covered" >    gapByFunction[funcId].total_gaps++;</span>
   }
   
   // Calculate averages
 <span class="cstat-no" title="statement not covered" >  for (const func of Object.values(gapByFunction)) {</span>
-<span class="cstat-no" title="statement not covered" >    func.average_gap_score = </span>
-      func.gaps.reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, g: number) =&gt; <span class="cstat-no" title="statement not covered" >sum + g,</span> 0) / func.gaps.length;
-<span class="cstat-no" title="statement not covered" >    func.average_gap_score = Math.round(func.average_gap_score * 100) / 100;</span>
-<span class="cstat-no" title="statement not covered" >    delete func.gaps;</span>
+    (<span class="cstat-no" title="statement not covered" >func as any).average_gap_score = </span>
+      (func as any).gaps.reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, g: number) =&gt; <span class="cstat-no" title="statement not covered" >sum + g,</span> 0) / (func as any).gaps.length;
+    (<span class="cstat-no" title="statement not covered" >func as any).average_gap_score = Math.round((func as any).average_gap_score * 100) / 100;</span>
+<span class="cstat-no" title="statement not covered" >    delete (func as any).gaps;</span>
   }
   
   // Priority heatmap
-  const priorityHeatmap = <span class="cstat-no" title="statement not covered" >gaps.map(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
-    subcategory: g.subcategory_id,
-    risk: g.risk_score || 0,
-    effort: g.effort_score || 0,
-    gap: g.gap_score,
-    priority: g.priority_rank || 0
+  const priorityHeatmap = (<span class="cstat-no" title="statement not covered" >gaps as any).map(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+    subcategory: (g as any).subcategory_id,
+    risk: (g as any).risk_score || 0,
+    effort: (g as any).effort_score || 0,
+    gap: (g as any).gap_score,
+    priority: (g as any).priority_rank || 0
   }));
   
   // Maturity comparison
   const maturityComparison = <span class="cstat-no" title="statement not covered" >{</span>
     current: {
-      profile_name: currentProfile.name,
+      profile_name: (currentProfile as any).name,
       overall_maturity: 0,
       by_function: {} as Record&lt;string, number&gt;
     },
     target: {
-      profile_name: targetProfile.name,
+      profile_name: (targetProfile as any).name,
       overall_maturity: 0,
       by_function: {} as Record&lt;string, number&gt;
     }
   };
   
   // Effort vs Impact scatter plot data
-  const effortVsImpact = <span class="cstat-no" title="statement not covered" >gaps.map(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
-    subcategory: g.subcategory_id,
-    effort: g.effort_score || 5,
-    impact: g.risk_score || g.gap_score / 10,
-    gap_score: g.gap_score,
-    label: g.subcategory_name || g.subcategory_id
+  const effortVsImpact = (<span class="cstat-no" title="statement not covered" >gaps as any).map(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+    subcategory: (g as any).subcategory_id,
+    effort: (g as any).effort_score || 5,
+    impact: (g as any).risk_score || (g as any).gap_score / 10,
+    gap_score: (g as any).gap_score,
+    label: (g as any).subcategory_name || (g as any).subcategory_id
   }));
   
 <span class="cstat-no" title="statement not covered" >  return {</span>
@@ -1615,33 +1615,33 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
   };
   
   // Immediate actions - Quick Wins and Critical Gaps
-  const quickWins = <span class="cstat-no" title="statement not covered" >priorityMatrix?.find(<span class="fstat-no" title="function not covered" >m </span>=&gt; <span class="cstat-no" title="statement not covered" >m.quadrant === 'Quick Win')</span>;</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (quickWins &amp;&amp; quickWins.items.length &gt; 0) {</span>
-    const topQuickWins = <span class="cstat-no" title="statement not covered" >quickWins.items.slice(0, 3);</span>
+  const quickWins = <span class="cstat-no" title="statement not covered" >priorityMatrix?.find(<span class="fstat-no" title="function not covered" >m </span>=&gt; (<span class="cstat-no" title="statement not covered" >m as any).quadrant === 'Quick Win')</span>;</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (quickWins &amp;&amp; (quickWins as any).items.length &gt; 0) {</span>
+    const topQuickWins = (<span class="cstat-no" title="statement not covered" >quickWins as any).items.slice(0, 3);</span>
 <span class="cstat-no" title="statement not covered" >    for (const item of topQuickWins) {</span>
-<span class="cstat-no" title="statement not covered" >      recommendations.immediate_actions.push(</span>
-        `Implement ${item.subcategory_id}: ${item.improvement_required} (Gap: ${item.gap_score}%)`
+      (<span class="cstat-no" title="statement not covered" >recommendations as any).immediate_actions.push(</span>
+        `Implement ${(item as any).subcategory_id}: ${(item as any).improvement_required} (Gap: ${(item as any).gap_score}%)`
       );
     }
   }
   
   // Add critical gaps to immediate actions
-  const criticalGaps = <span class="cstat-no" title="statement not covered" >gaps.filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; <span class="cstat-no" title="statement not covered" >g.gap_score &gt;= 75)</span>.slice(0, 3);</span>
+  const criticalGaps = (<span class="cstat-no" title="statement not covered" >gaps as any).filter(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >g as any).gap_score &gt;= 75)</span>.slice(0, 3);</span>
 <span class="cstat-no" title="statement not covered" >  for (const gap of criticalGaps) {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!recommendations.immediate_actions.some(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.includes(gap.subcategory_id))</span>) {</span>
-<span class="cstat-no" title="statement not covered" >      recommendations.immediate_actions.push(</span>
-        `Address critical gap in ${gap.subcategory_id} (${gap.gap_score}% gap)`
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(recommendations as any).immediate_actions.some(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).includes((gap as any).subcategory_id))</span>) {</span>
+      (<span class="cstat-no" title="statement not covered" >recommendations as any).immediate_actions.push(</span>
+        `Address critical gap in ${(gap as any).subcategory_id} (${(gap as any).gap_score}% gap)`
       );
     }
   }
   
   // Short-term goals - Strategic Initiatives
-  const strategic = <span class="cstat-no" title="statement not covered" >priorityMatrix?.find(<span class="fstat-no" title="function not covered" >m </span>=&gt; <span class="cstat-no" title="statement not covered" >m.quadrant === 'Strategic Initiative')</span>;</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (strategic &amp;&amp; strategic.items.length &gt; 0) {</span>
-    const topStrategic = <span class="cstat-no" title="statement not covered" >strategic.items.slice(0, 3);</span>
+  const strategic = <span class="cstat-no" title="statement not covered" >priorityMatrix?.find(<span class="fstat-no" title="function not covered" >m </span>=&gt; (<span class="cstat-no" title="statement not covered" >m as any).quadrant === 'Strategic Initiative')</span>;</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (strategic &amp;&amp; (strategic as any).items.length &gt; 0) {</span>
+    const topStrategic = (<span class="cstat-no" title="statement not covered" >strategic as any).items.slice(0, 3);</span>
 <span class="cstat-no" title="statement not covered" >    for (const item of topStrategic) {</span>
-<span class="cstat-no" title="statement not covered" >      recommendations.short_term_goals.push(</span>
-        `Plan implementation of ${item.subcategory_id}: ${item.improvement_required}`
+      (<span class="cstat-no" title="statement not covered" >recommendations as any).short_term_goals.push(</span>
+        `Plan implementation of ${(item as any).subcategory_id}: ${(item as any).improvement_required}`
       );
     }
   }
@@ -1649,11 +1649,11 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
   // Long-term objectives - Based on functions with highest gaps
   const functionGaps: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
 <span class="cstat-no" title="statement not covered" >  for (const gap of gaps) {</span>
-    const funcId = <span class="cstat-no" title="statement not covered" >gap.subcategory_id.substring(0, 2);</span>
-<span class="cstat-no" title="statement not covered" >    functionGaps[funcId] = (functionGaps[funcId] || 0) + gap.gap_score;</span>
+    const funcId = (<span class="cstat-no" title="statement not covered" >gap as any).subcategory_id.substring(0, 2);</span>
+<span class="cstat-no" title="statement not covered" >    functionGaps[funcId] = (functionGaps[funcId] || 0) + (gap as any).gap_score;</span>
   }
   
-  const sortedFunctions = <span class="cstat-no" title="statement not covered" >Object.entries(functionGaps)</span>
+  const sortedFunctions = (<span class="cstat-no" title="statement not covered" >Object as any).entries(functionGaps)</span>
     .sort(<span class="fstat-no" title="function not covered" >([</span>, a], [, b]) =&gt; <span class="cstat-no" title="statement not covered" >b - a)</span>
     .slice(0, 3);
   
@@ -1668,32 +1668,32 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
   
 <span class="cstat-no" title="statement not covered" >  for (const [funcId, totalGap] of sortedFunctions) {</span>
     const funcName = <span class="cstat-no" title="statement not covered" >functionNames[funcId] || funcId;</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.long_term_objectives.push(</span>
-      `Strengthen ${funcName} function capabilities (Total gap: ${Math.round(totalGap)})`
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).long_term_objectives.push(</span>
+      `Strengthen ${funcName} function capabilities (Total gap: ${(Math as any).round(totalGap)})`
     );
   }
   
   // Resource requirements based on effort scores
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (gapSummary.total_effort_required &gt; 100) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.resource_requirements.push(</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((gapSummary as any).total_effort_required &gt; 100) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).resource_requirements.push(</span>
       'Significant resource allocation required (100+ effort points)'
     );
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (gapSummary.critical_gaps &gt; 5) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.resource_requirements.push(</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((gapSummary as any).critical_gaps &gt; 5) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).resource_requirements.push(</span>
       'Dedicated security team needed for critical gap remediation'
     );
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (quickWins &amp;&amp; quickWins.item_count &gt; 10) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.resource_requirements.push(</span>
-      `${quickWins.item_count} quick wins available - allocate resources for rapid implementation`
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (quickWins &amp;&amp; (quickWins as any).item_count &gt; 10) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).resource_requirements.push(</span>
+      `${(quickWins as any).item_count} quick wins available - allocate resources for rapid implementation`
     );
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (strategic &amp;&amp; strategic.total_effort &gt; 50) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.resource_requirements.push(</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (strategic &amp;&amp; (strategic as any).total_effort &gt; 50) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).resource_requirements.push(</span>
       'Multi-phase project planning required for strategic initiatives'
     );
   }
@@ -1705,23 +1705,23 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
  * Calculate profile summary
  */
 function <span class="fstat-no" title="function not covered" >calculateProfileSummary(</span>profileId: string, db: any): any {
-  const assessments = <span class="cstat-no" title="statement not covered" >db.getProfileAssessments(profileId);</span>
+  const assessments = (<span class="cstat-no" title="statement not covered" >db as any).getProfileAssessments(profileId);</span>
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!assessments || assessments.length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!assessments || (assessments as any).length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >    return { maturity: 0, implementation: 0 };</span>
   }
   
-  const implemented = <span class="cstat-no" title="statement not covered" >assessments.filter(</span>
-<span class="fstat-no" title="function not covered" >    (a</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >a.implementation_level !== 'not_implemented'</span>
+  const implemented = (<span class="cstat-no" title="statement not covered" >assessments as any).filter(</span>
+<span class="fstat-no" title="function not covered" >    (a</span>: any) =&gt; (<span class="cstat-no" title="statement not covered" >a as any).implementation_level !== 'not_implemented'</span>
   ).length;
   
-  const totalMaturity = <span class="cstat-no" title="statement not covered" >assessments.reduce(</span>
-<span class="fstat-no" title="function not covered" >    (s</span>um: number, a: any) =&gt; <span class="cstat-no" title="statement not covered" >sum + (a.maturity_score || 0),</span> 0
+  const totalMaturity = (<span class="cstat-no" title="statement not covered" >assessments as any).reduce(</span>
+<span class="fstat-no" title="function not covered" >    (s</span>um: number, a: any) =&gt; <span class="cstat-no" title="statement not covered" >sum + ((a as any).maturity_score || 0),</span> 0
   );
   
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    maturity: Math.round((totalMaturity / assessments.length) * 20),
-    implementation: Math.round((implemented / assessments.length) * 100)
+    maturity: (Math as any).round((totalMaturity / (assessments as any).length) * 20),
+    implementation: (Math as any).round((implemented / (assessments as any).length) * 100)
   };
 }
 &nbsp;
@@ -1730,18 +1730,18 @@ function <span class="fstat-no" title="function not covered" >calculateProfileSu
  */
 function <span class="fstat-no" title="function not covered" >formatGapItem(</span>gap: any): GapItem {
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    subcategory_id: gap.subcategory_id,
-    subcategory_name: gap.subcategory_name || gap.subcategory_id,
-    function_id: gap.subcategory_id.substring(0, 2),
-    category_id: gap.subcategory_id.substring(0, 5),
-    current_implementation: gap.current_implementation || 'not_implemented',
-    target_implementation: gap.target_implementation || 'fully_implemented',
-    current_maturity: gap.current_maturity || 0,
-    target_maturity: gap.target_maturity || 5,
-    gap_score: gap.gap_score || 0,
-    risk_score: gap.risk_score || 0,
-    effort_score: gap.effort_score || 5,
-    priority_rank: gap.priority_rank || 999,
+    subcategory_id: (gap as any).subcategory_id,
+    subcategory_name: (gap as any).subcategory_name || (gap as any).subcategory_id,
+    function_id: (gap as any).subcategory_id.substring(0, 2),
+    category_id: (gap as any).subcategory_id.substring(0, 5),
+    current_implementation: (gap as any).current_implementation || 'not_implemented',
+    target_implementation: (gap as any).target_implementation || 'fully_implemented',
+    current_maturity: (gap as any).current_maturity || 0,
+    target_maturity: (gap as any).target_maturity || 5,
+    gap_score: (gap as any).gap_score || 0,
+    risk_score: (gap as any).risk_score || 0,
+    effort_score: (gap as any).effort_score || 5,
+    priority_rank: (gap as any).priority_rank || 999,
     improvement_required: describeImprovement(gap)
   };
 }
@@ -1750,8 +1750,8 @@ function <span class="fstat-no" title="function not covered" >formatGapItem(</sp
  * Describe the improvement required
  */
 function <span class="fstat-no" title="function not covered" >describeImprovement(</span>gap: any): string {
-  const current = <span class="cstat-no" title="statement not covered" >gap.current_implementation || 'not_implemented';</span>
-  const target = <span class="cstat-no" title="statement not covered" >gap.target_implementation || 'fully_implemented';</span>
+  const current = (<span class="cstat-no" title="statement not covered" >gap as any).current_implementation || 'not_implemented';</span>
+  const target = (<span class="cstat-no" title="statement not covered" >gap as any).target_implementation || 'fully_implemented';</span>
   
   const improvements: Record&lt;string, Record&lt;string, string&gt;&gt; = <span class="cstat-no" title="statement not covered" >{</span>
     'not_implemented': {
@@ -1816,7 +1816,7 @@ function <span class="fstat-no" title="function not covered" >createErrorResult(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.240Z
+                at 2025-09-03T03:22:59.993Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

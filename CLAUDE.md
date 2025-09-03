@@ -4,16 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**. The server provides programmatic access to all NIST CSF 2.0 elements with enterprise-grade security, comprehensive assessment capabilities, advanced reporting features, and a complete suite of 36 MCP tools.
+This is a comprehensive **Model Context Protocol (MCP) server** implementation for the **NIST Cybersecurity Framework 2.0**. The server provides programmatic access to all NIST CSF 2.0 elements with enterprise-grade security, comprehensive assessment capabilities, advanced reporting features, and a complete suite of 38 MCP tools.
+
+**Current State**: Production-ready with ~32K lines of TypeScript code, comprehensive Docker support, dual-mode operation (MCP + HTTP REST API), and extensive documentation.
 
 ## Technology Stack
 
-- **Runtime**: Node.js 18.x+ with TypeScript 5.x
-- **Database**: SQLite3 with comprehensive schema for NIST CSF 2.0
-- **Security**: Multi-tier authentication (no-auth → API key → OAuth 2.1)
-- **Testing**: Jest with 95%+ test coverage across unit, integration, security, and performance tests
-- **Build**: TypeScript compilation with strict type checking
+- **Runtime**: Node.js 20.x+ with TypeScript 5.x
+- **Database**: SQLite3 with comprehensive schema for NIST CSF 2.0 (1.8MB+ of framework data)
+- **Security**: Multi-tier authentication (disabled/simple/oauth) with comprehensive validation
+- **Testing**: Jest with extensive test suites (unit, integration, security, performance)
+- **Build**: TypeScript compilation with Docker support and fallback mechanisms
 - **Validation**: Zod schemas for input validation and type safety
+- **Deployment**: Docker containerization with multi-stage builds and health checks
+- **APIs**: Dual-mode server supporting both MCP protocol and HTTP REST endpoints
 
 ## Development Setup
 
@@ -26,7 +30,10 @@ npm install
 npm run build
 
 # Initialize database with NIST CSF 2.0 data
-npm run db:init
+npm run import:csf-framework
+
+# Verify database integrity
+npm run db:verify
 
 # Optionally seed comprehensive question bank (424 questions)
 npm run seed:questions
@@ -37,14 +44,21 @@ npm run seed:questions
 # Development mode with auto-reload
 npm run dev
 
-# Production mode
+# Production mode (MCP server)
 npm start
+
+# HTTP REST API mode
+npm run start:http
 
 # With monitoring enabled
 ENABLE_MONITORING=true npm start
 
 # With specific authentication mode
 AUTH_MODE=simple API_KEY=test-key npm start
+
+# Docker deployment
+docker build -t nist-csf-mcp-server .
+docker run -p 3000:3000 nist-csf-mcp-server
 ```
 
 ### Testing
@@ -78,10 +92,11 @@ The server implements a comprehensive cybersecurity assessment platform followin
    - Protocol-compliant message handling
 
 2. **Tool Implementation Layer** (`src/tools/`)
-   - 36 comprehensive MCP tools covering all NIST CSF 2.0 functions
+   - 38 comprehensive MCP tools covering all NIST CSF 2.0 functions
    - Type-safe tool interfaces with Zod validation schemas
    - Consistent error handling and logging patterns
    - Modular design for maintainability
+   - Interactive tools with user prompting capabilities
 
 3. **Database Layer** (`src/db/`)
    - SQLite database with comprehensive NIST CSF 2.0 schema
@@ -427,6 +442,39 @@ This server implements enterprise-grade security measures:
 - **Audit Readiness**: Comprehensive audit trails and compliance reporting
 - **Industry Standards**: Follows industry best practices and security standards
 
+## Docker Deployment
+
+### Container Support
+The project includes comprehensive Docker support with:
+
+- **Multi-stage Builds**: Optimized production images with minimal size
+- **Build Fallback**: TypeScript compilation with fallback mechanisms for compatibility
+- **Health Checks**: Automated container health monitoring
+- **Security**: Non-root user execution and minimal attack surface
+- **Data Persistence**: Proper volume mounting for database and logs
+- **Environment Variables**: Flexible configuration through environment variables
+
+### Docker Commands
+```bash
+# Build image
+docker build -t nist-csf-mcp-server .
+
+# Run with port mapping
+docker run -p 3000:3000 nist-csf-mcp-server
+
+# Run with volume mounting
+docker run -p 3000:3000 -v $(pwd)/data:/app/data nist-csf-mcp-server
+
+# Docker Compose deployment
+docker-compose up -d
+```
+
+### Troubleshooting Docker Builds
+- The Docker build includes a fallback mechanism for TypeScript compilation
+- If TypeScript compilation fails, it uses a simplified file copy approach
+- All TypeScript syntax should be avoided in production Docker builds
+- Use `npm run build` locally to test TypeScript compilation before Docker builds
+
 ## Development Guidelines
 
 ### Code Quality Standards
@@ -437,9 +485,11 @@ This server implements enterprise-grade security measures:
 
 ### Git Workflow Standards
 - **Feature Branches**: Use feature branches for all development work
+- **Branch Protection**: Main branch is protected requiring PR reviews
 - **Commit Messages**: Clear, descriptive commit messages following conventional commits
-- **Pull Request Reviews**: All changes require review and approval
+- **Pull Request Reviews**: All changes require at least 1 approval before merging
 - **Automated Testing**: All tests must pass before merging
+- **No Force Pushes**: Force pushes and direct pushes to main are disabled
 
 ### Documentation Standards
 - **API Documentation**: Comprehensive documentation for all tools and endpoints
@@ -493,6 +543,8 @@ When working with this codebase:
 6. **Documentation Updates**: Update relevant documentation for any changes
 7. **Performance Monitoring**: Consider performance implications of all changes
 8. **Security Scanning**: Run security tests for any security-related changes
+9. **Branch Protection**: Always work on feature branches - main branch is protected
+10. **Docker Compatibility**: Consider Docker deployment implications for changes
 
 ### Critical Security Patterns
 
@@ -522,4 +574,16 @@ return { success: false, error: 'Invalid input provided' };
 return { success: false, error: error.message };
 ```
 
-This comprehensive MCP server represents a significant cybersecurity assessment platform with enterprise-grade features, security, and scalability.
+## Current Project Status (September 2025)
+
+- **Codebase**: 32K+ lines of production-ready TypeScript
+- **Tools**: 38 comprehensive MCP tools for NIST CSF 2.0
+- **Database**: Fully populated with official NIST framework data (1.8MB+)
+- **APIs**: Dual-mode server (MCP + HTTP REST)
+- **Documentation**: Extensive documentation with examples and guides
+- **Testing**: Comprehensive test coverage across multiple dimensions
+- **Security**: Multi-tier authentication with enterprise-grade patterns
+- **Deployment**: Docker-ready with containerization and orchestration support
+- **Branch Protection**: Main branch protected with required reviews
+
+This comprehensive MCP server represents a significant cybersecurity assessment platform with enterprise-grade features, security, and scalability. It serves as both a reference implementation for NIST CSF 2.0 and a production-ready assessment tool.
