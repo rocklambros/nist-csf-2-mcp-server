@@ -2,6 +2,7 @@
  * Comprehensive tests for Start Assessment Workflow tool - Assessment orchestration
  */
 
+import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import { startAssessmentWorkflow } from '../../src/tools/comprehensive_assessment_workflow.js';
 import { getDatabase, closeDatabase } from '../../src/db/database.js';
 

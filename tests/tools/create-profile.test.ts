@@ -2,6 +2,7 @@
  * Comprehensive tests for Create Profile tool - Organization and profile management
  */
 
+import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import { createProfile } from '../../src/tools/create_profile.js';
 import { getDatabase, closeDatabase } from '../../src/db/database.js';
 

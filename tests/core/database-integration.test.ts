@@ -2,6 +2,7 @@
  * Database Integration Tests - Core database operations validation
  */
 
+import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import { getDatabase, closeDatabase } from '../../src/db/database.js';
 
 describe('Database Integration Tests', () => {

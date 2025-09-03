@@ -2,6 +2,7 @@
  * Comprehensive tests for CSF Lookup tool - Core MCP functionality validation
  */
 
+import { describe, test, expect, beforeAll } from '@jest/globals';
 import { csfLookup } from '../../src/tools/csf_lookup.js';
 import { getFrameworkLoader } from '../../src/services/framework-loader.js';
 

@@ -2,6 +2,7 @@
  * Comprehensive tests for Assess Maturity tool - Maturity calculation and analysis
  */
 
+import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import { assessMaturity } from '../../src/tools/assess_maturity.js';
 import { createProfile } from '../../src/tools/create_profile.js';
 import { getDatabase, closeDatabase } from '../../src/db/database.js';
