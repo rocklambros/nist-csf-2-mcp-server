@@ -192,14 +192,14 @@ export class AssessmentProgressManager {
 
       const session = this.db.prepare('SELECT workflow_id FROM assessment_sessions WHERE session_id = ?').get(sessionId) as { workflow_id: string };
       
-      questions.forEach((question, index) => {
+      questions.forEach((question, _index) => {
         stmt.run(
           uuidv4(),
           sessionId,
           session.workflow_id,
           question.id,
           question.subcategory_id,
-          index + 1
+          _index + 1
         );
       });
 

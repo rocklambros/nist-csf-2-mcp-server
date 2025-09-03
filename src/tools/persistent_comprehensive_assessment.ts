@@ -245,7 +245,7 @@ async function answerQuestion(params: PersistentAssessmentParams, progressManage
     `).run(workflow_id);
 
     // Export final responses to main assessment system
-    const exportData = progressManager.exportAssessmentResponses(workflow_id);
+    progressManager.exportAssessmentResponses(workflow_id);
     
     return {
       success: true,
