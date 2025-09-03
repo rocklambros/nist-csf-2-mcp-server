@@ -1,4 +1,5 @@
 import { CSFDatabase } from "../db/database.js";
+import { logger } from "../utils/logger.js";
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -145,7 +146,7 @@ export async function importAssessment(
       }
     };
   } catch (error) {
-    console.error('Error importing assessment:', error);
+    logger.error('Error importing assessment:', error);
     return {
       success: false,
       imported: 0,

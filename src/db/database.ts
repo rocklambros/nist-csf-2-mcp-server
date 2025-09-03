@@ -60,13 +60,13 @@ interface ImplementationPlan {
   total_effort_hours: number;
   estimated_cost: number;
   status: string;
-  phases?: any[];
+  phases?: ImplementationPhase[];
 }
 
 // Additional type interfaces removed for compilation
 
 interface DatabaseRow {
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined | DatabaseRow[] | any;
 }
 
 interface ImplementationPhase {
@@ -98,7 +98,129 @@ interface PhaseDependency {
   depends_on_subcategory_id: string;
   dependency_type: string;
   dependency_strength?: number;
-  description?: string;
+}
+
+interface SubcategoryDependency {
+  id: string;
+  subcategory_id: string;
+  depends_on_subcategory_id: string;
+  dependency_type: string;
+  dependency_strength?: number;
+  depends_on_name?: string;
+  depends_on_description?: string;
+}
+
+interface CostEstimateResult {
+  subcategory_id: string;
+  organization_size: string;
+  labor_cost: number;
+  technology_cost: number;
+  training_cost: number;
+  consulting_cost: number;
+  other_costs: number;
+  total_cost: number;
+  confidence_level: string;
+}
+
+interface SuggestedAction {
+  subcategory_id: string;
+  priority: number;
+  effort_hours: number;
+  impact_score: number;
+  action_description: string;
+}
+
+interface GapAnalysisItem {
+  subcategory_id: string;
+  current_score: number;
+  target_score: number;
+  gap_score: number;
+  priority: string;
+}
+
+interface DependencyGraph {
+  [subcategoryId: string]: SubcategoryDependency[];
+}
+
+interface ProgressTrackingItem {
+  subcategory_id: string;
+  current_implementation: string;
+  current_maturity: number;
+  status: string;
+  last_updated: string;
+}
+
+interface ProgressSummary {
+  total_subcategories: number;
+  completed: number;
+  in_progress: number;
+  not_started: number;
+  completion_percentage: number;
+}
+
+interface ProgressMilestone {
+  milestone_name: string;
+  target_date: string;
+  actual_date?: string;
+  status: string;
+  completion_percentage: number;
+}
+
+interface VelocityData {
+  average_completion_rate: number;
+  trend: string;
+  projected_completion_date: string;
+}
+
+interface IndustryBenchmarkData {
+  industry: string;
+  organization_size: string;
+  function_scores: Record<string, number>;
+  overall_score: number;
+}
+
+interface BenchmarkComparison {
+  profile_score: number;
+  industry_average: number;
+  percentile_rank: number;
+  gap: number;
+}
+
+interface ExecutiveReportData {
+  organization: OrganizationProfile;
+  summary: ProgressSummary;
+  risk_scores: Record<string, number>;
+  key_findings: string[];
+}
+
+interface TechnicalReportData {
+  implementation_details: SubcategoryImplementation[];
+  progress_tracking: ProgressTrackingItem[];
+  technical_recommendations: string[];
+}
+
+interface ProgressReportData {
+  current_status: ProgressSummary;
+  recent_progress: ProgressTrackingItem[];
+  milestones: ProgressMilestone[];
+  velocity: VelocityData;
+}
+
+interface AuditReportData {
+  compliance_status: Record<string, string>;
+  audit_findings: string[];
+  evidence_summary: Record<string, number>;
+  recommendations: string[];
+}
+
+interface ProfileComparison {
+  profiles: Array<{
+    profile_id: string;
+    profile_name: string;
+    scores: Record<string, number>;
+  }>;
+  differences: Record<string, number>;
+  similarities: string[];
 }
 
 interface CostEstimate {
@@ -1925,7 +2047,7 @@ export class CSFDatabase {
     );
   }
 
-  getImplementationPlan(planId: string): any {
+  getImplementationPlan(planId: string): DatabaseRow | null {
     const plan = this.db.prepare(`
       SELECT * FROM implementation_plans WHERE id = ?
     `).get(planId);
@@ -1964,7 +2086,7 @@ export class CSFDatabase {
     return plan;
   }
 
-  getSubcategoryDependencies(subcategoryId: string): any[] {
+  getSubcategoryDependencies(subcategoryId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT 
         sd.*,
@@ -1994,7 +2116,7 @@ export class CSFDatabase {
     );
   }
 
-  getCostEstimate(subcategoryId: string, organizationSize: string): any {
+  getCostEstimate(subcategoryId: string, organizationSize: string): DatabaseRow | null {
     return this.db.prepare(`
       SELECT * FROM cost_estimates 
       WHERE subcategory_id = ? AND organization_size = ?
@@ -2021,7 +2143,7 @@ export class CSFDatabase {
     );
   }
 
-  getSuggestedActions(profileId: string, capacityHours: number): any[] {
+  getSuggestedActions(profileId: string, capacityHours: number): DatabaseRow[] {
     const sql = `
       WITH current_state AS (
         SELECT 
@@ -2109,7 +2231,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).all(profileId, profileId, capacityHours, capacityHours);
   }
 
-  getGapAnalysisItems(gapAnalysisId: string): any[] {
+  getGapAnalysisItems(gapAnalysisId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT 
         g.*,
@@ -2122,7 +2244,7 @@ export class CSFDatabase {
     `).all(gapAnalysisId);
   }
 
-  calculateDependencyGraph(subcategoryIds: string[]): any {
+  calculateDependencyGraph(subcategoryIds: string[]): DatabaseRow {
     const placeholders = subcategoryIds.map(() => '?').join(',');
     
     interface DependencyRow extends DatabaseRow {
@@ -2160,7 +2282,7 @@ export class CSFDatabase {
     
     for (const dep of dependencies) {
       if (!graph[dep.from_id]) graph[dep.from_id] = [];
-      graph[dep.from_id]!.push(dep);
+      graph[dep.from_id]?.push(dep);
       
       if (subcategoryIds.includes(dep.from_id)) {
         inDegree[dep.from_id] = (inDegree[dep.from_id] || 0) + 1;
@@ -2243,7 +2365,7 @@ export class CSFDatabase {
     );
   }
 
-  getProgressTracking(profileId: string): any[] {
+  getProgressTracking(profileId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT 
         pt.*,
@@ -2259,7 +2381,7 @@ export class CSFDatabase {
     `).all(profileId);
   }
 
-  getProgressSummary(profileId: string): any {
+  getProgressSummary(profileId: string): DatabaseRow | null {
     const sql = `
       WITH progress_stats AS (
         SELECT 
@@ -2345,7 +2467,7 @@ export class CSFDatabase {
     );
   }
 
-  getProgressMilestones(profileId: string): any[] {
+  getProgressMilestones(profileId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT 
         *,
@@ -2362,7 +2484,7 @@ export class CSFDatabase {
     `).all(profileId);
   }
 
-  calculateVelocity(profileId: string, daysBack: number = 30): any {
+  calculateVelocity(profileId: string, daysBack: number = 30): DatabaseRow | null {
     const sql = `
       WITH velocity_data AS (
         SELECT 
@@ -2449,7 +2571,7 @@ export class CSFDatabase {
     );
   }
 
-  getIndustryBenchmarks(industry: string, organizationSize: string): any[] {
+  getIndustryBenchmarks(industry: string, organizationSize: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT * FROM industry_benchmarks
       WHERE industry = ? AND organization_size = ?
@@ -2457,7 +2579,7 @@ export class CSFDatabase {
     `).all(industry, organizationSize);
   }
 
-  compareProfileToBenchmark(profileId: string, industry: string, organizationSize: string): any {
+  compareProfileToBenchmark(profileId: string, industry: string, organizationSize: string): DatabaseRow[] | null {
     const sql = `
       WITH profile_scores AS (
         SELECT 
@@ -2507,7 +2629,7 @@ export class CSFDatabase {
   // REPORTING METHODS
   // ============================================================================
 
-  getExecutiveReportData(profileId: string): any {
+  getExecutiveReportData(profileId: string): DatabaseRow | null {
     const sql = `
       WITH function_scores AS (
         SELECT 
@@ -2575,7 +2697,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(profileId, profileId, profileId, profileId);
   }
 
-  getTechnicalReportData(profileId: string): any {
+  getTechnicalReportData(profileId: string): DatabaseRow | null {
     const sql = `
       WITH subcategory_details AS (
         SELECT 
@@ -2640,7 +2762,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(profileId, profileId);
   }
 
-  getProgressReportData(profileId: string): any {
+  getProgressReportData(profileId: string): DatabaseRow | null {
     const sql = `
       WITH progress_overview AS (
         SELECT 
@@ -2710,7 +2832,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(profileId, profileId, profileId, profileId);
   }
 
-  getAuditReportData(profileId: string): any {
+  getAuditReportData(profileId: string): DatabaseRow | null {
     const sql = `
       WITH audit_trail AS (
         SELECT 
@@ -2746,7 +2868,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(profileId, profileId);
   }
 
-  compareProfiles(profileIds: string[]): any {
+  compareProfiles(profileIds: string[]): DatabaseRow | null {
     const placeholders = profileIds.map(() => '?').join(',');
     const sql = `
       WITH profile_comparisons AS (

@@ -1,4 +1,5 @@
 import { CSFDatabase } from "../db/database.js";
+import { logger } from '../utils/logger.js';
 
 interface ProfileComparison {
   profile_id: string;
@@ -132,7 +133,7 @@ export async function compareProfiles(
     
     return comparisonMatrix;
   } catch (error) {
-    console.error('Error comparing profiles:', error);
+    logger.error('Error comparing profiles:', error);
     throw new Error(`Failed to compare profiles: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

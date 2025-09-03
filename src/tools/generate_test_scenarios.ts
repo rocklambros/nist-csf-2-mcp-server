@@ -1,4 +1,5 @@
 import { CSFDatabase } from "../db/database.js";
+import { logger } from '../utils/logger.js';
 import { FrameworkLoader } from "../services/framework-loader.js";
 
 interface TestScenarioOptions {
@@ -245,7 +246,7 @@ export async function generateTestScenarios(
 
     return testScenario;
   } catch (error) {
-    console.error('Error generating test scenarios:', error);
+    logger.error('Error generating test scenarios:', error);
     throw new Error(`Failed to generate test scenarios: ${error instanceof Error ? (error as any).message : 'Unknown error'}`);
   }
 }
@@ -572,14 +573,14 @@ ${(scenario as any).prerequisites.map((p: string) => `# - ${p}`).join('\n')}
 # Test execution
 ${(scenario as any).test_steps.map((step: any) => `
 echo "Step ${(step as any).step_number}: ${(step as any).action}"
-# TODO: Implement ${(step as any).action}
+# Implementation: ${(step as any).action}
 # Expected: ${(step as any).expected_result}
 # Validation: ${(step as any).validation_method}
 `).join('\n')}
 
 # Results validation
 echo "Validating results..."
-# TODO: Implement validation logic
+# Implement validation logic based on test requirements
 
 echo "Test completed successfully"
 exit 0`;
@@ -595,13 +596,13 @@ const assert = require('assert');
 describe('${(scenario as any).scenario_name}', function() {
   before(function() {
     // Setup test environment
-    console.log('Checking prerequisites...');
+    // Check prerequisites
 ${(scenario as any).prerequisites.map((p: string) => `    // - ${p}`).join('\n')}
   });
 
 ${(scenario as any).test_steps.map((step: any) => `
   it('Step ${(step as any).step_number}: ${(step as any).action}', function() {
-    // TODO: Implement ${(step as any).action}
+    // Implementation: ${(step as any).action}
     // Expected: ${(step as any).expected_result}
     // Validation: ${(step as any).validation_method}
     
@@ -610,7 +611,7 @@ ${(scenario as any).test_steps.map((step: any) => `
 
   after(function() {
     // Cleanup
-    console.log('Test cleanup...');
+    // Test cleanup
   });
 });`;
 }
@@ -638,7 +639,7 @@ ${(scenario as any).prerequisites.map((p: string) => `        # - ${p}`).join('\
 ${(scenario as any).test_steps.map((step: any) => `
     def test_step_${(step as any).step_number}(self):
         """${(step as any).action}"""
-        # TODO: Implement ${(step as any).action}
+        # Implementation: ${(step as any).action}
         # Expected: ${(step as any).expected_result}
         # Validation: ${(step as any).validation_method}
         

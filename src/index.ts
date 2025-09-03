@@ -1064,10 +1064,10 @@ async function main() {
           
           try {
             db.createOrganization({
-              org_id: params.org_id!,
-              org_name: params.org_name!,
-              industry: params.industry!,
-              size: params.size!,
+              org_id: params.org_id,
+              org_name: params.org_name,
+              industry: params.industry,
+              size: params.size,
               current_tier: params.current_tier as ImplementationTier | undefined,
               target_tier: params.target_tier as ImplementationTier | undefined
             });
@@ -1094,10 +1094,10 @@ async function main() {
           const params = RecordImplementationSchema.parse(args);
           
           const impl: SubcategoryImplementation = {
-            org_id: params.org_id!,
-            subcategory_id: params.subcategory_id!,
-            implementation_status: params.implementation_status!,
-            maturity_level: params.maturity_level!,
+            org_id: params.org_id,
+            subcategory_id: params.subcategory_id,
+            implementation_status: params.implementation_status,
+            maturity_level: params.maturity_level,
             notes: params.notes,
             assessed_by: params.assessed_by,
             last_assessed: new Date()
@@ -1122,14 +1122,14 @@ async function main() {
           const params = RecordRiskSchema.parse(args);
           
           const risk: RiskAssessment = {
-            org_id: params.org_id!,
-            element_id: params.element_id!,
-            risk_level: params.risk_level!,
-            likelihood: params.likelihood!,
-            impact: params.impact!,
-            mitigation_status: params.mitigation_status!,
+            org_id: params.org_id,
+            element_id: params.element_id,
+            risk_level: params.risk_level,
+            likelihood: params.likelihood,
+            impact: params.impact,
+            mitigation_status: params.mitigation_status,
             mitigation_plan: params.mitigation_plan,
-            risk_score: (params.likelihood! * params.impact!) / 5.0,
+            risk_score: (params.likelihood * params.impact) / 5.0,
             assessment_date: new Date()
           };
           
@@ -1152,13 +1152,13 @@ async function main() {
           const params = RecordGapSchema.parse(args);
           
           const gap: GapAnalysis = {
-            org_id: params.org_id!,
-            category_id: params.category_id!,
-            current_score: params.current_score!,
-            target_score: params.target_score!,
-            priority: params.priority!,
+            org_id: params.org_id,
+            category_id: params.category_id,
+            current_score: params.current_score,
+            target_score: params.target_score,
+            priority: params.priority,
             estimated_effort: params.estimated_effort,
-            gap_score: params.target_score! - params.current_score!,
+            gap_score: params.target_score - params.current_score,
             analysis_date: new Date()
           };
           
@@ -1629,7 +1629,7 @@ async function main() {
         case 'check_assessment_workflow_status': {
           const params = CheckAssessmentWorkflowSchema.parse(args);
           const result = await checkAssessmentWorkflowStatus({ 
-            workflow_id: params.workflow_id!
+            workflow_id: params.workflow_id
           });
           
           return {

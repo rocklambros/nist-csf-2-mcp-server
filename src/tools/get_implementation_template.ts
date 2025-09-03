@@ -1,4 +1,5 @@
 import { CSFDatabase } from "../db/database.js";
+import { logger } from '../utils/logger.js';
 import { FrameworkLoader } from "../services/framework-loader.js";
 
 interface ImplementationTemplateOptions {
@@ -201,7 +202,7 @@ export async function getImplementationTemplate(
 
     return template;
   } catch (error) {
-    console.error('Error generating implementation template:', error);
+    logger.error('Error generating implementation template:', error);
     throw new Error(`Failed to generate template: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

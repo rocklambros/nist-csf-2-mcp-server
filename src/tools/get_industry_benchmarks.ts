@@ -1,4 +1,5 @@
 import { CSFDatabase } from "../db/database.js";
+import { logger } from "../utils/logger.js";
 import { 
   ALL_BENCHMARKS, 
   INDUSTRY_METADATA,
@@ -168,7 +169,7 @@ export async function getIndustryBenchmarks(
       }
     };
   } catch (error) {
-    console.error('Error getting industry benchmarks:', error);
+    logger.error('Error getting industry benchmarks:', error);
     throw new Error(`Failed to get industry benchmarks: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

@@ -1,4 +1,5 @@
 import { CSFDatabase } from "../db/database.js";
+import { logger } from "../utils/logger.js";
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -224,7 +225,7 @@ export async function validateEvidence(
     }
 
   } catch (error) {
-    console.error('Error validating evidence:', error);
+    logger.error('Error validating evidence:', error);
     result.success = false;
     result.errors.push(error instanceof Error ? error.message : 'Unknown error');
   }

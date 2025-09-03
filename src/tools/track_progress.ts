@@ -1,4 +1,5 @@
 import { CSFDatabase } from "../db/database.js";
+import { logger } from '../utils/logger.js';
 
 interface ProgressUpdate {
   subcategory_id: string;
@@ -111,7 +112,7 @@ export async function trackProgress(
 
     return summary;
   } catch (error) {
-    console.error('Error tracking progress:', error);
+    logger.error('Error tracking progress:', error);
     throw new Error(`Failed to track progress: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
