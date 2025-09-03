@@ -9,6 +9,8 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListPromptsRequestSchema,
+  ListResourcesRequestSchema,
   ErrorCode,
   McpError
 } from '@modelcontextprotocol/sdk/types.js';
@@ -983,6 +985,16 @@ async function main() {
         }
       }
     ],
+  }));
+
+  // Handle prompts list (required by MCP protocol)
+  server.setRequestHandler(ListPromptsRequestSchema, async () => ({
+    prompts: []
+  }));
+
+  // Handle resources list (required by MCP protocol)  
+  server.setRequestHandler(ListResourcesRequestSchema, async () => ({
+    resources: []
   }));
 
   // Handle tool calls
