@@ -160,6 +160,8 @@ async function main() {
     {
       capabilities: {
         tools: {},
+        prompts: {},
+        resources: {},
       },
     }
   );
