@@ -60,8 +60,24 @@ try {
       if (fs.statSync(srcPath).isDirectory()) {
         copyDir(srcPath, destPath);
       } else if (entry.endsWith('.ts')) {
-        // Copy .ts file as .js for runtime
-        const content = fs.readFileSync(srcPath, 'utf8');
+        // Copy .ts file as .js for runtime, strip TypeScript syntax
+        let content = fs.readFileSync(srcPath, 'utf8');
+        
+        // Remove TypeScript-only syntax for Docker compatibility
+        content = content
+          .replace(/import type \{[^}]*\} from [^;]+;?\n?/g, '') // Remove type-only imports
+          .replace(/export type \{[^}]*\}[^;]*;?\n?/g, '') // Remove type-only exports  
+          .replace(/: [A-Za-z<>[\]|&\s,]+(?=\s*[=;{)])/g, '') // Remove type annotations
+          .replace(/\?\s*:/g, ':') // Remove optional property markers
+          .replace(/as [A-Za-z<>[\]|&\s,]+/g, '') // Remove type assertions
+          .replace(/interface\s+\w+\s*\{[\s\S]*?\}\s*/g, '') // Remove interface definitions (multiline)
+          .replace(/export interface[\s\S]*?\}\s*/g, '') // Remove export interface definitions (multiline)
+          .replace(/type\s+\w+\s*=[^;]+;\s*/g, '') // Remove type aliases
+          .replace(/\/\*\*[\s\S]*?\*\//g, '') // Remove JSDoc comments that might have types
+          .replace(/,\s*\}\s*\)/g, ' })') // Fix trailing commas in object destructuring
+          .replace(/:\s*\{[\s\n]*tools/g, ': { tools') // Fix object destructuring syntax errors
+          .replace(/\n\s*\n\s*\n/g, '\n\n'); // Clean up extra blank lines
+        
         const jsPath = destPath.replace('.ts', '.js');
         fs.writeFileSync(jsPath, content);
       } else if (entry.endsWith('.js') || entry.endsWith('.json')) {
