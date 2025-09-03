@@ -28,8 +28,8 @@ COPY src/ ./src/
 COPY scripts/ ./scripts/
 COPY data/ ./data/
 
-# Build TypeScript with Docker-compatible fallback
-RUN node build-docker.cjs
+# Build TypeScript - try proper compilation first, fallback if needed
+RUN npm run build || node build-docker.cjs
 
 # Initialize database with complete framework data (skip question bank for now)
 RUN npm run import:csf-framework
