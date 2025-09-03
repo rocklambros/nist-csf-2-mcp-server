@@ -591,7 +591,7 @@ function generateJavaScriptScript(scenario: any, subcategory: any): string {
 // Subcategory: ${(subcategory as any).title}
 // Generated: ${new Date().toISOString()}
 
-const assert = require('assert');
+import assert from 'assert';
 
 describe('${(scenario as any).scenario_name}', function() {
   before(function() {
