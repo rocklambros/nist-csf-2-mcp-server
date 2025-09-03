@@ -1,0 +1,265 @@
+/**
+ * Database Integration Tests - Core database operations validation
+ */
+
+import { getDatabase, closeDatabase } from '../../src/db/database.js';
+
+describe('Database Integration Tests', () => {
+  let db: any;
+
+  beforeAll(() => {
+    db = getDatabase();
+  });
+
+  afterAll(() => {
+    closeDatabase();
+  });
+
+  beforeEach(() => {
+    // Clean up test data
+    try {
+      db.prepare('DELETE FROM profile_assessments WHERE profile_id LIKE ?').run('test-%');
+      db.prepare('DELETE FROM profiles WHERE profile_name LIKE ?').run('%test%');
+      db.prepare('DELETE FROM organization_profiles WHERE org_name LIKE ?').run('%test%');
+    } catch (error) {
+      // Ignore cleanup errors
+    }
+  });
+
+  describe('Organization Operations', () => {
+    test('should create organization successfully', () => {
+      const org = {
+        org_id: 'test-org-001',
+        org_name: 'Test Integration Org',
+        industry: 'Technology',
+        size: 'medium'
+      };
+
+      expect(() => db.createOrganization(org)).not.toThrow();
+      
+      const retrieved = db.getOrganization(org.org_id);
+      expect(retrieved).toBeDefined();
+      expect(retrieved.org_name).toBe(org.org_name);
+      expect(retrieved.industry).toBe(org.industry);
+    });
+
+    test('should prevent duplicate organization IDs', () => {
+      const org = {
+        org_id: 'test-duplicate',
+        org_name: 'Duplicate Test Org',
+        industry: 'Healthcare',
+        size: 'small'
+      };
+
+      db.createOrganization(org);
+      
+      // Second creation should throw error
+      expect(() => db.createOrganization(org)).toThrow();
+    });
+
+    test('should update organization successfully', () => {
+      const org = {
+        org_id: 'test-update-org',
+        org_name: 'Update Test Org',
+        industry: 'Manufacturing',
+        size: 'large'
+      };
+
+      db.createOrganization(org);
+
+      const updates = {
+        org_name: 'Updated Test Org',
+        industry: 'Energy'
+      };
+
+      expect(() => db.updateOrganization(org.org_id, updates)).not.toThrow();
+      
+      const updated = db.getOrganization(org.org_id);
+      expect(updated.org_name).toBe(updates.org_name);
+      expect(updated.industry).toBe(updates.industry);
+      expect(updated.size).toBe(org.size); // Unchanged
+    });
+  });
+
+  describe('Profile Management', () => {
+    test('should create profile with valid organization', () => {
+      // Create organization first
+      const org = {
+        org_id: 'test-profile-org',
+        org_name: 'Profile Test Org',
+        industry: 'Government',
+        size: 'enterprise'
+      };
+      db.createOrganization(org);
+
+      const profile = {
+        profile_id: 'test-profile-001',
+        org_id: org.org_id,
+        profile_name: 'Test Profile',
+        profile_type: 'current',
+        description: 'Integration test profile',
+        created_by: 'test-suite'
+      };
+
+      expect(() => db.createProfile(profile)).not.toThrow();
+      
+      const retrieved = db.getProfile(profile.profile_id);
+      expect(retrieved).toBeDefined();
+      expect(retrieved.profile_name).toBe(profile.profile_name);
+    });
+
+    test('should handle profile foreign key constraints', () => {
+      const profile = {
+        profile_id: 'test-invalid-fk',
+        org_id: 'non-existent-org',
+        profile_name: 'Invalid FK Profile',
+        profile_type: 'current'
+      };
+
+      // Should fail due to foreign key constraint
+      expect(() => db.createProfile(profile)).toThrow();
+    });
+  });
+
+  describe('Assessment Operations', () => {
+    let testProfileId: string;
+    let testOrgId: string;
+
+    beforeEach(() => {
+      // Setup test organization and profile
+      testOrgId = 'test-assessment-org';
+      testProfileId = 'test-assessment-profile';
+
+      db.createOrganization({
+        org_id: testOrgId,
+        org_name: 'Assessment Test Org',
+        industry: 'Technology', 
+        size: 'medium'
+      });
+
+      db.createProfile({
+        profile_id: testProfileId,
+        org_id: testOrgId,
+        profile_name: 'Assessment Test Profile',
+        profile_type: 'current'
+      });
+    });
+
+    test('should create bulk assessments successfully', () => {
+      const assessments = [
+        {
+          subcategory_id: 'GV.OC-01',
+          implementation_level: 4,
+          maturity_score: 4,
+          confidence_level: 'high',
+          assessed_by: 'test-suite'
+        },
+        {
+          subcategory_id: 'GV.OC-02',
+          implementation_level: 3,
+          maturity_score: 3,
+          confidence_level: 'medium',
+          assessed_by: 'test-suite'
+        }
+      ];
+
+      const result = db.createBulkAssessments(testProfileId, assessments);
+      expect(result.changes).toBe(2);
+      
+      // Verify assessments were created
+      const savedAssessments = db.getProfileAssessments(testProfileId);
+      expect(savedAssessments).toHaveLength(2);
+    });
+
+    test('should retrieve profile assessments correctly', () => {
+      const assessments = [
+        {
+          subcategory_id: 'ID.AM-01',
+          implementation_level: 5,
+          maturity_score: 5,
+          confidence_level: 'high'
+        },
+        {
+          subcategory_id: 'PR.AA-01', 
+          implementation_level: 2,
+          maturity_score: 2,
+          confidence_level: 'low'
+        }
+      ];
+
+      db.createBulkAssessments(testProfileId, assessments);
+      
+      const retrieved = db.getProfileAssessments(testProfileId);
+      expect(retrieved).toHaveLength(2);
+      expect(retrieved.map((a: any) => a.subcategory_id)).toContain('ID.AM-01');
+      expect(retrieved.map((a: any) => a.subcategory_id)).toContain('PR.AA-01');
+    });
+  });
+
+  describe('Statistics and Reporting', () => {
+    test('should calculate database statistics', () => {
+      const stats = db.getStats();
+      
+      expect(stats).toBeDefined();
+      expect(typeof stats.organizations).toBe('number');
+      expect(typeof stats.profiles).toBe('number');
+      expect(typeof stats.assessments).toBe('number');
+      expect(stats.organizations).toBeGreaterThanOrEqual(0);
+    });
+
+    test('should handle empty database gracefully', () => {
+      // Clean all data
+      try {
+        db.prepare('DELETE FROM profile_assessments').run();
+        db.prepare('DELETE FROM profiles').run();
+        db.prepare('DELETE FROM organization_profiles').run();
+      } catch (error) {
+        // Ignore if tables don't exist
+      }
+
+      const stats = db.getStats();
+      expect(stats.organizations).toBe(0);
+      expect(stats.profiles).toBe(0);
+      expect(stats.assessments).toBe(0);
+    });
+  });
+
+  describe('Transaction Safety', () => {
+    test('should handle transaction rollback on error', () => {
+      const orgId = 'test-transaction-org';
+      
+      // Create organization
+      db.createOrganization({
+        org_id: orgId,
+        org_name: 'Transaction Test Org',
+        industry: 'Technology',
+        size: 'medium'
+      });
+
+      // Attempt transaction that should fail
+      expect(() => {
+        db.transaction(() => {
+          // This should work
+          db.createProfile({
+            profile_id: 'test-tx-profile',
+            org_id: orgId,
+            profile_name: 'Transaction Test Profile',
+            profile_type: 'current'
+          });
+          
+          // This should fail (duplicate org_id)
+          db.createOrganization({
+            org_id: orgId, // Duplicate
+            org_name: 'Duplicate Org',
+            industry: 'Healthcare',
+            size: 'small'
+          });
+        });
+      }).toThrow();
+
+      // Profile should not exist due to rollback
+      const profile = db.getProfile('test-tx-profile');
+      expect(profile).toBeUndefined();
+    });
+  });
+});

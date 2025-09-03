@@ -1,0 +1,241 @@
+/**
+ * Comprehensive tests for Assess Maturity tool - Maturity calculation and analysis
+ */
+
+import { assessMaturity } from '../../src/tools/assess_maturity.js';
+import { createProfile } from '../../src/tools/create_profile.js';
+import { getDatabase, closeDatabase } from '../../src/db/database.js';
+
+describe('Assess Maturity Tool', () => {
+  let db: any;
+  let testProfileId: string;
+
+  beforeAll(async () => {
+    db = getDatabase();
+    
+    // Create test profile for maturity assessment
+    const profileResult = await createProfile({
+      org_name: 'Maturity Test Organization',
+      sector: 'Technology',
+      size: 'medium',
+      profile_type: 'current'
+    });
+    
+    testProfileId = profileResult.profile_id;
+    
+    // Add some test assessment data
+    const testAssessments = [
+      { subcategory_id: 'GV.OC-01', implementation_level: 4, maturity_score: 4 },
+      { subcategory_id: 'GV.OC-02', implementation_level: 3, maturity_score: 3 },
+      { subcategory_id: 'ID.AM-01', implementation_level: 2, maturity_score: 2 },
+      { subcategory_id: 'ID.AM-02', implementation_level: 5, maturity_score: 5 },
+      { subcategory_id: 'PR.AA-01', implementation_level: 1, maturity_score: 1 },
+      { subcategory_id: 'DE.CM-01', implementation_level: 3, maturity_score: 3 }
+    ];
+
+    db.createBulkAssessments(testProfileId, testAssessments);
+  });
+
+  afterAll(() => {
+    // Cleanup test data
+    try {
+      db.prepare('DELETE FROM profile_assessments WHERE profile_id = ?').run(testProfileId);
+      db.prepare('DELETE FROM profiles WHERE profile_id = ?').run(testProfileId);
+    } catch (error) {
+      // Ignore cleanup errors
+    }
+    closeDatabase();
+  });
+
+  describe('Basic Maturity Assessment', () => {
+    test('should calculate maturity for profile with assessments', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId,
+        include_recommendations: true
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.profile_id).toBe(testProfileId);
+      expect(result.maturity_tiers).toBeDefined();
+      expect(result.overall_maturity).toBeDefined();
+      expect(typeof result.overall_maturity.average_score).toBe('number');
+    });
+
+    test('should include function-level breakdown', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.function_maturity).toBeDefined();
+      expect(Array.isArray(result.function_maturity)).toBe(true);
+      expect(result.function_maturity.length).toBeGreaterThan(0);
+      
+      // Should have entries for functions with data (GV, ID, PR, DE)
+      const functionIds = result.function_maturity.map((f: any) => f.function_id);
+      expect(functionIds).toContain('GV');
+      expect(functionIds).toContain('ID');
+    });
+
+    test('should calculate correct average scores', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId
+      });
+
+      expect(result.success).toBe(true);
+      
+      // Find GV function (should have scores 4,3 = avg 3.5)
+      const govFunction = result.function_maturity.find((f: any) => f.function_id === 'GV');
+      expect(govFunction).toBeDefined();
+      expect(govFunction.average_score).toBe(3.5);
+      
+      // Find ID function (should have scores 2,5 = avg 3.5)
+      const idFunction = result.function_maturity.find((f: any) => f.function_id === 'ID');
+      expect(idFunction).toBeDefined();
+      expect(idFunction.average_score).toBe(3.5);
+    });
+  });
+
+  describe('Maturity Recommendations', () => {
+    test('should include recommendations when requested', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId,
+        include_recommendations: true
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.recommendations).toBeDefined();
+      expect(Array.isArray(result.recommendations)).toBe(true);
+    });
+
+    test('should exclude recommendations when not requested', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId,
+        include_recommendations: false
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.recommendations).toBeUndefined();
+    });
+
+    test('should provide actionable recommendations', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId,
+        include_recommendations: true
+      });
+
+      expect(result.success).toBe(true);
+      if (result.recommendations) {
+        result.recommendations.forEach((rec: any) => {
+          expect(rec.priority).toBeDefined();
+          expect(rec.description).toBeDefined();
+          expect(rec.function_id).toBeDefined();
+        });
+      }
+    });
+  });
+
+  describe('Subcategory Details', () => {
+    test('should include subcategory details when requested', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId,
+        include_subcategory_details: true
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.subcategory_details).toBeDefined();
+      expect(Array.isArray(result.subcategory_details)).toBe(true);
+      expect(result.subcategory_details.length).toBeGreaterThan(0);
+    });
+
+    test('should exclude subcategory details by default', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.subcategory_details).toBeUndefined();
+    });
+  });
+
+  describe('Error Handling', () => {
+    test('should handle non-existent profile ID', async () => {
+      const result = await assessMaturity({
+        profile_id: 'non-existent-profile-id'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBeDefined();
+      expect(result.error).toContain('not found');
+    });
+
+    test('should handle profile with no assessments', async () => {
+      // Create empty profile
+      const emptyProfile = await createProfile({
+        org_name: 'Empty Test Org',
+        sector: 'Technology',
+        size: 'small'
+      });
+
+      const result = await assessMaturity({
+        profile_id: emptyProfile.profile_id
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.overall_maturity.average_score).toBe(0);
+      expect(result.function_maturity).toHaveLength(0);
+    });
+
+    test('should maintain consistent response structure on error', async () => {
+      const result = await assessMaturity({
+        profile_id: 'invalid-id'
+      });
+
+      expect(result).toHaveProperty('success');
+      expect(result).toHaveProperty('profile_id');
+      expect(result.success).toBe(false);
+      expect(result.profile_id).toBe('invalid-id');
+    });
+  });
+
+  describe('Performance', () => {
+    test('should complete assessment calculation quickly', async () => {
+      const startTime = Date.now();
+      
+      await assessMaturity({
+        profile_id: testProfileId,
+        include_recommendations: true,
+        include_subcategory_details: true
+      });
+      
+      const duration = Date.now() - startTime;
+      expect(duration).toBeLessThan(2000); // Should complete in under 2 seconds
+    });
+  });
+
+  describe('Maturity Tier Calculation', () => {
+    test('should determine correct maturity tiers', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.maturity_tiers).toBeDefined();
+      
+      // With our test data (avg 3.0), should be in Tier 2-3 range
+      expect(result.overall_maturity.tier_recommendation).toMatch(/Tier [2-3]/);
+    });
+
+    test('should provide tier progression guidance', async () => {
+      const result = await assessMaturity({
+        profile_id: testProfileId,
+        include_recommendations: true
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.maturity_tiers.current_tier).toBeDefined();
+      expect(result.maturity_tiers.next_tier).toBeDefined();
+      expect(result.maturity_tiers.progression_guidance).toBeDefined();
+    });
+  });
+});

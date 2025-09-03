@@ -54,20 +54,19 @@ module.exports = {
   },
   // Setup files for test environment
   setupFilesAfterEnv: ['<rootDir>/tests/helpers/jest-setup.ts'],
-  // Exclude problematic tests by default
+  // Focus on core functionality tests for coverage
   testPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',
     '\\.comprehensive\\.test\\.ts$',
     '\\.backup$',
     'tests/validation/transaction.validation.test.ts',
-    'tests/tools/reporting-tools.test.ts',
+    'tests/tools/reporting-tools.test.ts', 
     'tests/performance/',
     'tests/simple-db.test.ts',
     'tests/tools/.*simple.*\\.test\\.ts$',
     'tests/tools/.*unit\\.test\\.ts$',
     'tests/security/',
-    'tests/tools/',
     'tests/integration/',
     'tests/e2e/',
     'tests/services/',
