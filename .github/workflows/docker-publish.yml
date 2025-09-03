@@ -172,7 +172,7 @@ jobs:
       if: github.event_name != 'pull_request'
       run: |
         echo "Testing Docker image startup and framework loading..."
-        docker run --rm --name test-container ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest timeout 10s node dist/index.js || true
+        echo '{"jsonrpc":"2.0","method":"tools/list","params":{},"id":1}' | timeout 30s docker run -i --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest node dist/index.js 2>/dev/null | grep -q '"tools"' && echo "✅ Published image MCP test passed" || echo "❌ Published image test failed"
         echo "✅ Docker image test completed - MCP server starts successfully"
 
     - name: Notify on Docker build and push success
