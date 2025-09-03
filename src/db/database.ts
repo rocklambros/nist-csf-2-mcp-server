@@ -92,11 +92,11 @@ interface ImplementationPlan {
 
 // Additional type interfaces removed for compilation
 
-interface DatabaseRow {
-  [key: string]: string | number | boolean | null | undefined | DatabaseRow[] | any;
+export interface DatabaseRow {
+  [key: string]: any;
 }
 
-interface ImplementationPhase {
+export interface ImplementationPhase {
   id: string;
   plan_id: string;
   phase_number: number;
@@ -108,7 +108,7 @@ interface ImplementationPhase {
   status?: string;
 }
 
-interface ImplementationItem {
+export interface ImplementationItem {
   id: string;
   phase_id: string;
   subcategory_id: string;
@@ -119,7 +119,7 @@ interface ImplementationItem {
   completion_percentage?: number;
 }
 
-interface PhaseDependency {
+export interface PhaseDependency {
   id: string;
   subcategory_id: string;
   depends_on_subcategory_id: string;
@@ -127,7 +127,7 @@ interface PhaseDependency {
   dependency_strength?: number;
 }
 
-interface SubcategoryDependency {
+export interface SubcategoryDependency {
   id: string;
   subcategory_id: string;
   depends_on_subcategory_id: string;
@@ -137,7 +137,7 @@ interface SubcategoryDependency {
   depends_on_description?: string;
 }
 
-interface CostEstimateResult {
+export interface CostEstimateResult {
   subcategory_id: string;
   organization_size: string;
   labor_cost: number;
@@ -149,7 +149,7 @@ interface CostEstimateResult {
   confidence_level: string;
 }
 
-interface SuggestedAction {
+export interface SuggestedAction {
   subcategory_id: string;
   priority: number;
   effort_hours: number;
@@ -157,7 +157,7 @@ interface SuggestedAction {
   action_description: string;
 }
 
-interface GapAnalysisItem {
+export interface GapAnalysisItem {
   subcategory_id: string;
   current_score: number;
   target_score: number;
@@ -165,11 +165,11 @@ interface GapAnalysisItem {
   priority: string;
 }
 
-interface DependencyGraph {
+export interface DependencyGraph {
   [subcategoryId: string]: SubcategoryDependency[];
 }
 
-interface ProgressTrackingItem {
+export interface ProgressTrackingItem {
   subcategory_id: string;
   current_implementation: string;
   current_maturity: number;
@@ -177,7 +177,7 @@ interface ProgressTrackingItem {
   last_updated: string;
 }
 
-interface ProgressSummary {
+export interface ProgressSummary {
   total_subcategories: number;
   completed: number;
   in_progress: number;
@@ -185,7 +185,7 @@ interface ProgressSummary {
   completion_percentage: number;
 }
 
-interface ProgressMilestone {
+export interface ProgressMilestone {
   milestone_name: string;
   target_date: string;
   actual_date?: string;
@@ -193,54 +193,54 @@ interface ProgressMilestone {
   completion_percentage: number;
 }
 
-interface VelocityData {
+export interface VelocityData {
   average_completion_rate: number;
   trend: string;
   projected_completion_date: string;
 }
 
-interface IndustryBenchmarkData {
+export interface IndustryBenchmarkData {
   industry: string;
   organization_size: string;
   function_scores: Record<string, number>;
   overall_score: number;
 }
 
-interface BenchmarkComparison {
+export interface BenchmarkComparison {
   profile_score: number;
   industry_average: number;
   percentile_rank: number;
   gap: number;
 }
 
-interface ExecutiveReportData {
+export interface ExecutiveReportData {
   organization: OrganizationProfile;
   summary: ProgressSummary;
   risk_scores: Record<string, number>;
   key_findings: string[];
 }
 
-interface TechnicalReportData {
+export interface TechnicalReportData {
   implementation_details: SubcategoryImplementation[];
   progress_tracking: ProgressTrackingItem[];
   technical_recommendations: string[];
 }
 
-interface ProgressReportData {
+export interface ProgressReportData {
   current_status: ProgressSummary;
   recent_progress: ProgressTrackingItem[];
   milestones: ProgressMilestone[];
   velocity: VelocityData;
 }
 
-interface AuditReportData {
+export interface AuditReportData {
   compliance_status: Record<string, string>;
   audit_findings: string[];
   evidence_summary: Record<string, number>;
   recommendations: string[];
 }
 
-interface ProfileComparison {
+export interface ProfileComparison {
   profiles: Array<{
     profile_id: string;
     profile_name: string;
@@ -250,7 +250,7 @@ interface ProfileComparison {
   similarities: string[];
 }
 
-interface CostEstimate {
+export interface CostEstimate {
   id: string;
   subcategory_id: string;
   organization_size: string;
@@ -262,7 +262,7 @@ interface CostEstimate {
   confidence_level?: string;
 }
 
-interface ProgressUpdate {
+export interface ProgressUpdate {
   id: string;
   profile_id: string;
   subcategory_id: string;
@@ -285,7 +285,7 @@ interface ProgressUpdate {
   improvement_priority?: string;
 }
 
-interface Milestone {
+export interface Milestone {
   id: string;
   profile_id: string;
   milestone_name: string;
@@ -2336,12 +2336,15 @@ export class CSFDatabase {
     }
     
     while (queue.length > 0) {
-      const current = queue.shift()!;
+      const current = queue.shift();
+      if (!current) continue;
       sorted.push(current);
       
       for (const dep of (graph[current] || [])) {
         if (inDegree[dep.to_id] !== undefined) {
-          inDegree[dep.to_id]!--;
+          if (inDegree[dep.to_id] !== undefined) {
+            inDegree[dep.to_id]--;
+          }
           if (inDegree[dep.to_id] === 0) {
             queue.push(dep.to_id);
           }
@@ -2957,7 +2960,7 @@ export class CSFDatabase {
     return this.db.prepare(sql).get(...profileIds, ...profileIds);
   }
 
-  exportProfileData(profileId: string): any {
+  exportProfileData(profileId: string): DatabaseRow | null {
     const sql = `
       SELECT 
         -- Profile Information
@@ -3017,7 +3020,7 @@ export class CSFDatabase {
   // DATA IMPORT AND EVIDENCE VALIDATION
   // ============================================================================
 
-  getAssessment(assessmentId: string): any {
+  getAssessment(assessmentId: string): DatabaseRow | null {
     return this.db.prepare(`
       SELECT * FROM subcategory_assessments 
       WHERE assessment_id = ?
@@ -3217,7 +3220,7 @@ export class CSFDatabase {
     `).run(status, notes, validatedBy, evidenceId);
   }
 
-  getEvidenceForAssessment(assessmentId: string): any[] {
+  getEvidenceForAssessment(assessmentId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT * FROM audit_evidence 
       WHERE assessment_id = ? 
@@ -3225,7 +3228,7 @@ export class CSFDatabase {
     `).all(assessmentId);
   }
 
-  getEvidenceValidationReport(profileId: string): any {
+  getEvidenceValidationReport(profileId: string): DatabaseRow | null {
     const stats = this.db.prepare(`
       SELECT 
         validation_status,
@@ -3270,7 +3273,7 @@ export class CSFDatabase {
   }
 
   getImportValidationErrors(
-    data: any[],
+    data: DatabaseRow[],
     _format: 'csv' | 'json' | 'excel'
   ): Array<{ row: number; field: string; error: string }> {
     const errors: Array<{ row: number; field: string; error: string }> = [];
@@ -3467,7 +3470,7 @@ export class CSFDatabase {
     sector?: string;
     includeOptions?: boolean;
     includeExamples?: boolean;
-  }): any[] {
+  }): DatabaseRow[] {
     let sql = `
       SELECT 
         qb.*,
@@ -3479,7 +3482,7 @@ export class CSFDatabase {
       WHERE qb.subcategory_id = ?
     `;
 
-    const params: any[] = [subcategoryId];
+    const params: (string | number)[] = [subcategoryId];
 
     if (filters?.questionType) {
       sql += ' AND qb.question_type = ?';
@@ -3524,7 +3527,7 @@ export class CSFDatabase {
   /**
    * Get question options
    */
-  getQuestionOptions(questionId: string): any[] {
+  getQuestionOptions(questionId: string): DatabaseRow[] {
     return this.db.prepare(`
       SELECT * FROM question_options 
       WHERE question_id = ? 
@@ -3538,13 +3541,13 @@ export class CSFDatabase {
   getQuestionExamples(questionId: string, filters?: {
     organizationSize?: string;
     sector?: string;
-  }): any[] {
+  }): DatabaseRow[] {
     let sql = `
       SELECT * FROM question_examples 
       WHERE question_id = ?
     `;
 
-    const params: any[] = [questionId];
+    const params: (string | number)[] = [questionId];
 
     if (filters?.organizationSize) {
       sql += ' AND (organization_size IS NULL OR organization_size = ?)';
@@ -3648,7 +3651,7 @@ export class CSFDatabase {
       WHERE qr.profile_id = ?
     `;
 
-    const params: any[] = [profileId];
+    const params: (string | number)[] = [profileId];
 
     if (subcategoryId) {
       sql += ' AND qr.subcategory_id = ?';
