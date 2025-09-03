@@ -1819,48 +1819,48 @@ interface CreateCustomReportResponse {
 function <span class="fstat-no" title="function not covered" >validateParams(</span>params: CreateCustomReportParams): { isValid: boolean; errors: string[] } {
   const errors: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!params.profile_id) <span class="cstat-no" title="statement not covered" >errors.push('profile_id is required');</span></span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!params.report_name) <span class="cstat-no" title="statement not covered" >errors.push('report_name is required');</span></span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!params.custom_sections || params.custom_sections.length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >    errors.push('At least one custom section is required');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!(params as any).profile_id) (<span class="cstat-no" title="statement not covered" >errors as any).push('profile_id is required');</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!(params as any).report_name) (<span class="cstat-no" title="statement not covered" >errors as any).push('report_name is required');</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!(params as any).custom_sections || (params as any).custom_sections.length === 0) {</span>
+    (<span class="cstat-no" title="statement not covered" >errors as any).push('At least one custom section is required');</span>
   }
 &nbsp;
   const validTemplateTypes = <span class="cstat-no" title="statement not covered" >['technical', 'executive', 'compliance', 'operational', 'blank'];</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (params.template_type &amp;&amp; !validTemplateTypes.includes(params.template_type)) {</span>
-<span class="cstat-no" title="statement not covered" >    errors.push('Invalid template_type');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((params as any).template_type &amp;&amp; !(validTemplateTypes as any).includes((params as any).template_type)) {</span>
+    (<span class="cstat-no" title="statement not covered" >errors as any).push('Invalid template_type');</span>
   }
 &nbsp;
   const validSectionTypes = <span class="cstat-no" title="statement not covered" >['summary', 'metrics', 'analysis', 'recommendations', 'charts', 'tables', 'text', 'custom'];</span>
-<span class="cstat-no" title="statement not covered" >  params.custom_sections?.forEach(<span class="fstat-no" title="function not covered" >(s</span>ection, index) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!section.section_id) <span class="cstat-no" title="statement not covered" >errors.push(`Section ${index + 1}: section_id is required`);</span></span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!section.section_name) <span class="cstat-no" title="statement not covered" >errors.push(`Section ${index + 1}: section_name is required`);</span></span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!validSectionTypes.includes(section.section_type)) {</span>
-<span class="cstat-no" title="statement not covered" >      errors.push(`Section ${index + 1}: Invalid section_type`);</span>
+  (<span class="cstat-no" title="statement not covered" >params as any).custom_sections?.forEach(<span class="fstat-no" title="function not covered" >(s</span>ection, index) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(section as any).section_id) (<span class="cstat-no" title="statement not covered" >errors as any).push(`Section ${index + 1}: section_id is required`);</span></span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(section as any).section_name) (<span class="cstat-no" title="statement not covered" >errors as any).push(`Section ${index + 1}: section_name is required`);</span></span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(validSectionTypes as any).includes((section as any).section_type)) {</span>
+      (<span class="cstat-no" title="statement not covered" >errors as any).push(`Section ${index + 1}: Invalid section_type`);</span>
     }
   });
 &nbsp;
   const validOutputFormats = <span class="cstat-no" title="statement not covered" >['json', 'html', 'pdf', 'csv'];</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (params.output_format &amp;&amp; !validOutputFormats.includes(params.output_format)) {</span>
-<span class="cstat-no" title="statement not covered" >    errors.push('Invalid output_format');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((params as any).output_format &amp;&amp; !(validOutputFormats as any).includes((params as any).output_format)) {</span>
+    (<span class="cstat-no" title="statement not covered" >errors as any).push('Invalid output_format');</span>
   }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return { isValid: errors.length === 0, errors };</span>
+<span class="cstat-no" title="statement not covered" >  return { isValid: (errors as any).length === 0, errors };</span>
 }
 &nbsp;
 async function <span class="fstat-no" title="function not covered" >createCustomReport(</span>params: CreateCustomReportParams, db: Database): Promise&lt;CreateCustomReportResponse&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // Validate input
     const validation = <span class="cstat-no" title="statement not covered" >validateParams(params);</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!validation.isValid) {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(validation as any).isValid) {</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         success: false,
         error: 'ValidationError',
-        message: validation.errors.join(', ')
+        message: (validation as any).errors.join(', ')
       };
     }
 &nbsp;
     // Verify profile exists
-    const profile = <span class="cstat-no" title="statement not covered" >db.prepare('SELECT * FROM profiles WHERE profile_id = ?').get(params.profile_id);</span>
+    const profile = (<span class="cstat-no" title="statement not covered" >db as any).prepare('SELECT * FROM profiles WHERE profile_id = ?').get((params as any).profile_id);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!profile) {</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         success: false,
@@ -1871,59 +1871,59 @@ async function <span class="fstat-no" title="function not covered" >createCustom
 &nbsp;
     const reportId = <span class="cstat-no" title="statement not covered" >uuidv4();</span>
     const createdDate = <span class="cstat-no" title="statement not covered" >new Date().toISOString();</span>
-    const templateType = <span class="cstat-no" title="statement not covered" >params.template_type || 'blank';</span>
-    const outputFormat = <span class="cstat-no" title="statement not covered" >params.output_format || 'json';</span>
+    const templateType = (<span class="cstat-no" title="statement not covered" >params as any).template_type || 'blank';</span>
+    const outputFormat = (<span class="cstat-no" title="statement not covered" >params as any).output_format || 'json';</span>
 &nbsp;
     // Get base data for report generation
-    const assessments = <span class="cstat-no" title="statement not covered" >db.prepare(`</span>
-      SELECT a.*, s.name as subcategory_name, s.description as subcategory_description,
-             c.name as category_name, f.name as function_name, f.id as function_id
+    const assessments = (<span class="cstat-no" title="statement not covered" >db as any).prepare(`</span>
+      SELECT a.*, (s as any).name as subcategory_name, (s as any).description as subcategory_description,
+             (c as any).name as category_name, (f as any).name as function_name, (f as any).id as function_id
       FROM assessments a
-      JOIN subcategories s ON a.subcategory_id = s.id
-      JOIN categories c ON s.category_id = c.id
-      JOIN functions f ON c.function_id = f.id
-      WHERE a.profile_id = ?
-    `).all(params.profile_id);
+      JOIN subcategories s ON (a as any).subcategory_id = (s as any).id
+      JOIN categories c ON (s as any).category_id = (c as any).id
+      JOIN functions f ON (c as any).function_id = (f as any).id
+      WHERE (a as any).profile_id = ?
+    `).all((params as any).profile_id);
 &nbsp;
     // Generate sections based on custom configuration
-    const generatedSections = <span class="cstat-no" title="statement not covered" >await generateCustomSections(params.custom_sections, assessments, db);</span>
+    const generatedSections = <span class="cstat-no" title="statement not covered" >await generateCustomSections((params as any).custom_sections, assessments, db);</span>
     
     // Calculate report statistics
     const reportStats = <span class="cstat-no" title="statement not covered" >calculateReportStatistics(assessments, generatedSections);</span>
     
     // Apply styling
-    const stylingApplied = <span class="cstat-no" title="statement not covered" >applyStyling(params.styling_options);</span>
+    const stylingApplied = <span class="cstat-no" title="statement not covered" >applyStyling((params as any).styling_options);</span>
     
     // Configure export options
-    const exportOptions = <span class="cstat-no" title="statement not covered" >configureExportOptions(outputFormat, params.distribution_settings);</span>
+    const exportOptions = <span class="cstat-no" title="statement not covered" >configureExportOptions(outputFormat, (params as any).distribution_settings);</span>
     
     // Calculate report metadata
-    const totalDataPoints = <span class="cstat-no" title="statement not covered" >generatedSections.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, section) =&gt; </span>
-<span class="cstat-no" title="statement not covered" >      sum + (section.metrics?.data_points || 0),</span> 0
+    const totalDataPoints = (<span class="cstat-no" title="statement not covered" >generatedSections as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, section) =&gt; </span>
+<span class="cstat-no" title="statement not covered" >      sum + ((section as any).metrics?.data_points || 0),</span> 0
     );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    logger.info('Custom report created successfully', { </span>
+    (<span class="cstat-no" title="statement not covered" >logger as any).info('Custom report created successfully', { </span>
       report_id: reportId, 
-      profile_id: params.profile_id,
-      report_name: params.report_name,
-      sections_count: generatedSections.length
+      profile_id: (params as any).profile_id,
+      report_name: (params as any).report_name,
+      sections_count: (generatedSections as any).length
     });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
       success: true,
       report: {
         report_id: reportId,
-        profile_id: params.profile_id,
-        report_name: params.report_name,
-        report_description: params.report_description || `Custom report: ${params.report_name}`,
+        profile_id: (params as any).profile_id,
+        report_name: (params as any).report_name,
+        report_description: (params as any).report_description || `Custom report: ${(params as any).report_name}`,
         template_type: templateType,
         created_date: createdDate,
         last_generated: createdDate,
         report_metadata: {
-          total_sections: generatedSections.length,
+          total_sections: (generatedSections as any).length,
           data_points_included: totalDataPoints,
           output_format: outputFormat,
-          estimated_generation_time: estimateGenerationTime(generatedSections.length, totalDataPoints)
+          estimated_generation_time: estimateGenerationTime((generatedSections as any).length, totalDataPoints)
         },
         sections: generatedSections,
         report_statistics: reportStats,
@@ -1933,7 +1933,7 @@ async function <span class="fstat-no" title="function not covered" >createCustom
     };
 &nbsp;
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    logger.error('Create custom report error', error);</span>
+    (<span class="cstat-no" title="statement not covered" >logger as any).error('Create custom report error', error);</span>
 <span class="cstat-no" title="statement not covered" >    return {</span>
       success: false,
       error: 'InternalError',
@@ -1947,23 +1947,23 @@ async function <span class="fstat-no" title="function not covered" >generateCust
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  for (const sectionConfig of sections) {</span>
     // Filter data based on content filters
-    const filteredData = <span class="cstat-no" title="statement not covered" >applyContentFilters(assessments, sectionConfig.content_filters);</span>
+    const filteredData = <span class="cstat-no" title="statement not covered" >applyContentFilters(assessments, (sectionConfig as any).content_filters);</span>
     
     // Generate section content based on type
     const sectionContent = <span class="cstat-no" title="statement not covered" >generateSectionContent(</span>
-      sectionConfig.section_type, 
+      (sectionConfig as any).section_type, 
       filteredData, 
-      sectionConfig.display_options,
-      sectionConfig.custom_content
+      (sectionConfig as any).display_options,
+      (sectionConfig as any).custom_content
     );
     
     // Calculate section metrics
-    const sectionMetrics = <span class="cstat-no" title="statement not covered" >calculateSectionMetrics(sectionContent, sectionConfig.section_type);</span>
+    const sectionMetrics = <span class="cstat-no" title="statement not covered" >calculateSectionMetrics(sectionContent, (sectionConfig as any).section_type);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    generatedSections.push({</span>
-      section_id: sectionConfig.section_id,
-      section_name: sectionConfig.section_name,
-      section_type: sectionConfig.section_type,
+    (<span class="cstat-no" title="statement not covered" >generatedSections as any).push({</span>
+      section_id: (sectionConfig as any).section_id,
+      section_name: (sectionConfig as any).section_name,
+      section_type: (sectionConfig as any).section_type,
       content: sectionContent,
       metrics: sectionMetrics
     });
@@ -1978,44 +1978,44 @@ function <span class="fstat-no" title="function not covered" >applyContentFilter
   let filteredData = <span class="cstat-no" title="statement not covered" >[...assessments];</span>
 &nbsp;
   // Filter by function IDs
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (filters.function_ids &amp;&amp; filters.function_ids.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >    filteredData = filteredData.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
-<span class="cstat-no" title="statement not covered" >      filters.function_ids.includes(a.function_id)</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((filters as any).function_ids &amp;&amp; (filters as any).function_ids.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >    filteredData = (filteredData as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
+      (<span class="cstat-no" title="statement not covered" >filters as any).function_ids.includes((a as any).function_id)</span>
     );
   }
 &nbsp;
   // Filter by subcategory IDs
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (filters.subcategory_ids &amp;&amp; filters.subcategory_ids.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >    filteredData = filteredData.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
-<span class="cstat-no" title="statement not covered" >      filters.subcategory_ids.includes(a.subcategory_id)</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((filters as any).subcategory_ids &amp;&amp; (filters as any).subcategory_ids.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >    filteredData = (filteredData as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
+      (<span class="cstat-no" title="statement not covered" >filters as any).subcategory_ids.includes((a as any).subcategory_id)</span>
     );
   }
 &nbsp;
   // Filter by maturity level range
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (filters.maturity_level_min !== undefined) {</span>
-<span class="cstat-no" title="statement not covered" >    filteredData = filteredData.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
-<span class="cstat-no" title="statement not covered" >      (a.maturity_score || 0) &gt;= filters.maturity_level_min</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((filters as any).maturity_level_min !== undefined) {</span>
+<span class="cstat-no" title="statement not covered" >    filteredData = (filteredData as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
+<span class="cstat-no" title="statement not covered" >      ((a as any).maturity_score || 0) &gt;= (filters as any).maturity_level_min</span>
     );
   }
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (filters.maturity_level_max !== undefined) {</span>
-<span class="cstat-no" title="statement not covered" >    filteredData = filteredData.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
-<span class="cstat-no" title="statement not covered" >      (a.maturity_score || 0) &lt;= filters.maturity_level_max</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((filters as any).maturity_level_max !== undefined) {</span>
+<span class="cstat-no" title="statement not covered" >    filteredData = (filteredData as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
+<span class="cstat-no" title="statement not covered" >      ((a as any).maturity_score || 0) &lt;= (filters as any).maturity_level_max</span>
     );
   }
 &nbsp;
   // Filter by implementation status
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (filters.implementation_status &amp;&amp; filters.implementation_status.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >    filteredData = filteredData.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
-<span class="cstat-no" title="statement not covered" >      filters.implementation_status.includes(a.implementation_level)</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((filters as any).implementation_status &amp;&amp; (filters as any).implementation_status.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >    filteredData = (filteredData as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
+      (<span class="cstat-no" title="statement not covered" >filters as any).implementation_status.includes((a as any).implementation_level)</span>
     );
   }
 &nbsp;
   // Filter by date range (would use actual date fields in real implementation)
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (filters.date_range) {</span>
-    const startDate = <span class="cstat-no" title="statement not covered" >new Date(filters.date_range.start_date);</span>
-    const endDate = <span class="cstat-no" title="statement not covered" >new Date(filters.date_range.end_date);</span>
-<span class="cstat-no" title="statement not covered" >    filteredData = filteredData.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; {</span>
-      const assessmentDate = <span class="cstat-no" title="statement not covered" >new Date(a.assessed_date || a.created_date || Date.now());</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((filters as any).date_range) {</span>
+    const startDate = <span class="cstat-no" title="statement not covered" >new Date((filters as any).date_range.start_date);</span>
+    const endDate = <span class="cstat-no" title="statement not covered" >new Date((filters as any).date_range.end_date);</span>
+<span class="cstat-no" title="statement not covered" >    filteredData = (filteredData as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; {</span>
+      const assessmentDate = <span class="cstat-no" title="statement not covered" >new Date((a as any).assessed_date || (a as any).created_date || Date.now());</span>
 <span class="cstat-no" title="statement not covered" >      return assessmentDate &gt;= startDate &amp;&amp; assessmentDate &lt;= endDate;</span>
     });
   }
@@ -2053,28 +2053,28 @@ function <span class="fstat-no" title="function not covered" >generateSectionCon
     case 'custom':
 <span class="cstat-no" title="statement not covered" >      return {</span>
         content_type: 'custom',
-        custom_data: data.slice(0, displayOptions?.max_items || 100),
+        custom_data: (data as any).slice(0, (displayOptions as any)?.max_items || 100),
         custom_content: customContent,
-        item_count: Math.min(data.length, displayOptions?.max_items || 100)
+        item_count: Math.min((data as any).length, (displayOptions as any)?.max_items || 100)
       };
     
     default:
 <span class="cstat-no" title="statement not covered" >      return {</span>
         content_type: 'default',
         data: data,
-        item_count: data.length
+        item_count: (data as any).length
       };
   }
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateSummaryContent(</span>data: any[], _displayOptions?: any): any {
-  const totalControls = <span class="cstat-no" title="statement not covered" >data.length;</span>
-  const fullyImplemented = <span class="cstat-no" title="statement not covered" >data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.implementation_level === 'fully_implemented')</span>.length;</span>
-  const partiallyImplemented = <span class="cstat-no" title="statement not covered" >data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.implementation_level === 'partially_implemented')</span>.length;</span>
-  const notImplemented = <span class="cstat-no" title="statement not covered" >data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.implementation_level === 'not_implemented')</span>.length;</span>
+  const totalControls = (<span class="cstat-no" title="statement not covered" >data as any).length;</span>
+  const fullyImplemented = (<span class="cstat-no" title="statement not covered" >data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).implementation_level === 'fully_implemented')</span>.length;</span>
+  const partiallyImplemented = (<span class="cstat-no" title="statement not covered" >data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).implementation_level === 'partially_implemented')</span>.length;</span>
+  const notImplemented = (<span class="cstat-no" title="statement not covered" >data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).implementation_level === 'not_implemented')</span>.length;</span>
   
-  const avgMaturity = <span class="cstat-no" title="statement not covered" >data.length &gt; 0 ? </span>
-    data.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, d) =&gt; <span class="cstat-no" title="statement not covered" >sum + (d.maturity_score || 0),</span> 0) / data.length : 0;
+  const avgMaturity = (<span class="cstat-no" title="statement not covered" >data as any).length &gt; 0 ? </span>
+    (data as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, d) =&gt; <span class="cstat-no" title="statement not covered" >sum + ((d as any).maturity_score || 0),</span> 0) / (data as any).length : 0;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
     content_type: 'summary',
@@ -2098,21 +2098,21 @@ function <span class="fstat-no" title="function not covered" >generateSummaryCon
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateMetricsContent(</span>data: any[], _displayOptions?: any): any {
-  const functionBreakdown = <span class="cstat-no" title="statement not covered" >data.reduce(<span class="fstat-no" title="function not covered" >(a</span>cc, item) =&gt; {</span>
-    const functionId = <span class="cstat-no" title="statement not covered" >item.function_id || 'Unknown';</span>
+  const functionBreakdown = (<span class="cstat-no" title="statement not covered" >data as any).reduce(<span class="fstat-no" title="function not covered" >(a</span>cc, item) =&gt; {</span>
+    const functionId = (<span class="cstat-no" title="statement not covered" >item as any).function_id || 'Unknown';</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!acc[functionId]) {</span>
 <span class="cstat-no" title="statement not covered" >      acc[functionId] = { count: 0, total_maturity: 0 };</span>
     }
 <span class="cstat-no" title="statement not covered" >    acc[functionId].count++;</span>
-<span class="cstat-no" title="statement not covered" >    acc[functionId].total_maturity += item.maturity_score || 0;</span>
+<span class="cstat-no" title="statement not covered" >    acc[functionId].total_maturity += (item as any).maturity_score || 0;</span>
 <span class="cstat-no" title="statement not covered" >    return acc;</span>
-  }, {});
+  }, {} as any);
 &nbsp;
   const metrics = <span class="cstat-no" title="statement not covered" >Object.entries(functionBreakdown).map(<span class="fstat-no" title="function not covered" >([</span>functionId, stats]: [string, any]) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
     function_id: functionId,
-    control_count: stats.count,
-    average_maturity: Math.round((stats.total_maturity / stats.count) * 10) / 10,
-    maturity_percentage: Math.round((stats.total_maturity / stats.count / 5) * 100)
+    control_count: (stats as any).count,
+    average_maturity: Math.round(((stats as any).total_maturity / (stats as any).count) * 10) / 10,
+    maturity_percentage: Math.round(((stats as any).total_maturity / (stats as any).count / 5) * 100)
   }));
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
@@ -2120,12 +2120,12 @@ function <span class="fstat-no" title="function not covered" >generateMetricsCon
     function_metrics: metrics,
     overall_metrics: {
       total_functions: Object.keys(functionBreakdown).length,
-      total_controls: data.length,
-      highest_maturity_function: metrics.length &gt; 0 ? metrics.reduce(<span class="fstat-no" title="function not covered" >(m</span>ax, curr) =&gt; 
-<span class="cstat-no" title="statement not covered" >        curr.average_maturity &gt; (max?.average_maturity || 0) ? curr : max,</span> metrics[0]
+      total_controls: (data as any).length,
+      highest_maturity_function: (metrics as any).length &gt; 0 ? (metrics as any).reduce(<span class="fstat-no" title="function not covered" >(m</span>ax, curr) =&gt; 
+        (<span class="cstat-no" title="statement not covered" >curr as any).average_maturity &gt; (max?.average_maturity || 0) ? curr : max,</span> metrics[0]
       ) : undefined,
-      lowest_maturity_function: metrics.length &gt; 0 ? metrics.reduce(<span class="fstat-no" title="function not covered" >(m</span>in, curr) =&gt; 
-<span class="cstat-no" title="statement not covered" >        curr.average_maturity &lt; (min?.average_maturity || Infinity) ? curr : min,</span> metrics[0]
+      lowest_maturity_function: (metrics as any).length &gt; 0 ? (metrics as any).reduce(<span class="fstat-no" title="function not covered" >(m</span>in, curr) =&gt; 
+        (<span class="cstat-no" title="statement not covered" >curr as any).average_maturity &lt; (min?.average_maturity || Infinity) ? curr : min,</span> metrics[0]
       ) : undefined
     }
   };
@@ -2133,20 +2133,20 @@ function <span class="fstat-no" title="function not covered" >generateMetricsCon
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateAnalysisContent(</span>data: any[], displayOptions?: any): any {
   const maturityDistribution = <span class="cstat-no" title="statement not covered" >{</span>
-    'level_1': data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) &gt;= 1 &amp;&amp; (d.maturity_score || 0) &lt; 2)</span>.length,
-    'level_2': data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) &gt;= 2 &amp;&amp; (d.maturity_score || 0) &lt; 3)</span>.length,
-    'level_3': data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) &gt;= 3 &amp;&amp; (d.maturity_score || 0) &lt; 4)</span>.length,
-    'level_4': data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) &gt;= 4 &amp;&amp; (d.maturity_score || 0) &lt; 5)</span>.length,
-    'level_5': data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) === 5)</span>.length
+    'level_1': (data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) &gt;= 1 &amp;&amp; ((d as any).maturity_score || 0) &lt; 2)</span>.length,
+    'level_2': (data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) &gt;= 2 &amp;&amp; ((d as any).maturity_score || 0) &lt; 3)</span>.length,
+    'level_3': (data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) &gt;= 3 &amp;&amp; ((d as any).maturity_score || 0) &lt; 4)</span>.length,
+    'level_4': (data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) &gt;= 4 &amp;&amp; ((d as any).maturity_score || 0) &lt; 5)</span>.length,
+    'level_5': (data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) === 5)</span>.length
   };
 &nbsp;
   const gapAnalysis = <span class="cstat-no" title="statement not covered" >data</span>
-    .filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) &lt; 3)</span>
+    .filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) &lt; 3)</span>
     .map(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span>
-      subcategory_id: d.subcategory_id,
-      subcategory_name: d.subcategory_name,
-      current_maturity: d.maturity_score || 0,
-      gap_severity: d.maturity_score &lt;= 1 ? 'critical' : 'moderate',
+      subcategory_id: (d as any).subcategory_id,
+      subcategory_name: (d as any).subcategory_name,
+      current_maturity: (d as any).maturity_score || 0,
+      gap_severity: (d as any).maturity_score &lt;= 1 ? 'critical' : 'moderate',
       recommended_actions: generateRecommendedActions(d)
     }));
 &nbsp;
@@ -2155,28 +2155,28 @@ function <span class="fstat-no" title="function not covered" >generateAnalysisCo
     maturity_analysis: {
       distribution: maturityDistribution,
       overall_trend: analyzeMaturityTrend(data),
-      improvement_opportunities: gapAnalysis.length
+      improvement_opportunities: (gapAnalysis as any).length
     },
-    gap_analysis: gapAnalysis.slice(0, displayOptions?.max_items || 10),
+    gap_analysis: (gapAnalysis as any).slice(0, displayOptions?.max_items || 10),
     risk_assessment: {
-      high_risk_controls: data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) &lt;= 2)</span>.length,
-      medium_risk_controls: data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) === 3)</span>.length,
-      low_risk_controls: data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) &gt;= 4)</span>.length
+      high_risk_controls: (data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) &lt;= 2)</span>.length,
+      medium_risk_controls: (data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) === 3)</span>.length,
+      low_risk_controls: (data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) &gt;= 4)</span>.length
     }
   };
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateRecommendationsContent(</span>data: any[], _displayOptions?: any): any {
-  const lowMaturityControls = <span class="cstat-no" title="statement not covered" >data.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >(d.maturity_score || 0) &lt;= 2)</span>;</span>
+  const lowMaturityControls = (<span class="cstat-no" title="statement not covered" >data as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >((d as any).maturity_score || 0) &lt;= 2)</span>;</span>
   
   const recommendations = <span class="cstat-no" title="statement not covered" >lowMaturityControls</span>
     .slice(0, _displayOptions?.max_items || 10)
     .map(<span class="fstat-no" title="function not covered" >(c</span>ontrol, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
       recommendation_id: `REC-${String(index + 1).padStart(3, '0')}`,
-      priority: control.maturity_score &lt;= 1 ? 'critical' : 'high',
-      control_id: control.subcategory_id,
-      control_name: control.subcategory_name,
-      current_state: control.implementation_level || 'not_implemented',
+      priority: (control as any).maturity_score &lt;= 1 ? 'critical' : 'high',
+      control_id: (control as any).subcategory_id,
+      control_name: (control as any).subcategory_name,
+      current_state: (control as any).implementation_level || 'not_implemented',
       recommended_actions: generateRecommendedActions(control),
       estimated_effort: estimateImplementationEffort(control),
       expected_timeline: estimateImplementationTimeline(control),
@@ -2187,10 +2187,10 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
     content_type: 'recommendations',
     priority_recommendations: recommendations,
     summary: {
-      total_recommendations: recommendations.length,
-      critical_priority: recommendations.filter(<span class="fstat-no" title="function not covered" >r </span>=&gt; <span class="cstat-no" title="statement not covered" >r.priority === 'critical')</span>.length,
-      high_priority: recommendations.filter(<span class="fstat-no" title="function not covered" >r </span>=&gt; <span class="cstat-no" title="statement not covered" >r.priority === 'high')</span>.length,
-      estimated_total_effort: `${recommendations.length * 2}-${recommendations.length * 4} weeks`
+      total_recommendations: (recommendations as any).length,
+      critical_priority: (recommendations as any).filter(<span class="fstat-no" title="function not covered" >r </span>=&gt; (<span class="cstat-no" title="statement not covered" >r as any).priority === 'critical')</span>.length,
+      high_priority: (recommendations as any).filter(<span class="fstat-no" title="function not covered" >r </span>=&gt; (<span class="cstat-no" title="statement not covered" >r as any).priority === 'high')</span>.length,
+      estimated_total_effort: `${(recommendations as any).length * 2}-${(recommendations as any).length * 4} weeks`
     }
   };
 }
@@ -2219,16 +2219,16 @@ function <span class="fstat-no" title="function not covered" >generateTablesCont
   const sortedData = <span class="cstat-no" title="statement not covered" >[...data].sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    switch (sortBy) {</span>
       case 'maturity':
-<span class="cstat-no" title="statement not covered" >        return (b.maturity_score || 0) - (a.maturity_score || 0);</span>
+<span class="cstat-no" title="statement not covered" >        return ((b as any).maturity_score || 0) - ((a as any).maturity_score || 0);</span>
       case 'date':
-<span class="cstat-no" title="statement not covered" >        return new Date(b.assessed_date || b.created_date || 0).getTime() - </span>
-               new Date(a.assessed_date || a.created_date || 0).getTime();
+<span class="cstat-no" title="statement not covered" >        return new Date((b as any).assessed_date || (b as any).created_date || 0).getTime() - </span>
+               new Date((a as any).assessed_date || (a as any).created_date || 0).getTime();
       case 'priority': {
         const priorityOrder: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{ 'critical': 4, 'high': 3, 'medium': 2, 'low': 1 };</span>
-<span class="cstat-no" title="statement not covered" >        return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);</span>
+<span class="cstat-no" title="statement not covered" >        return (priorityOrder[(b as any).priority] || 0) - (priorityOrder[(a as any).priority] || 0);</span>
       }
       default: // name
-<span class="cstat-no" title="statement not covered" >        return (a.subcategory_name || '').localeCompare(b.subcategory_name || '');</span>
+<span class="cstat-no" title="statement not covered" >        return ((a as any).subcategory_name || '').localeCompare((b as any).subcategory_name || '');</span>
     }
   });
 &nbsp;
@@ -2243,18 +2243,18 @@ function <span class="fstat-no" title="function not covered" >generateTablesCont
         'Maturity Score',
         'Last Assessed'
       ],
-      rows: sortedData.slice(0, maxItems).map(<span class="fstat-no" title="function not covered" >item </span>=&gt; <span class="cstat-no" title="statement not covered" >[</span>
-        item.subcategory_id,
-        item.subcategory_name,
-        item.function_name,
-        item.implementation_level || 'Not Assessed',
-        item.maturity_score || 0,
-        formatDate(item.assessed_date || item.created_date)
+      rows: (sortedData as any).slice(0, maxItems).map(<span class="fstat-no" title="function not covered" >item </span>=&gt; <span class="cstat-no" title="statement not covered" >[</span>
+        (item as any).subcategory_id,
+        (item as any).subcategory_name,
+        (item as any).function_name,
+        (item as any).implementation_level || 'Not Assessed',
+        (item as any).maturity_score || 0,
+        formatDate((item as any).assessed_date || (item as any).created_date)
       ])
     },
     table_summary: {
-      total_rows: sortedData.length,
-      displayed_rows: Math.min(sortedData.length, maxItems),
+      total_rows: (sortedData as any).length,
+      displayed_rows: Math.min((sortedData as any).length, maxItems),
       sorted_by: sortBy
     }
   };
@@ -2264,26 +2264,26 @@ function <span class="fstat-no" title="function not covered" >generateTablesCont
 function <span class="fstat-no" title="function not covered" >generateRecommendedActions(</span>control: any): string[] {
   const actions = <span class="cstat-no" title="statement not covered" >[];</span>
   
-<span class="cstat-no" title="statement not covered" >  if (!control.implementation_level || control.implementation_level === 'not_implemented') {</span>
-<span class="cstat-no" title="statement not covered" >    actions.push('Develop and implement control procedures');</span>
-<span class="cstat-no" title="statement not covered" >    actions.push('Assign responsible personnel');</span>
-<span class="cstat-no" title="statement not covered" >    actions.push('Establish monitoring mechanisms');</span>
-  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (control.implementation_level === 'partially_implemented') {</span>
-<span class="cstat-no" title="statement not covered" >    actions.push('Complete implementation of all control requirements');</span>
-<span class="cstat-no" title="statement not covered" >    actions.push('Enhance existing procedures');</span>
-<span class="cstat-no" title="statement not covered" >    actions.push('Improve documentation and evidence collection');</span>
+<span class="cstat-no" title="statement not covered" >  if (!(control as any).implementation_level || (control as any).implementation_level === 'not_implemented') {</span>
+    (<span class="cstat-no" title="statement not covered" >actions as any).push('Develop and implement control procedures');</span>
+    (<span class="cstat-no" title="statement not covered" >actions as any).push('Assign responsible personnel');</span>
+    (<span class="cstat-no" title="statement not covered" >actions as any).push('Establish monitoring mechanisms');</span>
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if ((control as any).implementation_level === 'partially_implemented') {</span>
+    (<span class="cstat-no" title="statement not covered" >actions as any).push('Complete implementation of all control requirements');</span>
+    (<span class="cstat-no" title="statement not covered" >actions as any).push('Enhance existing procedures');</span>
+    (<span class="cstat-no" title="statement not covered" >actions as any).push('Improve documentation and evidence collection');</span>
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((control.maturity_score || 0) &lt;= 2) {</span>
-<span class="cstat-no" title="statement not covered" >    actions.push('Establish regular review and improvement processes');</span>
-<span class="cstat-no" title="statement not covered" >    actions.push('Implement metrics and measurement');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (((control as any).maturity_score || 0) &lt;= 2) {</span>
+    (<span class="cstat-no" title="statement not covered" >actions as any).push('Establish regular review and improvement processes');</span>
+    (<span class="cstat-no" title="statement not covered" >actions as any).push('Implement metrics and measurement');</span>
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return actions;</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >estimateImplementationEffort(</span>control: any): string {
-  const maturity = <span class="cstat-no" title="statement not covered" >control.maturity_score || 0;</span>
+  const maturity = (<span class="cstat-no" title="statement not covered" >control as any).maturity_score || 0;</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (maturity &lt;= 1) <span class="cstat-no" title="statement not covered" >return '4-8 weeks';</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (maturity &lt;= 2) <span class="cstat-no" title="statement not covered" >return '2-4 weeks';</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (maturity &lt;= 3) <span class="cstat-no" title="statement not covered" >return '1-2 weeks';</span></span>
@@ -2291,25 +2291,25 @@ function <span class="fstat-no" title="function not covered" >estimateImplementa
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >estimateImplementationTimeline(</span>control: any): string {
-  const maturity = <span class="cstat-no" title="statement not covered" >control.maturity_score || 0;</span>
+  const maturity = (<span class="cstat-no" title="statement not covered" >control as any).maturity_score || 0;</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (maturity &lt;= 1) <span class="cstat-no" title="statement not covered" >return '2-3 months';</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (maturity &lt;= 2) <span class="cstat-no" title="statement not covered" >return '1-2 months';</span></span>
 <span class="cstat-no" title="statement not covered" >  return '2-4 weeks';</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >assessBusinessImpact(</span>control: any): string {
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (control.subcategory_id.includes('GV')) <span class="cstat-no" title="statement not covered" >return 'High - Governance and oversight';</span></span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (control.subcategory_id.includes('ID')) <span class="cstat-no" title="statement not covered" >return 'Medium - Asset and risk visibility';</span></span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (control.subcategory_id.includes('PR')) <span class="cstat-no" title="statement not covered" >return 'High - Core protection capabilities';</span></span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (control.subcategory_id.includes('DE')) <span class="cstat-no" title="statement not covered" >return 'Medium - Threat detection';</span></span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (control.subcategory_id.includes('RS')) <span class="cstat-no" title="statement not covered" >return 'High - Incident response';</span></span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (control.subcategory_id.includes('RC')) <span class="cstat-no" title="statement not covered" >return 'Medium - Recovery capabilities';</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((control as any).subcategory_id.includes('GV')) <span class="cstat-no" title="statement not covered" >return 'High - Governance and oversight';</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((control as any).subcategory_id.includes('ID')) <span class="cstat-no" title="statement not covered" >return 'Medium - Asset and risk visibility';</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((control as any).subcategory_id.includes('PR')) <span class="cstat-no" title="statement not covered" >return 'High - Core protection capabilities';</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((control as any).subcategory_id.includes('DE')) <span class="cstat-no" title="statement not covered" >return 'Medium - Threat detection';</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((control as any).subcategory_id.includes('RS')) <span class="cstat-no" title="statement not covered" >return 'High - Incident response';</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((control as any).subcategory_id.includes('RC')) <span class="cstat-no" title="statement not covered" >return 'Medium - Recovery capabilities';</span></span>
 <span class="cstat-no" title="statement not covered" >  return 'Medium - Security posture improvement';</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >analyzeMaturityTrend(</span>data: any[]): string {
   // Mock trend analysis - would use historical data in real implementation
-  const avgMaturity = <span class="cstat-no" title="statement not covered" >data.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, d) =&gt; <span class="cstat-no" title="statement not covered" >sum + (d.maturity_score || 0),</span> 0) / data.length;</span>
+  const avgMaturity = (<span class="cstat-no" title="statement not covered" >data as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, d) =&gt; <span class="cstat-no" title="statement not covered" >sum + ((d as any).maturity_score || 0),</span> 0) / (data as any).length;</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (avgMaturity &gt;= 3.5) <span class="cstat-no" title="statement not covered" >return 'Strong - Mature controls';</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (avgMaturity &gt;= 2.5) <span class="cstat-no" title="statement not covered" >return 'Improving - Good progress';</span></span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (avgMaturity &gt;= 1.5) <span class="cstat-no" title="statement not covered" >return 'Developing - Needs attention';</span></span>
@@ -2319,7 +2319,7 @@ function <span class="fstat-no" title="function not covered" >analyzeMaturityTre
 function <span class="fstat-no" title="function not covered" >prepareChartData(</span>data: any[], _chartType: string, groupBy?: string): any {
   const grouping = <span class="cstat-no" title="statement not covered" >groupBy || 'function';</span>
   
-  const grouped = <span class="cstat-no" title="statement not covered" >data.reduce(<span class="fstat-no" title="function not covered" >(a</span>cc, item) =&gt; {</span>
+  const grouped = (<span class="cstat-no" title="statement not covered" >data as any).reduce(<span class="fstat-no" title="function not covered" >(a</span>cc, item) =&gt; {</span>
     const key = <span class="cstat-no" title="statement not covered" >item[`${grouping}_name`] || item[grouping] || 'Unknown';</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!acc[key]) {</span>
 <span class="cstat-no" title="statement not covered" >      acc[key] = [];</span>
@@ -2332,9 +2332,9 @@ function <span class="fstat-no" title="function not covered" >prepareChartData(<
     labels: Object.keys(grouped),
     datasets: [{
       label: 'Average Maturity Score',
-      data: Object.values(grouped).map(<span class="fstat-no" title="function not covered" >(i</span>tems: unknown) =&gt; {
+      data: Object.values(grouped).map(<span class="fstat-no" title="function not covered" >(i</span>tems: any) =&gt; {
         const itemArray = <span class="cstat-no" title="statement not covered" >items as any[];</span>
-<span class="cstat-no" title="statement not covered" >        return itemArray.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + (item.maturity_score || 0),</span> 0) / itemArray.length;</span>
+<span class="cstat-no" title="statement not covered" >        return (itemArray as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + ((item as any).maturity_score || 0),</span> 0) / (itemArray as any).length;</span>
       }),
       backgroundColor: generateColors(Object.keys(grouped).length)
     }]
@@ -2346,32 +2346,32 @@ function <span class="fstat-no" title="function not covered" >generateColors(</s
     '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
     '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
   ];
-<span class="cstat-no" title="statement not covered" >  return colors.slice(0, count);</span>
+<span class="cstat-no" title="statement not covered" >  return (colors as any).slice(0, count);</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >calculateSectionMetrics(</span>content: any, sectionType: string): any {
 <span class="cstat-no" title="statement not covered" >  switch (sectionType) {</span>
     case 'charts':
 <span class="cstat-no" title="statement not covered" >      return {</span>
-        data_points: content.chart_data?.datasets?.[0]?.data?.length || 0,
+        data_points: (content as any).chart_data?.datasets?.[0]?.data?.length || 0,
         charts_included: 1,
         tables_included: 0
       };
     case 'tables':
 <span class="cstat-no" title="statement not covered" >      return {</span>
-        data_points: content.table_data?.rows?.length || 0,
+        data_points: (content as any).table_data?.rows?.length || 0,
         charts_included: 0,
         tables_included: 1
       };
     case 'metrics':
 <span class="cstat-no" title="statement not covered" >      return {</span>
-        data_points: content.function_metrics?.length || 0,
+        data_points: (content as any).function_metrics?.length || 0,
         charts_included: 0,
         tables_included: 0
       };
     default:
 <span class="cstat-no" title="statement not covered" >      return {</span>
-        data_points: Array.isArray(content.data) ? content.data.length : 0,
+        data_points: Array.isArray((content as any).data) ? (content as any).data.length : 0,
         charts_included: 0,
         tables_included: 0
       };
@@ -2379,26 +2379,26 @@ function <span class="fstat-no" title="function not covered" >calculateSectionMe
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >calculateReportStatistics(</span>assessments: any[], _sections: any[]): any {
-  const functions = <span class="cstat-no" title="statement not covered" >[...new Set(assessments.map(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.function_id)</span>)];</span>
-  const maturityScores = <span class="cstat-no" title="statement not covered" >assessments.map(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.maturity_score || 0)</span>.filter(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >s &gt; 0)</span>;</span>
-  const compliantControls = <span class="cstat-no" title="statement not covered" >assessments.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
-<span class="cstat-no" title="statement not covered" >    a.implementation_level === 'fully_implemented' || a.implementation_level === 'largely_implemented'</span>
+  const functions = <span class="cstat-no" title="statement not covered" >Array.from(new Set((assessments as any).map(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).function_id)</span>));</span>
+  const maturityScores = (<span class="cstat-no" title="statement not covered" >assessments as any).map(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).maturity_score || 0)</span>.filter(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >s &gt; 0)</span>;</span>
+  const compliantControls = (<span class="cstat-no" title="statement not covered" >assessments as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
+    (<span class="cstat-no" title="statement not covered" >a as any).implementation_level === 'fully_implemented' || (a as any).implementation_level === 'largely_implemented'</span>
   ).length;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    controls_analyzed: assessments.length,
+    controls_analyzed: (assessments as any).length,
     functions_covered: functions,
     maturity_range: {
       min: Math.min(...maturityScores),
       max: Math.max(...maturityScores),
-      average: maturityScores.length &gt; 0 ? 
-        Math.round((maturityScores.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, s) =&gt; <span class="cstat-no" title="statement not covered" >sum + s,</span> 0) / maturityScores.length) * 10) / 10 : 0
+      average: (maturityScores as any).length &gt; 0 ? 
+        Math.round(((maturityScores as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, s) =&gt; <span class="cstat-no" title="statement not covered" >sum + s,</span> 0) / (maturityScores as any).length) * 10) / 10 : 0
     },
     compliance_summary: {
-      total_controls: assessments.length,
+      total_controls: (assessments as any).length,
       compliant_controls: compliantControls,
-      compliance_percentage: assessments.length &gt; 0 ? 
-        Math.round((compliantControls / assessments.length) * 100) : 0
+      compliance_percentage: (assessments as any).length &gt; 0 ? 
+        Math.round((compliantControls / (assessments as any).length) * 100) : 0
     }
   };
 }
@@ -2515,7 +2515,7 @@ export { createCustomReport };</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.240Z
+                at 2025-09-03T03:22:59.993Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

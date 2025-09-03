@@ -1611,40 +1611,40 @@ interface GenerateComplianceReportResponse {
 function <span class="fstat-no" title="function not covered" >validateParams(</span>params: GenerateComplianceReportParams): { isValid: boolean; errors: string[] } {
   const errors: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!params.profile_id) <span class="cstat-no" title="statement not covered" >errors.push('profile_id is required');</span></span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!params.compliance_framework) <span class="cstat-no" title="statement not covered" >errors.push('compliance_framework is required');</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!(params as any).profile_id) (<span class="cstat-no" title="statement not covered" >errors as any).push('profile_id is required');</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!(params as any).compliance_framework) (<span class="cstat-no" title="statement not covered" >errors as any).push('compliance_framework is required');</span></span>
 &nbsp;
   const validFrameworks = <span class="cstat-no" title="statement not covered" >['iso27001', 'sox', 'hipaa', 'pci_dss', 'gdpr', 'fisma', 'fedramp', 'custom'];</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!validFrameworks.includes(params.compliance_framework)) {</span>
-<span class="cstat-no" title="statement not covered" >    errors.push('Invalid compliance_framework');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!(validFrameworks as any).includes((params as any).compliance_framework)) {</span>
+    (<span class="cstat-no" title="statement not covered" >errors as any).push('Invalid compliance_framework');</span>
   }
 &nbsp;
   const validScopes = <span class="cstat-no" title="statement not covered" >['full', 'partial', 'gap_analysis', 'remediation_focused'];</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (params.report_scope &amp;&amp; !validScopes.includes(params.report_scope)) {</span>
-<span class="cstat-no" title="statement not covered" >    errors.push('Invalid report_scope');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((params as any).report_scope &amp;&amp; !(validScopes as any).includes((params as any).report_scope)) {</span>
+    (<span class="cstat-no" title="statement not covered" >errors as any).push('Invalid report_scope');</span>
   }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (params.compliance_framework === 'custom' &amp;&amp; !params.custom_framework_requirements) {</span>
-<span class="cstat-no" title="statement not covered" >    errors.push('custom_framework_requirements is required for custom framework');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((params as any).compliance_framework === 'custom' &amp;&amp; !(params as any).custom_framework_requirements) {</span>
+    (<span class="cstat-no" title="statement not covered" >errors as any).push('custom_framework_requirements is required for custom framework');</span>
   }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return { isValid: errors.length === 0, errors };</span>
+<span class="cstat-no" title="statement not covered" >  return { isValid: (errors as any).length === 0, errors };</span>
 }
 &nbsp;
 async function <span class="fstat-no" title="function not covered" >generateComplianceReport(</span>params: GenerateComplianceReportParams, db: Database): Promise&lt;GenerateComplianceReportResponse&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // Validate input
     const validation = <span class="cstat-no" title="statement not covered" >validateParams(params);</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!validation.isValid) {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(validation as any).isValid) {</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         success: false,
         error: 'ValidationError',
-        message: validation.errors.join(', ')
+        message: (validation as any).errors.join(', ')
       };
     }
 &nbsp;
     // Verify profile exists
-    const profile = <span class="cstat-no" title="statement not covered" >db.prepare('SELECT * FROM profiles WHERE profile_id = ?').get(params.profile_id);</span>
+    const profile = (<span class="cstat-no" title="statement not covered" >db as any).prepare('SELECT * FROM profiles WHERE profile_id = ?').get((params as any).profile_id);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!profile) {</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         success: false,
@@ -1655,19 +1655,19 @@ async function <span class="fstat-no" title="function not covered" >generateComp
 &nbsp;
     const reportId = <span class="cstat-no" title="statement not covered" >uuidv4();</span>
     const generatedDate = <span class="cstat-no" title="statement not covered" >new Date().toISOString();</span>
-    const assessmentDate = <span class="cstat-no" title="statement not covered" >params.assessment_date || generatedDate;</span>
-    const reportScope = <span class="cstat-no" title="statement not covered" >params.report_scope || 'full';</span>
+    const assessmentDate = (<span class="cstat-no" title="statement not covered" >params as any).assessment_date || generatedDate;</span>
+    const reportScope = (<span class="cstat-no" title="statement not covered" >params as any).report_scope || 'full';</span>
 &nbsp;
     // Get framework requirements
-    const frameworkRequirements = <span class="cstat-no" title="statement not covered" >getFrameworkRequirements(params.compliance_framework, params.custom_framework_requirements);</span>
+    const frameworkRequirements = <span class="cstat-no" title="statement not covered" >getFrameworkRequirements((params as any).compliance_framework, (params as any).custom_framework_requirements);</span>
     
     // Get current assessments for the profile
-    const assessments = <span class="cstat-no" title="statement not covered" >db.prepare(`</span>
-      SELECT a.*, s.name as subcategory_name, s.description as subcategory_description
+    const assessments = (<span class="cstat-no" title="statement not covered" >db as any).prepare(`</span>
+      SELECT a.*, (s as any).name as subcategory_name, (s as any).description as subcategory_description
       FROM assessments a
-      JOIN subcategories s ON a.subcategory_id = s.id
-      WHERE a.profile_id = ?
-    `).all(params.profile_id);
+      JOIN subcategories s ON (a as any).subcategory_id = (s as any).id
+      WHERE (a as any).profile_id = ?
+    `).all((params as any).profile_id);
 &nbsp;
     // Generate compliance analysis
     const complianceDetails = <span class="cstat-no" title="statement not covered" >analyzeCompliance(frameworkRequirements, assessments);</span>
@@ -1679,29 +1679,29 @@ async function <span class="fstat-no" title="function not covered" >generateComp
     const executiveSummary = <span class="cstat-no" title="statement not covered" >generateExecutiveSummary(complianceDetails);</span>
     
     // Generate gap analysis if requested
-    const gapAnalysis = <span class="cstat-no" title="statement not covered" >(params.report_scope === 'gap_analysis' || params.include_recommendations) ?</span>
+    const gapAnalysis = <span class="cstat-no" title="statement not covered" >((params as any).report_scope === 'gap_analysis' || (params as any).include_recommendations) ?</span>
       generateGapAnalysis(complianceDetails) : undefined;
     
     // Generate recommendations if requested
-    const recommendations = <span class="cstat-no" title="statement not covered" >params.include_recommendations ?</span>
-      generateRecommendations(complianceDetails, params.compliance_framework) : undefined;
+    const recommendations = (<span class="cstat-no" title="statement not covered" >params as any).include_recommendations ?</span>
+      generateRecommendations(complianceDetails, (params as any).compliance_framework) : undefined;
     
     // Generate risk assessment if requested
-    const riskAssessment = <span class="cstat-no" title="statement not covered" >params.include_risk_assessment ?</span>
-      generateRiskAssessment(complianceDetails, params.compliance_framework) : undefined;
+    const riskAssessment = (<span class="cstat-no" title="statement not covered" >params as any).include_risk_assessment ?</span>
+      generateRiskAssessment(complianceDetails, (params as any).compliance_framework) : undefined;
     
     // Generate implementation roadmap if requested
-    const implementationRoadmap = <span class="cstat-no" title="statement not covered" >params.include_implementation_roadmap ?</span>
-      generateImplementationRoadmap(complianceDetails, params.compliance_framework) : undefined;
+    const implementationRoadmap = (<span class="cstat-no" title="statement not covered" >params as any).include_implementation_roadmap ?</span>
+      generateImplementationRoadmap(complianceDetails, (params as any).compliance_framework) : undefined;
 &nbsp;
     // Determine compliance status
     const complianceStatus = <span class="cstat-no" title="statement not covered" >overallScore &gt;= 90 ? 'compliant' : </span>
                            overallScore &gt;= 70 ? 'partially_compliant' : 'non_compliant';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    logger.info('Compliance report generated successfully', { </span>
+    (<span class="cstat-no" title="statement not covered" >logger as any).info('Compliance report generated successfully', { </span>
       report_id: reportId, 
-      profile_id: params.profile_id,
-      compliance_framework: params.compliance_framework,
+      profile_id: (params as any).profile_id,
+      compliance_framework: (params as any).compliance_framework,
       compliance_score: overallScore
     });
 &nbsp;
@@ -1709,12 +1709,12 @@ async function <span class="fstat-no" title="function not covered" >generateComp
       success: true,
       report: {
         report_id: reportId,
-        profile_id: params.profile_id,
-        compliance_framework: params.compliance_framework,
+        profile_id: (params as any).profile_id,
+        compliance_framework: (params as any).compliance_framework,
         report_scope: reportScope,
         generated_date: generatedDate,
         assessment_date: assessmentDate,
-        assessor_name: params.assessor_name,
+        assessor_name: (params as any).assessor_name,
         overall_compliance_score: overallScore,
         compliance_status: complianceStatus,
         executive_summary: executiveSummary,
@@ -1727,7 +1727,7 @@ async function <span class="fstat-no" title="function not covered" >generateComp
     };
 &nbsp;
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    logger.error('Generate compliance report error', error);</span>
+    (<span class="cstat-no" title="statement not covered" >logger as any).error('Generate compliance report error', error);</span>
 <span class="cstat-no" title="statement not covered" >    return {</span>
       success: false,
       error: 'InternalError',
@@ -1750,7 +1750,7 @@ function <span class="fstat-no" title="function not covered" >getFrameworkRequir
         description: 'A set of policies for information security shall be defined',
         mandatory: true,
         category: 'Security Policy',
-        csf_mappings: ['GV.OC-01', 'GV.PO-01']
+        csf_mappings: ['(GV as any).OC-01', '(GV as any).PO-01']
       },
       {
         requirement_id: 'A.6.1.1',
@@ -1758,7 +1758,7 @@ function <span class="fstat-no" title="function not covered" >getFrameworkRequir
         description: 'All information security responsibilities shall be defined and allocated',
         mandatory: true,
         category: 'Organization of Information Security',
-        csf_mappings: ['GV.OC-02', 'GV.OC-03']
+        csf_mappings: ['(GV as any).OC-02', '(GV as any).OC-03']
       },
       {
         requirement_id: 'A.8.1.1',
@@ -1766,7 +1766,7 @@ function <span class="fstat-no" title="function not covered" >getFrameworkRequir
         description: 'Assets associated with information and information processing facilities shall be identified',
         mandatory: true,
         category: 'Asset Management',
-        csf_mappings: ['ID.AM-01', 'ID.AM-02']
+        csf_mappings: ['(ID as any).AM-01', '(ID as any).AM-02']
       }
     ],
     pci_dss: [
@@ -1776,7 +1776,7 @@ function <span class="fstat-no" title="function not covered" >getFrameworkRequir
         description: 'Install and maintain a firewall configuration to protect cardholder data',
         mandatory: true,
         category: 'Network Security',
-        csf_mappings: ['PR.AC-04', 'PR.PT-04']
+        csf_mappings: ['(PR as any).AC-04', '(PR as any).PT-04']
       },
       {
         requirement_id: 'REQ-2',
@@ -1784,7 +1784,7 @@ function <span class="fstat-no" title="function not covered" >getFrameworkRequir
         description: 'Do not use vendor-supplied defaults for system passwords and other security parameters',
         mandatory: true,
         category: 'Configuration Management',
-        csf_mappings: ['PR.AC-01', 'PR.IP-01']
+        csf_mappings: ['(PR as any).AC-01', '(PR as any).IP-01']
       }
     ],
     hipaa: [
@@ -1794,7 +1794,7 @@ function <span class="fstat-no" title="function not covered" >getFrameworkRequir
         description: 'Assign security responsibilities to an individual',
         mandatory: true,
         category: 'Administrative Safeguards',
-        csf_mappings: ['GV.OC-02']
+        csf_mappings: ['(GV as any).OC-02']
       },
       {
         requirement_id: 'SEC-164.312(a)(1)',
@@ -1802,7 +1802,7 @@ function <span class="fstat-no" title="function not covered" >getFrameworkRequir
         description: 'Implement technical policies and procedures for electronic information systems',
         mandatory: true,
         category: 'Technical Safeguards',
-        csf_mappings: ['PR.AC-01', 'PR.DS-02']
+        csf_mappings: ['(PR as any).AC-01', '(PR as any).DS-02']
       }
     ]
   };
@@ -1811,10 +1811,10 @@ function <span class="fstat-no" title="function not covered" >getFrameworkRequir
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >analyzeCompliance(</span>requirements: any[], assessments: any[]): any[] {
-<span class="cstat-no" title="statement not covered" >  return requirements.map(<span class="fstat-no" title="function not covered" >requirement </span>=&gt; {</span>
-    const mappedSubcategories = <span class="cstat-no" title="statement not covered" >requirement.csf_mappings || [];</span>
-    const relevantAssessments = <span class="cstat-no" title="statement not covered" >assessments.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
-<span class="cstat-no" title="statement not covered" >      mappedSubcategories.includes(a.subcategory_id)</span>
+<span class="cstat-no" title="statement not covered" >  return (requirements as any).map(<span class="fstat-no" title="function not covered" >requirement </span>=&gt; {</span>
+    const mappedSubcategories = (<span class="cstat-no" title="statement not covered" >requirement as any).csf_mappings || [];</span>
+    const relevantAssessments = (<span class="cstat-no" title="statement not covered" >assessments as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; </span>
+      (<span class="cstat-no" title="statement not covered" >mappedSubcategories as any).includes((a as any).subcategory_id)</span>
     );
 &nbsp;
     // Determine compliance status based on assessments
@@ -1822,41 +1822,41 @@ function <span class="fstat-no" title="function not covered" >analyzeCompliance(
     const currentImplementation: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
     const gapsIdentified: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if (relevantAssessments.length &gt; 0) {</span>
-      const avgMaturity = <span class="cstat-no" title="statement not covered" >relevantAssessments.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a) =&gt; <span class="cstat-no" title="statement not covered" >sum + (a.maturity_score || 0),</span> 0) / relevantAssessments.length;</span>
+<span class="cstat-no" title="statement not covered" >    if ((relevantAssessments as any).length &gt; 0) {</span>
+      const avgMaturity = (<span class="cstat-no" title="statement not covered" >relevantAssessments as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a) =&gt; <span class="cstat-no" title="statement not covered" >sum + ((a as any).maturity_score || 0),</span> 0) / (relevantAssessments as any).length;</span>
       
 <span class="cstat-no" title="statement not covered" >      if (avgMaturity &gt;= 4) {</span>
 <span class="cstat-no" title="statement not covered" >        complianceStatus = 'compliant';</span>
-<span class="cstat-no" title="statement not covered" >        currentImplementation.push('Fully implemented controls with mature processes');</span>
+        (<span class="cstat-no" title="statement not covered" >currentImplementation as any).push('Fully implemented controls with mature processes');</span>
       } else <span class="cstat-no" title="statement not covered" >if (avgMaturity &gt;= 2) {</span>
 <span class="cstat-no" title="statement not covered" >        complianceStatus = 'partially_compliant';</span>
-<span class="cstat-no" title="statement not covered" >        currentImplementation.push('Partially implemented with some gaps');</span>
-<span class="cstat-no" title="statement not covered" >        gapsIdentified.push('Controls need maturity improvement');</span>
+        (<span class="cstat-no" title="statement not covered" >currentImplementation as any).push('Partially implemented with some gaps');</span>
+        (<span class="cstat-no" title="statement not covered" >gapsIdentified as any).push('Controls need maturity improvement');</span>
       } else {
 <span class="cstat-no" title="statement not covered" >        complianceStatus = 'non_compliant';</span>
-<span class="cstat-no" title="statement not covered" >        gapsIdentified.push('Controls not adequately implemented');</span>
+        (<span class="cstat-no" title="statement not covered" >gapsIdentified as any).push('Controls not adequately implemented');</span>
       }
     } else {
-<span class="cstat-no" title="statement not covered" >      gapsIdentified.push('No corresponding CSF controls implemented');</span>
+      (<span class="cstat-no" title="statement not covered" >gapsIdentified as any).push('No corresponding CSF controls implemented');</span>
     }
 &nbsp;
     // Determine risk and priority
     const riskLevel = <span class="cstat-no" title="statement not covered" >complianceStatus === 'compliant' ? 'low' :</span>
                      complianceStatus === 'partially_compliant' ? 'medium' : 'high';
     
-    const priority = <span class="cstat-no" title="statement not covered" >requirement.mandatory ? </span>
+    const priority = (<span class="cstat-no" title="statement not covered" >requirement as any).mandatory ? </span>
       (complianceStatus === 'non_compliant' ? 'critical' : 'high') :
       (complianceStatus === 'non_compliant' ? 'medium' : 'low');
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
-      requirement_id: requirement.requirement_id,
-      requirement_name: requirement.requirement_name,
-      description: requirement.description,
+      requirement_id: (requirement as any).requirement_id,
+      requirement_name: (requirement as any).requirement_name,
+      description: (requirement as any).description,
       compliance_status: complianceStatus,
       csf_subcategories: mappedSubcategories,
-      current_implementation: currentImplementation.join('; ') || 'Not implemented',
+      current_implementation: (currentImplementation as any).join('; ') || 'Not implemented',
       gaps_identified: gapsIdentified,
-      evidence_provided: relevantAssessments.map(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >`Assessment: ${a.subcategory_id} - ${a.implementation_level}`)</span>,
+      evidence_provided: (relevantAssessments as any).map(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >`Assessment: ${(a as any).subcategory_id} - ${(a as any).implementation_level}`)</span>,
       risk_level: riskLevel,
       remediation_priority: priority
     };
@@ -1864,10 +1864,10 @@ function <span class="fstat-no" title="function not covered" >analyzeCompliance(
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >calculateOverallScore(</span>complianceDetails: any[]): number {
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (complianceDetails.length === 0) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((complianceDetails as any).length === 0) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
 &nbsp;
-  const scores = <span class="cstat-no" title="statement not covered" >complianceDetails.map(<span class="fstat-no" title="function not covered" >(d</span>etail: any) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    switch (detail.compliance_status) {</span>
+  const scores = (<span class="cstat-no" title="statement not covered" >complianceDetails as any).map(<span class="fstat-no" title="function not covered" >(d</span>etail: any) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    switch ((detail as any).compliance_status) {</span>
       case 'compliant': <span class="cstat-no" title="statement not covered" >return 100;</span>
       case 'partially_compliant': <span class="cstat-no" title="statement not covered" >return 50;</span>
       case 'non_compliant': <span class="cstat-no" title="statement not covered" >return 0;</span>
@@ -1875,16 +1875,16 @@ function <span class="fstat-no" title="function not covered" >calculateOverallSc
     }
   });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return Math.round(scores.reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, score: number) =&gt; <span class="cstat-no" title="statement not covered" >sum + score,</span> 0) / scores.length);</span>
+<span class="cstat-no" title="statement not covered" >  return (Math as any).round((scores as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um: number, score: number) =&gt; <span class="cstat-no" title="statement not covered" >sum + score,</span> 0) / (scores as any).length);</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateExecutiveSummary(</span>complianceDetails: any[]): any {
-  const total = <span class="cstat-no" title="statement not covered" >complianceDetails.length;</span>
-  const compliant = <span class="cstat-no" title="statement not covered" >complianceDetails.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.compliance_status === 'compliant')</span>.length;</span>
-  const partiallyCompliant = <span class="cstat-no" title="statement not covered" >complianceDetails.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.compliance_status === 'partially_compliant')</span>.length;</span>
-  const nonCompliant = <span class="cstat-no" title="statement not covered" >complianceDetails.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.compliance_status === 'non_compliant')</span>.length;</span>
-  const criticalGaps = <span class="cstat-no" title="statement not covered" >complianceDetails.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.remediation_priority === 'critical')</span>.length;</span>
-  const highPriorityRecommendations = <span class="cstat-no" title="statement not covered" >complianceDetails.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.remediation_priority === 'high')</span>.length;</span>
+  const total = (<span class="cstat-no" title="statement not covered" >complianceDetails as any).length;</span>
+  const compliant = (<span class="cstat-no" title="statement not covered" >complianceDetails as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).compliance_status === 'compliant')</span>.length;</span>
+  const partiallyCompliant = (<span class="cstat-no" title="statement not covered" >complianceDetails as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).compliance_status === 'partially_compliant')</span>.length;</span>
+  const nonCompliant = (<span class="cstat-no" title="statement not covered" >complianceDetails as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).compliance_status === 'non_compliant')</span>.length;</span>
+  const criticalGaps = (<span class="cstat-no" title="statement not covered" >complianceDetails as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).remediation_priority === 'critical')</span>.length;</span>
+  const highPriorityRecommendations = (<span class="cstat-no" title="statement not covered" >complianceDetails as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).remediation_priority === 'high')</span>.length;</span>
 &nbsp;
   // Estimate remediation effort
   let effortEstimate = <span class="cstat-no" title="statement not covered" >'Low';</span>
@@ -1909,12 +1909,12 @@ function <span class="fstat-no" title="function not covered" >generateExecutiveS
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateGapAnalysis(</span>complianceDetails: any[]): any {
   const criticalGaps = <span class="cstat-no" title="statement not covered" >complianceDetails</span>
-    .filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.remediation_priority === 'critical')</span>
+    .filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).remediation_priority === 'critical')</span>
     .map(<span class="fstat-no" title="function not covered" >detail </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span>
-      requirement_id: detail.requirement_id,
-      gap_description: detail.gaps_identified.join('; '),
+      requirement_id: (detail as any).requirement_id,
+      gap_description: (detail as any).gaps_identified.join('; '),
       impact: 'High risk of non-compliance and potential regulatory penalties',
-      recommended_action: `Implement ${detail.requirement_name} controls immediately`,
+      recommended_action: `Implement ${(detail as any).requirement_name} controls immediately`,
       timeline: '1-3 months',
       effort_estimate: 'High'
     }));
@@ -1925,7 +1925,7 @@ function <span class="fstat-no" title="function not covered" >generateGapAnalysi
       phase: 1,
       phase_name: 'Critical Gap Remediation',
       duration: '1-3 months',
-      requirements_addressed: criticalGaps.map(<span class="fstat-no" title="function not covered" >g </span>=&gt; <span class="cstat-no" title="statement not covered" >g.requirement_id)</span>,
+      requirements_addressed: (criticalGaps as any).map(<span class="fstat-no" title="function not covered" >g </span>=&gt; (<span class="cstat-no" title="statement not covered" >g as any).requirement_id)</span>,
       deliverables: ['Critical control implementations', 'Compliance documentation', 'Risk mitigation measures'],
       success_criteria: ['All critical gaps addressed', 'Compliance status improved to partially compliant']
     },
@@ -1933,7 +1933,7 @@ function <span class="fstat-no" title="function not covered" >generateGapAnalysi
       phase: 2,
       phase_name: 'Comprehensive Compliance',
       duration: '3-6 months',
-      requirements_addressed: complianceDetails.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.compliance_status !== 'compliant')</span>.map(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.requirement_id)</span>,
+      requirements_addressed: (complianceDetails as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).compliance_status !== 'compliant')</span>.map(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).requirement_id)</span>,
       deliverables: ['Full compliance implementation', 'Process documentation', 'Training materials'],
       success_criteria: ['Full compliance achieved', 'All requirements met', 'Audit readiness']
     },
@@ -1958,18 +1958,18 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
 &nbsp;
   // Generate recommendations for non-compliant requirements
 <span class="cstat-no" title="statement not covered" >  complianceDetails</span>
-    .filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.compliance_status !== 'compliant')</span>
+    .filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).compliance_status !== 'compliant')</span>
     .forEach(<span class="fstat-no" title="function not covered" >(d</span>etail, index) =&gt; {
-<span class="cstat-no" title="statement not covered" >      recommendations.push({</span>
+      (<span class="cstat-no" title="statement not covered" >recommendations as any).push({</span>
         recommendation_id: `REC-${String(index + 1).padStart(3, '0')}`,
         category: 'technical' as const,
-        priority: detail.remediation_priority,
-        title: `Implement ${detail.requirement_name}`,
-        description: `Address compliance gap for ${detail.requirement_id}: ${detail.description}`,
-        affected_requirements: [detail.requirement_id],
-        implementation_guidance: `Focus on CSF subcategories: ${detail.csf_subcategories.join(', ')}`,
-        estimated_cost: detail.remediation_priority === 'critical' ? '$50K-100K' : '$10K-50K',
-        estimated_effort: detail.remediation_priority === 'critical' ? '2-3 months' : '1-2 months',
+        priority: (detail as any).remediation_priority,
+        title: `Implement ${(detail as any).requirement_name}`,
+        description: `Address compliance gap for ${(detail as any).requirement_id}: ${(detail as any).description}`,
+        affected_requirements: [(detail as any).requirement_id],
+        implementation_guidance: `Focus on CSF subcategories: ${(detail as any).csf_subcategories.join(', ')}`,
+        estimated_cost: (detail as any).remediation_priority === 'critical' ? '$50K-100K' : '$10K-50K',
+        estimated_effort: (detail as any).remediation_priority === 'critical' ? '2-3 months' : '1-2 months',
         expected_benefits: [
           'Improved compliance status',
           'Reduced regulatory risk',
@@ -1982,16 +1982,16 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateRiskAssessment(</span>complianceDetails: any[], _framework: string): any {
-  const nonCompliantItems = <span class="cstat-no" title="statement not covered" >complianceDetails.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.compliance_status === 'non_compliant')</span>;</span>
-  const criticalItems = <span class="cstat-no" title="statement not covered" >complianceDetails.filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; <span class="cstat-no" title="statement not covered" >d.remediation_priority === 'critical')</span>;</span>
+  const nonCompliantItems = (<span class="cstat-no" title="statement not covered" >complianceDetails as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).compliance_status === 'non_compliant')</span>;</span>
+  const criticalItems = (<span class="cstat-no" title="statement not covered" >complianceDetails as any).filter(<span class="fstat-no" title="function not covered" >d </span>=&gt; (<span class="cstat-no" title="statement not covered" >d as any).remediation_priority === 'critical')</span>;</span>
 &nbsp;
   // Determine overall risk level
   let overallRiskLevel: 'low' | 'medium' | 'high' | 'critical' = <span class="cstat-no" title="statement not covered" >'low';</span>
-<span class="cstat-no" title="statement not covered" >  if (criticalItems.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >  if ((criticalItems as any).length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >    overallRiskLevel = 'critical';</span>
-  } else <span class="cstat-no" title="statement not covered" >if (nonCompliantItems.length &gt; complianceDetails.length * 0.3) {</span>
+  } else <span class="cstat-no" title="statement not covered" >if ((nonCompliantItems as any).length &gt; (complianceDetails as any).length * 0.3) {</span>
 <span class="cstat-no" title="statement not covered" >    overallRiskLevel = 'high';</span>
-  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (nonCompliantItems.length &gt; 0) {</span>
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if ((nonCompliantItems as any).length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >    overallRiskLevel = 'medium';</span>
   }
 &nbsp;
@@ -2004,19 +2004,19 @@ function <span class="fstat-no" title="function not covered" >generateRiskAssess
     },
     {
       factor: 'Data Protection',
-      current_level: nonCompliantItems.some(<span class="fstat-no" title="function not covered" >i </span>=&gt; <span class="cstat-no" title="statement not covered" >i.requirement_name.toLowerCase().includes('data'))</span> ? 'high' : 'medium',
+      current_level: (nonCompliantItems as any).some(<span class="fstat-no" title="function not covered" >i </span>=&gt; (<span class="cstat-no" title="statement not covered" >i as any).requirement_name.toLowerCase().includes('data'))</span> ? 'high' : 'medium',
       target_level: 'low',
       mitigation_measures: ['Data classification', 'Access controls', 'Encryption implementation']
     }
   ];
 &nbsp;
-  const nonComplianceRisks = <span class="cstat-no" title="statement not covered" >nonCompliantItems.map(<span class="fstat-no" title="function not covered" >detail </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
-    requirement_id: detail.requirement_id,
-    risk_description: `Non-compliance with ${detail.requirement_name} may result in regulatory penalties`,
-    likelihood: detail.remediation_priority === 'critical' ? 'high' as const : 'medium' as const,
-    impact: detail.risk_level as 'low' | 'medium' | 'high' | 'critical',
-    risk_score: detail.remediation_priority === 'critical' ? 9 : 
-                detail.remediation_priority === 'high' ? 6 : 3
+  const nonComplianceRisks = (<span class="cstat-no" title="statement not covered" >nonCompliantItems as any).map(<span class="fstat-no" title="function not covered" >detail </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+    requirement_id: (detail as any).requirement_id,
+    risk_description: `Non-compliance with ${(detail as any).requirement_name} may result in regulatory penalties`,
+    likelihood: (detail as any).remediation_priority === 'critical' ? 'high' as const : 'medium' as const,
+    impact: (detail as any).risk_level as 'low' | 'medium' | 'high' | 'critical',
+    risk_score: (detail as any).remediation_priority === 'critical' ? 9 : 
+                (detail as any).remediation_priority === 'high' ? 6 : 3
   }));
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
@@ -2028,9 +2028,9 @@ function <span class="fstat-no" title="function not covered" >generateRiskAssess
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateImplementationRoadmap(</span>_complianceDetails: any[], _framework: string): any {
   const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
-  const phase1End = <span class="cstat-no" title="statement not covered" >new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);</span> // 3 months
-  const phase2End = <span class="cstat-no" title="statement not covered" >new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000);</span> // 6 months
-  const phase3End = <span class="cstat-no" title="statement not covered" >new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);</span> // 1 year
+  const phase1End = <span class="cstat-no" title="statement not covered" >new Date((now as any).getTime() + 90 * 24 * 60 * 60 * 1000);</span> // 3 months
+  const phase2End = <span class="cstat-no" title="statement not covered" >new Date((now as any).getTime() + 180 * 24 * 60 * 60 * 1000);</span> // 6 months
+  const phase3End = <span class="cstat-no" title="statement not covered" >new Date((now as any).getTime() + 365 * 24 * 60 * 60 * 1000);</span> // 1 year
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
     total_estimated_duration: '12 months',
@@ -2039,8 +2039,8 @@ function <span class="fstat-no" title="function not covered" >generateImplementa
       {
         phase_number: 1,
         phase_name: 'Critical Gap Remediation',
-        start_date: now.toISOString(),
-        end_date: phase1End.toISOString(),
+        start_date: (now as any).toISOString(),
+        end_date: (phase1End as any).toISOString(),
         objectives: [
           'Address critical compliance gaps',
           'Implement mandatory controls',
@@ -2065,8 +2065,8 @@ function <span class="fstat-no" title="function not covered" >generateImplementa
       {
         phase_number: 2,
         phase_name: 'Comprehensive Implementation',
-        start_date: phase1End.toISOString(),
-        end_date: phase2End.toISOString(),
+        start_date: (phase1End as any).toISOString(),
+        end_date: (phase2End as any).toISOString(),
         objectives: [
           'Achieve full compliance',
           'Implement all required controls',
@@ -2091,8 +2091,8 @@ function <span class="fstat-no" title="function not covered" >generateImplementa
       {
         phase_number: 3,
         phase_name: 'Continuous Monitoring',
-        start_date: phase2End.toISOString(),
-        end_date: phase3End.toISOString(),
+        start_date: (phase2End as any).toISOString(),
+        end_date: (phase3End as any).toISOString(),
         objectives: [
           'Maintain compliance status',
           'Continuous improvement',
@@ -2182,7 +2182,7 @@ export { generateComplianceReport };</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.240Z
+                at 2025-09-03T03:22:59.993Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

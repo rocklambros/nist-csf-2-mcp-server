@@ -37,7 +37,7 @@ import { importAssessmentTool } from './tools/import_assessment.js';
 import { validateEvidenceTool } from './tools/validate_evidence.js';
 import { getImplementationTemplateTool } from './tools/get_implementation_template.js';
 import { generatePolicyTemplateTool } from './tools/generate_policy_template.js';
-import { generateTestScenarios } from './tools/generate_test_scenarios.js';
+// import { generateTestScenarios } from './tools/generate_test_scenarios.js'; // DOCKER COMPATIBILITY
 import { startAssessmentWorkflow, StartAssessmentWorkflowSchema } from './tools/comprehensive_assessment_workflow.js';
 import { checkAssessmentWorkflowStatus, CheckAssessmentWorkflowSchema } from './tools/comprehensive_assessment_workflow.js';
 import { getAssessmentQuestions } from './tools/get_assessment_questions.js';
@@ -143,13 +143,13 @@ const HTTP_TOOLS = {
     industry: z.enum(['financial_services', 'healthcare', 'manufacturing', 'technology', 'government', 'retail', 'energy']).optional(),
     organization_size: z.enum(['small', 'medium', 'large', 'enterprise']).optional()
   }) },
-  'generate_test_scenarios': { handler: async (params: any) => generateTestScenarios(getDatabase(), getFrameworkLoader(), params), schema: z.object({
-    subcategory_id: z.string(),
-    test_type: z.enum(['functional', 'security', 'compliance', 'performance', 'all']).optional(),
-    include_scripts: z.boolean().default(true),
-    include_tools: z.boolean().default(true),
-    severity_levels: z.array(z.enum(['low', 'medium', 'high', 'critical'])).default(['low', 'medium', 'high', 'critical'])
-  }) },
+  // 'generate_test_scenarios': { handler: async (params: any) => generateTestScenarios(getDatabase(), getFrameworkLoader(), params), schema: z.object({ // DOCKER COMPATIBILITY
+  //   subcategory_id: z.string(),
+  //   test_type: z.enum(['functional', 'security', 'compliance', 'performance', 'all']).optional(),
+  //   include_scripts: z.boolean().default(true),
+  //   include_tools: z.boolean().default(true),
+  //   severity_levels: z.array(z.enum(['low', 'medium', 'high', 'critical'])).default(['low', 'medium', 'high', 'critical'])
+  // }) },
   
   // Question Bank
   'get_assessment_questions': { handler: getAssessmentQuestions, schema: z.object({

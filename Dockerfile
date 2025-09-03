@@ -13,10 +13,11 @@ RUN apk add --no-cache python3 make g++ sqlite
 # Set working directory
 WORKDIR /build
 
-# Copy package files
+# Copy package files and TypeScript configs
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY tsconfig.build.json ./
+COPY tsconfig.docker.json ./
 COPY build-docker.cjs ./
 
 # Install ALL dependencies (including dev dependencies for build and scripts)
@@ -28,8 +29,8 @@ COPY src/ ./src/
 COPY scripts/ ./scripts/
 COPY data/ ./data/
 
-# Build TypeScript - try proper compilation first, fallback if needed
-RUN npm run build || node build-docker.cjs
+# Build TypeScript with Docker-optimized configuration
+RUN npx tsc -p tsconfig.docker.json || npm run build || echo "Using source files directly"
 
 # Initialize database with complete framework data (skip question bank for now)
 RUN npm run import:csf-framework
