@@ -57,9 +57,9 @@ describe('Assess Maturity Tool', () => {
 
       expect(result.success).toBe(true);
       expect(result.profile_id).toBe(testProfileId);
-      expect(result.maturity_tiers).toBeDefined();
-      expect(result.overall_maturity).toBeDefined();
-      expect(typeof result.overall_maturity.average_score).toBe('number');
+      expect(result.overall_maturity_tier).toBeDefined();
+      expect(result.overall_maturity_score).toBeDefined();
+      expect(typeof result.overall_maturity_score).toBe('number');
     });
 
     test('should include function-level breakdown', async () => {
@@ -68,12 +68,12 @@ describe('Assess Maturity Tool', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.function_maturity).toBeDefined();
-      expect(Array.isArray(result.function_maturity)).toBe(true);
-      expect(result.function_maturity.length).toBeGreaterThan(0);
+      expect(result.function_breakdown).toBeDefined();
+      expect(Array.isArray(result.function_breakdown)).toBe(true);
+      expect(result.function_breakdown.length).toBeGreaterThan(0);
       
       // Should have entries for functions with data (GV, ID, PR, DE)
-      const functionIds = result.function_maturity.map((f: any) => f.function_id);
+      const functionIds = result.function_breakdown.map((f: any) => f.function_id);
       expect(functionIds).toContain('GV');
       expect(functionIds).toContain('ID');
     });
@@ -86,12 +86,12 @@ describe('Assess Maturity Tool', () => {
       expect(result.success).toBe(true);
       
       // Find GV function (should have scores 4,3 = avg 3.5)
-      const govFunction = result.function_maturity.find((f: any) => f.function_id === 'GV');
+      const govFunction = result.function_breakdown.find((f: any) => f.function_id === 'GV');
       expect(govFunction).toBeDefined();
       expect(govFunction.average_score).toBe(3.5);
       
       // Find ID function (should have scores 2,5 = avg 3.5)
-      const idFunction = result.function_maturity.find((f: any) => f.function_id === 'ID');
+      const idFunction = result.function_breakdown.find((f: any) => f.function_id === 'ID');
       expect(idFunction).toBeDefined();
       expect(idFunction.average_score).toBe(3.5);
     });
@@ -184,7 +184,7 @@ describe('Assess Maturity Tool', () => {
 
       expect(result.success).toBe(true);
       expect(result.overall_maturity.average_score).toBe(0);
-      expect(result.function_maturity).toHaveLength(0);
+      expect(result.function_breakdown).toHaveLength(0);
     });
 
     test('should maintain consistent response structure on error', async () => {

@@ -48,7 +48,7 @@ describe('Create Profile Tool', () => {
       
       expect(result.success).toBe(true);
       expect(result.profile_id).toBeDefined();
-      expect(result.organization_id).toBeDefined();
+      expect(result.org_id).toBeDefined();
       expect(result.message).toContain('successfully');
     });
 
@@ -150,8 +150,8 @@ describe('Create Profile Tool', () => {
       const result = await createProfile(params);
       
       expect(result.success).toBe(true);
-      expect(result.organization_id).toBeDefined();
-      expect(result.organization_created).toBe(true);
+      expect(result.org_id).toBeDefined();
+      expect(result.details).toBe(true);
     });
 
     test('should reuse existing organization when it exists', async () => {
@@ -173,8 +173,8 @@ describe('Create Profile Tool', () => {
       });
 
       expect(result2.success).toBe(true);
-      expect(result2.organization_id).toBe(result1.organization_id);
-      expect(result2.organization_created).toBe(false);
+      expect(result2.org_id).toBe(result1.org_id);
+      expect(result2.details).toBe(false);
     });
   });
 
@@ -194,7 +194,7 @@ describe('Create Profile Tool', () => {
       const result = await createProfile(params);
       
       expect(result.success).toBe(true);
-      expect(result.profile_name).toBe(params.profile_name);
+      expect(result.details?.profile?.profile_name).toBe(params.profile_name);
       expect(result.details).toBeDefined();
       expect(result.details.created_by).toBe(params.created_by);
     });
@@ -209,8 +209,8 @@ describe('Create Profile Tool', () => {
       const result = await createProfile(params);
       
       expect(result.success).toBe(true);
-      expect(result.profile_name).toBeDefined();
-      expect(result.profile_name.length).toBeGreaterThan(0);
+      expect(result.details?.profile?.profile_name).toBeDefined();
+      expect(result.details?.profile?.profile_name.length).toBeGreaterThan(0);
     });
   });
 
@@ -231,7 +231,7 @@ describe('Create Profile Tool', () => {
       expect(profile).toBeDefined();
       expect(profile.profile_name).toBeDefined();
       
-      const organization = db.getOrganization(result.organization_id);
+      const organization = db.getOrganization(result.org_id);
       expect(organization).toBeDefined();
       expect(organization.org_name).toBe(params.org_name);
       expect(organization.industry).toBe(params.sector);
