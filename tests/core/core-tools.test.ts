@@ -5,6 +5,8 @@
  * focusing on real database operations and tool functionality.
  */
 
+import { describe, test, expect } from '@jest/globals';
+
 describe('Core MCP Tools Integration', () => {
   // Basic smoke tests to ensure tools can be imported without errors
   
@@ -49,9 +51,12 @@ describe('Core MCP Tools Integration', () => {
       const stats = db.getStats();
       
       expect(stats).toBeDefined();
-      expect(typeof stats.organizations).toBe('number');
-      expect(typeof stats.profiles).toBe('number');
-      expect(typeof stats.assessments).toBe('number');
+      expect(stats).toHaveProperty('organizations');
+      expect(stats).toHaveProperty('profiles');
+      expect(stats).toHaveProperty('assessments');
+      expect(stats).toHaveProperty('implementations');
+      expect(stats).toHaveProperty('risk_assessments');
+      expect(stats).toHaveProperty('gaps');
     });
   });
 

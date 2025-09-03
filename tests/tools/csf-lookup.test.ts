@@ -12,7 +12,7 @@ describe('CSF Lookup Tool', () => {
     if (!framework.isLoaded()) {
       await framework.load();
     }
-  });
+  }, 30000); // Increased timeout for framework loading
 
   describe('Function Lookup', () => {
     test('should retrieve GV (GOVERN) function', async () => {

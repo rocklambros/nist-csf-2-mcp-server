@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.25% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/74</span>
+                <span class='fraction'>9/80</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.68% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/71</span>
+                <span class='fraction'>9/77</span>
             </div>
         
             
@@ -633,25 +633,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -692,7 +692,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1182,10 +1182,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1203,7 +1203,7 @@ import { getDatabase } from '../db/database.js';
 import { logger } from '../utils/logger.js';
 &nbsp;
 // Progress state for individual questions
-export const QuestionProgressState = <span class="cstat-no" title="statement not covered" >z.enum([</span>
+export const QuestionProgressState = z.enum([
   'not_started',
   'in_progress', 
   'answered',
@@ -1214,7 +1214,7 @@ export const QuestionProgressState = <span class="cstat-no" title="statement not
 export type QuestionProgressStateType = z.infer&lt;typeof QuestionProgressState&gt;;
 &nbsp;
 // Assessment session state
-export const AssessmentSessionState = <span class="cstat-no" title="statement not covered" >z.enum([</span>
+export const AssessmentSessionState = z.enum([
   'initialized',
   'questions_loaded',
   'in_progress',
@@ -1256,7 +1256,7 @@ export interface AssessmentSession {
   last_activity: string;
 }
 &nbsp;
-<span class="fstat-no" title="function not covered" >export </span>class AssessmentProgressManager {
+<span class="fstat-no" title="function not covered" >export class A</span>ssessmentProgressManager {
   private <span class="cstat-no" title="statement not covered" >db = getDatabase();</span>
 &nbsp;
   /**
@@ -1747,7 +1747,7 @@ export interface AssessmentSession {
 }
 &nbsp;
 // Singleton instance
-let progressManager: AssessmentProgressManager | null = <span class="cstat-no" title="statement not covered" >null;</span>
+let progressManager: AssessmentProgressManager | null = null;
 &nbsp;
 export function <span class="fstat-no" title="function not covered" >getProgressManager(</span>): AssessmentProgressManager {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!progressManager) {</span>
@@ -1762,7 +1762,7 @@ export function <span class="fstat-no" title="function not covered" >getProgress
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-03T14:32:45.742Z
+                at 2025-09-03T14:50:13.571Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

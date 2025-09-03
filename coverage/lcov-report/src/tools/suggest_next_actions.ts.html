@@ -1758,32 +1758,32 @@ export async function <span class="fstat-no" title="function not covered" >sugge
   
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // Ensure framework is loaded
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!framework.isLoaded()) {</span>
-<span class="cstat-no" title="statement not covered" >      await framework.load();</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(framework as any).isLoaded()) {</span>
+<span class="cstat-no" title="statement not covered" >      await (framework as any).load();</span>
     }
     
     // Verify profile exists
-    const profile = <span class="cstat-no" title="statement not covered" >db.getProfile(params.profile_id);</span>
+    const profile = (<span class="cstat-no" title="statement not covered" >db as any).getProfile((params as any).profile_id);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!profile) {</span>
-<span class="cstat-no" title="statement not covered" >      return createErrorResult(`Profile not found: ${params.profile_id}`);</span>
+<span class="cstat-no" title="statement not covered" >      return createErrorResult(`Profile not found: ${(params as any).profile_id}`);</span>
     }
     
     // Calculate total capacity
-    const totalCapacityHours = <span class="cstat-no" title="statement not covered" >params.capacity_hours_per_week * params.time_horizon_weeks;</span>
+    const totalCapacityHours = (<span class="cstat-no" title="statement not covered" >params as any).capacity_hours_per_week * (params as any).time_horizon_weeks;</span>
     
     // Get suggested actions from database
-    const dbSuggestions = <span class="cstat-no" title="statement not covered" >db.getSuggestedActions(params.profile_id, totalCapacityHours);</span>
+    const dbSuggestions = (<span class="cstat-no" title="statement not covered" >db as any).getSuggestedActions((params as any).profile_id, totalCapacityHours);</span>
     
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!dbSuggestions || dbSuggestions.length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!dbSuggestions || (dbSuggestions as any).length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      return createErrorResult('No actionable items found for this profile');</span>
     }
     
     // Filter by focus area if specified
     let filteredSuggestions = <span class="cstat-no" title="statement not covered" >dbSuggestions;</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (params.focus_area !== 'all') {</span>
-      const focusFunctionId = <span class="cstat-no" title="statement not covered" >getFunctionId(params.focus_area);</span>
-<span class="cstat-no" title="statement not covered" >      filteredSuggestions = dbSuggestions.filter(</span>
-<span class="fstat-no" title="function not covered" >        (s</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >s.function_id === focusFunctionId</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if ((params as any).focus_area !== 'all') {</span>
+      const focusFunctionId = <span class="cstat-no" title="statement not covered" >getFunctionId((params as any).focus_area);</span>
+<span class="cstat-no" title="statement not covered" >      filteredSuggestions = (dbSuggestions as any).filter(</span>
+<span class="fstat-no" title="function not covered" >        (s</span>: any) =&gt; (<span class="cstat-no" title="statement not covered" >s as any).function_id === focusFunctionId</span>
       );
     }
     
@@ -1793,81 +1793,81 @@ export async function <span class="fstat-no" title="function not covered" >sugge
     
 <span class="cstat-no" title="statement not covered" >    for (const suggestion of filteredSuggestions) {</span>
       // Check capacity
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (allocatedHours + suggestion.estimated_hours &gt; totalCapacityHours * 1.2) {</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (allocatedHours + (suggestion as any).estimated_hours &gt; totalCapacityHours * 1.2) {</span>
 <span class="cstat-no" title="statement not covered" >        break; </span> // Stop if we exceed capacity by more than 20%
       }
       
       // Get dependencies if requested
-      const dependencies = <span class="cstat-no" title="statement not covered" >params.include_dependencies</span>
-        ? await analyzeDependencies(suggestion.subcategory_id, params.profile_id, db, framework)
+      const dependencies = (<span class="cstat-no" title="statement not covered" >params as any).include_dependencies</span>
+        ? await analyzeDependencies((suggestion as any).subcategory_id, (params as any).profile_id, db, framework)
         : { blocking: [], recommended: [], status: 'Ready' as const };
       
       // Calculate impact scores
-      const impact = <span class="cstat-no" title="statement not covered" >calculateImpact(suggestion, params.optimization_goal);</span>
+      const impact = <span class="cstat-no" title="statement not covered" >calculateImpact(suggestion, (params as any).optimization_goal);</span>
       
       // Generate justification
-      const justification = <span class="cstat-no" title="statement not covered" >params.include_justification</span>
-        ? generateJustification(suggestion, dependencies, impact, params.optimization_goal)
-        : suggestion.justification || 'Recommended action';
+      const justification = (<span class="cstat-no" title="statement not covered" >params as any).include_justification</span>
+        ? generateJustification(suggestion, dependencies, impact, (params as any).optimization_goal)
+        : (suggestion as any).justification || 'Recommended action';
       
       // Create action object
       const action: SuggestedAction = <span class="cstat-no" title="statement not covered" >{</span>
-        rank: suggestedActions.length + 1,
-        subcategory_id: suggestion.subcategory_id,
-        subcategory_name: suggestion.subcategory_name,
-        function_id: suggestion.function_id,
-        function_name: getFunctionName(suggestion.function_id),
+        rank: (suggestedActions as any).length + 1,
+        subcategory_id: (suggestion as any).subcategory_id,
+        subcategory_name: (suggestion as any).subcategory_name,
+        function_id: (suggestion as any).function_id,
+        function_name: getFunctionName((suggestion as any).function_id),
         current_state: {
-          implementation_level: suggestion.implementation_level,
-          maturity_score: suggestion.maturity_score || 0,
-          gap_score: suggestion.gap_score || 0
+          implementation_level: (suggestion as any).implementation_level,
+          maturity_score: (suggestion as any).maturity_score || 0,
+          gap_score: (suggestion as any).gap_score || 0
         },
         estimated_effort: {
-          hours: suggestion.estimated_hours,
-          weeks: Math.ceil(suggestion.estimated_hours / params.capacity_hours_per_week),
-          complexity: getComplexity(suggestion.implementation_level)
+          hours: (suggestion as any).estimated_hours,
+          weeks: (Math as any).ceil((suggestion as any).estimated_hours / (params as any).capacity_hours_per_week),
+          complexity: getComplexity((suggestion as any).implementation_level)
         },
         impact,
         dependencies,
-        roi_score: suggestion.roi_score || 0,
+        roi_score: (suggestion as any).roi_score || 0,
         justification,
         implementation_tips: generateImplementationTips(suggestion, framework)
       };
       
-<span class="cstat-no" title="statement not covered" >      suggestedActions.push(action);</span>
-<span class="cstat-no" title="statement not covered" >      allocatedHours += suggestion.estimated_hours;</span>
+      (<span class="cstat-no" title="statement not covered" >suggestedActions as any).push(action);</span>
+<span class="cstat-no" title="statement not covered" >      allocatedHours += (suggestion as any).estimated_hours;</span>
     }
     
     // Create capacity analysis
     const capacityAnalysis: CapacityAnalysis = <span class="cstat-no" title="statement not covered" >{</span>
       total_capacity_hours: totalCapacityHours,
       allocated_hours: allocatedHours,
-      remaining_hours: Math.max(0, totalCapacityHours - allocatedHours),
-      utilization_percentage: Math.round((allocatedHours / totalCapacityHours) * 100),
-      feasible_actions: suggestedActions.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.dependencies.status === 'Ready')</span>.length,
-      stretch_actions: suggestedActions.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.dependencies.status === 'Partial')</span>.length
+      remaining_hours: (Math as any).max(0, totalCapacityHours - allocatedHours),
+      utilization_percentage: (Math as any).round((allocatedHours / totalCapacityHours) * 100),
+      feasible_actions: (suggestedActions as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).dependencies.status === 'Ready')</span>.length,
+      stretch_actions: (suggestedActions as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).dependencies.status === 'Partial')</span>.length
     };
     
     // Create action summary
     const actionSummary = <span class="cstat-no" title="statement not covered" >{</span>
-      total_actions: suggestedActions.length,
-      ready_to_start: suggestedActions.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.dependencies.status === 'Ready')</span>.length,
-      blocked_by_dependencies: suggestedActions.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.dependencies.status === 'Blocked')</span>.length,
+      total_actions: (suggestedActions as any).length,
+      ready_to_start: (suggestedActions as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).dependencies.status === 'Ready')</span>.length,
+      blocked_by_dependencies: (suggestedActions as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).dependencies.status === 'Blocked')</span>.length,
       total_effort_hours: allocatedHours,
-      expected_risk_reduction: suggestedActions.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a) =&gt; <span class="cstat-no" title="statement not covered" >sum + a.impact.risk_reduction,</span> 0),
-      expected_maturity_gain: suggestedActions.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a) =&gt; <span class="cstat-no" title="statement not covered" >sum + a.impact.maturity_improvement,</span> 0)
+      expected_risk_reduction: (suggestedActions as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a) =&gt; <span class="cstat-no" title="statement not covered" >sum + (a as any).impact.risk_reduction,</span> 0),
+      expected_maturity_gain: (suggestedActions as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, a) =&gt; <span class="cstat-no" title="statement not covered" >sum + (a as any).impact.maturity_improvement,</span> 0)
     };
     
     // Identify dependencies to address
-    const dependenciesToAddress = <span class="cstat-no" title="statement not covered" >params.include_dependencies</span>
+    const dependenciesToAddress = (<span class="cstat-no" title="statement not covered" >params as any).include_dependencies</span>
       ? identifyBlockingDependencies(suggestedActions, db)
       : undefined;
     
     // Create timeline
     const timeline = <span class="cstat-no" title="statement not covered" >createTimeline(</span>
       suggestedActions,
-      params.capacity_hours_per_week,
-      params.time_horizon_weeks
+      (params as any).capacity_hours_per_week,
+      (params as any).time_horizon_weeks
     );
     
     // Generate recommendations
@@ -1879,7 +1879,7 @@ export async function <span class="fstat-no" title="function not covered" >sugge
     
 <span class="cstat-no" title="statement not covered" >    return {</span>
       success: true,
-      profile_id: params.profile_id,
+      profile_id: (params as any).profile_id,
       assessment_date: new Date().toISOString(),
       capacity_analysis: capacityAnalysis,
       suggested_actions: suggestedActions,
@@ -1890,9 +1890,9 @@ export async function <span class="fstat-no" title="function not covered" >sugge
     };
     
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    logger.error('Suggest next actions error:', error);</span>
+    (<span class="cstat-no" title="statement not covered" >logger as any).error('Suggest next actions error:', error);</span>
 <span class="cstat-no" title="statement not covered" >    return createErrorResult(</span>
-      error instanceof Error ? error.message : 'Unknown error occurred'
+      error instanceof Error ? (error as any).message : 'Unknown error occurred'
     );
   }
 }
@@ -1907,47 +1907,47 @@ async function <span class="fstat-no" title="function not covered" >analyzeDepen
   _framework: any
 ): Promise&lt;any&gt; {
   // Get formal dependencies from database
-  const dependencies = <span class="cstat-no" title="statement not covered" >db.getSubcategoryDependencies(subcategoryId);</span>
+  const dependencies = (<span class="cstat-no" title="statement not covered" >db as any).getSubcategoryDependencies(subcategoryId);</span>
   
   // Check implementation status of dependencies
-  const assessments = <span class="cstat-no" title="statement not covered" >db.getProfileAssessments(profileId);</span>
+  const assessments = (<span class="cstat-no" title="statement not covered" >db as any).getProfileAssessments(profileId);</span>
   const implementedMap = <span class="cstat-no" title="statement not covered" >new Map(</span>
-    assessments.map(<span class="fstat-no" title="function not covered" >(a</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >[a.subcategory_id, a.implementation_level])</span>
+    (assessments as any).map(<span class="fstat-no" title="function not covered" >(a</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >[(a as any).subcategory_id, (a as any).implementation_level])</span>
   );
   
   const blocking: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
   const recommended: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
   
 <span class="cstat-no" title="statement not covered" >  for (const dep of dependencies) {</span>
-    const implLevel = <span class="cstat-no" title="statement not covered" >implementedMap.get(dep.depends_on_subcategory_id);</span>
+    const implLevel = (<span class="cstat-no" title="statement not covered" >implementedMap as any).get((dep as any).depends_on_subcategory_id);</span>
     
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!implLevel || implLevel === 'not_implemented') {</span>
-<span class="cstat-no" title="statement not covered" >      if (dep.dependency_strength &gt;= 8) {</span>
-<span class="cstat-no" title="statement not covered" >        blocking.push(dep.depends_on_subcategory_id);</span>
+<span class="cstat-no" title="statement not covered" >      if ((dep as any).dependency_strength &gt;= 8) {</span>
+        (<span class="cstat-no" title="statement not covered" >blocking as any).push((dep as any).depends_on_subcategory_id);</span>
       } else {
-<span class="cstat-no" title="statement not covered" >        recommended.push(dep.depends_on_subcategory_id);</span>
+        (<span class="cstat-no" title="statement not covered" >recommended as any).push((dep as any).depends_on_subcategory_id);</span>
       }
     }
   }
   
   // Also check function-level dependencies
-  const functionId = <span class="cstat-no" title="statement not covered" >subcategoryId.substring(0, 2);</span>
+  const functionId = (<span class="cstat-no" title="statement not covered" >subcategoryId as any).substring(0, 2);</span>
   const functionDeps = <span class="cstat-no" title="statement not covered" >FUNCTION_DEPENDENCIES[functionId] || [];</span>
   
 <span class="cstat-no" title="statement not covered" >  for (const depFunc of functionDeps) {</span>
     // Check if function has any implementation
-    const funcImplemented = <span class="cstat-no" title="statement not covered" >assessments.some(<span class="fstat-no" title="function not covered" >(a</span>: any) =&gt; </span>
-<span class="cstat-no" title="statement not covered" >      a.subcategory_id.startsWith(depFunc) &amp;&amp; </span>
-      a.implementation_level !== 'not_implemented'
+    const funcImplemented = (<span class="cstat-no" title="statement not covered" >assessments as any).some(<span class="fstat-no" title="function not covered" >(a</span>: any) =&gt; </span>
+      (<span class="cstat-no" title="statement not covered" >a as any).subcategory_id.startsWith(depFunc) &amp;&amp; </span>
+      (a as any).implementation_level !== 'not_implemented'
     );
     
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!funcImplemented) {</span>
-<span class="cstat-no" title="statement not covered" >      recommended.push(`${depFunc} function foundation`);</span>
+      (<span class="cstat-no" title="statement not covered" >recommended as any).push(`${depFunc} function foundation`);</span>
     }
   }
   
-  const status = <span class="cstat-no" title="statement not covered" >blocking.length &gt; 0 ? 'Blocked' :</span>
-                 recommended.length &gt; 0 ? 'Partial' : 'Ready';
+  const status = (<span class="cstat-no" title="statement not covered" >blocking as any).length &gt; 0 ? 'Blocked' :</span>
+                 (recommended as any).length &gt; 0 ? 'Partial' : 'Ready';
   
 <span class="cstat-no" title="statement not covered" >  return { blocking, recommended, status };</span>
 }
@@ -1957,13 +1957,13 @@ async function <span class="fstat-no" title="function not covered" >analyzeDepen
  */
 function <span class="fstat-no" title="function not covered" >calculateImpact(</span>suggestion: any, optimizationGoal: string): any {
   const priorities = <span class="cstat-no" title="statement not covered" >FUNCTION_PRIORITIES[optimizationGoal as keyof typeof FUNCTION_PRIORITIES];</span>
-  const functionPriority = <span class="cstat-no" title="statement not covered" >priorities?.[suggestion.function_id] || 1.0;</span>
+  const functionPriority = <span class="cstat-no" title="statement not covered" >priorities?.[(suggestion as any).function_id] || 1.0;</span>
   
   // Risk reduction based on gap score and function priority
-  const riskReduction = <span class="cstat-no" title="statement not covered" >(suggestion.gap_score / 100) * functionPriority * 10;</span>
+  const riskReduction = <span class="cstat-no" title="statement not covered" >((suggestion as any).gap_score / 100) * functionPriority * 10;</span>
   
   // Maturity improvement
-  const currentMaturity = <span class="cstat-no" title="statement not covered" >suggestion.maturity_score || 0;</span>
+  const currentMaturity = (<span class="cstat-no" title="statement not covered" >suggestion as any).maturity_score || 0;</span>
   const targetMaturity = <span class="cstat-no" title="statement not covered" >5;</span>
   const maturityImprovement = <span class="cstat-no" title="statement not covered" >((targetMaturity - currentMaturity) / 5) * 5;</span>
   
@@ -1978,9 +1978,9 @@ function <span class="fstat-no" title="function not covered" >calculateImpact(</
   };
   
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    risk_reduction: Math.round(riskReduction * 10) / 10,
-    maturity_improvement: Math.round(maturityImprovement * 10) / 10,
-    compliance_impact: complianceMap[suggestion.function_id] || 'Medium'
+    risk_reduction: (Math as any).round(riskReduction * 10) / 10,
+    maturity_improvement: (Math as any).round(maturityImprovement * 10) / 10,
+    compliance_impact: complianceMap[(suggestion as any).function_id] || 'Medium'
   };
 }
 &nbsp;
@@ -1996,50 +1996,50 @@ function <span class="fstat-no" title="function not covered" >generateJustificat
   const justifications: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
   
   // Primary justification based on existing data
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (suggestion.justification) {</span>
-<span class="cstat-no" title="statement not covered" >    justifications.push(suggestion.justification);</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((suggestion as any).justification) {</span>
+    (<span class="cstat-no" title="statement not covered" >justifications as any).push((suggestion as any).justification);</span>
   }
   
   // Goal-specific justification
 <span class="cstat-no" title="statement not covered" >  switch (optimizationGoal) {</span>
     case 'quick_wins':
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (suggestion.estimated_hours &lt;= 20) {</span>
-<span class="cstat-no" title="statement not covered" >        justifications.push(`Quick implementation (${suggestion.estimated_hours}h) with immediate value`);</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if ((suggestion as any).estimated_hours &lt;= 20) {</span>
+        (<span class="cstat-no" title="statement not covered" >justifications as any).push(`Quick implementation (${(suggestion as any).estimated_hours}h) with immediate value`);</span>
       }
 <span class="cstat-no" title="statement not covered" >      break;</span>
       
     case 'risk_reduction':
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (impact.risk_reduction &gt;= 5) {</span>
-<span class="cstat-no" title="statement not covered" >        justifications.push(`High risk reduction potential (${impact.risk_reduction}/10)`);</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if ((impact as any).risk_reduction &gt;= 5) {</span>
+        (<span class="cstat-no" title="statement not covered" >justifications as any).push(`High risk reduction potential (${(impact as any).risk_reduction}/10)`);</span>
       }
 <span class="cstat-no" title="statement not covered" >      break;</span>
       
     case 'compliance':
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (impact.compliance_impact === 'High') {</span>
-<span class="cstat-no" title="statement not covered" >        justifications.push('Critical for regulatory compliance');</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if ((impact as any).compliance_impact === 'High') {</span>
+        (<span class="cstat-no" title="statement not covered" >justifications as any).push('Critical for regulatory compliance');</span>
       }
 <span class="cstat-no" title="statement not covered" >      break;</span>
       
     case 'balanced':
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (suggestion.roi_score &gt;= 2) {</span>
-<span class="cstat-no" title="statement not covered" >        justifications.push(`Excellent ROI score (${suggestion.roi_score.toFixed(2)})`);</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if ((suggestion as any).roi_score &gt;= 2) {</span>
+        (<span class="cstat-no" title="statement not covered" >justifications as any).push(`Excellent ROI score (${(suggestion as any).roi_score.toFixed(2)})`);</span>
       }
 <span class="cstat-no" title="statement not covered" >      break;</span>
   }
   
   // Dependency status
-<span class="cstat-no" title="statement not covered" >  if (dependencies.status === 'Ready') {</span>
-<span class="cstat-no" title="statement not covered" >    justifications.push('No blocking dependencies - ready to start');</span>
-  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (dependencies.status === 'Blocked') {</span>
-<span class="cstat-no" title="statement not covered" >    justifications.push(`Blocked by ${dependencies.blocking.length} dependencies`);</span>
+<span class="cstat-no" title="statement not covered" >  if ((dependencies as any).status === 'Ready') {</span>
+    (<span class="cstat-no" title="statement not covered" >justifications as any).push('No blocking dependencies - ready to start');</span>
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if ((dependencies as any).status === 'Blocked') {</span>
+    (<span class="cstat-no" title="statement not covered" >justifications as any).push(`Blocked by ${(dependencies as any).blocking.length} dependencies`);</span>
   }
   
   // Gap severity
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (suggestion.gap_score &gt;= 80) {</span>
-<span class="cstat-no" title="statement not covered" >    justifications.push('Critical gap requiring immediate attention');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((suggestion as any).gap_score &gt;= 80) {</span>
+    (<span class="cstat-no" title="statement not covered" >justifications as any).push('Critical gap requiring immediate attention');</span>
   }
   
-<span class="cstat-no" title="statement not covered" >  return justifications.join('. ') || 'Recommended based on assessment';</span>
+<span class="cstat-no" title="statement not covered" >  return (justifications as any).join('. ') || 'Recommended based on assessment';</span>
 }
 &nbsp;
 /**
@@ -2047,7 +2047,7 @@ function <span class="fstat-no" title="function not covered" >generateJustificat
  */
 function <span class="fstat-no" title="function not covered" >generateImplementationTips(</span>suggestion: any, framework: any): string[] {
   const tips: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
-  const subcategory = <span class="cstat-no" title="statement not covered" >framework.getSubcategory(suggestion.subcategory_id);</span>
+  const subcategory = (<span class="cstat-no" title="statement not covered" >framework as any).getSubcategory((suggestion as any).subcategory_id);</span>
   
   // Function-specific tips
   const functionTips: Record&lt;string, string[]&gt; = <span class="cstat-no" title="statement not covered" >{</span>
@@ -2083,27 +2083,27 @@ function <span class="fstat-no" title="function not covered" >generateImplementa
     ]
   };
   
-  const funcTips = <span class="cstat-no" title="statement not covered" >functionTips[suggestion.function_id];</span>
+  const funcTips = <span class="cstat-no" title="statement not covered" >functionTips[(suggestion as any).function_id];</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (funcTips) {</span>
-<span class="cstat-no" title="statement not covered" >    tips.push(...funcTips.slice(0, 2));</span>
+    (<span class="cstat-no" title="statement not covered" >tips as any).push(...(funcTips as any).slice(0, 2));</span>
   }
   
   // Implementation level specific tips
-<span class="cstat-no" title="statement not covered" >  if (suggestion.implementation_level === 'not_implemented') {</span>
-<span class="cstat-no" title="statement not covered" >    tips.push('Consider starting with a pilot or proof of concept');</span>
-  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (suggestion.implementation_level === 'partially_implemented') {</span>
-<span class="cstat-no" title="statement not covered" >    tips.push('Build on existing foundation');</span>
-<span class="cstat-no" title="statement not covered" >    tips.push('Address identified gaps systematically');</span>
+<span class="cstat-no" title="statement not covered" >  if ((suggestion as any).implementation_level === 'not_implemented') {</span>
+    (<span class="cstat-no" title="statement not covered" >tips as any).push('Consider starting with a pilot or proof of concept');</span>
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if ((suggestion as any).implementation_level === 'partially_implemented') {</span>
+    (<span class="cstat-no" title="statement not covered" >tips as any).push('Build on existing foundation');</span>
+    (<span class="cstat-no" title="statement not covered" >tips as any).push('Address identified gaps systematically');</span>
   }
   
   // Add implementation examples if available
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (subcategory &amp;&amp; 'implementation_examples' in subcategory &amp;&amp; </span>
       Array.isArray((subcategory as any).implementation_examples) &amp;&amp; 
       (subcategory as any).implementation_examples.length &gt; 0) {
-<span class="cstat-no" title="statement not covered" >    tips.push(`Reference: ${(subcategory as any).implementation_examples[0]}`);</span>
+    (<span class="cstat-no" title="statement not covered" >tips as any).push(`Reference: ${(subcategory as any).implementation_examples[0]}`);</span>
   }
   
-<span class="cstat-no" title="statement not covered" >  return tips.slice(0, 3);</span>
+<span class="cstat-no" title="statement not covered" >  return (tips as any).slice(0, 3);</span>
 }
 &nbsp;
 /**
@@ -2113,24 +2113,24 @@ function <span class="fstat-no" title="function not covered" >identifyBlockingDe
   const blockingMap = <span class="cstat-no" title="statement not covered" >new Map&lt;string, any&gt;();</span>
   
 <span class="cstat-no" title="statement not covered" >  for (const action of actions) {</span>
-<span class="cstat-no" title="statement not covered" >    for (const blockingId of action.dependencies.blocking) {</span>
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!blockingMap.has(blockingId)) {</span>
-<span class="cstat-no" title="statement not covered" >        blockingMap.set(blockingId, {</span>
+<span class="cstat-no" title="statement not covered" >    for (const blockingId of (action as any).dependencies.blocking) {</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!(blockingMap as any).has(blockingId)) {</span>
+        (<span class="cstat-no" title="statement not covered" >blockingMap as any).set(blockingId, {</span>
           subcategory_id: blockingId,
           subcategory_name: blockingId,  // Would need framework lookup for real name
           blocking_count: 0,
           reason: 'Prerequisite for other actions'
         });
       }
-<span class="cstat-no" title="statement not covered" >      blockingMap.get(blockingId).blocking_count++;</span>
+      (<span class="cstat-no" title="statement not covered" >blockingMap as any).get(blockingId).blocking_count++;</span>
     }
   }
   
   // Sort by blocking count
-  const result = <span class="cstat-no" title="statement not covered" >Array.from(blockingMap.values());</span>
-<span class="cstat-no" title="statement not covered" >  result.sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b.blocking_count - a.blocking_count)</span>;</span>
+  const result = (<span class="cstat-no" title="statement not covered" >Array as any).from((blockingMap as any).values());</span>
+  (<span class="cstat-no" title="statement not covered" >result as any).sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; (<span class="cstat-no" title="statement not covered" >b as any).blocking_count - (a as any).blocking_count)</span>;</span>
   
-<span class="cstat-no" title="statement not covered" >  return result.slice(0, 5); </span> // Top 5 blockers
+<span class="cstat-no" title="statement not covered" >  return (result as any).slice(0, 5); </span> // Top 5 blockers
 }
 &nbsp;
 /**
@@ -2148,10 +2148,10 @@ function <span class="fstat-no" title="function not covered" >createTimeline(</s
   
 <span class="cstat-no" title="statement not covered" >  for (const action of actions) {</span>
     // Check if action fits in current week
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (weekHours + action.estimated_effort.hours &gt; weeklyCapacity) {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (weekHours + (action as any).estimated_effort.hours &gt; weeklyCapacity) {</span>
       // Save current week
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (weekActions.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >        timeline.push({</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if ((weekActions as any).length &gt; 0) {</span>
+        (<span class="cstat-no" title="statement not covered" >timeline as any).push({</span>
           week: currentWeek,
           actions: [...weekActions],
           hours_allocated: weekHours,
@@ -2170,13 +2170,13 @@ function <span class="fstat-no" title="function not covered" >createTimeline(</s
     }
     
     // Add action to current week
-<span class="cstat-no" title="statement not covered" >    weekActions.push(`${action.subcategory_id}: ${action.subcategory_name}`);</span>
-<span class="cstat-no" title="statement not covered" >    weekHours += action.estimated_effort.hours;</span>
+    (<span class="cstat-no" title="statement not covered" >weekActions as any).push(`${(action as any).subcategory_id}: ${(action as any).subcategory_name}`);</span>
+<span class="cstat-no" title="statement not covered" >    weekHours += (action as any).estimated_effort.hours;</span>
   }
   
   // Add final week
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (weekActions.length &gt; 0 &amp;&amp; currentWeek &lt;= horizonWeeks) {</span>
-<span class="cstat-no" title="statement not covered" >    timeline.push({</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((weekActions as any).length &gt; 0 &amp;&amp; currentWeek &lt;= horizonWeeks) {</span>
+    (<span class="cstat-no" title="statement not covered" >timeline as any).push({</span>
       week: currentWeek,
       actions: weekActions,
       hours_allocated: weekHours,
@@ -2194,15 +2194,15 @@ function <span class="fstat-no" title="function not covered" >generateWeeklyMile
   const milestones: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
   
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (week === 1) {</span>
-<span class="cstat-no" title="statement not covered" >    milestones.push('Implementation kickoff');</span>
+    (<span class="cstat-no" title="statement not covered" >milestones as any).push('Implementation kickoff');</span>
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (actions.some(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.includes('GV'))</span>) {</span>
-<span class="cstat-no" title="statement not covered" >    milestones.push('Governance framework update');</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((actions as any).some(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).includes('GV'))</span>) {</span>
+    (<span class="cstat-no" title="statement not covered" >milestones as any).push('Governance framework update');</span>
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (actions.length &gt;= 3) {</span>
-<span class="cstat-no" title="statement not covered" >    milestones.push(`Complete ${actions.length} implementations`);</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((actions as any).length &gt;= 3) {</span>
+    (<span class="cstat-no" title="statement not covered" >milestones as any).push(`Complete ${(actions as any).length} implementations`);</span>
   }
   
 <span class="cstat-no" title="statement not covered" >  return milestones;</span>
@@ -2224,16 +2224,16 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
   };
   
   // Immediate priorities
-  const readyActions = <span class="cstat-no" title="statement not covered" >actions.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.dependencies.status === 'Ready')</span>;</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (readyActions.length &gt; 0) {</span>
+  const readyActions = (<span class="cstat-no" title="statement not covered" >actions as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).dependencies.status === 'Ready')</span>;</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((readyActions as any).length &gt; 0) {</span>
     const firstAction = <span class="cstat-no" title="statement not covered" >readyActions[0];</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (firstAction) {</span>
-<span class="cstat-no" title="statement not covered" >      recommendations.immediate_priorities.push(</span>
-        `Start with ${firstAction.subcategory_id}: ${firstAction.subcategory_name}`
+      (<span class="cstat-no" title="statement not covered" >recommendations as any).immediate_priorities.push(</span>
+        `Start with ${(firstAction as any).subcategory_id}: ${(firstAction as any).subcategory_name}`
       );
       
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (firstAction.estimated_effort.complexity === 'Low') {</span>
-<span class="cstat-no" title="statement not covered" >        recommendations.immediate_priorities.push(</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if ((firstAction as any).estimated_effort.complexity === 'Low') {</span>
+        (<span class="cstat-no" title="statement not covered" >recommendations as any).immediate_priorities.push(</span>
           'Low complexity - ideal for building momentum'
         );
       }
@@ -2241,42 +2241,42 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
   }
   
   // Resource optimization
-<span class="cstat-no" title="statement not covered" >  if (capacity.utilization_percentage &gt; 90) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.resource_optimization.push(</span>
+<span class="cstat-no" title="statement not covered" >  if ((capacity as any).utilization_percentage &gt; 90) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).resource_optimization.push(</span>
       'High utilization - consider increasing capacity or extending timeline'
     );
-  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (capacity.utilization_percentage &lt; 60) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.resource_optimization.push(</span>
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if ((capacity as any).utilization_percentage &lt; 60) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).resource_optimization.push(</span>
       'Capacity available - consider accelerating implementation'
     );
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (capacity.remaining_hours &gt; 20) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.resource_optimization.push(</span>
-      `${capacity.remaining_hours}h available for additional quick wins`
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((capacity as any).remaining_hours &gt; 20) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).resource_optimization.push(</span>
+      `${(capacity as any).remaining_hours}h available for additional quick wins`
     );
   }
   
   // Dependency management
-  const blockedActions = <span class="cstat-no" title="statement not covered" >actions.filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; <span class="cstat-no" title="statement not covered" >a.dependencies.status === 'Blocked')</span>;</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (blockedActions.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.dependency_management.push(</span>
-      `Address dependencies to unblock ${blockedActions.length} actions`
+  const blockedActions = (<span class="cstat-no" title="statement not covered" >actions as any).filter(<span class="fstat-no" title="function not covered" >a </span>=&gt; (<span class="cstat-no" title="statement not covered" >a as any).dependencies.status === 'Blocked')</span>;</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((blockedActions as any).length &gt; 0) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).dependency_management.push(</span>
+      `Address dependencies to unblock ${(blockedActions as any).length} actions`
     );
   }
   
   // Success factors
-<span class="cstat-no" title="statement not covered" >  recommendations.success_factors.push(</span>
+  (<span class="cstat-no" title="statement not covered" >recommendations as any).success_factors.push(</span>
     'Maintain regular progress tracking',
     'Adjust priorities based on learnings'
   );
   
-<span class="cstat-no" title="statement not covered" >  if (params.optimization_goal === 'quick_wins') {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.success_factors.push(</span>
+<span class="cstat-no" title="statement not covered" >  if ((params as any).optimization_goal === 'quick_wins') {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).success_factors.push(</span>
       'Celebrate early wins to build momentum'
     );
-  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (params.optimization_goal === 'risk_reduction') {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.success_factors.push(</span>
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if ((params as any).optimization_goal === 'risk_reduction') {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).success_factors.push(</span>
       'Focus on highest risk areas first'
     );
   }
@@ -2365,7 +2365,7 @@ function <span class="fstat-no" title="function not covered" >createErrorResult(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.160Z
+                at 2025-09-03T14:50:13.441Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

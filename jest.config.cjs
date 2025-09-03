@@ -53,7 +53,7 @@ module.exports = {
     }],
   },
   // Setup files for test environment
-  setupFilesAfterEnv: ['<rootDir>/tests/helpers/jest-setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/helpers/simple-setup.ts'],
   // Focus on core functionality tests for coverage
   testPathIgnorePatterns: [
     '/node_modules/',

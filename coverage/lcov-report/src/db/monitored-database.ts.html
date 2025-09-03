@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/83</span>
+                <span class='fraction'>0/84</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/83</span>
+                <span class='fraction'>0/84</span>
             </div>
         
             
@@ -370,7 +370,15 @@
 <a name='L305'></a><a href='#L305'>305</a>
 <a name='L306'></a><a href='#L306'>306</a>
 <a name='L307'></a><a href='#L307'>307</a>
-<a name='L308'></a><a href='#L308'>308</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -467,6 +475,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -701,56 +717,56 @@ export class MonitoredDatabase extends CSFDatabase {
 <span class="cstat-no" title="statement not covered" >    this.getOrganization = monitorDatabaseQuery(</span>
       'SELECT', 
       'organizations',
-      originalGetOrganization
+      originalGetOrganization as (...args: any[]) =&gt; any
     ) as any;
     
     const originalCreateOrganization = <span class="cstat-no" title="statement not covered" >this.createOrganization.bind(this);</span>
 <span class="cstat-no" title="statement not covered" >    this.createOrganization = monitorDatabaseQuery(</span>
       'INSERT',
       'organizations', 
-      originalCreateOrganization
+      originalCreateOrganization as (...args: any[]) =&gt; any
     ) as any;
     
     const originalUpsertImplementation = <span class="cstat-no" title="statement not covered" >this.upsertImplementation.bind(this);</span>
 <span class="cstat-no" title="statement not covered" >    this.upsertImplementation = monitorDatabaseQuery(</span>
       'UPSERT',
       'implementations',
-      originalUpsertImplementation
+      originalUpsertImplementation as (...args: any[]) =&gt; any
     ) as any;
     
     const originalGetImplementations = <span class="cstat-no" title="statement not covered" >this.getImplementations.bind(this);</span>
 <span class="cstat-no" title="statement not covered" >    this.getImplementations = monitorDatabaseQuery(</span>
       'SELECT',
       'implementations',
-      originalGetImplementations
+      originalGetImplementations as (...args: any[]) =&gt; any
     ) as any;
     
     const originalUpsertRiskAssessment = <span class="cstat-no" title="statement not covered" >this.upsertRiskAssessment.bind(this);</span>
 <span class="cstat-no" title="statement not covered" >    this.upsertRiskAssessment = monitorDatabaseQuery(</span>
       'UPSERT',
       'risk_assessments',
-      originalUpsertRiskAssessment
+      originalUpsertRiskAssessment as (...args: any[]) =&gt; any
     ) as any;
     
     const originalGetRiskAssessments = <span class="cstat-no" title="statement not covered" >this.getRiskAssessments.bind(this);</span>
 <span class="cstat-no" title="statement not covered" >    this.getRiskAssessments = monitorDatabaseQuery(</span>
       'SELECT',
       'risk_assessments',
-      originalGetRiskAssessments
+      originalGetRiskAssessments as (...args: any[]) =&gt; any
     ) as any;
     
     const originalUpsertGapAnalysis = <span class="cstat-no" title="statement not covered" >this.upsertGapAnalysis.bind(this);</span>
 <span class="cstat-no" title="statement not covered" >    this.upsertGapAnalysis = monitorDatabaseQuery(</span>
       'UPSERT',
       'gap_analyses',
-      originalUpsertGapAnalysis
+      originalUpsertGapAnalysis as (...args: any[]) =&gt; any
     ) as any;
     
     const originalGetGapAnalyses = <span class="cstat-no" title="statement not covered" >this.getGapAnalyses.bind(this);</span>
 <span class="cstat-no" title="statement not covered" >    this.getGapAnalyses = monitorDatabaseQuery(</span>
       'SELECT',
       'gap_analyses',
-      originalGetGapAnalyses
+      originalGetGapAnalyses as (...args: any[]) =&gt; any
     ) as any;
   }
   
@@ -775,10 +791,18 @@ export class MonitoredDatabase extends CSFDatabase {
       });
       
       // Record current gauge values
-<span class="cstat-no" title="statement not covered" >      metrics.gauge('db_organizations_count', (stats as any).organizations || 0);</span>
-<span class="cstat-no" title="statement not covered" >      metrics.gauge('db_implementations_count', (stats as any).implementations || 0);</span>
-<span class="cstat-no" title="statement not covered" >      metrics.gauge('db_risk_assessments_count', (stats as any).risk_assessments || 0);</span>
-<span class="cstat-no" title="statement not covered" >      metrics.gauge('db_gap_analyses_count', (stats as any).gaps || 0);</span>
+      interface StatsResult {
+        organizations?: number;
+        implementations?: number;
+        risk_assessments?: number;
+        gaps?: number;
+      }
+      const typedStats = <span class="cstat-no" title="statement not covered" >stats as StatsResult;</span>
+      
+<span class="cstat-no" title="statement not covered" >      metrics.gauge('db_organizations_count', typedStats.organizations || 0);</span>
+<span class="cstat-no" title="statement not covered" >      metrics.gauge('db_implementations_count', typedStats.implementations || 0);</span>
+<span class="cstat-no" title="statement not covered" >      metrics.gauge('db_risk_assessments_count', typedStats.risk_assessments || 0);</span>
+<span class="cstat-no" title="statement not covered" >      metrics.gauge('db_gap_analyses_count', typedStats.gaps || 0);</span>
       
 <span class="cstat-no" title="statement not covered" >      return stats;</span>
     } catch (error) {
@@ -991,7 +1015,7 @@ export function <span class="fstat-no" title="function not covered" >closeMonito
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.160Z
+                at 2025-09-03T14:50:13.441Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

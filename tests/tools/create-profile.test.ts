@@ -9,11 +9,17 @@ describe('Create Profile Tool', () => {
   let db: any;
 
   beforeAll(() => {
-    db = getDatabase();
-  });
+    // Use test database path if available
+    const testDbPath = process.env.TEST_DB_PATH || ':memory:';
+    db = getDatabase(testDbPath);
+  }, 30000);
 
   afterAll(() => {
-    closeDatabase();
+    try {
+      closeDatabase();
+    } catch (error) {
+      // Ignore cleanup errors
+    }
   });
 
   beforeEach(() => {

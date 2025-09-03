@@ -1408,12 +1408,12 @@ import { logger } from '../utils/logger.js';
 &nbsp;
 // Input schema for the tool
 export const GeneratePriorityMatrixSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
-  profile_id: z.string().min(1),
-  target_profile_id: z.string().min(1).optional(),
-  matrix_type: z.enum(['effort_impact', 'risk_feasibility', 'cost_benefit']).default('effort_impact'),
-  include_recommendations: z.boolean().default(true),
-  include_resource_estimates: z.boolean().default(true),
-  max_items_per_quadrant: z.number().min(1).max(20).default(10)
+  profile_id: (z as any).string().min(1),
+  target_profile_id: (z as any).string().min(1).optional(),
+  matrix_type: (z as any).enum(['effort_impact', 'risk_feasibility', 'cost_benefit']).default('effort_impact'),
+  include_recommendations: (z as any).boolean().default(true),
+  include_resource_estimates: (z as any).boolean().default(true),
+  max_items_per_quadrant: (z as any).number().min(1).max(20).default(10)
 });
 &nbsp;
 export type GeneratePriorityMatrixParams = z.infer&lt;typeof GeneratePriorityMatrixSchema&gt;;
@@ -1541,66 +1541,66 @@ export async function <span class="fstat-no" title="function not covered" >gener
   
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // Ensure framework is loaded
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!framework.isLoaded()) {</span>
-<span class="cstat-no" title="statement not covered" >      await framework.load();</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(framework as any).isLoaded()) {</span>
+<span class="cstat-no" title="statement not covered" >      await (framework as any).load();</span>
     }
     
     // Verify profile exists
-    const profile = <span class="cstat-no" title="statement not covered" >db.getProfile(params.profile_id);</span>
+    const profile = (<span class="cstat-no" title="statement not covered" >db as any).getProfile((params as any).profile_id);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!profile) {</span>
-<span class="cstat-no" title="statement not covered" >      return createErrorResult(`Profile not found: ${params.profile_id}`);</span>
+<span class="cstat-no" title="statement not covered" >      return createErrorResult(`Profile not found: ${(params as any).profile_id}`);</span>
     }
     
     // Get matrix data from database
-    const matrixData = <span class="cstat-no" title="statement not covered" >params.target_profile_id</span>
-      ? db.getPriorityMatrix(params.target_profile_id)
-      : db.getPriorityMatrixFromAssessments(params.profile_id);
+    const matrixData = (<span class="cstat-no" title="statement not covered" >params as any).target_profile_id</span>
+      ? (db as any).getPriorityMatrix((params as any).target_profile_id)
+      : (db as any).getPriorityMatrixFromAssessments((params as any).profile_id);
     
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!matrixData || matrixData.length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!matrixData || (matrixData as any).length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      return createErrorResult('No data available for priority matrix generation');</span>
     }
     
     // Process items for the selected matrix type
     const processedItems = <span class="cstat-no" title="statement not covered" >processMatrixItems(</span>
       matrixData,
-      params.matrix_type,
+      (params as any).matrix_type,
       framework
     );
     
     // Classify items into quadrants
     const quadrants = <span class="cstat-no" title="statement not covered" >classifyIntoQuadrants(</span>
       processedItems,
-      params.matrix_type,
-      params.max_items_per_quadrant
+      (params as any).matrix_type,
+      (params as any).max_items_per_quadrant
     );
     
     // Calculate summary statistics
     const summary = <span class="cstat-no" title="statement not covered" >calculateSummary(quadrants);</span>
     
     // Generate recommendations if requested
-    const recommendations = <span class="cstat-no" title="statement not covered" >params.include_recommendations</span>
-      ? generateRecommendations(quadrants, summary, params.matrix_type)
+    const recommendations = (<span class="cstat-no" title="statement not covered" >params as any).include_recommendations</span>
+      ? generateRecommendations(quadrants, summary, (params as any).matrix_type)
       : undefined;
     
     // Generate resource estimates if requested
-    const resource_estimates = <span class="cstat-no" title="statement not covered" >params.include_resource_estimates</span>
+    const resource_estimates = (<span class="cstat-no" title="statement not covered" >params as any).include_resource_estimates</span>
       ? generateResourceEstimates(summary, quadrants)
       : undefined;
     
     // Get matrix configuration
-    const config = <span class="cstat-no" title="statement not covered" >MATRIX_CONFIGS[params.matrix_type as keyof typeof MATRIX_CONFIGS];</span>
+    const config = <span class="cstat-no" title="statement not covered" >MATRIX_CONFIGS[(params as any).matrix_type as keyof typeof MATRIX_CONFIGS];</span>
     
 <span class="cstat-no" title="statement not covered" >    return {</span>
       success: true,
-      matrix_type: params.matrix_type,
+      matrix_type: (params as any).matrix_type,
       generation_date: new Date().toISOString(),
-      profile_id: params.profile_id,
-      target_profile_id: params.target_profile_id,
+      profile_id: (params as any).profile_id,
+      target_profile_id: (params as any).target_profile_id,
       matrix_configuration: {
-        x_axis_label: config.x_axis_label,
-        y_axis_label: config.y_axis_label,
-        x_axis_threshold: config.x_axis_threshold,
-        y_axis_threshold: config.y_axis_threshold
+        x_axis_label: (config as any).x_axis_label,
+        y_axis_label: (config as any).y_axis_label,
+        x_axis_threshold: (config as any).x_axis_threshold,
+        y_axis_threshold: (config as any).y_axis_threshold
       },
       quadrants,
       summary,
@@ -1609,9 +1609,9 @@ export async function <span class="fstat-no" title="function not covered" >gener
     };
     
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    logger.error('Generate priority matrix error:', error);</span>
+    (<span class="cstat-no" title="statement not covered" >logger as any).error('Generate priority matrix error:', error);</span>
 <span class="cstat-no" title="statement not covered" >    return createErrorResult(</span>
-      error instanceof Error ? error.message : 'Unknown error occurred'
+      error instanceof Error ? (error as any).message : 'Unknown error occurred'
     );
   }
 }
@@ -1631,13 +1631,13 @@ function <span class="fstat-no" title="function not covered" >processMatrixItems
     
 <span class="cstat-no" title="statement not covered" >    switch (matrixType) {</span>
       case 'effort_impact':
-<span class="cstat-no" title="statement not covered" >        xValue = item.effort_score || estimateEffort(item);</span>
-<span class="cstat-no" title="statement not covered" >        yValue = item.impact_score || estimateImpact(item);</span>
+<span class="cstat-no" title="statement not covered" >        xValue = (item as any).effort_score || estimateEffort(item);</span>
+<span class="cstat-no" title="statement not covered" >        yValue = (item as any).impact_score || estimateImpact(item);</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
       
       case 'risk_feasibility':
 <span class="cstat-no" title="statement not covered" >        xValue = estimateFeasibility(item);</span>
-<span class="cstat-no" title="statement not covered" >        yValue = item.risk_score || estimateRiskReduction(item);</span>
+<span class="cstat-no" title="statement not covered" >        yValue = (item as any).risk_score || estimateRiskReduction(item);</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
       
       case 'cost_benefit':
@@ -1652,17 +1652,17 @@ function <span class="fstat-no" title="function not covered" >processMatrixItems
     
     const priorityScore = <span class="cstat-no" title="statement not covered" >calculatePriorityScore(xValue, yValue, matrixType);</span>
     
-<span class="cstat-no" title="statement not covered" >    items.push({</span>
-      subcategory_id: item.subcategory_id,
-      subcategory_name: item.subcategory_name || item.subcategory_id,
-      function_id: item.subcategory_id.substring(0, 2),
-      category_id: item.subcategory_id.substring(0, 5),
-      current_state: item.current_implementation || item.implementation_level || 'not_implemented',
-      target_state: item.target_implementation || 'fully_implemented',
-      gap_score: item.gap_score || calculateGapScore(item),
-      x_axis_value: Math.round(xValue * 100) / 100,
-      y_axis_value: Math.round(yValue * 100) / 100,
-      priority_score: Math.round(priorityScore * 100) / 100,
+    (<span class="cstat-no" title="statement not covered" >items as any).push({</span>
+      subcategory_id: (item as any).subcategory_id,
+      subcategory_name: (item as any).subcategory_name || (item as any).subcategory_id,
+      function_id: (item as any).subcategory_id.substring(0, 2),
+      category_id: (item as any).subcategory_id.substring(0, 5),
+      current_state: (item as any).current_implementation || (item as any).implementation_level || 'not_implemented',
+      target_state: (item as any).target_implementation || 'fully_implemented',
+      gap_score: (item as any).gap_score || calculateGapScore(item),
+      x_axis_value: (Math as any).round(xValue * 100) / 100,
+      y_axis_value: (Math as any).round(yValue * 100) / 100,
+      priority_score: (Math as any).round(priorityScore * 100) / 100,
       estimated_effort_hours: estimateEffortHours(item),
       estimated_cost: estimateCostDollars(item),
       risk_reduction: estimateRiskReduction(item)
@@ -1681,27 +1681,27 @@ function <span class="fstat-no" title="function not covered" >classifyIntoQuadra
   maxItemsPerQuadrant: number
 ): any {
   const config = <span class="cstat-no" title="statement not covered" >MATRIX_CONFIGS[matrixType as keyof typeof MATRIX_CONFIGS];</span>
-  const xThreshold = <span class="cstat-no" title="statement not covered" >config.x_axis_threshold;</span>
-  const yThreshold = <span class="cstat-no" title="statement not covered" >config.y_axis_threshold;</span>
+  const xThreshold = (<span class="cstat-no" title="statement not covered" >config as any).x_axis_threshold;</span>
+  const yThreshold = (<span class="cstat-no" title="statement not covered" >config as any).y_axis_threshold;</span>
   
   const quadrants = <span class="cstat-no" title="statement not covered" >{</span>
     high_value_low_effort: createQuadrant(
-      config.quadrant_names.high_value_low_effort,
+      (config as any).quadrant_names.high_value_low_effort,
       'High value with low effort - prioritize for immediate implementation',
       'Allocate resources immediately for quick implementation'
     ),
     high_value_high_effort: createQuadrant(
-      config.quadrant_names.high_value_high_effort,
+      (config as any).quadrant_names.high_value_high_effort,
       'High value but requires significant effort - plan strategically',
       'Develop phased implementation plan with milestones'
     ),
     low_value_low_effort: createQuadrant(
-      config.quadrant_names.low_value_low_effort,
+      (config as any).quadrant_names.low_value_low_effort,
       'Low value but easy to implement - consider as fill-in work',
       'Implement during available capacity or downtime'
     ),
     low_value_high_effort: createQuadrant(
-      config.quadrant_names.low_value_high_effort,
+      (config as any).quadrant_names.low_value_high_effort,
       'Low value and high effort - generally avoid or deprioritize',
       'Defer or reconsider necessity'
     )
@@ -1711,49 +1711,49 @@ function <span class="fstat-no" title="function not covered" >classifyIntoQuadra
 <span class="cstat-no" title="statement not covered" >  for (const item of items) {</span>
     let quadrant: Quadrant;
     
-<span class="cstat-no" title="statement not covered" >    if (item.y_axis_value &gt;= yThreshold &amp;&amp; item.x_axis_value &lt;= xThreshold) {</span>
-<span class="cstat-no" title="statement not covered" >      quadrant = quadrants.high_value_low_effort;</span>
-    } else <span class="cstat-no" title="statement not covered" >if (item.y_axis_value &gt;= yThreshold &amp;&amp; item.x_axis_value &gt; xThreshold) {</span>
-<span class="cstat-no" title="statement not covered" >      quadrant = quadrants.high_value_high_effort;</span>
-    } else <span class="cstat-no" title="statement not covered" >if (item.y_axis_value &lt; yThreshold &amp;&amp; item.x_axis_value &lt;= xThreshold) {</span>
-<span class="cstat-no" title="statement not covered" >      quadrant = quadrants.low_value_low_effort;</span>
+<span class="cstat-no" title="statement not covered" >    if ((item as any).y_axis_value &gt;= yThreshold &amp;&amp; (item as any).x_axis_value &lt;= xThreshold) {</span>
+<span class="cstat-no" title="statement not covered" >      quadrant = (quadrants as any).high_value_low_effort;</span>
+    } else <span class="cstat-no" title="statement not covered" >if ((item as any).y_axis_value &gt;= yThreshold &amp;&amp; (item as any).x_axis_value &gt; xThreshold) {</span>
+<span class="cstat-no" title="statement not covered" >      quadrant = (quadrants as any).high_value_high_effort;</span>
+    } else <span class="cstat-no" title="statement not covered" >if ((item as any).y_axis_value &lt; yThreshold &amp;&amp; (item as any).x_axis_value &lt;= xThreshold) {</span>
+<span class="cstat-no" title="statement not covered" >      quadrant = (quadrants as any).low_value_low_effort;</span>
     } else {
-<span class="cstat-no" title="statement not covered" >      quadrant = quadrants.low_value_high_effort;</span>
+<span class="cstat-no" title="statement not covered" >      quadrant = (quadrants as any).low_value_high_effort;</span>
     }
     
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (quadrant.items.length &lt; maxItemsPerQuadrant) {</span>
-<span class="cstat-no" title="statement not covered" >      quadrant.items.push(item);</span>
-<span class="cstat-no" title="statement not covered" >      quadrant.total_items++;</span>
-<span class="cstat-no" title="statement not covered" >      quadrant.total_effort_hours += item.estimated_effort_hours;</span>
-<span class="cstat-no" title="statement not covered" >      quadrant.total_cost += item.estimated_cost;</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if ((quadrant as any).items.length &lt; maxItemsPerQuadrant) {</span>
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).items.push(item);</span>
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).total_items++;</span>
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).total_effort_hours += (item as any).estimated_effort_hours;</span>
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).total_cost += (item as any).estimated_cost;</span>
     }
   }
   
   // Calculate statistics for each quadrant
-<span class="cstat-no" title="statement not covered" >  for (const quadrant of Object.values(quadrants)) {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (quadrant.items.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >      quadrant.average_gap = </span>
-        quadrant.items.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + item.gap_score,</span> 0) / quadrant.items.length;
-<span class="cstat-no" title="statement not covered" >      quadrant.average_gap = Math.round(quadrant.average_gap * 100) / 100;</span>
+<span class="cstat-no" title="statement not covered" >  for (const quadrant of (Object as any).values(quadrants)) {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if ((quadrant as any).items.length &gt; 0) {</span>
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).average_gap = </span>
+        (quadrant as any).items.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + (item as any).gap_score,</span> 0) / (quadrant as any).items.length;
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).average_gap = (Math as any).round((quadrant as any).average_gap * 100) / 100;</span>
       
-<span class="cstat-no" title="statement not covered" >      quadrant.average_risk_reduction = </span>
-        quadrant.items.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + item.risk_reduction,</span> 0) / quadrant.items.length;
-<span class="cstat-no" title="statement not covered" >      quadrant.average_risk_reduction = Math.round(quadrant.average_risk_reduction * 100) / 100;</span>
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).average_risk_reduction = </span>
+        (quadrant as any).items.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + (item as any).risk_reduction,</span> 0) / (quadrant as any).items.length;
+      (<span class="cstat-no" title="statement not covered" >quadrant as any).average_risk_reduction = (Math as any).round((quadrant as any).average_risk_reduction * 100) / 100;</span>
       
       // Set recommended timeline based on quadrant
-<span class="cstat-no" title="statement not covered" >      if (quadrant.name.includes('Quick Win') || quadrant.name.includes('High Priority')) {</span>
-<span class="cstat-no" title="statement not covered" >        quadrant.recommended_timeline = '0-3 months';</span>
-      } else <span class="cstat-no" title="statement not covered" >if (quadrant.name.includes('Strategic')) {</span>
-<span class="cstat-no" title="statement not covered" >        quadrant.recommended_timeline = '3-12 months';</span>
-      } else <span class="cstat-no" title="statement not covered" >if (quadrant.name.includes('Fill')) {</span>
-<span class="cstat-no" title="statement not covered" >        quadrant.recommended_timeline = '6-18 months';</span>
+<span class="cstat-no" title="statement not covered" >      if ((quadrant as any).name.includes('Quick Win') || (quadrant as any).name.includes('High Priority')) {</span>
+        (<span class="cstat-no" title="statement not covered" >quadrant as any).recommended_timeline = '0-3 months';</span>
+      } else <span class="cstat-no" title="statement not covered" >if ((quadrant as any).name.includes('Strategic')) {</span>
+        (<span class="cstat-no" title="statement not covered" >quadrant as any).recommended_timeline = '3-12 months';</span>
+      } else <span class="cstat-no" title="statement not covered" >if ((quadrant as any).name.includes('Fill')) {</span>
+        (<span class="cstat-no" title="statement not covered" >quadrant as any).recommended_timeline = '6-18 months';</span>
       } else {
-<span class="cstat-no" title="statement not covered" >        quadrant.recommended_timeline = 'Not recommended';</span>
+        (<span class="cstat-no" title="statement not covered" >quadrant as any).recommended_timeline = 'Not recommended';</span>
       }
     }
     
     // Sort items by priority score
-<span class="cstat-no" title="statement not covered" >    quadrant.items.sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b.priority_score - a.priority_score)</span>;</span>
+    (<span class="cstat-no" title="statement not covered" >quadrant as any).items.sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; (<span class="cstat-no" title="statement not covered" >b as any).priority_score - (a as any).priority_score)</span>;</span>
   }
   
 <span class="cstat-no" title="statement not covered" >  return quadrants;</span>
@@ -1765,20 +1765,20 @@ function <span class="fstat-no" title="function not covered" >classifyIntoQuadra
 function <span class="fstat-no" title="function not covered" >calculateSummary(</span>quadrants: any): any {
   const allItems: MatrixItem[] = <span class="cstat-no" title="statement not covered" >[];</span>
   
-<span class="cstat-no" title="statement not covered" >  for (const quadrant of Object.values(quadrants)) {</span>
-<span class="cstat-no" title="statement not covered" >    allItems.push(...(quadrant as Quadrant).items);</span>
+<span class="cstat-no" title="statement not covered" >  for (const quadrant of (Object as any).values(quadrants)) {</span>
+    (<span class="cstat-no" title="statement not covered" >allItems as any).push(...(quadrant as Quadrant).items);</span>
   }
   
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    total_items: allItems.length,
-    quick_wins_count: quadrants.high_value_low_effort.total_items,
-    strategic_initiatives_count: quadrants.high_value_high_effort.total_items,
-    fill_ins_count: quadrants.low_value_low_effort.total_items,
-    avoid_count: quadrants.low_value_high_effort.total_items,
-    total_effort_required: allItems.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + item.estimated_effort_hours,</span> 0),
-    total_cost_estimate: allItems.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + item.estimated_cost,</span> 0),
-    average_risk_reduction: allItems.length &gt; 0
-      ? allItems.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + item.risk_reduction,</span> 0) / allItems.length
+    total_items: (allItems as any).length,
+    quick_wins_count: (quadrants as any).high_value_low_effort.total_items,
+    strategic_initiatives_count: (quadrants as any).high_value_high_effort.total_items,
+    fill_ins_count: (quadrants as any).low_value_low_effort.total_items,
+    avoid_count: (quadrants as any).low_value_high_effort.total_items,
+    total_effort_required: (allItems as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + (item as any).estimated_effort_hours,</span> 0),
+    total_cost_estimate: (allItems as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + (item as any).estimated_cost,</span> 0),
+    average_risk_reduction: (allItems as any).length &gt; 0
+      ? (allItems as any).reduce(<span class="fstat-no" title="function not covered" >(s</span>um, item) =&gt; <span class="cstat-no" title="statement not covered" >sum + (item as any).risk_reduction,</span> 0) / (allItems as any).length
       : 0
   };
 }
@@ -1799,63 +1799,63 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
   };
   
   // Immediate focus - Quick Wins
-  const quickWins = <span class="cstat-no" title="statement not covered" >quadrants.high_value_low_effort;</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (quickWins.items.length &gt; 0) {</span>
-    const topItems = <span class="cstat-no" title="statement not covered" >quickWins.items.slice(0, 3);</span>
+  const quickWins = (<span class="cstat-no" title="statement not covered" >quadrants as any).high_value_low_effort;</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((quickWins as any).items.length &gt; 0) {</span>
+    const topItems = (<span class="cstat-no" title="statement not covered" >quickWins as any).items.slice(0, 3);</span>
 <span class="cstat-no" title="statement not covered" >    for (const item of topItems) {</span>
-<span class="cstat-no" title="statement not covered" >      recommendations.immediate_focus.push(</span>
-        `Implement ${item.subcategory_id}: Low effort (${item.x_axis_value}/10), High impact (${item.y_axis_value}/10)`
+      (<span class="cstat-no" title="statement not covered" >recommendations as any).immediate_focus.push(</span>
+        `Implement ${(item as any).subcategory_id}: Low effort (${(item as any).x_axis_value}/10), High impact (${(item as any).y_axis_value}/10)`
       );
     }
   }
   
   // Resource allocation
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (summary.quick_wins_count &gt; 5) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.resource_allocation.push(</span>
-      `Allocate dedicated team for ${summary.quick_wins_count} quick wins (${quickWins.total_effort_hours} hours estimated)`
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((summary as any).quick_wins_count &gt; 5) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).resource_allocation.push(</span>
+      `Allocate dedicated team for ${(summary as any).quick_wins_count} quick wins (${(quickWins as any).total_effort_hours} hours estimated)`
     );
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (summary.strategic_initiatives_count &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.resource_allocation.push(</span>
-      `Plan resources for ${summary.strategic_initiatives_count} strategic initiatives (${quadrants.high_value_high_effort.total_effort_hours} hours)`
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((summary as any).strategic_initiatives_count &gt; 0) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).resource_allocation.push(</span>
+      `Plan resources for ${(summary as any).strategic_initiatives_count} strategic initiatives (${(quadrants as any).high_value_high_effort.total_effort_hours} hours)`
     );
   }
   
   // Phased approach
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (summary.total_items &gt; 10) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.phased_approach.push(</span>
-      `Phase 1 (0-3 months): Focus on ${summary.quick_wins_count} quick wins`
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((summary as any).total_items &gt; 10) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).phased_approach.push(</span>
+      `Phase 1 (0-3 months): Focus on ${(summary as any).quick_wins_count} quick wins`
     );
-<span class="cstat-no" title="statement not covered" >    recommendations.phased_approach.push(</span>
-      `Phase 2 (3-9 months): Tackle ${Math.min(3, summary.strategic_initiatives_count)} strategic initiatives`
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).phased_approach.push(</span>
+      `Phase 2 (3-9 months): Tackle ${(Math as any).min(3, (summary as any).strategic_initiatives_count)} strategic initiatives`
     );
-<span class="cstat-no" title="statement not covered" >    recommendations.phased_approach.push(</span>
-      `Phase 3 (9-12 months): Address ${summary.fill_ins_count} fill-in items during available capacity`
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).phased_approach.push(</span>
+      `Phase 3 (9-12 months): Address ${(summary as any).fill_ins_count} fill-in items during available capacity`
     );
   }
   
   // Risk mitigation based on matrix type
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (matrixType === 'risk_feasibility' || matrixType === 'effort_impact') {</span>
-    const highRiskItems = <span class="cstat-no" title="statement not covered" >[...quadrants.high_value_high_effort.items, ...quadrants.high_value_low_effort.items]</span>
-      .filter(<span class="fstat-no" title="function not covered" >item </span>=&gt; <span class="cstat-no" title="statement not covered" >item.risk_reduction &gt; 7)</span>;
+    const highRiskItems = <span class="cstat-no" title="statement not covered" >[...(quadrants as any).high_value_high_effort.items, ...(quadrants as any).high_value_low_effort.items]</span>
+      .filter(<span class="fstat-no" title="function not covered" >item </span>=&gt; (<span class="cstat-no" title="statement not covered" >item as any).risk_reduction &gt; 7)</span>;
     
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (highRiskItems.length &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >      recommendations.risk_mitigation.push(</span>
-        `${highRiskItems.length} items provide significant risk reduction (&gt;70%)`
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if ((highRiskItems as any).length &gt; 0) {</span>
+      (<span class="cstat-no" title="statement not covered" >recommendations as any).risk_mitigation.push(</span>
+        `${(highRiskItems as any).length} items provide significant risk reduction (&gt;70%)`
       );
     }
   }
   
   // Add specific recommendations based on distribution
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (summary.quick_wins_count === 0 &amp;&amp; summary.strategic_initiatives_count &gt; 5) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.risk_mitigation.push(</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((summary as any).quick_wins_count === 0 &amp;&amp; (summary as any).strategic_initiatives_count &gt; 5) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).risk_mitigation.push(</span>
       'No quick wins identified - consider breaking down strategic initiatives into smaller tasks'
     );
   }
   
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (summary.avoid_count &gt; summary.quick_wins_count) {</span>
-<span class="cstat-no" title="statement not covered" >    recommendations.risk_mitigation.push(</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((summary as any).avoid_count &gt; (summary as any).quick_wins_count) {</span>
+    (<span class="cstat-no" title="statement not covered" >recommendations as any).risk_mitigation.push(</span>
       'High number of low-value/high-effort items - review requirements and consider alternatives'
     );
   }
@@ -1872,53 +1872,53 @@ function <span class="fstat-no" title="function not covered" >generateResourceEs
   const totalMonths = <span class="cstat-no" title="statement not covered" >12;</span>
   const availableHours = <span class="cstat-no" title="statement not covered" >monthlyHours * totalMonths;</span>
   
-  const teamSize = <span class="cstat-no" title="statement not covered" >Math.ceil(summary.total_effort_required / availableHours);</span>
+  const teamSize = (<span class="cstat-no" title="statement not covered" >Math as any).ceil((summary as any).total_effort_required / availableHours);</span>
   
   // Calculate timeline
-  const timelineMonths = <span class="cstat-no" title="statement not covered" >Math.ceil(summary.total_effort_required / (teamSize * monthlyHours));</span>
+  const timelineMonths = (<span class="cstat-no" title="statement not covered" >Math as any).ceil((summary as any).total_effort_required / (teamSize * monthlyHours));</span>
   
   // Calculate budget range (assuming $100-150 per hour)
   const minRate = <span class="cstat-no" title="statement not covered" >100;</span>
   const maxRate = <span class="cstat-no" title="statement not covered" >150;</span>
-  const budgetMin = <span class="cstat-no" title="statement not covered" >summary.total_effort_required * minRate;</span>
-  const budgetMax = <span class="cstat-no" title="statement not covered" >summary.total_effort_required * maxRate;</span>
+  const budgetMin = (<span class="cstat-no" title="statement not covered" >summary as any).total_effort_required * minRate;</span>
+  const budgetMax = (<span class="cstat-no" title="statement not covered" >summary as any).total_effort_required * maxRate;</span>
   
   // Determine skill requirements based on items
   const skillRequirements: Set&lt;string&gt; = <span class="cstat-no" title="statement not covered" >new Set();</span>
   
   // Analyze all items to determine skills needed
   const allItems = <span class="cstat-no" title="statement not covered" >[</span>
-    ...quadrants.high_value_low_effort.items,
-    ...quadrants.high_value_high_effort.items,
-    ...quadrants.low_value_low_effort.items
+    ...(quadrants as any).high_value_low_effort.items,
+    ...(quadrants as any).high_value_high_effort.items,
+    ...(quadrants as any).low_value_low_effort.items
   ];
   
 <span class="cstat-no" title="statement not covered" >  for (const item of allItems) {</span>
-    const funcId = <span class="cstat-no" title="statement not covered" >item.function_id;</span>
+    const funcId = (<span class="cstat-no" title="statement not covered" >item as any).function_id;</span>
 <span class="cstat-no" title="statement not covered" >    switch (funcId) {</span>
       case 'GV':
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Governance and Risk Management');</span>
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Policy Development');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Governance and Risk Management');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Policy Development');</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
       case 'ID':
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Asset Management');</span>
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Risk Assessment');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Asset Management');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Risk Assessment');</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
       case 'PR':
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Security Engineering');</span>
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Access Control');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Security Engineering');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Access Control');</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
       case 'DE':
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Security Monitoring');</span>
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('SIEM Management');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Security Monitoring');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('SIEM Management');</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
       case 'RS':
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Incident Response');</span>
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Crisis Management');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Incident Response');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Crisis Management');</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
       case 'RC':
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Business Continuity');</span>
-<span class="cstat-no" title="statement not covered" >        skillRequirements.add('Disaster Recovery');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Business Continuity');</span>
+        (<span class="cstat-no" title="statement not covered" >skillRequirements as any).add('Disaster Recovery');</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
     }
   }
@@ -1930,14 +1930,14 @@ function <span class="fstat-no" title="function not covered" >generateResourceEs
       minimum: budgetMin,
       maximum: budgetMax
     },
-    skill_requirements: Array.from(skillRequirements)
+    skill_requirements: (Array as any).from(skillRequirements)
   };
 }
 &nbsp;
 // Helper functions for estimation
 &nbsp;
 function <span class="fstat-no" title="function not covered" >estimateEffort(</span>item: any): number {
-  const implLevel = <span class="cstat-no" title="statement not covered" >item.current_implementation || item.implementation_level || 'not_implemented';</span>
+  const implLevel = (<span class="cstat-no" title="statement not covered" >item as any).current_implementation || (item as any).implementation_level || 'not_implemented';</span>
   const baseEffort: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{</span>
     'not_implemented': 8,
     'partially_implemented': 5,
@@ -1948,36 +1948,36 @@ function <span class="fstat-no" title="function not covered" >estimateEffort(</s
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >estimateImpact(</span>item: any): number {
-  const gap = <span class="cstat-no" title="statement not covered" >item.gap_score || 50;</span>
-<span class="cstat-no" title="statement not covered" >  return Math.min(10, gap / 10);</span>
+  const gap = (<span class="cstat-no" title="statement not covered" >item as any).gap_score || 50;</span>
+<span class="cstat-no" title="statement not covered" >  return (Math as any).min(10, gap / 10);</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >estimateFeasibility(</span>item: any): number {
   const effort = <span class="cstat-no" title="statement not covered" >estimateEffort(item);</span>
-<span class="cstat-no" title="statement not covered" >  return Math.max(1, 11 - effort);</span>
+<span class="cstat-no" title="statement not covered" >  return (Math as any).max(1, 11 - effort);</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >estimateRiskReduction(</span>item: any): number {
-  const gap = <span class="cstat-no" title="statement not covered" >item.gap_score || 50;</span>
-  const criticality = <span class="cstat-no" title="statement not covered" >item.subcategory_criticality || 5;</span>
-<span class="cstat-no" title="statement not covered" >  return Math.min(10, (gap * criticality) / 50);</span>
+  const gap = (<span class="cstat-no" title="statement not covered" >item as any).gap_score || 50;</span>
+  const criticality = (<span class="cstat-no" title="statement not covered" >item as any).subcategory_criticality || 5;</span>
+<span class="cstat-no" title="statement not covered" >  return (Math as any).min(10, (gap * criticality) / 50);</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >estimateCost(</span>item: any): number {
   const effort = <span class="cstat-no" title="statement not covered" >estimateEffort(item);</span>
-  const complexity = <span class="cstat-no" title="statement not covered" >item.implementation_complexity || 5;</span>
-<span class="cstat-no" title="statement not covered" >  return Math.min(10, (effort * complexity) / 10);</span>
+  const complexity = (<span class="cstat-no" title="statement not covered" >item as any).implementation_complexity || 5;</span>
+<span class="cstat-no" title="statement not covered" >  return (Math as any).min(10, (effort * complexity) / 10);</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >estimateBenefit(</span>item: any): number {
   const impact = <span class="cstat-no" title="statement not covered" >estimateImpact(item);</span>
   const riskReduction = <span class="cstat-no" title="statement not covered" >estimateRiskReduction(item);</span>
-<span class="cstat-no" title="statement not covered" >  return Math.min(10, (impact + riskReduction) / 2);</span>
+<span class="cstat-no" title="statement not covered" >  return (Math as any).min(10, (impact + riskReduction) / 2);</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >calculateGapScore(</span>item: any): number {
-  const current = <span class="cstat-no" title="statement not covered" >item.current_maturity || 0;</span>
-  const target = <span class="cstat-no" title="statement not covered" >item.target_maturity || 5;</span>
+  const current = (<span class="cstat-no" title="statement not covered" >item as any).current_maturity || 0;</span>
+  const target = (<span class="cstat-no" title="statement not covered" >item as any).target_maturity || 5;</span>
 <span class="cstat-no" title="statement not covered" >  return ((target - current) / 5) * 100;</span>
 }
 &nbsp;
@@ -2003,7 +2003,7 @@ function <span class="fstat-no" title="function not covered" >calculatePriorityS
 function <span class="fstat-no" title="function not covered" >estimateEffortHours(</span>item: any): number {
   const effort = <span class="cstat-no" title="statement not covered" >estimateEffort(item);</span>
   // Map effort score to hours (1=8hrs, 10=160hrs)
-<span class="cstat-no" title="statement not covered" >  return Math.round(8 + (effort - 1) * 17);</span>
+<span class="cstat-no" title="statement not covered" >  return (Math as any).round(8 + (effort - 1) * 17);</span>
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >estimateCostDollars(</span>item: any): number {
@@ -2071,7 +2071,7 @@ function <span class="fstat-no" title="function not covered" >createErrorResult(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.160Z
+                at 2025-09-03T14:50:13.441Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -523,7 +523,15 @@
 <a name='L458'></a><a href='#L458'>458</a>
 <a name='L459'></a><a href='#L459'>459</a>
 <a name='L460'></a><a href='#L460'>460</a>
-<a name='L461'></a><a href='#L461'>461</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a>
+<a name='L466'></a><a href='#L466'>466</a>
+<a name='L467'></a><a href='#L467'>467</a>
+<a name='L468'></a><a href='#L468'>468</a>
+<a name='L469'></a><a href='#L469'>469</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -574,6 +582,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -987,7 +1003,7 @@
  * Report Templates and Formatting Utilities
  */
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >generateHTMLReport(</span>data: any, reportType: string): string {
+export function <span class="fstat-no" title="function not covered" >generateHTMLReport(</span>data: ReportData, reportType: string): string {
   const timestamp = <span class="cstat-no" title="statement not covered" >new Date().toISOString();</span>
   const styles = <span class="cstat-no" title="statement not covered" >getHTMLStyles();</span>
   
@@ -1015,14 +1031,14 @@ export function <span class="fstat-no" title="function not covered" >generateHTM
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;NIST CSF 2.0 ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report&lt;/title&gt;
+  &lt;title&gt;NIST CSF 2.0 ${(reportType as any).charAt(0).toUpperCase() + (reportType as any).slice(1)} Report&lt;/title&gt;
   &lt;style&gt;${styles}&lt;/style&gt;
   &lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
   &lt;div class="report-container"&gt;
     &lt;header&gt;
-      &lt;h1&gt;NIST CSF 2.0 ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report&lt;/h1&gt;
+      &lt;h1&gt;NIST CSF 2.0 ${(reportType as any).charAt(0).toUpperCase() + (reportType as any).slice(1)} Report&lt;/h1&gt;
       &lt;p class="timestamp"&gt;Generated: ${new Date(timestamp).toLocaleString()}&lt;/p&gt;
     &lt;/header&gt;
     ${content}
@@ -1139,23 +1155,31 @@ function <span class="fstat-no" title="function not covered" >getHTMLStyles(</sp
   `;
 }
 &nbsp;
-function <span class="fstat-no" title="function not covered" >generateExecutiveHTML(</span>data: any): string {
-  const functionSummary = <span class="cstat-no" title="statement not covered" >JSON.parse(data.function_summary || '[]');</span>
+interface ReportData {
+  function_summary?: string;
+  avg_risk_score?: number;
+  critical_risks?: number;
+  critical_gaps?: number;
+  [key: string]: any;
+}
+&nbsp;
+function <span class="fstat-no" title="function not covered" >generateExecutiveHTML(</span>data: ReportData): string {
+  const functionSummary = (<span class="cstat-no" title="statement not covered" >JSON as any).parse((data as any).function_summary || '[]');</span>
   
   let html = <span class="cstat-no" title="statement not covered" >`</span>
     &lt;section class="summary"&gt;
       &lt;h2&gt;Executive Summary&lt;/h2&gt;
       &lt;div class="metrics-grid"&gt;
         &lt;div class="metric-card"&gt;
-          &lt;div class="metric-value"&gt;${data.avg_risk_score?.toFixed(1) || '0'}&lt;/div&gt;
+          &lt;div class="metric-value"&gt;${(data as any).avg_risk_score?.toFixed(1) || '0'}&lt;/div&gt;
           &lt;div class="metric-label"&gt;Average Risk Score&lt;/div&gt;
         &lt;/div&gt;
         &lt;div class="metric-card"&gt;
-          &lt;div class="metric-value"&gt;${data.critical_risks || 0}&lt;/div&gt;
+          &lt;div class="metric-value"&gt;${(data as any).critical_risks || 0}&lt;/div&gt;
           &lt;div class="metric-label"&gt;Critical Risks&lt;/div&gt;
         &lt;/div&gt;
         &lt;div class="metric-card"&gt;
-          &lt;div class="metric-value"&gt;${data.critical_gaps || 0}&lt;/div&gt;
+          &lt;div class="metric-value"&gt;${(data as any).critical_gaps || 0}&lt;/div&gt;
           &lt;div class="metric-label"&gt;Critical Gaps&lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -1175,12 +1199,12 @@ function <span class="fstat-no" title="function not covered" >generateExecutiveH
         &lt;tbody&gt;
   `;
   
-<span class="cstat-no" title="statement not covered" >  functionSummary.forEach(<span class="fstat-no" title="function not covered" >(f</span>unc: any) =&gt; {</span>
-    const percentage = <span class="cstat-no" title="statement not covered" >func.maturity_percentage || 0;</span>
+  (<span class="cstat-no" title="statement not covered" >functionSummary as any).forEach(<span class="fstat-no" title="function not covered" >(f</span>unc: any) =&gt; {</span>
+    const percentage = (<span class="cstat-no" title="statement not covered" >func as any).maturity_percentage || 0;</span>
 <span class="cstat-no" title="statement not covered" >    html += `</span>
       &lt;tr&gt;
-        &lt;td&gt;${func.function_name}&lt;/td&gt;
-        &lt;td&gt;${func.avg_maturity}&lt;/td&gt;
+        &lt;td&gt;${(func as any).function_name}&lt;/td&gt;
+        &lt;td&gt;${(func as any).avg_maturity}&lt;/td&gt;
         &lt;td&gt;${percentage}%&lt;/td&gt;
         &lt;td&gt;
           &lt;div class="progress-bar"&gt;
@@ -1208,10 +1232,10 @@ function <span class="fstat-no" title="function not covered" >generateExecutiveH
         new Chart(ctx, {
           type: 'radar',
           data: {
-            labels: ${JSON.stringify(functionSummary.map(<span class="fstat-no" title="function not covered" >(f</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >f.function_name)</span>)},
+            labels: ${JSON.stringify((functionSummary as any).map(<span class="fstat-no" title="function not covered" >(f</span>: any) =&gt; (<span class="cstat-no" title="statement not covered" >f as any).function_name)</span>)},
             datasets: [{
               label: 'Current Maturity',
-              data: ${JSON.stringify(functionSummary.map(<span class="fstat-no" title="function not covered" >(f</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >f.avg_maturity)</span>)},
+              data: ${JSON.stringify((functionSummary as any).map(<span class="fstat-no" title="function not covered" >(f</span>: any) =&gt; (<span class="cstat-no" title="statement not covered" >f as any).avg_maturity)</span>)},
               backgroundColor: 'rgba(0, 102, 204, 0.2)',
               borderColor: 'rgba(0, 102, 204, 1)',
               borderWidth: 2
@@ -1233,8 +1257,8 @@ function <span class="fstat-no" title="function not covered" >generateExecutiveH
 <span class="cstat-no" title="statement not covered" >  return html;</span>
 }
 &nbsp;
-function <span class="fstat-no" title="function not covered" >generateTechnicalHTML(</span>data: any): string {
-  const assessments = <span class="cstat-no" title="statement not covered" >JSON.parse(data.subcategory_assessments || '[]');</span>
+function <span class="fstat-no" title="function not covered" >generateTechnicalHTML(</span>data: ReportData): string {
+  const assessments = <span class="cstat-no" title="statement not covered" >JSON.parse((data as any).subcategory_assessments || '[]');</span>
   
   let html = <span class="cstat-no" title="statement not covered" >`</span>
     &lt;section class="technical-details"&gt;
@@ -1253,15 +1277,15 @@ function <span class="fstat-no" title="function not covered" >generateTechnicalH
         &lt;tbody&gt;
   `;
   
-<span class="cstat-no" title="statement not covered" >  assessments.forEach(<span class="fstat-no" title="function not covered" >(i</span>tem: any) =&gt; {</span>
+  (<span class="cstat-no" title="statement not covered" >assessments as any).forEach(<span class="fstat-no" title="function not covered" >(i</span>tem: any) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    html += `</span>
       &lt;tr&gt;
-        &lt;td&gt;${item.subcategory_id}&lt;/td&gt;
-        &lt;td&gt;${item.subcategory_name}&lt;/td&gt;
-        &lt;td&gt;${item.category_name}&lt;/td&gt;
-        &lt;td&gt;${item.function_name}&lt;/td&gt;
-        &lt;td&gt;${item.implementation_level || 'Not assessed'}&lt;/td&gt;
-        &lt;td&gt;${item.maturity_score || 0}/5&lt;/td&gt;
+        &lt;td&gt;${(item as any).subcategory_id}&lt;/td&gt;
+        &lt;td&gt;${(item as any).subcategory_name}&lt;/td&gt;
+        &lt;td&gt;${(item as any).category_name}&lt;/td&gt;
+        &lt;td&gt;${(item as any).function_name}&lt;/td&gt;
+        &lt;td&gt;${(item as any).implementation_level || 'Not assessed'}&lt;/td&gt;
+        &lt;td&gt;${(item as any).maturity_score || 0}/5&lt;/td&gt;
       &lt;/tr&gt;
     `;
   });
@@ -1275,9 +1299,9 @@ function <span class="fstat-no" title="function not covered" >generateTechnicalH
 <span class="cstat-no" title="statement not covered" >  return html;</span>
 }
 &nbsp;
-function <span class="fstat-no" title="function not covered" >generateAuditHTML(</span>data: any): string {
-  const auditLog = <span class="cstat-no" title="statement not covered" >JSON.parse(data.audit_log || '[]');</span>
-  const complianceSummary = <span class="cstat-no" title="statement not covered" >JSON.parse(data.compliance_summary || '[]');</span>
+function <span class="fstat-no" title="function not covered" >generateAuditHTML(</span>data: ReportData): string {
+  const auditLog = <span class="cstat-no" title="statement not covered" >JSON.parse((data as any).audit_log || '[]');</span>
+  const complianceSummary = <span class="cstat-no" title="statement not covered" >JSON.parse((data as any).compliance_summary || '[]');</span>
   
   let html = <span class="cstat-no" title="statement not covered" >`</span>
     &lt;section class="audit-trail"&gt;
@@ -1295,14 +1319,14 @@ function <span class="fstat-no" title="function not covered" >generateAuditHTML(
         &lt;tbody&gt;
   `;
   
-<span class="cstat-no" title="statement not covered" >  auditLog.slice(0, 20).forEach(<span class="fstat-no" title="function not covered" >(e</span>ntry: any) =&gt; {</span>
+  (<span class="cstat-no" title="statement not covered" >auditLog as any).slice(0, 20).forEach(<span class="fstat-no" title="function not covered" >(e</span>ntry: any) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    html += `</span>
       &lt;tr&gt;
-        &lt;td&gt;${new Date(entry.activity_date).toLocaleDateString()}&lt;/td&gt;
-        &lt;td&gt;${entry.activity_type}&lt;/td&gt;
-        &lt;td&gt;${entry.item_id}&lt;/td&gt;
-        &lt;td&gt;${entry.performed_by}&lt;/td&gt;
-        &lt;td&gt;${entry.details}&lt;/td&gt;
+        &lt;td&gt;${new Date((entry as any).activity_date).toLocaleDateString()}&lt;/td&gt;
+        &lt;td&gt;${(entry as any).activity_type}&lt;/td&gt;
+        &lt;td&gt;${(entry as any).item_id}&lt;/td&gt;
+        &lt;td&gt;${(entry as any).performed_by}&lt;/td&gt;
+        &lt;td&gt;${(entry as any).details}&lt;/td&gt;
       &lt;/tr&gt;
     `;
   });
@@ -1328,15 +1352,15 @@ function <span class="fstat-no" title="function not covered" >generateAuditHTML(
         &lt;tbody&gt;
   `;
   
-<span class="cstat-no" title="statement not covered" >  complianceSummary.forEach(<span class="fstat-no" title="function not covered" >(c</span>omp: any) =&gt; {</span>
+  (<span class="cstat-no" title="statement not covered" >complianceSummary as any).forEach(<span class="fstat-no" title="function not covered" >(c</span>omp: any) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    html += `</span>
       &lt;tr&gt;
-        &lt;td&gt;${comp.framework}&lt;/td&gt;
-        &lt;td&gt;${comp.coverage_percentage}%&lt;/td&gt;
-        &lt;td&gt;${comp.mapped_controls}&lt;/td&gt;
-        &lt;td&gt;${comp.fully_covered}&lt;/td&gt;
-        &lt;td&gt;${comp.partially_covered}&lt;/td&gt;
-        &lt;td&gt;${comp.not_covered}&lt;/td&gt;
+        &lt;td&gt;${(comp as any).framework}&lt;/td&gt;
+        &lt;td&gt;${(comp as any).coverage_percentage}%&lt;/td&gt;
+        &lt;td&gt;${(comp as any).mapped_controls}&lt;/td&gt;
+        &lt;td&gt;${(comp as any).fully_covered}&lt;/td&gt;
+        &lt;td&gt;${(comp as any).partially_covered}&lt;/td&gt;
+        &lt;td&gt;${(comp as any).not_covered}&lt;/td&gt;
       &lt;/tr&gt;
     `;
   });
@@ -1350,27 +1374,27 @@ function <span class="fstat-no" title="function not covered" >generateAuditHTML(
 <span class="cstat-no" title="statement not covered" >  return html;</span>
 }
 &nbsp;
-function <span class="fstat-no" title="function not covered" >generateProgressHTML(</span>data: any): string {
-  const recentUpdates = <span class="cstat-no" title="statement not covered" >JSON.parse(data.recent_updates || '[]');</span>
+function <span class="fstat-no" title="function not covered" >generateProgressHTML(</span>data: ReportData): string {
+  const recentUpdates = <span class="cstat-no" title="statement not covered" >JSON.parse((data as any).recent_updates || '[]');</span>
   
   let html = <span class="cstat-no" title="statement not covered" >`</span>
     &lt;section class="progress-overview"&gt;
       &lt;h2&gt;Progress Overview&lt;/h2&gt;
       &lt;div class="metrics-grid"&gt;
         &lt;div class="metric-card"&gt;
-          &lt;div class="metric-value"&gt;${Math.round(data.avg_completion || 0)}%&lt;/div&gt;
+          &lt;div class="metric-value"&gt;${Math.round((data as any).avg_completion || 0)}%&lt;/div&gt;
           &lt;div class="metric-label"&gt;Overall Completion&lt;/div&gt;
         &lt;/div&gt;
         &lt;div class="metric-card"&gt;
-          &lt;div class="metric-value"&gt;${data.completed || 0}&lt;/div&gt;
+          &lt;div class="metric-value"&gt;${(data as any).completed || 0}&lt;/div&gt;
           &lt;div class="metric-label"&gt;Completed Items&lt;/div&gt;
         &lt;/div&gt;
         &lt;div class="metric-card"&gt;
-          &lt;div class="metric-value"&gt;${data.on_track || 0}&lt;/div&gt;
+          &lt;div class="metric-value"&gt;${(data as any).on_track || 0}&lt;/div&gt;
           &lt;div class="metric-label"&gt;On Track&lt;/div&gt;
         &lt;/div&gt;
         &lt;div class="metric-card"&gt;
-          &lt;div class="metric-value"&gt;${data.blocked || 0}&lt;/div&gt;
+          &lt;div class="metric-value"&gt;${(data as any).blocked || 0}&lt;/div&gt;
           &lt;div class="metric-label"&gt;Blocked&lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -1391,14 +1415,14 @@ function <span class="fstat-no" title="function not covered" >generateProgressHT
         &lt;tbody&gt;
   `;
   
-<span class="cstat-no" title="statement not covered" >  recentUpdates.forEach(<span class="fstat-no" title="function not covered" >(u</span>pdate: any) =&gt; {</span>
+  (<span class="cstat-no" title="statement not covered" >recentUpdates as any).forEach(<span class="fstat-no" title="function not covered" >(u</span>pdate: any) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    html += `</span>
       &lt;tr&gt;
-        &lt;td&gt;${update.subcategory_id}&lt;/td&gt;
-        &lt;td&gt;&lt;span class="status-badge status-${update.status}"&gt;${update.status}&lt;/span&gt;&lt;/td&gt;
-        &lt;td&gt;${update.completion_percentage}%&lt;/td&gt;
-        &lt;td&gt;${new Date(update.last_updated).toLocaleDateString()}&lt;/td&gt;
-        &lt;td&gt;${update.notes || '-'}&lt;/td&gt;
+        &lt;td&gt;${(update as any).subcategory_id}&lt;/td&gt;
+        &lt;td&gt;&lt;span class="status-badge status-${(update as any).status}"&gt;${(update as any).status}&lt;/span&gt;&lt;/td&gt;
+        &lt;td&gt;${(update as any).completion_percentage}%&lt;/td&gt;
+        &lt;td&gt;${new Date((update as any).last_updated).toLocaleDateString()}&lt;/td&gt;
+        &lt;td&gt;${(update as any).notes || '-'}&lt;/td&gt;
       &lt;/tr&gt;
     `;
   });
@@ -1412,22 +1436,22 @@ function <span class="fstat-no" title="function not covered" >generateProgressHT
 <span class="cstat-no" title="statement not covered" >  return html;</span>
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >formatDataAsCSV(</span>data: any): string {
+export function <span class="fstat-no" title="function not covered" >formatDataAsCSV(</span>data: ReportData): string {
   const rows: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
   
   // Convert JSON data to CSV rows
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (data.assessments) {</span>
-    const assessments = <span class="cstat-no" title="statement not covered" >JSON.parse(data.assessments);</span>
-<span class="cstat-no" title="statement not covered" >    rows.push('Subcategory ID,Implementation Level,Maturity Score,Notes,Assessed At,Assessed By');</span>
-<span class="cstat-no" title="statement not covered" >    assessments.forEach(<span class="fstat-no" title="function not covered" >(a</span>: any) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      rows.push(`"${a.subcategory_id}","${a.implementation_level}",${a.maturity_score},"${a.notes || ''}","${a.assessed_at}","${a.assessed_by || ''}"`);</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if ((data as any).assessments) {</span>
+    const assessments = <span class="cstat-no" title="statement not covered" >JSON.parse((data as any).assessments);</span>
+    (<span class="cstat-no" title="statement not covered" >rows as any).push('Subcategory ID,Implementation Level,Maturity Score,Notes,Assessed At,Assessed By');</span>
+    (<span class="cstat-no" title="statement not covered" >assessments as any).forEach(<span class="fstat-no" title="function not covered" >(a</span>: any) =&gt; {</span>
+      (<span class="cstat-no" title="statement not covered" >rows as any).push(`"${(a as any).subcategory_id}","${(a as any).implementation_level}",${(a as any).maturity_score},"${(a as any).notes || ''}","${(a as any).assessed_at}","${(a as any).assessed_by || ''}"`);</span>
     });
   }
   
-<span class="cstat-no" title="statement not covered" >  return rows.join('\n');</span>
+<span class="cstat-no" title="statement not covered" >  return (rows as any).join('\n');</span>
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >formatDataAsJSON(</span>data: any): string {
+export function <span class="fstat-no" title="function not covered" >formatDataAsJSON(</span>data: ReportData): string {
   // Parse any stringified JSON fields
   const parsed: any = <span class="cstat-no" title="statement not covered" >{};</span>
 <span class="cstat-no" title="statement not covered" >  for (const key in data) {</span>
@@ -1450,7 +1474,7 @@ export function <span class="fstat-no" title="function not covered" >formatDataA
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.160Z
+                at 2025-09-03T14:50:13.441Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

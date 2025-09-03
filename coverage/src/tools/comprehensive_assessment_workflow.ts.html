@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">10.98% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/86</span>
+                <span class='fraction'>10/91</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.62% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/81</span>
+                <span class='fraction'>10/86</span>
             </div>
         
             
@@ -630,13 +630,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -645,9 +647,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -733,7 +733,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -867,7 +867,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -894,11 +893,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1117,7 +1117,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1174,7 +1174,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1197,7 +1197,7 @@ import { getDatabase } from '../db/database.js';
 import { logger } from '../utils/logger.js';
 &nbsp;
 // Workflow state enum
-export const AssessmentWorkflowState = <span class="cstat-no" title="statement not covered" >z.enum([</span>
+export const AssessmentWorkflowState = z.enum([
   'not_started',
   'organization_setup',
   'questions_ready', 
@@ -1209,7 +1209,7 @@ export const AssessmentWorkflowState = <span class="cstat-no" title="statement n
 export type AssessmentWorkflowStateType = z.infer&lt;typeof AssessmentWorkflowState&gt;;
 &nbsp;
 // Input schema for starting the workflow
-export const StartAssessmentWorkflowSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
+export const StartAssessmentWorkflowSchema = z.object({
   org_name: z.string().min(1, 'Organization name is required'),
   sector: z.string().min(1, 'Industry sector is required'),
   size: z.enum(['small', 'medium', 'large', 'enterprise'], {
@@ -1456,7 +1456,7 @@ export async function <span class="fstat-no" title="function not covered" >start
 /**
  * Check assessment workflow status
  */
-export const CheckAssessmentWorkflowSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
+export const CheckAssessmentWorkflowSchema = z.object({
   workflow_id: z.string().min(1, 'Workflow ID is required')
 });
 &nbsp;
@@ -1679,7 +1679,7 @@ function <span class="fstat-no" title="function not covered" >calculateTimeRemai
 // TOOL EXPORTS
 // ============================================================================
 &nbsp;
-export const startAssessmentWorkflowTool = <span class="cstat-no" title="statement not covered" >{</span>
+export const startAssessmentWorkflowTool = {
   name: 'start_assessment_workflow',
   description: 'Start a comprehensive NIST CSF 2.0 assessment workflow with authentic data collection. Prevents fake data generation and ensures real organizational responses.',
   inputSchema: {
@@ -1736,7 +1736,7 @@ export const startAssessmentWorkflowTool = <span class="cstat-no" title="stateme
   }
 };
 &nbsp;
-export const checkAssessmentWorkflowStatusTool = <span class="cstat-no" title="statement not covered" >{</span>
+export const checkAssessmentWorkflowStatusTool = {
   name: 'check_assessment_workflow_status',
   description: 'Monitor and track assessment workflow progress with detailed status reporting. Provides comprehensive status updates on assessment workflows.',
   inputSchema: {
@@ -1756,7 +1756,7 @@ export const checkAssessmentWorkflowStatusTool = <span class="cstat-no" title="s
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-03T14:32:45.742Z
+                at 2025-09-03T14:50:13.571Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

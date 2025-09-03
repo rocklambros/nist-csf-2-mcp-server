@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/120</span>
+                <span class='fraction'>0/121</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/71</span>
+                <span class='fraction'>0/106</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/120</span>
+                <span class='fraction'>0/121</span>
             </div>
         
             
@@ -781,7 +781,10 @@
 <a name='L716'></a><a href='#L716'>716</a>
 <a name='L717'></a><a href='#L717'>717</a>
 <a name='L718'></a><a href='#L718'>718</a>
-<a name='L719'></a><a href='#L719'>719</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L719'></a><a href='#L719'>719</a>
+<a name='L720'></a><a href='#L720'>720</a>
+<a name='L721'></a><a href='#L721'>721</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -998,6 +1001,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1500,6 +1504,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { CSFDatabase } from "../db/database.js";
+import { logger } from '../utils/logger.js';
 import { FrameworkLoader } from "../services/framework-loader.js";
 &nbsp;
 interface ImplementationTemplateOptions {
@@ -1646,9 +1651,9 @@ export async function <span class="fstat-no" title="function not covered" >getIm
     }
 &nbsp;
     // Get category and function details
-    const categoryId = <span class="cstat-no" title="statement not covered" >options.subcategory_id.split('.')[0]!;</span>
-    const category = <span class="cstat-no" title="statement not covered" >framework.getCategory(categoryId)!;</span>
-    const functionId = <span class="cstat-no" title="statement not covered" >categoryId.split('-')[0]!;</span>
+    const categoryId = <span class="cstat-no" title="statement not covered" >options.subcategory_id.substring(0, options.subcategory_id.lastIndexOf('-'));</span>
+    const category = <span class="cstat-no" title="statement not covered" >framework.getCategory(categoryId);</span>
+    const functionId = <span class="cstat-no" title="statement not covered" >categoryId.split('.')[0]!;</span>
     const func = <span class="cstat-no" title="statement not covered" >framework.getFunction(functionId);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!category || !func) {</span>
@@ -1702,22 +1707,23 @@ export async function <span class="fstat-no" title="function not covered" >getIm
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return template;</span>
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Error generating implementation template:', error);</span>
+<span class="cstat-no" title="statement not covered" >    logger.error('Error generating implementation template:', error);</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error(`Failed to generate template: ${error instanceof Error ? error.message : 'Unknown error'}`);</span>
   }
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateOverview(</span>subcategory: any, category: any, func: any): string {
-<span class="cstat-no" title="statement not covered" >  return `This implementation guide provides a structured approach to implementing ${subcategory.title} ` +</span>
-    `as part of the ${category.title} category within the ${func.title} function of the NIST CSF 2.0 framework. ` +
-    `\n\n${subcategory.description}\n\n` +
-    `This control is essential for establishing ${func.description.toLowerCase()} and supports ` +
-    `the broader objective of ${category.description.toLowerCase()}.`;
+<span class="cstat-no" title="statement not covered" >  return `This implementation guide provides a structured approach to implementing ${subcategory.title || subcategory.text || subcategory.element_identifier} ` +</span>
+    `as part of the ${category.title || category.text || 'category'} within the ${func.title || func.text || 'function'} of the NIST CSF 2.0 framework. ` +
+    `\n\n${subcategory.text || 'This subcategory defines security controls and requirements.'}\n\n` +
+    `This control is essential for establishing ${func.title || 'cybersecurity'} capabilities and supports ` +
+    `the broader objective of ${category.title || 'organizational security'}.`;
 }
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateObjectives(</span>subcategory: any): string[] {
+  const title = <span class="cstat-no" title="statement not covered" >(subcategory.title || subcategory.text || subcategory.element_identifier || 'subcategory').toLowerCase();</span>
   const objectives = <span class="cstat-no" title="statement not covered" >[</span>
-    `Establish and maintain ${subcategory.title.toLowerCase()} capabilities`,
+    `Establish and maintain ${title} capabilities`,
     `Ensure alignment with organizational risk management strategy`,
     `Meet regulatory and compliance requirements`,
     `Enable continuous monitoring and improvement`,
@@ -1725,19 +1731,19 @@ function <span class="fstat-no" title="function not covered" >generateObjectives
   ];
 &nbsp;
   // Add subcategory-specific objectives based on keywords
-  const title = <span class="cstat-no" title="statement not covered" >subcategory.title.toLowerCase();</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('policy')) {</span>
+  const subcategoryTitle = <span class="cstat-no" title="statement not covered" >(subcategory.title || subcategory.text || subcategory.element_identifier || '').toLowerCase();</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (subcategoryTitle.includes('policy')) {</span>
 <span class="cstat-no" title="statement not covered" >    objectives.push('Develop and communicate clear policies and procedures');</span>
   }
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('risk')) {</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (subcategoryTitle.includes('risk')) {</span>
 <span class="cstat-no" title="statement not covered" >    objectives.push('Identify and assess relevant risks');</span>
 <span class="cstat-no" title="statement not covered" >    objectives.push('Implement appropriate risk mitigation measures');</span>
   }
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('monitor')) {</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (subcategoryTitle.includes('monitor')) {</span>
 <span class="cstat-no" title="statement not covered" >    objectives.push('Establish continuous monitoring capabilities');</span>
 <span class="cstat-no" title="statement not covered" >    objectives.push('Define alerting thresholds and response procedures');</span>
   }
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('incident')) {</span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (subcategoryTitle.includes('incident')) {</span>
 <span class="cstat-no" title="statement not covered" >    objectives.push('Establish incident response procedures');</span>
 <span class="cstat-no" title="statement not covered" >    objectives.push('Ensure timely detection and response');</span>
   }
@@ -1931,7 +1937,7 @@ function <span class="fstat-no" title="function not covered" >getEffortEstimate(
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateExampleConfigurations(</span>subcategory: any, _industry: string): any[] {
   const examples = <span class="cstat-no" title="statement not covered" >[];</span>
-  const title = <span class="cstat-no" title="statement not covered" >subcategory.title.toLowerCase();</span>
+  const title = <span class="cstat-no" title="statement not covered" >(subcategory.title || subcategory.text || subcategory.element_identifier || '').toLowerCase();</span>
 &nbsp;
   // Add relevant example configurations based on subcategory
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('access') || title.includes('authentication')) {</span>
@@ -2008,7 +2014,7 @@ function <span class="fstat-no" title="function not covered" >generateSuccessCri
     'Compliance requirements are met'
   ];
 &nbsp;
-  const title = <span class="cstat-no" title="statement not covered" >subcategory.title.toLowerCase();</span>
+  const title = <span class="cstat-no" title="statement not covered" >(subcategory.title || subcategory.text || subcategory.element_identifier || '').toLowerCase();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (title.includes('policy')) {</span>
 <span class="cstat-no" title="statement not covered" >    criteria.push('Policies are approved and communicated');</span>
 <span class="cstat-no" title="statement not covered" >    criteria.push('Policy exceptions are documented and approved');</span>
@@ -2027,7 +2033,7 @@ function <span class="fstat-no" title="function not covered" >generateSuccessCri
 &nbsp;
 function <span class="fstat-no" title="function not covered" >generateMetrics(</span>subcategory: any): any[] {
   const metrics = <span class="cstat-no" title="statement not covered" >[];</span>
-  const title = <span class="cstat-no" title="statement not covered" >subcategory.title.toLowerCase();</span>
+  const title = <span class="cstat-no" title="statement not covered" >(subcategory.title || subcategory.text || subcategory.element_identifier || '').toLowerCase();</span>
 &nbsp;
   // Add general metrics
 <span class="cstat-no" title="statement not covered" >  metrics.push({</span>
@@ -2224,7 +2230,7 @@ export const getImplementationTemplateTool = <span class="cstat-no" title="state
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-28T12:37:02.160Z
+                at 2025-09-03T14:50:13.441Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
