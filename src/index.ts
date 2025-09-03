@@ -73,6 +73,13 @@ import {
   CheckAssessmentWorkflowSchema
 } from './tools/comprehensive_assessment_workflow.js';
 
+// Persistent Assessment Tool
+import { 
+  persistentComprehensiveAssessment, 
+  persistentComprehensiveAssessmentTool,
+  PersistentAssessmentSchema
+} from './tools/persistent_comprehensive_assessment.js';
+
 // ============================================================================
 // TOOL SCHEMAS
 // ============================================================================
@@ -985,6 +992,11 @@ async function main() {
           },
           required: ['workflow_id']
         }
+      },
+      {
+        name: 'persistent_comprehensive_assessment',
+        description: 'Manage comprehensive assessment with persistent progress tracking. Resume assessments across sessions and save progress after each question.',
+        inputSchema: persistentComprehensiveAssessmentTool.inputSchema
       }
     ],
   }));
@@ -1645,6 +1657,20 @@ async function main() {
           const result = await checkAssessmentWorkflowStatus({ 
             workflow_id: params.workflow_id
           });
+          
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        }
+
+        case 'persistent_comprehensive_assessment': {
+          const params = PersistentAssessmentSchema.parse(args);
+          const result = await persistentComprehensiveAssessment(params);
           
           return {
             content: [
