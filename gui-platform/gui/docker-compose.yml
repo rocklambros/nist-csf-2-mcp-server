@@ -1,0 +1,78 @@
+services:
+  # NIST CSF MCP Server (existing)
+  nist-csf-mcp:
+    build: 
+      context: ..
+      dockerfile: Dockerfile
+    container_name: nist-csf-mcp-server
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - MCP_SERVER=true
+    volumes:
+      - ../data:/app/data:ro
+      - nist_csf_data:/app/nist_csf.db
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('MCP Server Health Check')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - nist-csf-network
+
+  # GUI Backend API  
+  gui-backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nist-csf-gui-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MCP_SERVER_PATH=/app/nist-csf-mcp/dist/index.js
+      - CORS_ORIGIN=http://localhost:3000
+      - LOG_LEVEL=info
+    depends_on:
+      - nist-csf-mcp
+    volumes:
+      - ./backend/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - nist-csf-network
+
+  # React Frontend (INTEGRATED with Module 1 Backend)
+  gui-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nist-csf-gui-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_BACKEND_URL=http://gui-backend:3001
+      - REACT_APP_WEBSOCKET_URL=ws://gui-backend:3001
+    depends_on:
+      - gui-backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - nist-csf-network
+
+volumes:
+  nist_csf_data:
+    driver: local
+
+networks:
+  nist-csf-network:
+    driver: bridge
