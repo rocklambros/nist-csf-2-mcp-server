@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # NIST CSF MCP Server (existing)
+  nist-csf-mcp:
+    build: 
+      context: ..
+      dockerfile: Dockerfile
+    container_name: nist-csf-mcp-server
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - MCP_SERVER=true
+    volumes:
+      - ../data:/app/data:ro
+      - nist_csf_data:/app/nist_csf.db
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('MCP Server Health Check')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - nist-csf-network
+
+  # GUI Backend API  
+  gui-backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nist-csf-gui-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MCP_SERVER_PATH=/app/nist-csf-mcp/dist/index.js
+      - CORS_ORIGIN=http://localhost:3000
+      - LOG_LEVEL=info
+    depends_on:
+      - nist-csf-mcp
+    volumes:
+      - ./backend/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - nist-csf-network
+
+  # React Frontend (placeholder for future implementation)
+  gui-frontend:
+    image: nginx:alpine
+    container_name: nist-csf-gui-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - gui-backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - nist-csf-network
+
+volumes:
+  nist_csf_data:
+    driver: local
+
+networks:
+  nist-csf-network:
+    driver: bridge
