@@ -1,87 +1,38 @@
-/* NIST CSF Assessment GUI Styles */
-
-.assessment-wizard {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+.App {
+  text-align: center;
 }
 
-/* Loading animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
 }
 
-@keyframes slideIn {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.animate-slide-in {
-  animation: slideIn 0.3s ease-out;
-}
-
-/* Professional styling for presentations */
-.dashboard-card {
-  transition: all 0.2s ease-in-out;
-}
-
-.dashboard-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-/* NIST CSF specific styling */
-.nist-function-gv { @apply bg-blue-600 text-white; }
-.nist-function-id { @apply bg-green-600 text-white; }
-.nist-function-pr { @apply bg-yellow-600 text-white; }
-.nist-function-de { @apply bg-orange-600 text-white; }
-.nist-function-rs { @apply bg-red-600 text-white; }
-.nist-function-rc { @apply bg-purple-600 text-white; }
-
-/* Accessibility improvements */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Focus indicators for keyboard navigation */
-.focus-visible:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* Print optimizations for executive reports */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-  
-  .print-page-break {
-    page-break-before: always;
-  }
-  
-  .bg-white {
-    background: white !important;
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
   }
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .mobile-stack {
-    flex-direction: column;
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
   }
-  
-  .mobile-full {
-    width: 100%;
+  to {
+    transform: rotate(360deg);
   }
 }

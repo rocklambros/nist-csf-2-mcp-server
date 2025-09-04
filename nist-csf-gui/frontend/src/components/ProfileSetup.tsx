@@ -21,12 +21,10 @@ import { logger } from '../utils/logger';
 
 // Validation schema
 const ProfileSetupSchema = z.object({
-  org_name: z.string().min(2, 'Organization name must be at least 2 characters'),
-  sector: z.string().min(1, 'Please select a sector'),
-  size: z.enum(['small', 'medium', 'large', 'enterprise'], {
-    errorMap: () => ({ message: 'Please select organization size' })
-  }),
-  industry: z.string().min(1, 'Please select an industry'),
+  org_name: z.string().min(2),
+  sector: z.string().min(1),
+  size: z.enum(['small', 'medium', 'large', 'enterprise']),
+  industry: z.string().min(1),
   description: z.string().optional(),
   current_tier: z.string().optional(),
   target_tier: z.string().optional()
