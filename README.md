@@ -90,6 +90,57 @@ docker-compose up -d
 
 **Instant deployment.** Your comprehensive NIST CSF 2.0 MCP Server is running with complete framework data, multi-tier security, and all tools ready for AI integration.
 
+## 🎨 NEW: Professional Assessment GUI
+
+### 🖥️ Local Deployment (Cybersecurity Professionals)
+
+**Complete Assessment Platform with Stunning Executive Dashboards**
+
+```bash
+# Start the complete assessment platform
+cd nist-csf-gui
+docker-compose up
+
+# Access URLs:
+# 🌐 Assessment GUI: http://localhost:3000 (Professional Interface)
+# 🔧 Backend API: http://localhost:3001 (REST API)
+# 📊 Health Status: http://localhost:3001/health
+```
+
+### ✨ Assessment GUI Features
+
+**Professional Experience for CISOs and Security Teams:**
+- **Intuitive Assessment Wizard**: Create organization profile and walk through comprehensive evaluation
+- **Company-Size Intelligence**: Questions automatically filtered for small/medium/large/enterprise organizations
+- **Real-time Progress Tracking**: Persistent sessions with pause/resume capability  
+- **Executive Dashboards**: Professional visualizations with industry benchmarking
+- **NIST CSF 2.0 Complete Coverage**: All 185 subcategories with dual assessment (maturity + implementation)
+
+**Technical Excellence:**
+- **Zero-Configuration Setup**: Single `docker-compose up` command
+- **Real-time Synchronization**: WebSocket updates for live dashboard streaming
+- **Professional Design**: CISO and board presentation ready interface
+- **Full Integration**: Seamless connection to all 40+ MCP tools via React interface
+
+### 🔄 Assessment Workflow
+
+1. **Organization Setup** (2 minutes):
+   - Organization name, sector, size, industry
+   - Automatic question filtering based on organization context
+
+2. **Function Assessment** (2-4 hours, resumable):
+   - Navigate by NIST function: Govern → Identify → Protect → Detect → Respond → Recover
+   - Dual questions per subcategory: Maturity rating + Implementation status
+   - Context help and examples for each assessment area
+
+3. **Executive Dashboard** (Instant):
+   - Real-time progress visualization
+   - Industry benchmark comparison
+   - Risk heat maps and maturity progression
+   - Exportable executive reports and action plans
+
+**Perfect for:** CISOs, Security Analysts, Compliance Teams, Executive Presentations
+
 ## 🎯 Assessment Workflows (User-Friendly)
 
 ### 🚀 Quick Assessment (6 Questions)
