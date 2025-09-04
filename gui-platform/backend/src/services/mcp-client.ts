@@ -26,8 +26,8 @@ export class MCPClient extends EventEmitter {
   }>();
   private isConnected = false;
   private connectionRetries = 0;
-  private readonly maxRetries = 3;
-  private readonly requestTimeout = 30000; // 30 seconds
+  private readonly maxRetries = parseInt(process.env.MCP_RETRY_ATTEMPTS || '5');
+  private readonly requestTimeout = parseInt(process.env.MCP_CONNECTION_TIMEOUT || '60000');
 
   constructor(private mcpServerPath: string) {
     super();
@@ -193,14 +193,14 @@ export class MCPClient extends EventEmitter {
   }
 
   /**
-   * Wait for initial connection
+   * Wait for initial connection with container startup consideration
    * Used by: connect method
    */
   private async waitForConnection(): Promise<void> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('Connection timeout'));
-      }, 10000);
+      }, 30000); // Increased timeout for container startup
 
       // Try to get tools list to verify connection
       const testRequest = {
@@ -238,7 +238,7 @@ export class MCPClient extends EventEmitter {
         this.connect().catch(error => {
           logger.error('Retry connection failed:', error);
         });
-      }, 2000 * this.connectionRetries); // Exponential backoff
+      }, Math.min(5000 * Math.pow(2, this.connectionRetries), 30000)); // Exponential backoff with cap
     } else {
       logger.error('Max connection retries exceeded');
       this.emit('connection_failed');

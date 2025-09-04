@@ -20,7 +20,7 @@ Choose your deployment option based on your use case:
 
 ```bash
 git clone https://github.com/rocklambros/nist-csf-2-mcp-server.git
-cd nist-csf-2-mcp-server/nist-csf-gui
+cd nist-csf-2-mcp-server/gui-platform
 docker-compose up
 ```
 
