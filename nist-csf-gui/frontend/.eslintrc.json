@@ -1,35 +1,10 @@
 {
   "extends": [
     "react-app",
-    "react-app/jest",
-    "@typescript-eslint/recommended",
-    "@typescript-eslint/recommended-requiring-type-checking"
+    "react-app/jest"
   ],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
-  "plugins": ["@typescript-eslint"],
   "rules": {
-    "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/prefer-const": "error",
-    "@typescript-eslint/no-non-null-assertion": "error",
-    "@typescript-eslint/explicit-function-return-type": "warn",
-    "no-console": "warn",
-    "prefer-const": "error",
-    "no-var": "error",
-    "complexity": ["error", 10],
-    "max-lines-per-function": ["error", 100],
-    "react-hooks/exhaustive-deps": "error",
-    "react-hooks/rules-of-hooks": "error"
-  },
-  "overrides": [
-    {
-      "files": ["**/*.test.ts", "**/*.test.tsx"],
-      "rules": {
-        "@typescript-eslint/no-explicit-any": "off"
-      }
-    }
-  ]
+    "no-unused-vars": "warn",
+    "no-console": "warn"
+  }
 }

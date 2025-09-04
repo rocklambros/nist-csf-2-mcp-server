@@ -111,7 +111,7 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
     return 'text-gray-600';
   };
 
-  const getConnectionIcon = (): JSX.Element => {
+  const getConnectionIcon = () => {
     switch (connectionStatus) {
       case 'connected':
         return <Wifi className="w-4 h-4 text-green-600" />;

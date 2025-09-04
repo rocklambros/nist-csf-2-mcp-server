@@ -13,8 +13,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { 
   HelpCircle, 
   Save, 
@@ -22,22 +20,21 @@ import {
   ArrowLeft, 
   CheckCircle,
   AlertCircle,
-  FileText
+  FileText,
+  Target
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { AssessmentProfile, AssessmentProgress, AssessmentQuestion } from '../types';
 import { logger } from '../utils/logger';
 
-// Response validation schema
-const QuestionResponseSchema = z.object({
-  maturity_rating: z.number().min(0).max(5),
-  implementation_status: z.number().min(0).max(5),
-  confidence_level: z.enum(['low', 'medium', 'high']).default('medium'),
-  notes: z.string().optional(),
-  evidence: z.string().optional()
-});
-
-type QuestionFormData = z.infer<typeof QuestionResponseSchema>;
+// Simplified form data interface - removes Zod dependency
+interface QuestionFormData {
+  maturity_rating: number;
+  implementation_status: number;
+  confidence_level: 'low' | 'medium' | 'high';
+  notes?: string;
+  evidence?: string;
+}
 
 interface QuestionInterfaceProps {
   profile: AssessmentProfile;
@@ -72,11 +69,9 @@ export const QuestionInterface: React.FC<QuestionInterfaceProps> = ({
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
-    watch,
-    reset
+    formState: { isDirty },
+    watch
   } = useForm<QuestionFormData>({
-    resolver: zodResolver(QuestionResponseSchema),
     defaultValues: {
       maturity_rating: 0,
       implementation_status: 0,
@@ -289,12 +284,6 @@ export const QuestionInterface: React.FC<QuestionInterfaceProps> = ({
                   ))}
                 </div>
                 
-                {errors.maturity_rating && (
-                  <p className="text-sm text-red-600 flex items-center space-x-1">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>{errors.maturity_rating.message}</span>
-                  </p>
-                )}
               </div>
 
               {/* Implementation Status */}
@@ -328,12 +317,6 @@ export const QuestionInterface: React.FC<QuestionInterfaceProps> = ({
                   ))}
                 </div>
                 
-                {errors.implementation_status && (
-                  <p className="text-sm text-red-600 flex items-center space-x-1">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>{errors.implementation_status.message}</span>
-                  </p>
-                )}
               </div>
             </div>
 

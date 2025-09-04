@@ -102,7 +102,7 @@ export const ReconnectionHandler: React.FC<ReconnectionHandlerProps> = ({
   }
 
   // Connection status indicator in top bar
-  const getStatusIndicator = (): JSX.Element | null => {
+  const getStatusIndicator = () => {
     switch (connectionStatus) {
       case 'connecting':
         return (
@@ -130,7 +130,7 @@ export const ReconnectionHandler: React.FC<ReconnectionHandlerProps> = ({
   };
 
   // Offline notice overlay
-  const renderOfflineNotice = (): JSX.Element | null => {
+  const renderOfflineNotice = () => {
     if (!showOfflineNotice) return null;
 
     return (
