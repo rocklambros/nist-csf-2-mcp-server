@@ -192,9 +192,7 @@ export class AuthMiddleware {
       const token = this.extractToken(req);
       if (!token) {
         return res.status(401).json({ 
-          error: 'Unauthorized - No token provided',
-          auth_mode: this.config.mode,
-          hint: this.config.mode === 'simple' ? 'Use Bearer token with API key' : 'Use Bearer token with valid JWT'
+          error: 'Unauthorized - No token provided'
         });
       }
 
@@ -204,8 +202,7 @@ export class AuthMiddleware {
           const validated = this.validateApiKey(token);
           if (!validated) {
             return res.status(401).json({ 
-              error: 'Unauthorized - Invalid API key',
-              auth_mode: 'simple'
+              error: 'Unauthorized - Invalid credentials'
             });
           }
           (req as any).auth = validated;
@@ -266,10 +263,7 @@ export class AuthMiddleware {
       
       if (!scopes.includes(requiredScope)) {
         return res.status(403).json({ 
-          error: 'Forbidden - Insufficient permissions',
-          required_scope: requiredScope,
-          available_scopes: scopes,
-          auth_mode: this.config.mode
+          error: 'Forbidden - Insufficient permissions'
         });
       }
 
