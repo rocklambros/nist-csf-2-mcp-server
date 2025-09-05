@@ -1,114 +1,48 @@
-# Multi-stage build for security and efficiency
-FROM --platform=$TARGETPLATFORM node:20-alpine AS builder
-
-# Build arguments for metadata
-ARG BUILDTIME
-ARG VERSION
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-
-# Install build dependencies
-RUN apk add --no-cache python3 make g++ sqlite
-
-# Set working directory
-WORKDIR /build
-
-# Copy package files and TypeScript configs
-COPY package*.json ./
-COPY tsconfig.json ./
-COPY tsconfig.build.json ./
-COPY tsconfig.docker.json ./
-COPY build-docker.cjs ./
-
-# Install ALL dependencies (including dev dependencies for build and scripts)
-RUN npm ci && \
-    npm cache clean --force
-
-# Copy source code and data
-COPY src/ ./src/
-COPY scripts/ ./scripts/
-COPY data/ ./data/
-
-# Build TypeScript with Docker-optimized configuration
-RUN npx tsc -p tsconfig.docker.json || npm run build || echo "Using source files directly"
-
-# Initialize database with complete framework data (skip question bank for now)
-RUN npm run import:csf-framework
-
-# Verify database was built correctly
-RUN npm run db:verify
-
-# Remove dev dependencies after database build
-RUN npm prune --production && \
-    rm -rf src/ scripts/ tsconfig.json
-
-# Final stage - minimal runtime image
+# NIST CSF 2.0 MCP Server - Stable Release
 FROM node:20-alpine
 
-# Install security updates and build tools for better-sqlite3 native compilation
-RUN apk update && \
-    apk upgrade && \
-    apk add --no-cache \
-    dumb-init \
-    python3 make g++ sqlite \
-    && rm -rf /var/cache/apk/*
+# Install dependencies for better-sqlite3
+RUN apk add --no-cache python3 make g++ sqlite
 
-# Create non-root user with specific UID/GID
-RUN addgroup -g 10001 -S mcp-server && \
-    adduser -u 10001 -S -G mcp-server -h /app mcp-server
+# Create non-root user
+RUN addgroup -g 1001 -S mcp && adduser -S mcp -u 1001
 
 # Set working directory
 WORKDIR /app
 
-# Create necessary directories with proper permissions
-RUN mkdir -p /app/data /app/logs && \
-    chown -R mcp-server:mcp-server /app
+# Copy package files
+COPY package*.json ./
+COPY tsconfig*.json ./
 
-# Copy built application from builder stage
-COPY --from=builder --chown=mcp-server:mcp-server /build/node_modules ./node_modules
-COPY --from=builder --chown=mcp-server:mcp-server /build/dist ./dist
-COPY --from=builder --chown=mcp-server:mcp-server /build/package*.json ./
+# Install all dependencies (including dev for build)
+RUN npm ci
 
-# Copy framework data and pre-built database
-COPY --from=builder --chown=mcp-server:mcp-server /build/data/ ./data/
-COPY --from=builder --chown=mcp-server:mcp-server /build/nist_csf.db ./nist_csf.db
+# Copy application files
+COPY src/ ./src/
+COPY data/ ./data/
+COPY scripts/ ./scripts/
 
-# Copy Docker entrypoint script
-COPY --chown=mcp-server:mcp-server docker-entrypoint.sh ./docker-entrypoint.sh
-RUN chmod +x docker-entrypoint.sh
+# Build TypeScript
+RUN npm run build
 
-# Rebuild better-sqlite3 for target platform compatibility
-USER root
-RUN npm rebuild better-sqlite3 && chown -R mcp-server:mcp-server /app
+# Initialize database
+RUN npm run import:csf-framework
 
-# Set security environment variables and metadata
-ENV NODE_ENV=production \
-    NODE_OPTIONS="--max-old-space-size=512" \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    MCP_SERVER=true
+# Remove development files and prune to production dependencies
+RUN rm -rf src/ scripts/ tsconfig*.json && npm prune --production
 
-# Add metadata labels
-LABEL org.opencontainers.image.created="${BUILDTIME}" \
-      org.opencontainers.image.version="${VERSION}" \
-      org.opencontainers.image.title="NIST CSF 2.0 MCP Server" \
-      org.opencontainers.image.description="Model Context Protocol server for NIST Cybersecurity Framework 2.0" \
-      org.opencontainers.image.source="https://github.com/rocklambros/nist-csf-2-mcp-server" \
-      org.opencontainers.image.documentation="https://github.com/rocklambros/nist-csf-2-mcp-server/blob/main/README.md" \
-      org.opencontainers.image.platform="${TARGETPLATFORM}"
+# Change ownership to non-root user
+RUN chown -R mcp:mcp /app
 
-# Switch to non-root user (MANDATORY)
-USER mcp-server
+# Switch to non-root user
+USER mcp
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "import http from 'http'; http.get('http://localhost:8080/health', (r) => {r.statusCode === 200 ? process.exit(0) : process.exit(1)})"
-
-# Expose port (non-privileged)
+# Expose port for HTTP mode (optional)
 EXPOSE 8080
 
-# Use dumb-init to handle signals properly and our custom entrypoint
-ENTRYPOINT ["/usr/bin/dumb-init", "--", "./docker-entrypoint.sh"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD node -e "try { require('fs').accessSync('/app/dist/index.js'); process.exit(0); } catch { process.exit(1); }"
 
-# Default CMD - runs the MCP server
-CMD []
+# Start MCP server
+CMD ["node", "dist/index.js"]
