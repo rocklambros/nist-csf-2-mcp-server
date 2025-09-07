@@ -1177,6 +1177,11 @@ export class CSFDatabase {
     return stmt.get(profileId) as DatabaseRow | undefined;
   }
 
+  getProfilesByOrganization(orgId: string): DatabaseRow[] {
+    const stmt = this.db.prepare('SELECT * FROM profiles WHERE org_id = ? ORDER BY profile_type, created_at DESC');
+    return stmt.all(orgId) as DatabaseRow[];
+  }
+
   /**
    * Validate that assessment data is from real user responses, not fake/synthetic data
    */
@@ -1472,11 +1477,10 @@ export class CSFDatabase {
         WHERE gap_score > 0
       )
       INSERT INTO gap_analysis (
-        id, org_id, category_id, current_score, target_score, 
+        org_id, category_id, current_score, target_score, 
         gap_score, priority, estimated_effort, target_date, analysis_date
       )
       SELECT 
-        ? || '_' || category_id,
         (SELECT org_id FROM profiles WHERE profile_id = ?),
         category_id,
         AVG(current_score),
@@ -1504,7 +1508,6 @@ export class CSFDatabase {
     this.db.prepare(sql).run(
       currentProfileId,
       targetProfileId,
-      analysisId,
       currentProfileId
     );
     
@@ -1575,7 +1578,7 @@ export class CSFDatabase {
     return this.db.prepare(detailSql).all(currentProfileId, targetProfileId) as DatabaseRow[];
   }
 
-  getGapAnalysisDetails(analysisId: string): DatabaseRow[] {
+  getGapAnalysisDetails(orgId: string): DatabaseRow[] {
     const sql = `
       SELECT 
         g.*,
@@ -1588,11 +1591,11 @@ export class CSFDatabase {
         SUM(CASE WHEN g.priority = 'High' THEN 1 ELSE 0 END) as high_gaps
       FROM gap_analysis g
       JOIN organization_profiles p ON g.org_id = p.org_id
-      WHERE g.id LIKE ? || '%'
+      WHERE g.org_id = ?
       GROUP BY g.org_id
     `;
     
-    return this.db.prepare(sql).all(analysisId) as DatabaseRow[];
+    return this.db.prepare(sql).all(orgId) as DatabaseRow[];
   }
 
   getPriorityMatrix(analysisId: string): DatabaseRow[] {
@@ -1679,7 +1682,7 @@ export class CSFDatabase {
           WHEN a.implementation_level = 'largely_implemented' THEN 30
           ELSE 0
         END as gap_score,
-        a.confidence_score,
+        a.confidence_level,
         CASE 
           WHEN a.implementation_level = 'not_implemented' THEN 8
           WHEN a.implementation_level = 'partially_implemented' THEN 5
@@ -2135,6 +2138,12 @@ export class CSFDatabase {
     `).all(subcategoryId);
   }
 
+  getSubcategoriesByCategory(categoryId: string): DatabaseRow[] {
+    return this.db.prepare(`
+      SELECT * FROM subcategories WHERE category_id = ? ORDER BY id
+    `).all(categoryId);
+  }
+
   createSubcategoryDependency(dep: PhaseDependency): void {
     const stmt = this.db.prepare(`
       INSERT INTO subcategory_dependencies (
@@ -2271,12 +2280,12 @@ export class CSFDatabase {
     return this.db.prepare(`
       SELECT 
         g.*,
-        s.name as subcategory_name,
-        s.description as subcategory_description
+        c.name as category_name,
+        c.description as category_description
       FROM gap_analysis g
-      JOIN subcategories s ON g.subcategory_id = s.id
-      WHERE g.id LIKE ? || '%'
-      ORDER BY g.priority_rank
+      JOIN categories c ON g.category_id = c.id
+      WHERE g.org_id = ?
+      ORDER BY g.priority DESC
     `).all(gapAnalysisId);
   }
 
@@ -2692,7 +2701,7 @@ export class CSFDatabase {
           AVG(risk_score) as avg_risk_score
         FROM risk_assessments r
         JOIN profiles p ON p.org_id = r.org_id
-        WHERE p.id = ?
+        WHERE p.profile_id = ?
       ),
       gap_summary AS (
         SELECT 
@@ -2701,7 +2710,7 @@ export class CSFDatabase {
           SUM(CASE WHEN priority = 'Critical' THEN 1 ELSE 0 END) as critical_gaps
         FROM gap_analysis g
         JOIN profiles p ON p.org_id = g.org_id
-        WHERE p.id = ?
+        WHERE p.profile_id = ?
       ),
       profile_info AS (
         SELECT 
@@ -2711,7 +2720,7 @@ export class CSFDatabase {
           o.size
         FROM profiles p
         JOIN organizations o ON p.org_id = o.org_id
-        WHERE p.id = ?
+        WHERE p.profile_id = ?
       )
       SELECT 
         pi.*,
@@ -2767,7 +2776,7 @@ export class CSFDatabase {
           last_assessed
         FROM subcategory_implementations si
         JOIN profiles p ON p.org_id = si.org_id
-        WHERE p.id = ?
+        WHERE p.profile_id = ?
       ),
       dependencies AS (
         SELECT 
@@ -2914,19 +2923,19 @@ export class CSFDatabase {
     const sql = `
       WITH profile_comparisons AS (
         SELECT 
-          p.id as profile_id,
+          p.profile_id as profile_id,
           p.profile_name,
           o.org_name,
           o.industry,
           o.size,
           p.profile_type,
           p.created_at,
-          (SELECT AVG(maturity_score) FROM assessments WHERE profile_id = p.id) as avg_maturity,
-          (SELECT COUNT(*) FROM assessments WHERE profile_id = p.id) as assessments_count,
-          (SELECT COUNT(*) FROM progress_tracking WHERE profile_id = p.id AND status = 'completed') as completed_items
+          (SELECT AVG(maturity_score) FROM assessments WHERE profile_id = p.profile_id) as avg_maturity,
+          (SELECT COUNT(*) FROM assessments WHERE profile_id = p.profile_id) as assessments_count,
+          (SELECT COUNT(*) FROM progress_tracking WHERE profile_id = p.profile_id AND status = 'completed') as completed_items
         FROM profiles p
         JOIN organizations o ON p.org_id = o.org_id
-        WHERE p.id IN (${placeholders})
+        WHERE p.profile_id IN (${placeholders})
       ),
       function_comparisons AS (
         SELECT 
@@ -2965,7 +2974,7 @@ export class CSFDatabase {
       SELECT 
         -- Profile Information
         (SELECT json_object(
-          'id', p.id,
+          'id', p.profile_id,
           'profile_name', p.profile_name,
           'profile_type', p.profile_type,
           'description', p.description,
@@ -2976,7 +2985,7 @@ export class CSFDatabase {
           'size', o.size
         ) FROM profiles p
         JOIN organizations o ON p.org_id = o.org_id
-        WHERE p.id = ?) as profile_info,
+        WHERE p.profile_id = ?) as profile_info,
         
         -- Assessments
         (SELECT json_group_array(json_object(

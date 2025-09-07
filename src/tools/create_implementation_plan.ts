@@ -100,21 +100,59 @@ export async function createImplementationPlan(params: CreateImplementationPlanP
       await framework.load();
     }
     
-    // Get gap analysis items
-    const gapItems = db.getGapAnalysisItems(params.gap_analysis_id);
+    // Get gap analysis items using org_id (now passed as gap_analysis_id)
+    logger.info(`Getting gap analysis items for org ID: ${params.gap_analysis_id}`);
+    const gapItems = (db as any).getGapAnalysisItems(params.gap_analysis_id);
+    logger.info(`Gap items found: ${gapItems ? gapItems.length : 0}`);
+    if (gapItems && gapItems.length > 0) {
+      logger.info(`First gap item category_id: ${gapItems[0].category_id}`);
+      logger.info(`Sample gap items: ${JSON.stringify(gapItems.slice(0, 2), null, 2)}`);
+    }
     
     if (!gapItems || gapItems.length === 0) {
-      return createErrorResult('No gap analysis items found');
+      logger.warn(`No gap analysis items found for org: ${params.gap_analysis_id}`);
+      return createErrorResult('No gap analysis items found for the provided organization');
     }
     
-    // Extract profile ID from first gap item
-    const profileId = gapItems[0].current_profile_id || gapItems[0].profile_id;
+    // Get org_id from gap items and find profile
+    const orgId = gapItems[0].org_id;
+    logger.info(`Found org_id from gap items: ${orgId}`);
+    
+    // Get current profiles for this organization - use the org_id we passed as gap_analysis_id
+    const profiles = (db as any).getProfilesByOrganization(params.gap_analysis_id);
+    const currentProfile = profiles?.find((p: any) => p.profile_type === 'current');
+    const profileId = currentProfile?.profile_id;
+    logger.info(`Found profile ID: ${profileId}`);
+    
     if (!profileId) {
-      return createErrorResult('Unable to determine profile ID from gap analysis');
+      return createErrorResult('Unable to determine current profile ID for the organization');
     }
     
-    // Build dependency graph if requested
-    const subcategoryIds = gapItems.map((item: any) => item.subcategory_id);
+    // Gap analysis works at category level, but implementation plans need subcategories
+    // Get all subcategories for the categories with gaps
+    const categoryIds = gapItems.map((item: any) => item.category_id).filter(Boolean);
+    logger.info(`Categories with gaps: ${categoryIds.join(', ')}`);
+    
+    // Get subcategories for these categories
+    const allSubcategories: any[] = [];
+    for (const categoryId of categoryIds) {
+      const subcategories = (db as any).getSubcategoriesByCategory(categoryId);
+      if (subcategories && subcategories.length > 0) {
+        // Add gap info to each subcategory
+        const gapItem = gapItems.find(g => g.category_id === categoryId);
+        subcategories.forEach((sub: any) => {
+          allSubcategories.push({
+            ...sub,
+            gap_score: gapItem?.gap_score || 0,
+            priority: gapItem?.priority || 'Medium',
+            estimated_effort: gapItem?.estimated_effort || 'Medium'
+          });
+        });
+      }
+    }
+    
+    logger.info(`Total subcategories for implementation: ${allSubcategories.length}`);
+    const subcategoryIds = allSubcategories.map(sub => sub.id).filter(Boolean);
     const dependencyGraph = params.include_dependencies
       ? db.calculateDependencyGraph(subcategoryIds)
       : null;
@@ -124,9 +162,9 @@ export async function createImplementationPlan(params: CreateImplementationPlanP
       logger.warn('Dependency cycle detected in implementation plan');
     }
     
-    // Sort items based on strategy
+    // Sort items based on strategy - use subcategories instead of gap items  
     const sortedItems = sortItemsByStrategy(
-      gapItems,
+      allSubcategories,
       params.prioritization_strategy,
       dependencyGraph
     );
@@ -172,8 +210,10 @@ export async function createImplementationPlan(params: CreateImplementationPlanP
     const planName = params.plan_name || 
       `Implementation Plan - ${new Date().toISOString().split('T')[0]}`;
     
-    db.createImplementationPlan({
-      id: planId,
+    logger.info(`Creating implementation plan with ID: ${planId}`);
+    try {
+      db.createImplementationPlan({
+        id: planId,
       gap_analysis_id: params.gap_analysis_id,
       profile_id: profileId,
       plan_name: planName,
@@ -184,8 +224,14 @@ export async function createImplementationPlan(params: CreateImplementationPlanP
       estimated_cost: estimatedCost,
       status: 'draft'
     });
+      logger.info(`Implementation plan created successfully with ID: ${planId}`);
+    } catch (error) {
+      logger.error('Failed to create implementation plan:', error);
+      return createErrorResult(`Failed to create implementation plan: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
     
     // Save phases and items
+    logger.info(`Creating ${phases.length} phases`);
     for (const phase of phases) {
       db.createImplementationPhase({
         id: phase.id,
@@ -200,7 +246,9 @@ export async function createImplementationPlan(params: CreateImplementationPlanP
       });
       
       for (const item of phase.items) {
-        db.createImplementationItem({
+        logger.info(`Creating implementation item for subcategory: ${item.subcategory_id}`);
+        try {
+          db.createImplementationItem({
           id: item.id,
           phase_id: phase.id,
           subcategory_id: item.subcategory_id,
@@ -210,6 +258,10 @@ export async function createImplementationPlan(params: CreateImplementationPlanP
           status: item.status,
           completion_percentage: 0
         });
+        } catch (error) {
+          logger.warn(`Failed to create implementation item for ${item.subcategory_id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          // Continue with other items
+        }
       }
     }
     
@@ -388,8 +440,8 @@ function calculatePhases(
       if (phase.effort_hours + itemEffort <= capacityPerPhase) {
         phase.items.push({
           id: uuidv4(),
-          subcategory_id: item.subcategory_id,
-          subcategory_name: item.subcategory_name || item.subcategory_id,
+          subcategory_id: item.subcategory_id || item.category_id || '',
+          subcategory_name: item.subcategory_name || item.category_name || item.category_id || 'Unknown',
           priority_rank: item.priority_rank || 999,
           effort_hours: itemEffort,
           dependencies: item.dependencies || [],
@@ -461,7 +513,8 @@ function estimateItemEffort(item: any): number {
   let effort = baseEffort[implLevel] || 40;
   
   // Adjust based on function
-  const functionId = item.subcategory_id.substring(0, 2);
+  const subcategoryId = item.subcategory_id || item.category_id || '';
+  const functionId = subcategoryId.length >= 2 ? subcategoryId.substring(0, 2) : '';
   const functionMultiplier: Record<string, number> = {
     'GV': 1.2,  // Governance typically requires more effort
     'ID': 1.0,

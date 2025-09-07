@@ -54,13 +54,14 @@ module.exports = {
   },
   // Setup files for test environment
   setupFilesAfterEnv: ['<rootDir>/tests/helpers/simple-setup.ts'],
-  // Only include core working tests to prevent legacy test issues
+  // Include core and E2E tests
   testMatch: [
     '**/tests/core/**/*.test.ts',
     '**/tests/tools/csf-lookup.test.ts',
     '**/tests/tools/create-profile.test.ts',
     '**/tests/tools/assess-maturity.test.ts',
-    '**/tests/tools/start-assessment-workflow.test.ts'
+    '**/tests/tools/start-assessment-workflow.test.ts',
+    '**/tests/e2e/**/*.test.ts'
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
@@ -79,7 +80,6 @@ module.exports = {
     'tests/performance/',
     'tests/security/',
     'tests/integration/',
-    'tests/e2e/',
     'tests/services/',
     'tests/simple-db.test.ts',
     '\\.backup$'

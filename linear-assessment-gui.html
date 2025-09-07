@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIST CSF 2.0 Linear Assessment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .progress-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 25px;
+            height: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            height: 100%;
+            border-radius: 25px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .progress-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .function-progress {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .function-badge {
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .function-badge.completed { background: #d5f4e6; color: #27ae60; }
+        .function-badge.current { background: #fef5e7; color: #f39c12; }
+        .function-badge.pending { background: #f8f9fa; color: #7f8c8d; }
+        
+        .organization-setup {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .question-container {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            display: none;
+        }
+        
+        .current-location {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .function-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+        
+        .subcategory-title {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+        
+        .question-progress {
+            font-size: 0.9rem;
+            color: #95a5a6;
+        }
+        
+        .question-pair {
+            margin-bottom: 32px;
+            padding: 20px;
+            background: #fafbfc;
+            border-radius: 8px;
+        }
+        
+        .question-header {
+            margin-bottom: 16px;
+        }
+        
+        .question-number {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            line-height: 1.6;
+            margin: 8px 0;
+        }
+        
+        .question-type {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .question-type.maturity { background: #8e44ad; }
+        .question-type.effectiveness { background: #27ae60; }
+        
+        .question-options {
+            margin: 16px 0;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin: 6px 0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #ecf0f1;
+        }
+        
+        .option:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        
+        .option.selected {
+            border-color: #3498db;
+            background: #ebf3fd;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 12px;
+        }
+        
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .confidence-section {
+            margin: 16px 0;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .confidence-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+        
+        .auto-save-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        
+        .auto-save-indicator.saved {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        
+        .auto-save-indicator.saving {
+            background: #fef5e7;
+            color: #f39c12;
+        }
+        
+        .auto-save-indicator.error {
+            background: #fff5f5;
+            color: #e74c3c;
+        }
+        
+        .hidden { display: none; }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .error {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .function-progress {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ NIST CSF 2.0 Assessment</h1>
+            <p>Comprehensive framework assessment: Govern → Identify → Protect → Detect → Respond → Recover</p>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="overallProgress"></div>
+            </div>
+            <div class="progress-text" id="progressText">Getting started...</div>
+            
+            <div class="function-progress">
+                <div class="function-badge pending" id="progress-GV">GOVERN</div>
+                <div class="function-badge pending" id="progress-ID">IDENTIFY</div>
+                <div class="function-badge pending" id="progress-PR">PROTECT</div>
+                <div class="function-badge pending" id="progress-DE">DETECT</div>
+                <div class="function-badge pending" id="progress-RS">RESPOND</div>
+                <div class="function-badge pending" id="progress-RC">RECOVER</div>
+            </div>
+        </div>
+
+        <!-- Organization Setup Screen -->
+        <div class="organization-setup" id="organizationSetup">
+            <h2>Organization Setup</h2>
+            <div class="form-group">
+                <label for="orgName">Organization Name *</label>
+                <input type="text" id="orgName" placeholder="Enter your organization name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sector">Industry Sector *</label>
+                <select id="sector" required>
+                    <option value="">Select your industry sector</option>
+                    <option value="financial">Financial Services</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="energy">Energy & Utilities</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="technology">Technology</option>
+                    <option value="government">Government</option>
+                    <option value="education">Education</option>
+                    <option value="retail">Retail</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="orgSize">Organization Size *</label>
+                <select id="orgSize" required>
+                    <option value="">Select organization size</option>
+                    <option value="small">Small (1-50 employees)</option>
+                    <option value="medium">Medium (51-250 employees)</option>
+                    <option value="large">Large (251-1000 employees)</option>
+                    <option value="enterprise">Enterprise (1000+ employees)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="contactEmail">Contact Email</label>
+                <input type="email" id="contactEmail" placeholder="contact@organization.com">
+            </div>
+            
+            <button class="btn" onclick="startLinearAssessment()">Start Assessment</button>
+        </div>
+
+        <!-- Linear Question Interface -->
+        <div class="question-container" id="questionContainer">
+            <div class="current-location">
+                <div class="function-title" id="currentFunction"></div>
+                <div class="subcategory-title" id="currentSubcategory"></div>
+                <div class="question-progress" id="locationProgress"></div>
+            </div>
+
+            <!-- Maturity Question -->
+            <div class="question-pair" id="maturityQuestion">
+                <div class="question-header">
+                    <div class="question-type maturity">MATURITY ASSESSMENT</div>
+                    <div class="question-text" id="maturityQuestionText"></div>
+                </div>
+                <div class="question-options" id="maturityOptions"></div>
+                <!-- Confidence removed - optional in database -->
+            </div>
+
+            <!-- Effectiveness Question -->
+            <div class="question-pair" id="effectivenessQuestion">
+                <div class="question-header">
+                    <div class="question-type effectiveness">EFFECTIVENESS ASSESSMENT</div>
+                    <div class="question-text" id="effectivenessQuestionText"></div>
+                </div>
+                <div class="question-options" id="effectivenessOptions"></div>
+            </div>
+
+            <div class="navigation">
+                <button class="btn" onclick="previousSubcategory()" id="prevBtn">Previous</button>
+                <div class="auto-save-indicator" id="saveIndicator">
+                    <span id="saveText">Ready to save</span>
+                </div>
+                <button class="btn" onclick="nextSubcategory()" id="nextBtn">Next Subcategory</button>
+            </div>
+        </div>
+
+        <div id="loadingIndicator" class="loading hidden">
+            <div>🔄 Loading assessment data...</div>
+        </div>
+    </div>
+
+    <script>
+        // Global Assessment State
+        let assessmentState = {
+            sessionId: null,
+            organizationId: null,
+            profileId: null,
+            workflowId: null,
+            
+            // Linear progression tracking
+            currentFunction: 0,           // 0-5 (GV, ID, PR, DE, RS, RC)
+            currentSubcategory: 0,        // Current subcategory within function
+            currentQuestionType: 'maturity', // 'maturity' or 'coverage'
+            
+            // Question structure
+            functions: ['GV', 'ID', 'PR', 'DE', 'RS', 'RC'],
+            functionNames: {
+                'GV': 'GOVERN',
+                'ID': 'IDENTIFY', 
+                'PR': 'PROTECT',
+                'DE': 'DETECT',
+                'RS': 'RESPOND',
+                'RC': 'RECOVER'
+            },
+            
+            // Question data
+            allQuestions: [],
+            questionsBySubcategory: new Map(),
+            subcategoriesByFunction: new Map(),
+            
+            // Progress tracking
+            answers: new Map(),           // questionId -> answer data
+            functionProgress: new Map(),  // function -> completion %
+            totalQuestions: 0,
+            lastSaveTime: null
+        };
+
+        // Configuration
+        const MCP_SERVER_URL = 'http://localhost:3001';
+        const AUTO_SAVE_DELAY = 500;
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLinearAssessment();
+        });
+
+        async function initializeLinearAssessment() {
+            try {
+                // Check for existing session
+                const savedSession = localStorage.getItem('nist-csf-linear-session');
+                if (savedSession) {
+                    assessmentState = { ...assessmentState, ...JSON.parse(savedSession) };
+                    if (assessmentState.organizationId) {
+                        await resumeLinearAssessment();
+                        return;
+                    }
+                }
+                
+                // Show organization setup for new assessment
+                showOrganizationSetup();
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showError('Failed to initialize assessment. Please refresh and try again.');
+            }
+        }
+
+        function showOrganizationSetup() {
+            document.getElementById('organizationSetup').classList.remove('hidden');
+            document.getElementById('questionContainer').style.display = 'none';
+        }
+
+        async function startLinearAssessment() {
+            try {
+                showLoading(true);
+                
+                // Validate organization form
+                const orgName = document.getElementById('orgName').value;
+                const sector = document.getElementById('sector').value;
+                const orgSize = document.getElementById('orgSize').value;
+                const contactEmail = document.getElementById('contactEmail').value;
+                
+                if (!orgName || !sector || !orgSize) {
+                    showError('Please fill in all required organization details.');
+                    showLoading(false);
+                    return;
+                }
+
+                // Create organization profile
+                const profileResult = await callMCPTool('create_profile', {
+                    org_name: orgName,
+                    sector: sector,
+                    size: orgSize,
+                    profile_type: 'current',
+                    profile_name: `${orgName} - Linear Assessment`,
+                    description: `Comprehensive linear NIST CSF 2.0 assessment for ${orgName}`,
+                    contact_email: contactEmail
+                });
+
+                if (!profileResult.success) {
+                    throw new Error('Failed to create organization profile: ' + (profileResult.error || 'Unknown error'));
+                }
+
+                // Update assessment state
+                const profileData = profileResult.data || profileResult;
+                assessmentState.organizationId = profileData.org_id;
+                assessmentState.profileId = profileData.profile_id;
+                assessmentState.sessionId = generateSessionId();
+                assessmentState.workflowId = `linear-assessment-${Date.now()}`;
+
+                // Load questions and structure them for linear progression
+                await loadLinearQuestionStructure();
+                
+                // Start at first function, first subcategory
+                assessmentState.currentFunction = 0;
+                assessmentState.currentSubcategory = 0;
+                assessmentState.currentQuestionType = 'maturity';
+                
+                // Save session and start assessment
+                saveSessionState();
+                showLinearQuestionInterface();
+                showLoading(false);
+
+            } catch (error) {
+                console.error('Assessment start error:', error);
+                showError('Failed to start assessment: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+        async function loadLinearQuestionStructure() {
+            try {
+                // Get CSF framework structure directly
+                const frameworkResult = await callMCPTool('csf_lookup', {
+                    include_examples: false
+                });
+
+                if (!frameworkResult.success) {
+                    throw new Error('Failed to load CSF framework');
+                }
+
+                const frameworkData = frameworkResult.data || frameworkResult;
+                
+                // Extract subcategories from framework structure
+                structureFrameworkForLinearFlow(frameworkData);
+                
+                // Calculate total questions (maturity + effectiveness per subcategory)
+                const totalSubcategories = Array.from(assessmentState.questionsBySubcategory.keys()).length;
+                assessmentState.totalQuestions = totalSubcategories * 2;
+                
+                console.log(`Loaded ${totalSubcategories} subcategories, ${assessmentState.totalQuestions} total questions`);
+                
+                initializeFunctionProgress();
+
+            } catch (error) {
+                throw new Error('Failed to load questions: ' + error.message);
+            }
+        }
+
+        function structureFrameworkForLinearFlow(frameworkData) {
+            const subcategoryMap = new Map();
+            
+            // Extract subcategories from framework data structure - filter for official subcategories only
+            const officialSubcategories = new Set(); // Track to avoid duplicates
+            
+            if (frameworkData.data && Array.isArray(frameworkData.data)) {
+                frameworkData.data.forEach(functionData => {
+                    if (functionData.children && Array.isArray(functionData.children)) {
+                        functionData.children.forEach(categoryData => {
+                            if (categoryData.children && Array.isArray(categoryData.children)) {
+                                categoryData.children.forEach(subcategoryElement => {
+                                    const subcategoryId = subcategoryElement.element_identifier;
+                                    const functionId = subcategoryId.substring(0, 2);
+                                    
+                                    // Filter for standard subcategory pattern (XX.YY-NN) and avoid duplicates
+                                    if (subcategoryId.match(/^[A-Z]{2}\.[A-Z]{2}-\d{2}$/) && 
+                                        !officialSubcategories.has(subcategoryId)) {
+                                        
+                                        officialSubcategories.add(subcategoryId);
+                                        
+                                        const subcatData = {
+                                            id: subcategoryId,
+                                            function: functionId,
+                                            name: subcategoryElement.text || subcategoryElement.title || subcategoryId,
+                                            questions: {}
+                                        };
+
+                                        // Maturity question
+                                        subcatData.questions.maturity = {
+                                            subcategory_id: subcategoryId,
+                                            question_text: `What is the maturity level of "${subcategoryElement.text || subcategoryId}" in your organization?`,
+                                            question_type: 'maturity_rating',
+                                            options: [
+                                                { value: 0, label: 'Not Implemented', description: 'No measures in place' },
+                                                { value: 1, label: 'Initial/Ad Hoc', description: 'Minimal processes' },
+                                                { value: 2, label: 'Developing', description: 'Basic processes defined' },
+                                                { value: 3, label: 'Defined', description: 'Formal processes documented' },
+                                                { value: 4, label: 'Managed', description: 'Processes monitored and measured' },
+                                                { value: 5, label: 'Optimized', description: 'Continuous improvement' }
+                                            ]
+                                        };
+
+                                        // Effectiveness question with custom options
+                                        subcatData.questions.effectiveness = {
+                                            subcategory_id: subcategoryId,
+                                            question_text: `How effective is your organization at implementing "${subcategoryElement.text || subcategoryId}"?`,
+                                            question_type: 'effectiveness_rating',
+                                            options: [
+                                                { value: 0, label: 'Non-existent', description: 'No implementation exists' },
+                                                { value: 1, label: 'Partial', description: 'Partially implemented with gaps' },
+                                                { value: 2, label: 'Full', description: 'Fully implemented and effective' }
+                                            ]
+                                        };
+
+                                        subcategoryMap.set(subcategoryId, subcatData);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            
+            console.log(`Filtered to ${officialSubcategories.size} official subcategories (target: 106)`);
+
+            // Organize subcategories by function
+            assessmentState.functions.forEach(funcId => {
+                const subcategories = [];
+                subcategoryMap.forEach((subcategory) => {
+                    if (subcategory.function === funcId) {
+                        subcategories.push(subcategory);
+                    }
+                });
+                
+                // Sort subcategories by ID (GV.OC-01, GV.OC-02, etc.)
+                subcategories.sort((a, b) => a.id.localeCompare(b.id));
+                assessmentState.subcategoriesByFunction.set(funcId, subcategories);
+            });
+
+            assessmentState.questionsBySubcategory = subcategoryMap;
+        }
+
+        function extractSubcategoryName(question) {
+            // Extract full readable name from the question text - no truncation
+            if (question.question_text) {
+                const text = question.question_text.replace('Rate your organization\'s current implementation level for: ', '');
+                return text; // Return full text without truncation
+            }
+            return question.subcategory_id;
+        }
+
+        function initializeFunctionProgress() {
+            assessmentState.functions.forEach(funcId => {
+                const subcategories = assessmentState.subcategoriesByFunction.get(funcId) || [];
+                assessmentState.functionProgress.set(funcId, {
+                    total: subcategories.length * 2, // maturity + coverage per subcategory
+                    completed: 0,
+                    percentage: 0
+                });
+            });
+        }
+
+        function showLinearQuestionInterface() {
+            document.getElementById('organizationSetup').classList.add('hidden');
+            document.getElementById('questionContainer').style.display = 'block';
+            
+            renderCurrentLinearQuestion();
+        }
+
+        function renderCurrentLinearQuestion() {
+            const currentFunc = assessmentState.functions[assessmentState.currentFunction];
+            const subcategories = assessmentState.subcategoriesByFunction.get(currentFunc) || [];
+            const currentSubcat = subcategories[assessmentState.currentSubcategory];
+
+            if (!currentSubcat) {
+                // Function completed, move to next or finish
+                if (assessmentState.currentFunction < assessmentState.functions.length - 1) {
+                    assessmentState.currentFunction++;
+                    assessmentState.currentSubcategory = 0;
+                    renderCurrentLinearQuestion();
+                } else {
+                    // Assessment completed!
+                    showCompletionMessage();
+                }
+                return;
+            }
+
+            // Update location display
+            updateLocationDisplay(currentFunc, currentSubcat);
+            
+            // Render both maturity and effectiveness questions
+            renderMaturityQuestion(currentSubcat);
+            renderEffectivenessQuestion(currentSubcat);
+            
+            // Load existing answers
+            loadExistingAnswers(currentSubcat);
+            
+            // Update navigation
+            updateLinearNavigation();
+            
+            // Update progress
+            updateLinearProgress();
+        }
+
+        function updateLocationDisplay(functionId, subcategory) {
+            document.getElementById('currentFunction').textContent = 
+                `${assessmentState.functionNames[functionId]} (${functionId})`;
+            document.getElementById('currentSubcategory').textContent = 
+                `${subcategory.id}: ${subcategory.name || subcategory.id}`;
+            document.getElementById('locationProgress').textContent = 
+                `Function ${assessmentState.currentFunction + 1} of 6 | Subcategory ${assessmentState.currentSubcategory + 1} of ${(assessmentState.subcategoriesByFunction.get(functionId) || []).length}`;
+        }
+
+        function renderMaturityQuestion(subcategory) {
+            const question = subcategory.questions.maturity;
+            if (!question) return;
+
+            document.getElementById('maturityQuestionText').textContent = question.question_text;
+            
+            const container = document.getElementById('maturityOptions');
+            container.innerHTML = '';
+            
+            renderQuestionOptions(question, container, 'maturity');
+        }
+
+        function renderEffectivenessQuestion(subcategory) {
+            const question = subcategory.questions.effectiveness;
+            if (!question) return;
+
+            document.getElementById('effectivenessQuestionText').textContent = question.question_text;
+            
+            const container = document.getElementById('effectivenessOptions');
+            container.innerHTML = '';
+            
+            renderQuestionOptions(question, container, 'effectiveness');
+        }
+
+        function renderQuestionOptions(question, container, questionType) {
+            const options = question.options || [
+                { value: 0, label: 'Not Implemented', description: 'No measures in place' },
+                { value: 1, label: 'Initial/Ad Hoc', description: 'Minimal processes' },
+                { value: 2, label: 'Developing', description: 'Basic processes defined' },
+                { value: 3, label: 'Defined', description: 'Formal processes documented' },
+                { value: 4, label: 'Managed', description: 'Processes monitored and measured' },
+                { value: 5, label: 'Optimized', description: 'Continuous improvement' }
+            ];
+
+            options.forEach(option => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                
+                optionDiv.innerHTML = `
+                    <input type="radio" name="${questionType}Answer" value="${option.value}" id="${questionType}_${option.value}">
+                    <label for="${questionType}_${option.value}">
+                        <strong>${option.label}</strong><br>
+                        <small>${option.description}</small>
+                    </label>
+                `;
+
+                // Add auto-save on selection
+                optionDiv.querySelector('input').addEventListener('change', function() {
+                    if (this.checked) {
+                        optionDiv.parentNode.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                        optionDiv.classList.add('selected');
+                        scheduleAutoSave(question.subcategory_id + '_' + questionType, this.value, questionType);
+                    }
+                });
+
+                container.appendChild(optionDiv);
+            });
+        }
+
+        function loadExistingAnswers(subcategory) {
+            // Load maturity answer
+            const maturityQuestion = subcategory.questions.maturity;
+            if (maturityQuestion) {
+                const maturityId = maturityQuestion.subcategory_id + '_maturity';
+                const existingAnswer = assessmentState.answers.get(maturityId);
+                if (existingAnswer) {
+                    const radio = document.querySelector(`input[name="maturityAnswer"][value="${existingAnswer.response_value}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        radio.closest('.option').classList.add('selected');
+                    }
+                    // Confidence removed - optional in database
+                }
+            }
+
+            // Load effectiveness answer
+            const effectivenessQuestion = subcategory.questions.effectiveness;
+            if (effectivenessQuestion) {
+                const effectivenessId = effectivenessQuestion.subcategory_id + '_effectiveness';
+                const existingAnswer = assessmentState.answers.get(effectivenessId);
+                if (existingAnswer) {
+                    const radio = document.querySelector(`input[name="effectivenessAnswer"][value="${existingAnswer.response_value}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        radio.closest('.option').classList.add('selected');
+                    }
+                }
+            }
+        }
+
+        let saveTimeout;
+        async function scheduleAutoSave(questionId, responseValue, questionType) {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            
+            saveTimeout = setTimeout(async () => {
+                await saveLinearAnswer(questionId, responseValue, questionType);
+            }, AUTO_SAVE_DELAY);
+        }
+
+        async function saveLinearAnswer(questionId, responseValue, questionType) {
+            try {
+                showSaveIndicator('saving');
+
+                const answerData = {
+                    question_id: questionId,
+                    response_value: responseValue,
+                    confidence_level: 'medium', // Default since confidence is optional
+                    question_type: questionType
+                };
+
+                // Save to MCP server
+                const result = await callMCPTool('validate_assessment_responses', {
+                    profile_id: assessmentState.profileId,
+                    assessment_type: 'detailed',
+                    responses: [{
+                        subcategory_id: questionId.split('_')[0], // Extract subcategory from question ID
+                        response_value: responseValue,
+                        confidence_level: answerData.confidence_level
+                    }],
+                    require_all_questions: false,
+                    allow_partial_responses: true
+                });
+
+                if (result.success || result.data?.is_valid !== false) {
+                    // Update local state
+                    assessmentState.answers.set(questionId, answerData);
+                    assessmentState.lastSaveTime = new Date();
+                    
+                    updateLinearProgress();
+                    saveSessionState();
+                    showSaveIndicator('saved');
+                } else {
+                    throw new Error(result.error || 'Save validation failed');
+                }
+
+            } catch (error) {
+                console.error('Save error:', error);
+                showSaveIndicator('error');
+                // Backup to localStorage
+                localStorage.setItem(`backup-${questionId}`, JSON.stringify({
+                    questionId, responseValue, timestamp: Date.now()
+                }));
+            }
+        }
+
+        function updateLinearProgress() {
+            // Update function progress
+            let totalQuestionsCalculated = 0;
+            
+            assessmentState.functions.forEach(funcId => {
+                const subcategories = assessmentState.subcategoriesByFunction.get(funcId) || [];
+                let completed = 0;
+                
+                subcategories.forEach(subcat => {
+                    const maturityId = subcat.questions.maturity ? subcat.questions.maturity.subcategory_id + '_maturity' : null;
+                    const effectivenessId = subcat.questions.effectiveness ? subcat.questions.effectiveness.subcategory_id + '_effectiveness' : null;
+                    
+                    if (maturityId && assessmentState.answers.has(maturityId)) completed++;
+                    if (effectivenessId && assessmentState.answers.has(effectivenessId)) completed++;
+                });
+                
+                const total = subcategories.length * 2;
+                totalQuestionsCalculated += total;
+                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+                
+                assessmentState.functionProgress.set(funcId, { total, completed, percentage });
+                
+                // Update function badge
+                const badge = document.getElementById(`progress-${funcId}`);
+                if (badge) {
+                    badge.className = `function-badge ${
+                        percentage === 100 ? 'completed' : 
+                        funcId === assessmentState.functions[assessmentState.currentFunction] ? 'current' : 
+                        'pending'
+                    }`;
+                }
+            });
+
+            // Fix total questions if it's wrong
+            if (assessmentState.totalQuestions === 0 && totalQuestionsCalculated > 0) {
+                assessmentState.totalQuestions = totalQuestionsCalculated;
+            }
+
+            // Update overall progress with safety check
+            const totalAnswered = assessmentState.answers.size;
+            const totalQuestions = Math.max(assessmentState.totalQuestions, 1); // Prevent division by zero
+            const overallPercentage = Math.round((totalAnswered / totalQuestions) * 100);
+            
+            document.getElementById('overallProgress').style.width = Math.min(overallPercentage, 100) + '%';
+            document.getElementById('progressText').textContent = 
+                `${Math.min(overallPercentage, 100)}% Complete - ${totalAnswered}/${assessmentState.totalQuestions} Questions Answered`;
+        }
+
+        function nextSubcategory() {
+            // Check if both questions are answered for current subcategory
+            const currentFunc = assessmentState.functions[assessmentState.currentFunction];
+            const subcategories = assessmentState.subcategoriesByFunction.get(currentFunc) || [];
+            const currentSubcat = subcategories[assessmentState.currentSubcategory];
+
+            if (currentSubcat) {
+                const maturityId = currentSubcat.questions.maturity ? currentSubcat.questions.maturity.subcategory_id + '_maturity' : null;
+                const effectivenessId = currentSubcat.questions.effectiveness ? currentSubcat.questions.effectiveness.subcategory_id + '_effectiveness' : null;
+                
+                const maturityAnswered = !maturityId || assessmentState.answers.has(maturityId);
+                const effectivenessAnswered = !effectivenessId || assessmentState.answers.has(effectivenessId);
+                
+                if (!maturityAnswered || !effectivenessAnswered) {
+                    showError('Please answer both maturity and effectiveness questions before proceeding.');
+                    return;
+                }
+            }
+
+            // Move to next subcategory
+            if (assessmentState.currentSubcategory < subcategories.length - 1) {
+                assessmentState.currentSubcategory++;
+            } else {
+                // Move to next function
+                if (assessmentState.currentFunction < assessmentState.functions.length - 1) {
+                    assessmentState.currentFunction++;
+                    assessmentState.currentSubcategory = 0;
+                } else {
+                    // Assessment completed!
+                    showCompletionMessage();
+                    return;
+                }
+            }
+            
+            saveSessionState();
+            renderCurrentLinearQuestion();
+        }
+
+        function previousSubcategory() {
+            if (assessmentState.currentSubcategory > 0) {
+                assessmentState.currentSubcategory--;
+            } else if (assessmentState.currentFunction > 0) {
+                // Move to previous function, last subcategory
+                assessmentState.currentFunction--;
+                const prevFunc = assessmentState.functions[assessmentState.currentFunction];
+                const prevSubcategories = assessmentState.subcategoriesByFunction.get(prevFunc) || [];
+                assessmentState.currentSubcategory = Math.max(0, prevSubcategories.length - 1);
+            } else {
+                // Already at beginning
+                return;
+            }
+            
+            saveSessionState();
+            renderCurrentLinearQuestion();
+        }
+
+        function updateLinearNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            // Show/hide previous button
+            prevBtn.style.display = (assessmentState.currentFunction === 0 && assessmentState.currentSubcategory === 0) ? 'none' : 'block';
+            
+            // Update next button text
+            const currentFunc = assessmentState.functions[assessmentState.currentFunction];
+            const subcategories = assessmentState.subcategoriesByFunction.get(currentFunc) || [];
+            
+            if (assessmentState.currentFunction === assessmentState.functions.length - 1 && 
+                assessmentState.currentSubcategory === subcategories.length - 1) {
+                nextBtn.textContent = 'Complete Assessment';
+            } else {
+                nextBtn.textContent = 'Next Subcategory';
+            }
+        }
+
+        function showCompletionMessage() {
+            document.getElementById('questionContainer').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <h2 style="color: #27ae60; margin-bottom: 16px;">🎉 Assessment Complete!</h2>
+                    <p style="font-size: 1.2rem; color: #2c3e50; margin-bottom: 24px;">
+                        Congratulations! You have completed the comprehensive NIST CSF 2.0 assessment.
+                    </p>
+                    <p style="color: #7f8c8d; margin-bottom: 24px;">
+                        Organization: ${assessmentState.organizationId}<br>
+                        Total Questions Answered: ${assessmentState.answers.size}
+                    </p>
+                    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn" onclick="generateFinalReports()">Generate Assessment Reports</button>
+                        <button class="btn" onclick="startNewAssessment()" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">Start New Assessment</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function resumeLinearAssessment() {
+            try {
+                showLoading(true);
+                
+                // Restore state from localStorage
+                const saved = JSON.parse(localStorage.getItem('nist-csf-linear-session'));
+                assessmentState.answers = new Map(saved.answers || []);
+                
+                await loadLinearQuestionStructure();
+                updateLinearProgress();
+                showLinearQuestionInterface();
+                
+                showSuccess(`Resuming linear assessment for organization: ${assessmentState.organizationId}`);
+                showLoading(false);
+
+            } catch (error) {
+                console.error('Resume error:', error);
+                showError('Failed to resume assessment. Starting fresh...');
+                localStorage.removeItem('nist-csf-linear-session');
+                showOrganizationSetup();
+                showLoading(false);
+            }
+        }
+
+        function saveSessionState() {
+            const sessionData = {
+                sessionId: assessmentState.sessionId,
+                organizationId: assessmentState.organizationId,
+                profileId: assessmentState.profileId,
+                workflowId: assessmentState.workflowId,
+                currentFunction: assessmentState.currentFunction,
+                currentSubcategory: assessmentState.currentSubcategory,
+                currentQuestionType: assessmentState.currentQuestionType,
+                answers: Array.from(assessmentState.answers.entries()),
+                lastSaveTime: assessmentState.lastSaveTime
+            };
+            
+            localStorage.setItem('nist-csf-linear-session', JSON.stringify(sessionData));
+        }
+
+        function getSubcategoryName(subcategoryId) {
+            // Add subcategory name mapping
+            const subcategoryNames = {
+                'GV.OC-01': 'Organizational Mission',
+                'GV.OC-02': 'Internal and External Context',
+                'GV.OC-03': 'Legal, Regulatory, and Contractual Requirements',
+                'GV.OC-04': 'Critical Technology and Dependency Management',
+                'GV.OC-05': 'Organizational Risk Tolerance',
+                // Add more mappings as needed...
+            };
+            
+            return subcategoryNames[subcategoryId] || 'Assessment Question';
+        }
+
+        function generateSessionId() {
+            return 'linear-session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        async function callMCPTool(toolName, params) {
+            try {
+                console.log(`Calling MCP tool: ${toolName}`, params);
+                
+                const response = await fetch(`${MCP_SERVER_URL}/api/tools/${toolName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(params)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                console.log(`MCP tool result:`, result);
+                
+                return result;
+
+            } catch (error) {
+                console.error(`MCP tool error (${toolName}):`, error);
+                return { 
+                    success: false, 
+                    error: `Failed to call ${toolName}: ${error.message}` 
+                };
+            }
+        }
+
+        function showSaveIndicator(status) {
+            const indicator = document.getElementById('saveIndicator');
+            const text = document.getElementById('saveText');
+            
+            indicator.className = `auto-save-indicator ${status}`;
+            
+            switch(status) {
+                case 'saving':
+                    text.textContent = '💾 Saving...';
+                    break;
+                case 'saved':
+                    text.textContent = '✅ Saved';
+                    setTimeout(() => {
+                        text.textContent = 'Auto-save enabled';
+                        indicator.className = 'auto-save-indicator';
+                    }, 2000);
+                    break;
+                case 'error':
+                    text.textContent = '❌ Save failed - stored locally';
+                    break;
+                default:
+                    text.textContent = 'Auto-save enabled';
+            }
+        }
+
+        function showLoading(show) {
+            const indicator = document.getElementById('loadingIndicator');
+            if (show) {
+                indicator.classList.remove('hidden');
+            } else {
+                indicator.classList.add('hidden');
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            
+            document.querySelector('.container').insertBefore(errorDiv, document.querySelector('.container').firstChild);
+            
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            
+            document.querySelector('.container').insertBefore(successDiv, document.querySelector('.container').firstChild);
+            
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+
+        function startNewAssessment() {
+            // Clear all browser session data
+            localStorage.removeItem('nist-csf-linear-session');
+            
+            // Clear all backup data
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('backup-')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            
+            // Reset assessment state
+            assessmentState = {
+                sessionId: null,
+                organizationId: null,
+                profileId: null,
+                workflowId: null,
+                currentFunction: 0,
+                currentSubcategory: 0,
+                currentQuestionType: 'maturity',
+                functions: ['GV', 'ID', 'PR', 'DE', 'RS', 'RC'],
+                functionNames: {
+                    'GV': 'GOVERN',
+                    'ID': 'IDENTIFY', 
+                    'PR': 'PROTECT',
+                    'DE': 'DETECT',
+                    'RS': 'RESPOND',
+                    'RC': 'RECOVER'
+                },
+                allQuestions: [],
+                questionsBySubcategory: new Map(),
+                subcategoriesByFunction: new Map(),
+                answers: new Map(),
+                functionProgress: new Map(),
+                totalQuestions: 0,
+                lastSaveTime: null
+            };
+            
+            // Show fresh organization setup
+            showOrganizationSetup();
+            
+            showSuccess('Session cleared! Starting fresh assessment.');
+        }
+
+        async function generateFinalReports() {
+            try {
+                showLoading(true);
+                
+                // Generate comprehensive reports
+                const reportResult = await callMCPTool('generate_report', {
+                    profile_id: assessmentState.profileId,
+                    report_type: 'comprehensive',
+                    format: 'json',
+                    include_recommendations: true
+                });
+
+                if (reportResult.success) {
+                    showSuccess('Assessment reports generated successfully!');
+                    // Could display reports or download them
+                } else {
+                    showError('Failed to generate reports: ' + reportResult.error);
+                }
+                
+                showLoading(false);
+            } catch (error) {
+                console.error('Report generation error:', error);
+                showError('Failed to generate reports: ' + error.message);
+                showLoading(false);
+            }
+        }
+
+    </script>
+</body>
+</html>

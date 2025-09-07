@@ -90,6 +90,7 @@ interface TestReport {
   artifacts: {
     organizationId?: string;
     profileId?: string;
+    targetProfileId?: string;
     gapAnalysisId?: string;
     implementationPlanId?: string;
     reportData?: any;
@@ -205,10 +206,28 @@ class E2ETestRunner {
         this.report.artifacts.profileId = result.profile_id;
         this.report.artifacts.organizationId = result.org_id;
         
+        // Create target profile for gap analysis
+        const targetProfileData = {
+          org_name: profileData.organization.name,
+          sector: profileData.organization.industry,
+          size: profileData.organization.size as 'small' | 'medium' | 'large' | 'enterprise',
+          profile_type: 'target' as const,
+          profile_name: 'E2E Target Profile',
+          description: 'Target state profile for E2E gap analysis testing'
+        };
+        
+        const targetResult = await createProfile(targetProfileData);
+        if (!targetResult.profile_id) {
+          throw new Error('Target profile creation failed - no profile_id returned');
+        }
+        
+        this.report.artifacts.targetProfileId = targetResult.profile_id;
+        
         return {
           profileId: result.profile_id,
+          targetProfileId: targetResult.profile_id,
           organizationId: result.org_id,
-          message: result.message
+          message: `${result.message} | Target profile: ${targetResult.profile_id}`
         };
       }
     );
@@ -249,8 +268,28 @@ class E2ETestRunner {
           throw new Error('Quick assessment failed - operation not successful');
         }
         
+        // Create target assessment with higher maturity scores
+        const targetResult = await quickAssessment({
+          profile_id: this.report.artifacts.targetProfileId!,
+          simplified_answers: {
+            govern: 'yes',     // Higher than 'partial'
+            identify: 'yes',   // Higher than 'partial'
+            protect: 'yes',    // Higher than 'partial' 
+            detect: 'yes',     // Same
+            respond: 'yes',    // Higher than 'no'
+            recover: 'yes'     // Higher than 'partial'
+          },
+          assessed_by: 'e2e-test-target',
+          confidence_level: 'high'
+        });
+        
+        if (!targetResult.success) {
+          throw new Error('Target assessment failed - operation not successful');
+        }
+        
         return {
           assessmentsCreated: result.details?.assessmentsCreated || 0,
+          targetAssessmentsCreated: targetResult.details?.assessmentsCreated || 0,
           functionSummaries: result.details?.functionSummaries?.length || 0,
           overallAverage: result.initial_maturity_scores.overall_average,
           message: result.message
@@ -321,7 +360,7 @@ class E2ETestRunner {
         
         const result = await generateGapAnalysis({
           current_profile_id: this.report.artifacts.profileId!,
-          target_profile_id: this.report.artifacts.profileId!,
+          target_profile_id: this.report.artifacts.targetProfileId!,
           include_priority_matrix: true,
           include_visualizations: false,
           minimum_gap_score: 0
@@ -398,7 +437,7 @@ class E2ETestRunner {
         // };
         
         const result = await createImplementationPlan({
-          gap_analysis_id: this.report.artifacts.gapAnalysisId!,
+          gap_analysis_id: this.report.artifacts.organizationId!,  // Use org ID instead of gap analysis UUID
           timeline_months: 12,
           available_resources: 5,
           prioritization_strategy: 'risk_based' as const,
@@ -765,7 +804,7 @@ async function main() {
 }
 
 // Run tests if this file is executed directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }
 

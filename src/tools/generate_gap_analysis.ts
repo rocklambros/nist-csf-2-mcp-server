@@ -115,18 +115,29 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
     const analysisId = uuidv4();
     
     // Perform gap analysis and store results in database
-    const analysisResult = (db as any).generateGapAnalysis(
-      (params as any).current_profile_id,
-      (params as any).target_profile_id,
-      analysisId
-    );
-    
-    if (!analysisResult || !(Array as any).isArray(analysisResult) || (analysisResult as any).length === 0) {
-      return createErrorResult('Failed to generate gap analysis');
+    try {
+      logger.info(`Generating gap analysis with ID: ${analysisId}, current: ${(params as any).current_profile_id}, target: ${(params as any).target_profile_id}`);
+      (db as any).generateGapAnalysis(
+        (params as any).current_profile_id,
+        (params as any).target_profile_id,
+        analysisId
+      );
+      logger.info(`Gap analysis database insert completed successfully`);
+    } catch (error) {
+      logger.error('Gap analysis database error:', error);
+      return createErrorResult(`Failed to generate gap analysis: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
     
-    // Get detailed gap analysis data
-    const gapDetails = (db as any).getGapAnalysisDetails(analysisId);
+    // Get detailed gap analysis data by org_id
+    const orgId = currentProfile.org_id || (db as any).getProfile((params as any).current_profile_id)?.org_id;
+    logger.info(`Retrieving gap analysis details for org: ${orgId} (analysis: ${analysisId})`);
+    const gapDetails = (db as any).getGapAnalysisDetails(orgId);
+    logger.info(`Gap analysis details retrieved: ${gapDetails ? (gapDetails as any).length : 0} records`);
+    
+    if (!gapDetails || !(Array as any).isArray(gapDetails) || (gapDetails as any).length === 0) {
+      logger.warn(`No gap analysis details found for ID: ${analysisId}`);
+      return createErrorResult('Gap analysis generated but no details found');
+    }
     
     // Filter by minimum gap score if specified
     const filteredGaps = (gapDetails as any).filter(
@@ -420,8 +431,11 @@ function generateRecommendations(
   // Long-term objectives - Based on functions with highest gaps
   const functionGaps: Record<string, number> = {};
   for (const gap of gaps) {
-    const funcId = (gap as any).subcategory_id.substring(0, 2);
-    functionGaps[funcId] = (functionGaps[funcId] || 0) + (gap as any).gap_score;
+    const subcategoryId = (gap as any).subcategory_id || '';
+    if (subcategoryId.length >= 2) {
+      const funcId = subcategoryId.substring(0, 2);
+      functionGaps[funcId] = (functionGaps[funcId] || 0) + (gap as any).gap_score;
+    }
   }
   
   const sortedFunctions = (Object as any).entries(functionGaps)
@@ -500,11 +514,12 @@ function calculateProfileSummary(profileId: string, db: any): any {
  * Format gap item for output
  */
 function formatGapItem(gap: any): GapItem {
+  const subcategoryId = (gap as any).subcategory_id || '';
   return {
-    subcategory_id: (gap as any).subcategory_id,
-    subcategory_name: (gap as any).subcategory_name || (gap as any).subcategory_id,
-    function_id: (gap as any).subcategory_id.substring(0, 2),
-    category_id: (gap as any).subcategory_id.substring(0, 5),
+    subcategory_id: subcategoryId,
+    subcategory_name: (gap as any).subcategory_name || subcategoryId,
+    function_id: subcategoryId.length >= 2 ? subcategoryId.substring(0, 2) : '',
+    category_id: subcategoryId.length >= 5 ? subcategoryId.substring(0, 5) : subcategoryId,
     current_implementation: (gap as any).current_implementation || 'not_implemented',
     target_implementation: (gap as any).target_implementation || 'fully_implemented',
     current_maturity: (gap as any).current_maturity || 0,
