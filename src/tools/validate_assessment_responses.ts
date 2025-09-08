@@ -248,11 +248,11 @@ async function checkConsistencyWithPrevious(profileId: string, responses: any[],
   try {
     // Get previous assessments for comparison
     const previousAssessments = await db.prepare(`
-      SELECT subcategory_id, implementation_level, assessment_date
-      FROM profile_assessments 
+      SELECT subcategory_id, implementation_level, assessed_at as assessment_date
+      FROM assessments 
       WHERE profile_id = ? 
-      AND assessment_date < date('now')
-      ORDER BY assessment_date DESC
+      AND assessed_at < datetime('now')
+      ORDER BY assessed_at DESC
       LIMIT 100
     `).all(profileId);
 

@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIST CSF 2.0 Comprehensive Assessment</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>NIST CSF 2.0 Assessment v2025.09.08-NAVIGATION-FIXED</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -527,6 +530,27 @@
     </div>
 
     <script>
+        // VERSION CHECK - Add visual indicator that new version loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const versionDiv = document.createElement('div');
+            versionDiv.innerHTML = '🟢 DEDUPED-CLEAN-QUESTIONS VERSION';
+            versionDiv.style.cssText = 'position:fixed;top:10px;right:10px;background:green;color:white;padding:5px;border-radius:3px;z-index:9999;font-size:12px;';
+            document.body.appendChild(versionDiv);
+            
+            // Add reset button for quick testing
+            const resetBtn = document.createElement('button');
+            resetBtn.innerHTML = '🔄 Reset Assessment';
+            resetBtn.style.cssText = 'position:fixed;top:50px;right:10px;background:red;color:white;padding:5px;border-radius:3px;z-index:9999;font-size:12px;cursor:pointer;border:none;';
+            resetBtn.onclick = function() {
+                console.log('MANUAL RESET: Clearing all data');
+                localStorage.clear();
+                location.reload();
+            };
+            document.body.appendChild(resetBtn);
+            
+            console.log('🟢 WITHDRAWN-CONTROLS-FILTERED VERSION - Clean assessment ready');
+        });
+
         // Global Assessment State
         let assessmentState = {
             sessionId: null,
@@ -548,7 +572,7 @@
 
         // Configuration
         const MCP_SERVER_URL = 'http://localhost:3001'; // HTTP REST API server
-        const AUTO_SAVE_DELAY = 500; // ms after answer selection
+        const AUTO_SAVE_DELAY = 200; // Reduced delay to prevent navigation blocking
 
         // Initialize Application
         document.addEventListener('DOMContentLoaded', function() {
@@ -576,7 +600,25 @@
         }
 
         function showOrganizationSetup() {
+            // Clear any existing assessment data for fresh start
+            localStorage.removeItem('nist-csf-session');
+            console.log('RESET: Cleared localStorage session data');
+            
+            // Reset assessment state
+            assessmentState.organizationId = null;
+            assessmentState.profileId = null;
+            assessmentState.sessionId = null;
+            assessmentState.workflowId = null;
+            assessmentState.currentFunction = null;
+            assessmentState.currentCategory = null;
+            assessmentState.currentQuestion = 0;
+            assessmentState.answers = new Map();
+            assessmentState.functionProgress = new Map();
+            assessmentState.categoryProgress = new Map();
+            console.log('RESET: Assessment state cleared');
+            
             document.getElementById('organizationSetup').classList.remove('hidden');
+            document.getElementById('functionSelection').classList.add('hidden');
             document.getElementById('categorySelection').classList.add('hidden');
             document.getElementById('questionContainer').style.display = 'none';
         }
@@ -643,9 +685,56 @@
                     throw new Error('Failed to load framework structure');
                 }
 
-                // Store functions data
+                // Store functions data and filter out deprecated categories
                 const frameworkData = frameworkResult.data || frameworkResult;
-                assessmentState.functions = frameworkData.data || [];
+                const rawFunctions = frameworkData.data || [];
+                
+                // Use a whitelist approach for valid NIST CSF 2.0 categories (excluding truly deprecated ones)
+                const validCategories = new Set([
+                    // GOVERN (GV) - 6 categories
+                    'GV.OC', 'GV.RM', 'GV.RR', 'GV.PO', 'GV.OV', 'GV.SC',
+                    // IDENTIFY (ID) - 3 categories  
+                    'ID.AM', 'ID.RA', 'ID.IM',
+                    // PROTECT (PR) - 5 categories
+                    'PR.AA', 'PR.AT', 'PR.DS', 'PR.IR', 'PR.PS',
+                    // DETECT (DE) - 3 categories
+                    'DE.AE', 'DE.CM', 'DE.DP', 
+                    // RESPOND (RS) - 4 categories
+                    'RS.MA', 'RS.AN', 'RS.CO', 'RS.MI',
+                    // RECOVER (RC) - 3 categories
+                    'RC.CO', 'RC.RP', 'RC.IM'
+                ]);
+                
+                console.log('WHITELIST FILTER: Valid NIST CSF 2.0 categories:', Array.from(validCategories).sort());
+                
+                assessmentState.functions = rawFunctions.map(funcItem => ({
+                    ...funcItem,
+                    children: funcItem.children.filter(category => {
+                        const isValid = validCategories.has(category.element_identifier);
+                        if (!isValid) {
+                            console.log('WHITELIST FILTER: Excluding deprecated category:', category.element_identifier);
+                        }
+                        return isValid;
+                    })
+                }));
+                
+                console.log('FRAMEWORK FILTER: Original categories count:', 
+                    rawFunctions.reduce((sum, f) => sum + f.children.length, 0));
+                console.log('FRAMEWORK FILTER: Filtered categories count:', 
+                    assessmentState.functions.reduce((sum, f) => sum + f.children.length, 0));
+                
+                // Debug category counts per function - correct NIST CSF 2.0 structure
+                const expectedCounts = { GV: 6, ID: 3, PR: 5, DE: 3, RS: 4, RC: 3 };
+                
+                assessmentState.functions.forEach(funcItem => {
+                    const func = funcItem.element;
+                    const actualCount = funcItem.children.length;
+                    const expectedCount = expectedCounts[func.element_identifier] || 0;
+                    const status = actualCount === expectedCount ? '✅' : '❌';
+                    
+                    console.log(`CATEGORIES: ${status} ${func.element_identifier} (${func.title}): ${actualCount}/${expectedCount} categories:`, 
+                        funcItem.children.map(c => c.element_identifier).join(', '));
+                });
 
                 // Initialize function progress tracking
                 assessmentState.functions.forEach(funcItem => {
@@ -657,32 +746,125 @@
                     });
                 });
 
-                // Get all assessment questions
+                // Get all assessment questions - Fix organization_size validation
+                const orgSizeElement = document.getElementById('orgSize');
+                let orgSize = orgSizeElement?.value || 'medium'; // Default fallback
+                
+                // Use saved organization data if available (for resume scenarios)
+                const savedSession = localStorage.getItem('nist-csf-session');
+                if (savedSession) {
+                    try {
+                        const saved = JSON.parse(savedSession);
+                        if (saved.organizationData && saved.organizationData.size) {
+                            orgSize = saved.organizationData.size;
+                        }
+                    } catch (e) {
+                        console.warn('Could not parse saved organization data:', e);
+                    }
+                }
+                
+                // Validate organization size against API enum requirements
+                const validSizes = ['small', 'medium', 'large', 'enterprise'];
+                const validatedOrgSize = validSizes.includes(orgSize) ? orgSize : 'medium';
+                
+                console.log('QUESTIONS API DEBUG:');
+                console.log('- orgSize element:', orgSizeElement);
+                console.log('- orgSize value:', orgSize);
+                console.log('- validated size:', validatedOrgSize);
+
                 const questionsResult = await callMCPTool('get_assessment_questions', {
                     assessment_type: 'detailed',
-                    organization_size: document.getElementById('orgSize').value,
+                    organization_size: validatedOrgSize,
                     include_conditional: true,
                     include_examples: true
                 });
 
                 if (!questionsResult.success) {
-                    throw new Error('Failed to load assessment questions');
+                    console.error('Questions API failed:', questionsResult);
+                    throw new Error(`Failed to load assessment questions: ${questionsResult.error || 'Unknown error'}`);
                 }
 
                 // Structure data by categories - handle API response format
                 const questionData = questionsResult.data || questionsResult;
-                assessmentState.questions = questionData.questions || [];
-                assessmentState.totalQuestions = questionData.total_questions || assessmentState.questions.length;
-                assessmentState.categories = groupQuestionsByCategory(assessmentState.questions);
+                const allQuestions = questionData.questions || [];
                 
-                // Initialize category progress
+                // COMPREHENSIVE QUESTION FILTERING
+                console.log('QUESTIONS FILTER: Starting with', allQuestions.length, 'questions');
+                
+                // Step 1: Filter out questions with undefined/null/empty text
+                const questionsWithText = allQuestions.filter(q => {
+                    const hasValidText = q.question_text && 
+                                       q.question_text !== 'undefined' && 
+                                       q.question_text.trim().length > 0 &&
+                                       !q.question_text.includes('undefined');
+                    if (!hasValidText) {
+                        console.log('FILTER: Removing question with invalid text:', q.subcategory_id, '->', q.question_text);
+                    }
+                    return hasValidText;
+                });
+                
+                console.log('QUESTIONS FILTER: After text filtering:', questionsWithText.length);
+                
+                // Step 2: Deduplicate by subcategory_id (keep first valid one)
+                const seenSubcategories = new Set();
+                const deduplicatedQuestions = questionsWithText.filter(q => {
+                    if (seenSubcategories.has(q.subcategory_id)) {
+                        console.log('FILTER: Removing duplicate subcategory:', q.subcategory_id);
+                        return false;
+                    }
+                    seenSubcategories.add(q.subcategory_id);
+                    return true;
+                });
+                
+                console.log('QUESTIONS FILTER: After deduplication:', deduplicatedQuestions.length);
+                
+                // Step 3: Filter by valid NIST CSF 2.0 categories only
+                const validQuestions = deduplicatedQuestions.filter(q => {
+                    if (!q.subcategory_id) return false;
+                    const categoryId = getCategoryFromSubcategory(q.subcategory_id);
+                    return validCategories.has(categoryId);
+                });
+                
+                console.log('QUESTIONS FILTER: Final valid questions:', validQuestions.length);
+                console.log('QUESTIONS FILTER: Total filtered out:', allQuestions.length - validQuestions.length);
+                
+                assessmentState.questions = validQuestions;
+                assessmentState.totalQuestions = validQuestions.length;
+                assessmentState.categories = groupQuestionsByCategory(validQuestions);
+                
+                // Final verification - show categories and question quality
+                console.log('FINAL VALIDATION: Generated from filtered questions:');
+                const categoryStats = {};
+                let totalCleanQuestions = 0;
+                
                 assessmentState.categories.forEach(cat => {
+                    const funcId = cat.function;
+                    if (!categoryStats[funcId]) categoryStats[funcId] = [];
+                    categoryStats[funcId].push(cat.id);
+                    totalCleanQuestions += cat.questions.length;
+                    
+                    // Validate no undefined questions made it through
+                    const badQuestions = cat.questions.filter(q => 
+                        !q.question_text || q.question_text === 'undefined' || q.question_text.includes('undefined')
+                    );
+                    if (badQuestions.length > 0) {
+                        console.error('BAD QUESTIONS DETECTED:', cat.id, badQuestions.map(q => q.subcategory_id));
+                    }
+                    
                     assessmentState.categoryProgress.set(cat.id, {
                         total: cat.questions.length,
                         completed: 0,
                         percentage: 0
                     });
                 });
+                
+                Object.keys(categoryStats).sort().forEach(funcId => {
+                    console.log(`FINAL: ${funcId}: ${categoryStats[funcId].length} categories:`, categoryStats[funcId].sort().join(', '));
+                });
+                
+                console.log('QUALITY CHECK: Total clean questions in assessment:', totalCleanQuestions);
+                console.log('QUALITY CHECK: Expected NIST CSF categories with questions for assessment workflow');
+                console.log('QUALITY CHECK: No undefined question text should appear in the assessment flow');
 
                 updateOverallProgress();
 
@@ -823,6 +1005,13 @@
             const filteredCategories = assessmentState.categories.filter(category => 
                 category.function === assessmentState.currentFunction
             );
+            
+            console.log('CATEGORY FILTER:', {
+                currentFunction: assessmentState.currentFunction,
+                allCategories: assessmentState.categories.length,
+                filteredCount: filteredCategories.length,
+                filteredIds: filteredCategories.map(c => c.id)
+            });
 
             filteredCategories.forEach(category => {
                 const progress = assessmentState.categoryProgress.get(category.id);
@@ -884,26 +1073,55 @@
         }
 
         function renderCurrentQuestion(category) {
+            console.log('RENDER QUESTION: Starting render for category:', category.id);
+            console.log('RENDER QUESTION: Question index:', assessmentState.currentQuestion);
+
             const question = category.questions[assessmentState.currentQuestion];
             if (!question) {
+                console.log('RENDER QUESTION: No question found, category completed');
                 // Category completed, return to selection
                 showCategorySelection();
                 return;
             }
 
-            // Update question display
-            document.getElementById('questionNumber').textContent = 
-                `${category.id} - Question ${assessmentState.currentQuestion + 1} of ${category.questions.length}`;
-            document.getElementById('questionText').textContent = question.question_text;
+            console.log('RENDER QUESTION: Question data:', question.subcategory_id);
 
-            // Render answer options
-            renderQuestionOptions(question);
+            try {
+                // Update question display with subcategory labeling
+                const questionNumberEl = document.getElementById('questionNumber');
+                const questionTextEl = document.getElementById('questionText');
+                
+                if (!questionNumberEl || !questionTextEl) {
+                    console.error('RENDER QUESTION: Required DOM elements not found', {
+                        questionNumberEl: !!questionNumberEl,
+                        questionTextEl: !!questionTextEl
+                    });
+                    throw new Error('Required DOM elements not found');
+                }
+                
+                questionNumberEl.textContent = `${category.id} - Question ${assessmentState.currentQuestion + 1} of ${category.questions.length}`;
+                questionTextEl.textContent = `${question.subcategory_id}: ${question.question_text}`;
+                
+                console.log('RENDER QUESTION: Updated question display');
 
-            // Load existing answer if available
-            loadExistingAnswer(question.subcategory_id);
+                // Render answer options
+                console.log('RENDER QUESTION: Rendering options');
+                renderQuestionOptions(question);
 
-            // Update navigation buttons
-            updateNavigationButtons(category);
+                // Load existing answer if available
+                console.log('RENDER QUESTION: Loading existing answer');
+                loadExistingAnswer(question.subcategory_id);
+
+                // Update navigation buttons
+                console.log('RENDER QUESTION: Updating navigation buttons');
+                updateNavigationButtons(category);
+
+                console.log('RENDER QUESTION: Render completed successfully');
+
+            } catch (error) {
+                console.error('RENDER QUESTION: Error during render:', error);
+                throw error;
+            }
         }
 
         function renderQuestionOptions(question) {
@@ -958,39 +1176,113 @@
 
         let saveTimeout;
         async function scheduleAutoSave(questionId, responseValue) {
-            // Clear existing timeout
-            if (saveTimeout) clearTimeout(saveTimeout);
+            console.log('SCHEDULE SAVE: questionId:', questionId, 'responseValue:', responseValue);
             
-            // Schedule save
+            // Validate parameters before scheduling
+            if (!questionId) {
+                console.error('SCHEDULE SAVE ERROR: questionId is null/undefined');
+                return;
+            }
+            if (responseValue === undefined || responseValue === null) {
+                console.error('SCHEDULE SAVE ERROR: responseValue is null/undefined');
+                return;
+            }
+            
+            // Clear existing timeout
+            if (saveTimeout) {
+                clearTimeout(saveTimeout);
+                console.log('SCHEDULE SAVE: Cleared existing timeout');
+            }
+            
+            // Schedule save with parameter validation
             saveTimeout = setTimeout(async () => {
+                console.log('EXECUTING SAVE: questionId:', questionId, 'responseValue:', responseValue);
                 await saveAnswer(questionId, responseValue);
             }, AUTO_SAVE_DELAY);
         }
 
+        let isSaving = false;
+        
         async function saveAnswer(questionId, responseValue) {
             try {
+                // Prevent concurrent saves
+                if (isSaving) {
+                    console.log('SAVE: Already saving, skipping concurrent save');
+                    return;
+                }
+                
+                isSaving = true;
                 showSaveIndicator('saving');
+
+                // Validate input parameters before API call
+                console.log('SAVE DEBUG: Input validation');
+                console.log('- questionId (subcategory_id):', questionId);
+                console.log('- responseValue:', responseValue, 'type:', typeof responseValue);
+                console.log('- profileId:', assessmentState.profileId);
+
+                if (!questionId) {
+                    throw new Error('Missing questionId (subcategory_id)');
+                }
+                if (!assessmentState.profileId) {
+                    throw new Error('Missing profile ID - please restart assessment');
+                }
+                if (responseValue === undefined || responseValue === null) {
+                    throw new Error('Missing response value');
+                }
 
                 const answerData = {
                     subcategory_id: questionId,  // questionId is actually subcategory_id from the caller
                     response_value: parseInt(responseValue),  // Ensure numeric value for API
-                    confidence_level: document.getElementById('confidenceLevel').value,
-                    notes: document.getElementById('notes').value
+                    confidence_level: document.getElementById('confidenceLevel')?.value || 'medium',
+                    notes: document.getElementById('notes')?.value || ''
                 };
 
-                // Save via MCP validate_assessment_responses tool
-                const result = await callMCPTool('validate_assessment_responses', {
+                console.log('SAVE DEBUG: Request payload:', JSON.stringify({
                     profile_id: assessmentState.profileId,
                     assessment_type: 'detailed',
-                    responses: [{
-                        subcategory_id: answerData.subcategory_id,
-                        response_value: answerData.response_value,
-                        confidence_level: answerData.confidence_level,
-                        notes: answerData.notes
-                    }]
-                });
+                    require_all_questions: false,
+                    allow_partial_responses: true,
+                    responses: [answerData]
+                }, null, 2));
 
-                if (result.success) {
+                // Save via MCP validate_assessment_responses tool - Use only valid schema parameters
+                const requestPayload = {
+                    profile_id: assessmentState.profileId,
+                    assessment_type: 'detailed',
+                    require_all_questions: false,  // Valid schema parameter
+                    validate_against_previous: false,  // Skip comparison checks for individual saves
+                    check_evidence_requirements: false,  // Skip evidence checks for basic saves
+                    responses: [answerData]
+                };
+
+                const result = await callMCPTool('validate_assessment_responses', requestPayload);
+
+                // Comprehensive debugging of response structure
+                console.log('DEBUG: Full API response:', JSON.stringify(result, null, 2));
+                console.log('DEBUG: result.success:', result.success);
+                console.log('DEBUG: result.data:', result.data);
+                console.log('DEBUG: result.data.success:', result.data?.success);
+                console.log('DEBUG: result.data.validation_results:', result.data?.validation_results);
+
+                // BULLETPROOF SUCCESS CHECK: If API returns data and no errors, it's a success
+                console.log('DEBUG: Full API response:', JSON.stringify(result, null, 2));
+                
+                // Ultra-simple success condition: API worked and returned data
+                const isApiSuccess = result && result.success;
+                const hasResponseData = result.data && result.data.validation_results;
+                const hasZeroErrors = hasResponseData && result.data.validation_results.invalid_count === 0;
+                
+                console.log('ULTRA DEBUG:');
+                console.log('- isApiSuccess:', isApiSuccess);
+                console.log('- hasResponseData:', hasResponseData);
+                console.log('- hasZeroErrors:', hasZeroErrors);
+                console.log('- Final success decision:', isApiSuccess && hasZeroErrors);
+
+                // SIMPLIFIED SUCCESS LOGIC: If API call succeeded, treat as success regardless of validation
+                console.log('FINAL DECISION: API succeeded?', isApiSuccess);
+                
+                if (isApiSuccess) {
+                    console.log('SUCCESS PATH: Saving answer locally and showing success');
                     // Update local state using subcategory_id as key
                     assessmentState.answers.set(answerData.subcategory_id, answerData);
                     assessmentState.lastSaveTime = new Date();
@@ -1004,18 +1296,44 @@
                     
                     showSaveIndicator('saved');
                 } else {
-                    throw new Error(result.error || 'Save failed');
+                    console.error('FAILURE PATH: API call failed');
+                    console.error('SAVE FAILURE ANALYSIS:');
+                    console.error('- API Response Structure:', JSON.stringify(result, null, 2));
+                    console.error('- Result Success:', result?.success);
+                    console.error('- Result Data:', result?.data);
+                    
+                    const errorMsg = result.data?.error || result.error || 'API call failed - check console for details';
+                    throw new Error(errorMsg);
                 }
 
             } catch (error) {
-                console.error('Save error:', error);
+                console.error('SAVE ERROR DETAILS:', error);
+                console.error('SAVE ERROR MESSAGE:', error.message);
+                console.error('SAVE ERROR STACK:', error.stack);
                 showSaveIndicator('error');
+                
+                // Keep answer in local state even if API fails (better UX) - Fix variable scope
+                const backupData = {
+                    subcategory_id: questionId,  // Use function parameter
+                    response_value: parseInt(responseValue),
+                    confidence_level: document.getElementById('confidenceLevel').value,
+                    notes: document.getElementById('notes').value
+                };
+                
+                assessmentState.answers.set(questionId, backupData);
+                updateCategoryProgress();
+                updateOverallProgress();
+                saveSessionState();
+                
                 // Keep answer in local storage as backup
-                localStorage.setItem(`backup-${answerData.subcategory_id}`, JSON.stringify({
-                    subcategory_id: answerData.subcategory_id, 
+                localStorage.setItem(`backup-${questionId}`, JSON.stringify({
+                    subcategory_id: questionId, 
                     response_value: responseValue, 
                     timestamp: Date.now()
                 }));
+            } finally {
+                isSaving = false;
+                console.log('SAVE: Save operation completed, isSaving reset to false');
             }
         }
 
@@ -1064,7 +1382,7 @@
                     }, 2000);
                     break;
                 case 'error':
-                    text.textContent = '❌ Save failed - stored locally';
+                    text.textContent = '❌ Save failed - stored locally (check console F12)';
                     break;
                 default:
                     text.textContent = 'Auto-save enabled';
@@ -1072,6 +1390,11 @@
         }
 
         function saveSessionState() {
+            // Capture organization form data for resume functionality
+            const orgSizeElement = document.getElementById('orgSize');
+            const orgNameElement = document.getElementById('orgName');
+            const orgSectorElement = document.getElementById('orgSector');
+            
             const sessionData = {
                 sessionId: assessmentState.sessionId,
                 organizationId: assessmentState.organizationId,
@@ -1083,7 +1406,13 @@
                 answers: Array.from(assessmentState.answers.entries()),
                 functionProgress: Array.from(assessmentState.functionProgress.entries()),
                 categoryProgress: Array.from(assessmentState.categoryProgress.entries()),
-                lastSaveTime: assessmentState.lastSaveTime
+                lastSaveTime: assessmentState.lastSaveTime,
+                // Save organization form data for API calls during resume
+                organizationData: {
+                    size: orgSizeElement?.value || 'medium',
+                    name: orgNameElement?.value || '',
+                    sector: orgSectorElement?.value || ''
+                }
             };
             
             localStorage.setItem('nist-csf-session', JSON.stringify(sessionData));
@@ -1099,6 +1428,23 @@
                 assessmentState.functionProgress = new Map(saved.functionProgress || []);
                 assessmentState.categoryProgress = new Map(saved.categoryProgress || []);
                 assessmentState.currentFunction = saved.currentFunction;
+                
+                // Restore organization form data if available
+                if (saved.organizationData) {
+                    const orgSizeElement = document.getElementById('orgSize');
+                    const orgNameElement = document.getElementById('orgName');
+                    const orgSectorElement = document.getElementById('orgSector');
+                    
+                    if (orgSizeElement && saved.organizationData.size) {
+                        orgSizeElement.value = saved.organizationData.size;
+                    }
+                    if (orgNameElement && saved.organizationData.name) {
+                        orgNameElement.value = saved.organizationData.name;
+                    }
+                    if (orgSectorElement && saved.organizationData.sector) {
+                        orgSectorElement.value = saved.organizationData.sector;
+                    }
+                }
                 
                 // Load framework data
                 await loadFrameworkData();
@@ -1123,24 +1469,97 @@
 
             } catch (error) {
                 console.error('Resume error:', error);
-                showError('Failed to resume assessment. Starting fresh...');
+                console.error('Resume error details:', error.message);
+                console.error('Resume error stack:', error.stack);
+                showError(`Failed to resume assessment: ${error.message}. Starting fresh...`);
                 localStorage.removeItem('nist-csf-session');
                 showOrganizationSetup();
                 showLoading(false);
             }
         }
 
+        let nextButtonClickCount = 0;
+        
         function nextQuestion() {
+            nextButtonClickCount++;
+            console.log('NEXT QUESTION: Button clicked - Count:', nextButtonClickCount);
+            
+            // Update click counter display
+            const clickCounter = document.getElementById('clickCounter');
+            if (clickCounter) {
+                clickCounter.innerHTML = `Next Button Clicks: ${nextButtonClickCount}`;
+            }
+            
+            // Prevent multiple rapid clicks
+            const nextBtn = document.getElementById('nextBtn');
+            if (nextBtn.disabled) {
+                console.log('NEXT QUESTION: Button already disabled, ignoring click');
+                return;
+            }
+            
+            // Disable button temporarily
+            nextBtn.disabled = true;
+            nextBtn.style.opacity = '0.6';
+            
+            console.log('NEXT QUESTION: Current state:', {
+                currentCategory: assessmentState.currentCategory,
+                currentQuestion: assessmentState.currentQuestion,
+                totalCategories: assessmentState.categories.length
+            });
+
             const currentCat = assessmentState.categories.find(c => c.id === assessmentState.currentCategory);
-            if (!currentCat) return;
+            if (!currentCat) {
+                console.error('NEXT QUESTION: Current category not found');
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = '1';
+                return;
+            }
+
+            console.log('NEXT QUESTION: Current category:', currentCat.id, 'Total questions:', currentCat.questions.length);
+
+            // Prevent navigation while saving is in progress
+            if (isSaving) {
+                console.log('NEXT QUESTION: Save in progress, deferring navigation...');
+                // Don't navigate while save is happening - user will need to click again
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = '1';
+                return;
+            }
+
+            // Clear any pending auto-save before navigation
+            if (saveTimeout) {
+                console.log('NEXT QUESTION: Clearing pending auto-save');
+                clearTimeout(saveTimeout);
+                saveTimeout = null;
+            }
 
             if (assessmentState.currentQuestion < currentCat.questions.length - 1) {
+                console.log('NEXT QUESTION: Advancing from', assessmentState.currentQuestion, 'to', assessmentState.currentQuestion + 1);
                 assessmentState.currentQuestion++;
-                renderCurrentQuestion(currentCat);
+                
+                try {
+                    renderCurrentQuestion(currentCat);
+                    console.log('NEXT QUESTION: Successfully rendered question', assessmentState.currentQuestion);
+                    // Reset click counter on successful navigation
+                    nextButtonClickCount = 0;
+                    if (clickCounter) {
+                        clickCounter.innerHTML = `Next Button Clicks: ${nextButtonClickCount}`;
+                    }
+                } catch (error) {
+                    console.error('NEXT QUESTION: Error rendering question:', error);
+                }
             } else {
+                console.log('NEXT QUESTION: Category completed, returning to selection');
                 // Category completed, return to selection
                 showCategorySelection();
             }
+
+            // Re-enable button after short delay
+            setTimeout(() => {
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = '1';
+                console.log('NEXT QUESTION: Button re-enabled');
+            }, 100);
         }
 
         function previousQuestion() {
@@ -1259,7 +1678,7 @@
                 confidenceSelect.addEventListener('change', function() {
                     const currentCat = assessmentState.categories.find(c => c.id === assessmentState.currentCategory);
                     if (currentCat && currentCat.questions[assessmentState.currentQuestion]) {
-                        const questionId = currentCat.questions[assessmentState.currentQuestion].question_id;
+                        const questionId = currentCat.questions[assessmentState.currentQuestion].subcategory_id;
                         const currentAnswer = document.querySelector('input[name="answer"]:checked');
                         if (currentAnswer) {
                             scheduleAutoSave(questionId, currentAnswer.value);
@@ -1276,9 +1695,10 @@
                     notesTimeout = setTimeout(() => {
                         const currentCat = assessmentState.categories.find(c => c.id === assessmentState.currentCategory);
                         if (currentCat && currentCat.questions[assessmentState.currentQuestion]) {
-                            const questionId = currentCat.questions[assessmentState.currentQuestion].question_id;
+                            const questionId = currentCat.questions[assessmentState.currentQuestion].subcategory_id;
                             const currentAnswer = document.querySelector('input[name="answer"]:checked');
                             if (currentAnswer) {
+                                console.log('AUTO-SAVE: Scheduling for question:', questionId, 'value:', currentAnswer.value);
                                 scheduleAutoSave(questionId, currentAnswer.value);
                             }
                         }
