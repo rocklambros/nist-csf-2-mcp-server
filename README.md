@@ -11,54 +11,128 @@
 
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 Deployment Options & Use Cases
 
-### Option 1: Web Assessment GUI (Recommended)
+Choose your deployment based on your specific use case and infrastructure preferences:
 
-**Perfect for: CISOs, Security Teams, Auditors, Executive Assessments**
+### 🌟 Recommended: Docker Dual-Mode (Production)
 
+**Perfect for: Production deployments, Claude Desktop + Web GUI, Enterprise environments**
+
+**One-command deployment:**
 ```bash
-# Clone and start servers
+# Clone and start complete platform
 git clone https://github.com/rocklambros/nist-csf-2-mcp-server.git
 cd nist-csf-2-mcp-server
 
-# Install dependencies and initialize
-npm install
-npm run build
-npm run import:csf-framework
-
-# Start assessment platform
-HTTP_PORT=3001 npm run start:http &
-python3 -m http.server 8081 &
+# Docker deployment with both MCP + HTTP
+docker-compose up -d
 ```
 
-**🌐 Access Your Assessment Platform:**
-- **📋 Assessment GUI**: http://localhost:8081/nist-csf-assessment-gui.html
+**Access:**
+- **📋 Assessment GUI**: http://localhost:3001/nist-csf-assessment-gui.html  
 - **📊 API Documentation**: http://localhost:3001/api/tools
-- **💚 Health Check**: http://localhost:3001/health
+- **🤖 Claude Desktop**: Connects to same container via MCP protocol
 
-### Option 2: MCP Server for AI Integration
-
-**Perfect for: Claude Desktop, ChatGPT, Developer Workflows**
-
-**Claude Desktop Configuration:**
+**Claude Desktop Configuration (Docker):**
 ```json
 {
   "mcpServers": {
     "nist-csf-2.0": {
-      "command": "node",
-      "args": ["dist/index.js"],
-      "cwd": "/path/to/nist-csf-2-mcp-server"
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-v", "nist-csf-data:/app/data", "ghcr.io/rocklambros/nist-csf-2-mcp-server:latest"]
     }
   }
 }
 ```
 
-**Docker MCP Server:**
+### 🚀 Local Development & Testing
+
+**Perfect for: Development, customization, debugging**
+
+**Option A: Dual-Mode (Both protocols in one process)**
 ```bash
-docker run -i --rm \
-  -v $(pwd)/data:/app/data \
-  ghcr.io/rocklambros/nist-csf-2-mcp-server:latest
+# Setup
+npm install && npm run build && npm run import:csf-framework
+
+# Start both MCP + HTTP server
+npm run start:dual  # Runs on port 8080 (configurable via HTTP_PORT)
+
+# Access
+# Claude Desktop: Connects to localhost stdio
+# Web GUI: http://localhost:8080/nist-csf-assessment-gui.html (served from container)
+```
+
+**Option B: Separate Processes (Independent servers)**
+```bash
+# Setup  
+npm install && npm run build && npm run import:csf-framework
+
+# Start HTTP server for web GUI
+HTTP_PORT=3001 npm run start:http &
+
+# Start file server for static GUI files
+python3 -m http.server 8081 &
+
+# Access
+# Web GUI: http://localhost:8081/nist-csf-assessment-gui.html
+# API: http://localhost:3001/api/tools
+```
+
+**Claude Desktop Configuration (Local):**
+```json
+{
+  "mcpServers": {
+    "nist-csf-2.0": {
+      "command": "node", 
+      "args": ["dist/index.js"],
+      "cwd": "/absolute/path/to/nist-csf-2-mcp-server"
+    }
+  }
+}
+```
+
+### 🐳 Advanced Docker Deployment
+
+**Perfect for: Production environments, scalability, isolated deployment**
+
+**Custom Configuration:**
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  nist-csf-server:
+    build: .
+    ports:
+      - "3001:8080"    # HTTP REST API
+    volumes:
+      - nist-csf-data:/app/data
+      - ./nist-csf-assessment-gui.html:/app/public/nist-csf-assessment-gui.html
+    environment:
+      - HTTP_PORT=8080
+      - AUTH_MODE=simple
+      - API_KEY=your-secure-key
+    command: ["node", "dist/dual-mode-server.js"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  nist-csf-data:
+```
+
+**Claude Desktop Configuration (Production Docker):**
+```json
+{
+  "mcpServers": {
+    "nist-csf-2.0": {
+      "command": "docker", 
+      "args": ["exec", "-i", "nist-csf-server", "node", "dist/index.js"]
+    }
+  }
+}
 ```
 
 ---
@@ -502,11 +576,59 @@ curl -X POST http://localhost:3001/api/tools/csf_lookup \
 # Check server logs for detailed error information
 ```
 
+### Deployment Issues
+
+**Docker & Claude Desktop Integration:**
+```bash
+# Test Docker MCP connectivity
+docker run -i --rm ghcr.io/rocklambros/nist-csf-2-mcp-server:latest <<< '{"method":"ping"}'
+
+# Test dual-mode container
+docker run -p 3001:8080 nist-csf-mcp-server node dist/dual-mode-server.js
+
+# Check container logs
+docker logs nist-csf-assessment-platform
+```
+
+**Port Configuration Issues:**
+```bash
+# Check port usage
+lsof -i :3001
+lsof -i :8080
+lsof -i :8081
+
+# Use alternative ports
+HTTP_PORT=3002 npm run start:dual
+python3 -m http.server 8082  # For GUI files
+
+# Docker port mapping
+docker run -p 3002:8080 nist-csf-server
+```
+
+**Simultaneous Operation Troubleshooting:**
+```bash
+# Dual-mode (recommended): Both protocols in one process
+npm run start:dual
+# Access: http://localhost:8080/api/tools (HTTP)
+# Claude Desktop connects to stdio (MCP)
+
+# Separate processes: Independent servers  
+HTTP_PORT=3001 npm run start:http &  # HTTP server
+node dist/index.js                   # MCP server (for Claude)
+# Note: May have database lock conflicts
+
+# Docker + Local hybrid:
+docker run -i --rm nist-csf-mcp-server &      # Docker MCP for Claude
+HTTP_PORT=3001 npm run start:http            # Local HTTP for GUI
+# Note: Use separate database files or shared volume
+```
+
 ### Support Resources
 - **GitHub Issues**: https://github.com/rocklambros/nist-csf-2-mcp-server/issues
 - **API Documentation**: http://localhost:3001/api/tools
 - **Tool Examples**: [PROMPTS.md](./PROMPTS.md)
 - **Architecture Details**: [CLAUDE.md](./CLAUDE.md)
+- **GUI User Guide**: [GUI-USAGE-GUIDE.md](./GUI-USAGE-GUIDE.md)
 
 ---
 

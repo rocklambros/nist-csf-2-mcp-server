@@ -1,10 +1,14 @@
+# NIST CSF 2.0 Assessment Platform
+# Deployment profiles: default (dual-mode), development (separate services), production (with proxy)
+
 services:
-  mcp-server:
+  # Main dual-mode server (MCP + HTTP) - Default deployment
+  nist-csf-server:
     build:
       context: .
       dockerfile: Dockerfile
     image: nist-csf-mcp-server:latest
-    container_name: mcp-server
+    container_name: nist-csf-assessment-platform
     restart: unless-stopped
     
     # Security configurations
@@ -33,12 +37,15 @@ services:
       # Data persistence with proper permissions
       - ./data:/app/data:rw
       - ./logs:/app/logs:rw
-      # Secrets mounted as read-only
+      # GUI files mounted for HTTP serving
+      - ./nist-csf-assessment-gui.html:/app/public/nist-csf-assessment-gui.html:ro
+      - ./linear-assessment-gui.html:/app/public/linear-assessment-gui.html:ro
+      # Secrets mounted as read-only (optional)
       - ./secrets:/app/secrets:ro
     
-    # Network configuration
+    # Network configuration - Map to port 3001 for consistency with local development
     ports:
-      - "8080:8080"  # Changed to bind all interfaces for easier access
+      - "3001:8080"  # HTTP REST API + GUI access
     
     networks:
       - mcp-network
@@ -51,8 +58,14 @@ services:
     environment:
       - NODE_ENV=production
       - LOG_LEVEL=info
-      - SERVER_PORT=8080
+      - HTTP_PORT=8080          # HTTP REST API port
       - SERVER_HOST=0.0.0.0
+      - AUTH_MODE=disabled      # Change to 'simple' or 'oauth' for production
+      - CORS_ORIGIN=*           # Configure for production security
+      - ENABLE_MONITORING=true
+    
+    # Run dual-mode server for both MCP and HTTP protocols
+    command: ["node", "dist/dual-mode-server.js"]
     
     # Health check
     healthcheck:

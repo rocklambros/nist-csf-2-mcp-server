@@ -40,25 +40,47 @@ npm run seed:questions
 ```
 
 ### Running the Server
-```bash
-# Development mode with auto-reload
-npm run dev
 
-# Production mode (MCP server)
+**Recommended: Docker Dual-Mode (MCP + HTTP)**
+```bash
+# Production deployment with both protocols
+docker-compose up -d
+
+# Access points:
+# - Claude Desktop: MCP protocol via container
+# - Web GUI: http://localhost:3001/nist-csf-assessment-gui.html
+# - API: http://localhost:3001/api/tools
+```
+
+**Local Development Options:**
+```bash
+# Option A: Dual-mode (both MCP + HTTP)
+npm run start:dual
+
+# Option B: MCP only (Claude Desktop)
 npm start
 
-# HTTP REST API mode
+# Option C: HTTP only (Web GUI + API)  
 npm run start:http
 
 # With monitoring enabled
-ENABLE_MONITORING=true npm start
+ENABLE_MONITORING=true npm run start:dual
 
-# With specific authentication mode
-AUTH_MODE=simple API_KEY=test-key npm start
+# Custom port configuration
+HTTP_PORT=3001 npm run start:dual
+```
 
-# Docker deployment
+**Docker Options:**
+```bash
+# Build and run dual-mode container
 docker build -t nist-csf-mcp-server .
-docker run -p 3000:3000 nist-csf-mcp-server
+docker run -p 3001:8080 -v $(pwd)/data:/app/data nist-csf-mcp-server node dist/dual-mode-server.js
+
+# MCP-only container (Claude Desktop)
+docker run -i --rm -v $(pwd)/data:/app/data nist-csf-mcp-server
+
+# HTTP-only container (Web GUI)
+docker run -p 3001:8080 nist-csf-mcp-server node dist/http-server.js
 ```
 
 ### Testing
@@ -620,7 +642,8 @@ return { success: false, error: error.message };
 - Executive reporting and data export
 
 **Web Assessment Interface**: Production Ready ✅
-- **URL**: http://localhost:8081/nist-csf-assessment-gui.html
+- **Docker URL**: http://localhost:3001/nist-csf-assessment-gui.html (dual-mode container)
+- **Local URL**: http://localhost:8081/nist-csf-assessment-gui.html (separate file server)
 - **Features**: Complete hierarchical navigation, auto-save, progress tracking
 - **Quality**: Clean questions, no duplicates, proper subcategory labeling
 - **Experience**: Single-click navigation, visual feedback, session persistence
@@ -630,5 +653,40 @@ return { success: false, error: error.message };
 - **MCP Protocol**: Native Claude Desktop integration
 - **Multi-format responses**: JSON, HTML, CSV, PDF exports
 - **Authentication**: Multi-tier security (disabled/simple/oauth)
+
+### Claude Desktop Integration Options
+
+**Recommended: Docker Container (Production)**
+```json
+{
+  "mcpServers": {
+    "nist-csf-2.0": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-v", "nist-csf-data:/app/data", "ghcr.io/rocklambros/nist-csf-2-mcp-server:latest"]
+    }
+  }
+}
+```
+
+**Alternative: Local Development**
+```json
+{
+  "mcpServers": {
+    "nist-csf-2.0": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "cwd": "/absolute/path/to/nist-csf-2-mcp-server"
+    }
+  }
+}
+```
+
+**Benefits of Docker Configuration**:
+- ✅ **No local build required**: Container includes pre-built application
+- ✅ **Consistent environment**: Same runtime across all machines
+- ✅ **Easy updates**: `docker pull` to get latest version
+- ✅ **Isolated execution**: No conflicts with local Node.js versions
+- ✅ **Data persistence**: Named volume maintains assessment data
+- ✅ **Simultaneous operation**: Can run with local HTTP server for GUI access
 
 This comprehensive MCP server represents a **production-grade cybersecurity assessment platform** with enterprise-level features, complete testing coverage, and professional user experience. It serves as both a reference implementation for NIST CSF 2.0 and a immediately deployable assessment solution.
