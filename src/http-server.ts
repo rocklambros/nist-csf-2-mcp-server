@@ -363,6 +363,16 @@ export async function startHttpServer(port: number = 8080): Promise<void> {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+  // Static file serving for GUI
+  app.use(express.static('.', {
+    index: false,
+    setHeaders: (res, path) => {
+      if (path.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache');
+      }
+    }
+  }));
+
   // Initialize services
   logger.info('Initializing HTTP server services...');
   await initializeFramework();

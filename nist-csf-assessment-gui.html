@@ -357,6 +357,14 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 24px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .question-navigation .nav-buttons-left {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
         
         .auto-save-indicator {
@@ -382,6 +390,225 @@
             text-align: center;
             padding: 40px;
             color: #7f8c8d;
+        }
+
+        /* Completion Screen Styles */
+        .completion-screen {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .completion-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .completion-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 2.2em;
+        }
+
+        .completion-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .stat-value {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .analysis-section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+            margin-bottom: 30px;
+        }
+
+        .deliverables-list {
+            margin: 20px 0;
+            padding-left: 0;
+        }
+
+        .deliverables-list li {
+            list-style: none;
+            margin: 10px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .analysis-controls {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-size: 1.1em;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .analysis-progress {
+            margin-top: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .analysis-results {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .result-card h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+
+        .result-actions {
+            margin-top: 15px;
+        }
+
+        .result-actions button {
+            margin: 5px 5px 5px 0;
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+
+        .completion-actions {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .completion-actions button {
+            margin: 0 10px;
+        }
+        
+        /* Navigation Button Styles */
+        .page-navigation {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .nav-buttons-left {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-buttons-right {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-nav {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-nav:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-nav:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
         }
         
         .error {
@@ -475,6 +702,18 @@
         <!-- Category Selection Screen -->
         <!-- Function Selection Screen -->
         <div class="function-grid hidden" id="functionSelection">
+            <div class="page-navigation" id="functionNavigation">
+                <div class="nav-buttons-left">
+                    <button class="btn-nav" id="backToCategoriesFromFunction" onclick="goBackToCategories()" style="display: none;">
+                        ← Back to Categories
+                    </button>
+                </div>
+                <div class="nav-buttons-right">
+                    <button class="btn-submit" onclick="manualSubmitAssessment()">
+                        📋 Submit Assessment
+                    </button>
+                </div>
+            </div>
             <h2>Select NIST CSF 2.0 Function to Assess</h2>
             <p>Choose a cybersecurity function to begin detailed assessment</p>
             <div class="function-cards" id="functionCards">
@@ -516,7 +755,10 @@
             </div>
 
             <div class="question-navigation">
-                <button class="btn" onclick="previousQuestion()" id="prevBtn">Previous</button>
+                <div class="nav-buttons-left">
+                    <button class="btn" onclick="previousQuestion()" id="prevBtn">Previous</button>
+                    <button class="btn-nav" onclick="goBackToCategories()">← Back to Categories</button>
+                </div>
                 <div class="auto-save-indicator" id="saveIndicator">
                     <span id="saveText">Ready to save</span>
                 </div>
@@ -526,6 +768,85 @@
 
         <div id="loadingIndicator" class="loading hidden">
             <div>🔄 Loading assessment data...</div>
+        </div>
+
+        <!-- Assessment Completion Screen -->
+        <div class="completion-screen hidden" id="completionScreen">
+            <div class="completion-header">
+                <h2>🎉 Assessment Complete!</h2>
+                <p>Congratulations! You have successfully completed your NIST CSF 2.0 assessment.</p>
+            </div>
+
+            <div class="completion-summary">
+                <h3>Assessment Summary</h3>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Organization:</span>
+                        <span class="stat-value" id="completionOrgName">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Industry:</span>
+                        <span class="stat-value" id="completionSector">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Size:</span>
+                        <span class="stat-value" id="completionSize">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Questions Answered:</span>
+                        <span class="stat-value" id="completionQuestions">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Functions Completed:</span>
+                        <span class="stat-value" id="completionFunctions">6/6</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Completion Date:</span>
+                        <span class="stat-value" id="completionDate">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-section">
+                <h3>Generate Comprehensive Analysis</h3>
+                <p>Click below to generate your complete cybersecurity assessment package including:</p>
+                <ul class="deliverables-list">
+                    <li>📊 <strong>Maturity Assessment Report</strong> - Your organization's cybersecurity maturity tier and detailed breakdown</li>
+                    <li>⚠️ <strong>Risk Analysis Report</strong> - Comprehensive risk scoring and vulnerability assessment</li>
+                    <li>👔 <strong>Executive Summary</strong> - C-suite ready report with strategic recommendations</li>
+                    <li>🗺️ <strong>Implementation Roadmap</strong> - Prioritized action plan with timelines</li>
+                    <li>💰 <strong>Cost Estimate Analysis</strong> - Budget projections for recommended improvements</li>
+                    <li>📈 <strong>Interactive Dashboard</strong> - Real-time metrics and progress tracking</li>
+                    <li>📋 <strong>Gap Analysis</strong> - Detailed identification of security gaps</li>
+                    <li>⭐ <strong>Priority Matrix</strong> - Risk-based prioritization of improvements</li>
+                    <li>✅ <strong>Compliance Report</strong> - Multi-framework compliance status</li>
+                </ul>
+
+                <div class="analysis-controls">
+                    <button class="btn btn-primary" onclick="generateComprehensiveAnalysis()" id="generateAnalysisBtn">
+                        🚀 Generate Complete Analysis Package
+                    </button>
+                    <div class="analysis-progress hidden" id="analysisProgress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="analysisProgressFill"></div>
+                        </div>
+                        <div class="progress-text" id="analysisProgressText">Generating analysis...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-results hidden" id="analysisResults">
+                <h3>📋 Your Analysis Results</h3>
+                <div class="results-grid" id="resultsGrid">
+                    <!-- Results will be populated dynamically -->
+                </div>
+                
+                <div class="completion-actions">
+                    <button class="btn" onclick="exportAllReports()">📥 Download All Reports</button>
+                    <button class="btn" onclick="showFunctionSelection()">🔄 Review Assessment</button>
+                    <button class="btn" onclick="startNewAssessment()">➕ Start New Assessment</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -572,7 +893,8 @@
 
         // Configuration
         const MCP_SERVER_URL = 'http://localhost:3001'; // HTTP REST API server
-        const AUTO_SAVE_DELAY = 200; // Reduced delay to prevent navigation blocking
+        const BACKUP_SAVE_DELAY = 30000; // 30 seconds backup timer for safety
+        const DEBOUNCE_DELAY = 500; // 500ms debounce to prevent duplicate saves
 
         // Initialize Application
         document.addEventListener('DOMContentLoaded', function() {
@@ -941,6 +1263,15 @@
             document.getElementById('functionSelection').classList.remove('hidden');
             document.getElementById('categorySelection').classList.add('hidden');
             document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('completionScreen').classList.add('hidden');
+
+            // Show/hide "Back to Categories" button based on whether a function was previously selected
+            const backToCategoriesBtn = document.getElementById('backToCategoriesFromFunction');
+            if (assessmentState.currentFunction && backToCategoriesBtn) {
+                backToCategoriesBtn.style.display = 'inline-flex';
+            } else if (backToCategoriesBtn) {
+                backToCategoriesBtn.style.display = 'none';
+            }
 
             renderFunctionCards();
         }
@@ -991,6 +1322,33 @@
             showCategorySelection();
         }
 
+        async function goBackToCategories() {
+            // Save current answer immediately before navigation
+            await saveCurrentAnswerBeforeNavigation();
+            
+            // Navigate back to category selection for the current function
+            if (assessmentState.currentFunction) {
+                showCategorySelection();
+            } else {
+                showError('No function selected. Please select a function first.');
+            }
+        }
+
+        function manualSubmitAssessment() {
+            // Allow manual submission even if assessment is not complete
+            const totalAnswered = assessmentState.answers.size;
+            const completionPercentage = Math.round((totalAnswered / assessmentState.totalQuestions) * 100);
+            
+            const message = `Are you sure you want to submit your assessment for analysis?\n\n` +
+                          `Current Progress: ${completionPercentage}% complete (${totalAnswered}/${assessmentState.totalQuestions} questions answered)\n\n` +
+                          `Note: You can submit with partial completion. The analysis will be based on your current responses.`;
+            
+            if (confirm(message)) {
+                console.log('MANUAL SUBMIT: User confirmed submission with', completionPercentage, '% completion');
+                showCompletionInterface();
+            }
+        }
+
         function renderCategoryCards() {
             const container = document.getElementById('categorySelection');
             
@@ -1000,6 +1358,9 @@
             if (breadcrumb) {
                 container.appendChild(breadcrumb);
             }
+
+            // Update progress for all categories before rendering
+            updateAllCategoryProgress();
 
             // Filter categories by current function
             const filteredCategories = assessmentState.categories.filter(category => 
@@ -1014,7 +1375,11 @@
             });
 
             filteredCategories.forEach(category => {
-                const progress = assessmentState.categoryProgress.get(category.id);
+                const progress = assessmentState.categoryProgress.get(category.id) || { 
+                    total: category.questions?.length || 0, 
+                    completed: 0, 
+                    percentage: 0 
+                };
                 const progressClass = progress.percentage === 100 ? 'completed' : 
                                    progress.percentage > 0 ? 'in-progress' : 'not-started';
 
@@ -1153,7 +1518,7 @@
                 // Add auto-save on selection
                 optionDiv.querySelector('input').addEventListener('change', function() {
                     if (this.checked) {
-                        scheduleAutoSave(question.subcategory_id, this.value);
+                        scheduleImmediateSave(question.subcategory_id, this.value);
                     }
                 });
 
@@ -1175,30 +1540,53 @@
         }
 
         let saveTimeout;
-        async function scheduleAutoSave(questionId, responseValue) {
-            console.log('SCHEDULE SAVE: questionId:', questionId, 'responseValue:', responseValue);
+        let backupSaveTimeout;
+        let lastSaveKey = null;
+        
+        async function scheduleImmediateSave(questionId, responseValue) {
+            console.log('IMMEDIATE SAVE: questionId:', questionId, 'responseValue:', responseValue);
             
-            // Validate parameters before scheduling
+            // Validate parameters
             if (!questionId) {
-                console.error('SCHEDULE SAVE ERROR: questionId is null/undefined');
+                console.error('IMMEDIATE SAVE ERROR: questionId is null/undefined');
                 return;
             }
             if (responseValue === undefined || responseValue === null) {
-                console.error('SCHEDULE SAVE ERROR: responseValue is null/undefined');
+                console.error('IMMEDIATE SAVE ERROR: responseValue is null/undefined');
                 return;
             }
             
-            // Clear existing timeout
+            // Create unique key for this save to prevent duplicates
+            const saveKey = `${questionId}-${responseValue}`;
+            
+            // Clear any pending debounced save
             if (saveTimeout) {
                 clearTimeout(saveTimeout);
-                console.log('SCHEDULE SAVE: Cleared existing timeout');
+                console.log('IMMEDIATE SAVE: Cleared pending debounced save');
             }
             
-            // Schedule save with parameter validation
+            // Debounce rapid saves of the same answer
+            if (lastSaveKey === saveKey) {
+                console.log('IMMEDIATE SAVE: Debouncing duplicate save');
+                return;
+            }
+            
+            // Save immediately with debounce protection
+            lastSaveKey = saveKey;
             saveTimeout = setTimeout(async () => {
-                console.log('EXECUTING SAVE: questionId:', questionId, 'responseValue:', responseValue);
+                console.log('EXECUTING IMMEDIATE SAVE: questionId:', questionId, 'responseValue:', responseValue);
                 await saveAnswer(questionId, responseValue);
-            }, AUTO_SAVE_DELAY);
+                lastSaveKey = null; // Reset after save
+            }, DEBOUNCE_DELAY);
+            
+            // Set backup timer in case something goes wrong
+            if (backupSaveTimeout) {
+                clearTimeout(backupSaveTimeout);
+            }
+            backupSaveTimeout = setTimeout(async () => {
+                console.log('EXECUTING BACKUP SAVE: questionId:', questionId, 'responseValue:', responseValue);
+                await saveAnswer(questionId, responseValue);
+            }, BACKUP_SAVE_DELAY);
         }
 
         let isSaving = false;
@@ -1289,6 +1677,7 @@
                     
                     // Update progress
                     updateCategoryProgress();
+                    updateFunctionProgress();
                     updateOverallProgress();
                     
                     // Save session state
@@ -1322,6 +1711,7 @@
                 
                 assessmentState.answers.set(questionId, backupData);
                 updateCategoryProgress();
+                updateFunctionProgress();
                 updateOverallProgress();
                 saveSessionState();
                 
@@ -1355,6 +1745,63 @@
             assessmentState.categoryProgress.set(assessmentState.currentCategory, progress);
         }
 
+        function updateAllCategoryProgress() {
+            // Update progress for ALL categories (for categories page display)
+            assessmentState.categories.forEach(category => {
+                let completed = 0;
+                category.questions.forEach(q => {
+                    if (assessmentState.answers.has(q.subcategory_id)) completed++;
+                });
+
+                const progress = {
+                    total: category.questions.length,
+                    completed: completed,
+                    percentage: Math.round((completed / category.questions.length) * 100)
+                };
+
+                assessmentState.categoryProgress.set(category.id, progress);
+            });
+        }
+
+        function updateFunctionProgress() {
+            // Update progress for each function based on completed categories
+            assessmentState.functions.forEach(funcItem => {
+                const func = funcItem.element;
+                const functionId = func.element_identifier;
+                
+                // Get categories for this function
+                const functionCategories = assessmentState.categories.filter(cat => 
+                    cat.function === functionId
+                );
+                
+                // Count completed categories (100% answered)
+                let completedCategories = 0;
+                functionCategories.forEach(category => {
+                    const categoryProgress = assessmentState.categoryProgress.get(category.id);
+                    if (categoryProgress && categoryProgress.percentage === 100) {
+                        completedCategories++;
+                    }
+                });
+                
+                // Calculate function progress percentage
+                const totalCategories = functionCategories.length;
+                const functionPercentage = totalCategories > 0 ? 
+                    Math.round((completedCategories / totalCategories) * 100) : 0;
+                
+                // Update function progress
+                assessmentState.functionProgress.set(functionId, {
+                    total_categories: totalCategories,
+                    completed_categories: completedCategories,
+                    percentage: functionPercentage
+                });
+                
+                console.log(`FUNCTION PROGRESS UPDATE: ${functionId} = ${completedCategories}/${totalCategories} = ${functionPercentage}%`);
+            });
+            
+            // Check if assessment is complete after updating function progress
+            checkAssessmentCompletion();
+        }
+
         function updateOverallProgress() {
             const totalAnswered = assessmentState.answers.size;
             const percentage = Math.round((totalAnswered / assessmentState.totalQuestions) * 100);
@@ -1362,6 +1809,95 @@
             document.getElementById('overallProgress').style.width = percentage + '%';
             document.getElementById('progressText').textContent = 
                 `${percentage}% Complete - ${totalAnswered}/${assessmentState.totalQuestions} Questions Answered`;
+        }
+
+        function checkAssessmentCompletion() {
+            console.log('COMPLETION CHECK: Starting assessment completion check');
+            
+            // Check if all functions have 100% completion
+            let totalFunctions = 0;
+            let completedFunctions = 0;
+            
+            assessmentState.functions.forEach(funcItem => {
+                const func = funcItem.element;
+                const progress = assessmentState.functionProgress.get(func.element_identifier);
+                if (progress) {
+                    totalFunctions++;
+                    if (progress.percentage === 100) {
+                        completedFunctions++;
+                    }
+                    console.log(`COMPLETION CHECK: ${func.element_identifier} = ${progress.percentage}%`);
+                }
+            });
+            
+            const isComplete = completedFunctions === totalFunctions && totalFunctions > 0;
+            console.log(`COMPLETION CHECK: ${completedFunctions}/${totalFunctions} functions complete. Overall complete: ${isComplete}`);
+            
+            if (isComplete) {
+                console.log('COMPLETION CHECK: Assessment is complete! Showing completion interface.');
+                showCompletionInterface();
+            }
+            
+            return isComplete;
+        }
+
+        function showCompletionInterface() {
+            console.log('COMPLETION INTERFACE: Preparing completion screen');
+            
+            // Hide all other screens
+            document.getElementById('organizationSetup').classList.add('hidden');
+            document.getElementById('functionSelection').classList.add('hidden');
+            document.getElementById('categorySelection').classList.add('hidden');
+            document.getElementById('questionContainer').style.display = 'none';
+            
+            // Show completion screen
+            document.getElementById('completionScreen').classList.remove('hidden');
+            
+            // Populate completion summary
+            populateCompletionSummary();
+            
+            console.log('COMPLETION INTERFACE: Completion screen displayed');
+        }
+
+        function populateCompletionSummary() {
+            // Get organization data from localStorage
+            const savedSession = localStorage.getItem('nist-csf-session');
+            let orgData = { name: '', sector: '', size: '' };
+            
+            if (savedSession) {
+                try {
+                    const session = JSON.parse(savedSession);
+                    if (session.organizationData) {
+                        orgData = session.organizationData;
+                    }
+                } catch (e) {
+                    console.warn('Could not parse saved session data:', e);
+                }
+            }
+            
+            // Also try to get from form elements if still available
+            const orgNameEl = document.getElementById('orgName');
+            const orgSectorEl = document.getElementById('sector');
+            const orgSizeEl = document.getElementById('orgSize');
+            
+            if (orgNameEl && orgNameEl.value) orgData.name = orgNameEl.value;
+            if (orgSectorEl && orgSectorEl.value) orgData.sector = orgSectorEl.value;
+            if (orgSizeEl && orgSizeEl.value) orgData.size = orgSizeEl.value;
+            
+            // Populate completion summary
+            document.getElementById('completionOrgName').textContent = orgData.name || 'Organization';
+            document.getElementById('completionSector').textContent = 
+                orgData.sector ? orgData.sector.charAt(0).toUpperCase() + orgData.sector.slice(1) : 'Not specified';
+            document.getElementById('completionSize').textContent = 
+                orgData.size ? orgData.size.charAt(0).toUpperCase() + orgData.size.slice(1) : 'Not specified';
+            document.getElementById('completionQuestions').textContent = 
+                `${assessmentState.answers.size}/${assessmentState.totalQuestions}`;
+            document.getElementById('completionDate').textContent = 
+                new Date().toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
         }
 
         function showSaveIndicator(status) {
@@ -1480,7 +2016,24 @@
 
         let nextButtonClickCount = 0;
         
-        function nextQuestion() {
+        async function saveCurrentAnswerBeforeNavigation() {
+            const currentQuestion = getCurrentQuestion();
+            if (!currentQuestion) return;
+            
+            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            if (selectedAnswer) {
+                console.log('NAVIGATION SAVE: Saving current answer before navigation');
+                await saveAnswer(currentQuestion.subcategory_id, selectedAnswer.value);
+            }
+        }
+        
+        function getCurrentQuestion() {
+            const currentCat = assessmentState.categories.find(c => c.id === assessmentState.currentCategory);
+            if (!currentCat || !currentCat.questions[assessmentState.currentQuestion]) return null;
+            return currentCat.questions[assessmentState.currentQuestion];
+        }
+
+        async function nextQuestion() {
             nextButtonClickCount++;
             console.log('NEXT QUESTION: Button clicked - Count:', nextButtonClickCount);
             
@@ -1517,20 +2070,18 @@
 
             console.log('NEXT QUESTION: Current category:', currentCat.id, 'Total questions:', currentCat.questions.length);
 
-            // Prevent navigation while saving is in progress
-            if (isSaving) {
-                console.log('NEXT QUESTION: Save in progress, deferring navigation...');
-                // Don't navigate while save is happening - user will need to click again
-                nextBtn.disabled = false;
-                nextBtn.style.opacity = '1';
-                return;
-            }
+            // Save current answer immediately before navigation
+            await saveCurrentAnswerBeforeNavigation();
 
-            // Clear any pending auto-save before navigation
+            // Clear any pending saves
             if (saveTimeout) {
-                console.log('NEXT QUESTION: Clearing pending auto-save');
+                console.log('NEXT QUESTION: Clearing pending save');
                 clearTimeout(saveTimeout);
                 saveTimeout = null;
+            }
+            if (backupSaveTimeout) {
+                clearTimeout(backupSaveTimeout);
+                backupSaveTimeout = null;
             }
 
             if (assessmentState.currentQuestion < currentCat.questions.length - 1) {
@@ -1562,9 +2113,12 @@
             }, 100);
         }
 
-        function previousQuestion() {
+        async function previousQuestion() {
             const currentCat = assessmentState.categories.find(c => c.id === assessmentState.currentCategory);
             if (!currentCat) return;
+
+            // Save current answer immediately before navigation
+            await saveCurrentAnswerBeforeNavigation();
 
             if (assessmentState.currentQuestion > 0) {
                 assessmentState.currentQuestion--;
@@ -1593,34 +2147,522 @@
             return 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         }
 
-        async function callMCPTool(toolName, params) {
-            try {
-                console.log(`Calling MCP tool: ${toolName}`, params);
-                
-                const response = await fetch(`${MCP_SERVER_URL}/api/tools/${toolName}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(params)
-                });
+        async function callMCPTool(toolName, params, maxRetries = 3) {
+            let lastError;
+            
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    console.log(`Calling MCP tool: ${toolName} (attempt ${attempt}/${maxRetries})`, params);
+                    
+                    const response = await fetch(`${MCP_SERVER_URL}/api/tools/${toolName}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(params)
+                    });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    // Handle rate limiting with exponential backoff
+                    if (response.status === 429) {
+                        const retryAfter = response.headers.get('Retry-After');
+                        const delay = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, attempt) * 1000;
+                        
+                        console.warn(`Rate limited (429) on attempt ${attempt}. Retrying after ${delay}ms...`);
+                        
+                        if (attempt < maxRetries) {
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            continue; // Retry
+                        } else {
+                            throw new Error(`Rate limit exceeded. Please try again in ${Math.ceil(delay/1000)} seconds.`);
+                        }
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    console.log(`MCP tool result (attempt ${attempt}):`, result);
+                    
+                    return result;
+
+                } catch (error) {
+                    lastError = error;
+                    console.error(`MCP tool error (${toolName}) attempt ${attempt}:`, error);
+                    
+                    // If it's not a rate limit error and not the last attempt, wait before retry
+                    if (attempt < maxRetries && !error.message.includes('Rate limit')) {
+                        const delay = Math.pow(2, attempt) * 500; // 500ms, 1s, 2s
+                        console.log(`Retrying after ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
                 }
+            }
+            
+            // All retries exhausted
+            return { 
+                success: false, 
+                error: `Failed to call ${toolName} after ${maxRetries} attempts: ${lastError.message}` 
+            };
+        }
 
-                const result = await response.json();
-                console.log(`MCP tool result:`, result);
+        async function generateComprehensiveAnalysis() {
+            try {
+                console.log('ANALYSIS GENERATION: Starting comprehensive analysis generation');
                 
-                return result;
-
-            } catch (error) {
-                console.error(`MCP tool error (${toolName}):`, error);
-                return { 
-                    success: false, 
-                    error: `Failed to call ${toolName}: ${error.message}` 
+                // Show progress and disable button
+                document.getElementById('generateAnalysisBtn').disabled = true;
+                document.getElementById('analysisProgress').classList.remove('hidden');
+                
+                const progressBar = document.getElementById('analysisProgressFill');
+                const progressText = document.getElementById('analysisProgressText');
+                
+                const results = {};
+                let stepIndex = 0;
+                const totalSteps = 8;
+                
+                // Helper function to update progress
+                const updateProgress = (stepName) => {
+                    stepIndex++;
+                    const progress = Math.round((stepIndex / totalSteps) * 100);
+                    progressBar.style.width = progress + '%';
+                    progressText.textContent = `Generating ${stepName}... (${progress}%)`;
+                    console.log(`ANALYSIS GENERATION: Step ${stepIndex}/${totalSteps}: ${stepName}`);
                 };
+                
+                // Step 1: Maturity Assessment
+                updateProgress('Maturity Assessment');
+                try {
+                    const maturityResult = await callMCPTool('assess_maturity', { 
+                        profile_id: assessmentState.profileId, 
+                        include_recommendations: true 
+                    });
+                    results['assess_maturity'] = maturityResult.success ? maturityResult.data : { error: maturityResult.error };
+                } catch (error) {
+                    console.error('ANALYSIS: Maturity assessment error:', error);
+                    results['assess_maturity'] = { error: error.message };
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Step 2: Risk Analysis  
+                updateProgress('Risk Analysis');
+                try {
+                    const riskResult = await callMCPTool('calculate_risk_score', { 
+                        profile_id: assessmentState.profileId 
+                    });
+                    results['calculate_risk_score'] = riskResult.success ? riskResult.data : { error: riskResult.error };
+                } catch (error) {
+                    console.error('ANALYSIS: Risk analysis error:', error);
+                    results['calculate_risk_score'] = { error: error.message };
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Step 3: Gap Analysis (using profile as both current and target for self-assessment)
+                updateProgress('Gap Analysis');
+                try {
+                    const gapResult = await callMCPTool('generate_gap_analysis', { 
+                        current_profile_id: assessmentState.profileId,
+                        target_profile_id: assessmentState.profileId
+                    });
+                    results['generate_gap_analysis'] = gapResult.success ? gapResult.data : { error: gapResult.error };
+                } catch (error) {
+                    console.error('ANALYSIS: Gap analysis error:', error);
+                    results['generate_gap_analysis'] = { error: error.message };
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Step 4: Priority Matrix
+                updateProgress('Priority Matrix');
+                try {
+                    const priorityResult = await callMCPTool('generate_priority_matrix', { 
+                        profile_id: assessmentState.profileId 
+                    });
+                    results['generate_priority_matrix'] = priorityResult.success ? priorityResult.data : { error: priorityResult.error };
+                } catch (error) {
+                    console.error('ANALYSIS: Priority matrix error:', error);
+                    results['generate_priority_matrix'] = { error: error.message };
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Step 5: Cost Estimates (extract subcategory IDs from answered questions)
+                updateProgress('Cost Estimates');
+                try {
+                    // Get subcategory IDs from answered questions
+                    const subcategoryIds = Array.from(assessmentState.answers.keys()).map(key => {
+                        // Extract subcategory ID from question key (format: "subcategory_id-question_type")
+                        return key.split('-')[0];
+                    }).filter((id, index, arr) => arr.indexOf(id) === index); // Remove duplicates
+                    
+                    // Get organization size from localStorage or default
+                    const orgData = JSON.parse(localStorage.getItem('nist-csf-session') || '{}');
+                    const orgSize = document.getElementById('orgSize')?.value || 'medium'; // Fallback to medium
+                    
+                    const costResult = await callMCPTool('estimate_implementation_cost', { 
+                        subcategory_ids: subcategoryIds.slice(0, 20), // Limit to first 20 to avoid API limits
+                        organization_size: orgSize
+                    });
+                    results['estimate_implementation_cost'] = costResult.success ? costResult.data : { error: costResult.error };
+                } catch (error) {
+                    console.error('ANALYSIS: Cost estimates error:', error);
+                    results['estimate_implementation_cost'] = { error: error.message };
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Step 6: Implementation Plan (use gap analysis ID if available)
+                updateProgress('Implementation Plan');
+                try {
+                    const gapAnalysisId = results['generate_gap_analysis']?.id || assessmentState.profileId;
+                    const planResult = await callMCPTool('create_implementation_plan', { 
+                        gap_analysis_id: gapAnalysisId,
+                        timeline_months: 12,
+                        available_resources: 'medium'
+                    });
+                    results['create_implementation_plan'] = planResult.success ? planResult.data : { error: planResult.error };
+                } catch (error) {
+                    console.error('ANALYSIS: Implementation plan error:', error);
+                    results['create_implementation_plan'] = { error: error.message };
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Step 7: Executive Report
+                updateProgress('Executive Report');
+                try {
+                    const execResult = await callMCPTool('generate_report', { 
+                        profile_id: assessmentState.profileId,
+                        report_type: 'executive'
+                    });
+                    results['generate_executive_report'] = execResult.success ? execResult.data : { error: execResult.error };
+                } catch (error) {
+                    console.error('ANALYSIS: Executive report error:', error);
+                    results['generate_executive_report'] = { error: error.message };
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Step 8: Dashboard Report  
+                updateProgress('Dashboard');
+                try {
+                    const dashResult = await callMCPTool('generate_report', { 
+                        profile_id: assessmentState.profileId,
+                        report_type: 'dashboard'
+                    });
+                    results['generate_dashboard'] = dashResult.success ? dashResult.data : { error: dashResult.error };
+                } catch (error) {
+                    console.error('ANALYSIS: Dashboard error:', error);
+                    results['generate_dashboard'] = { error: error.message };
+                }
+                
+                progressText.textContent = '100% Complete - Analysis generated!';
+                
+                // Display results
+                displayAnalysisResults(results);
+                
+                console.log('ANALYSIS GENERATION: All analysis completed');
+                
+            } catch (error) {
+                console.error('ANALYSIS GENERATION: Failed:', error);
+                showError('Failed to generate analysis: ' + error.message);
+            }
+        }
+
+        function displayAnalysisResults(results) {
+            const resultsContainer = document.getElementById('analysisResults');
+            const resultsGrid = document.getElementById('resultsGrid');
+            
+            // Clear previous results
+            resultsGrid.innerHTML = '';
+            
+            const reportDefinitions = [
+                { key: 'assess_maturity', title: '📊 Maturity Assessment', description: 'Your cybersecurity maturity tier and detailed breakdown' },
+                { key: 'calculate_risk_score', title: '⚠️ Risk Analysis', description: 'Comprehensive risk scoring and vulnerability assessment' },
+                { key: 'generate_gap_analysis', title: '📋 Gap Analysis', description: 'Detailed identification of security gaps' },
+                { key: 'generate_priority_matrix', title: '⭐ Priority Matrix', description: 'Risk-based prioritization of improvements' },
+                { key: 'create_implementation_plan', title: '🗺️ Implementation Roadmap', description: 'Prioritized action plan with timelines' },
+                { key: 'estimate_implementation_cost', title: '💰 Cost Estimates', description: 'Budget projections for recommended improvements' },
+                { key: 'generate_executive_report', title: '👔 Executive Report', description: 'C-suite ready report with strategic recommendations' },
+                { key: 'generate_dashboard', title: '📈 Dashboard', description: 'Real-time metrics and progress tracking' }
+            ];
+            
+            reportDefinitions.forEach(report => {
+                const result = results[report.key];
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                
+                const status = result && !result.error ? '✅ Generated' : '❌ Failed';
+                const statusClass = result && !result.error ? 'success' : 'error';
+                
+                card.innerHTML = `
+                    <h4>${report.title}</h4>
+                    <p>${report.description}</p>
+                    <div class="result-status ${statusClass}">${status}</div>
+                    <div class="result-actions">
+                        ${result && !result.error ? 
+                            `<button class="btn" onclick="viewReport('${report.key}')">👁️ View</button>
+                             <button class="btn" onclick="downloadReport('${report.key}')">📥 Download</button>` :
+                            `<span class="error-text">Error: ${result?.error || 'Unknown error'}</span>`
+                        }
+                    </div>
+                `;
+                
+                resultsGrid.appendChild(card);
+            });
+            
+            // Store results globally for access by view/download functions
+            window.analysisResults = results;
+            
+            // Show results section
+            resultsContainer.classList.remove('hidden');
+        }
+
+        function viewReport(reportKey) {
+            const result = window.analysisResults?.[reportKey];
+            if (result) {
+                // Create a popup window to display the report
+                const reportWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes');
+                reportWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>NIST CSF 2.0 Analysis Report</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                            h1, h2, h3 { color: #2c3e50; }
+                            pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow: auto; }
+                            .report-header { background: #3498db; color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="report-header">
+                            <h1>NIST CSF 2.0 Assessment Report</h1>
+                            <p>Generated: ${new Date().toLocaleString()}</p>
+                        </div>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    </body>
+                    </html>
+                `);
+                reportWindow.document.close();
+            }
+        }
+
+        function downloadReport(reportKey) {
+            const result = window.analysisResults?.[reportKey];
+            if (!result) {
+                showError('No report data available for download');
+                return;
+            }
+            
+            // Create formatted HTML for PDF generation
+            const reportTitle = getReportTitle(reportKey);
+            const reportDate = new Date().toISOString().split('T')[0];
+            const orgName = assessmentState.organizationName || 'Organization';
+            
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${reportTitle} - ${orgName}</title>
+                    <style>
+                        @page { margin: 1in; size: letter; }
+                        body { font-family: Arial, sans-serif; line-height: 1.4; color: #333; }
+                        .header { border-bottom: 2px solid #2c5aa0; padding-bottom: 20px; margin-bottom: 30px; }
+                        .header h1 { color: #2c5aa0; margin: 0; font-size: 24px; }
+                        .header .meta { color: #666; margin-top: 10px; }
+                        .section { margin-bottom: 30px; page-break-inside: avoid; }
+                        .section h2 { color: #2c5aa0; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+                        .section h3 { color: #444; margin-top: 20px; }
+                        .data-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+                        .data-table th, .data-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        .data-table th { background-color: #f5f5f5; font-weight: bold; }
+                        .score-high { color: #28a745; font-weight: bold; }
+                        .score-medium { color: #ffc107; font-weight: bold; }
+                        .score-low { color: #dc3545; font-weight: bold; }
+                        .json-data { background: #f8f9fa; border: 1px solid #ddd; padding: 15px; 
+                                    border-radius: 4px; font-family: monospace; font-size: 12px; 
+                                    white-space: pre-wrap; word-wrap: break-word; }
+                        .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; 
+                                 font-size: 12px; color: #666; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>${reportTitle}</h1>
+                        <div class="meta">
+                            <strong>Organization:</strong> ${orgName}<br>
+                            <strong>Report Date:</strong> ${reportDate}<br>
+                            <strong>Profile ID:</strong> ${assessmentState.profileId || 'N/A'}
+                        </div>
+                    </div>
+                    
+                    ${formatReportContent(reportKey, result)}
+                    
+                    <div class="footer">
+                        Generated by NIST CSF 2.0 Assessment Platform | ${new Date().toLocaleString()}
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            // Create and trigger PDF download
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            
+            // Wait for content to load, then trigger print dialog
+            printWindow.onload = function() {
+                setTimeout(function() {
+                    printWindow.print();
+                    // Close the window after a delay (user may cancel print dialog)
+                    setTimeout(() => printWindow.close(), 1000);
+                }, 500);
+            };
+        }
+        
+        function getReportTitle(reportKey) {
+            const titles = {
+                'assess_maturity': 'NIST CSF 2.0 Maturity Assessment Report',
+                'calculate_risk_score': 'Cybersecurity Risk Analysis Report', 
+                'generate_gap_analysis': 'Security Gap Analysis Report',
+                'generate_priority_matrix': 'Implementation Priority Matrix',
+                'create_implementation_plan': 'Cybersecurity Implementation Roadmap',
+                'estimate_implementation_cost': 'Implementation Cost Analysis',
+                'generate_executive_report': 'Executive Cybersecurity Report',
+                'generate_dashboard': 'Cybersecurity Dashboard Report'
+            };
+            return titles[reportKey] || 'NIST CSF 2.0 Analysis Report';
+        }
+        
+        function formatReportContent(reportKey, result) {
+            // Handle specific report types with custom formatting
+            if (reportKey === 'assess_maturity') {
+                return formatMaturityReport(result);
+            } else if (reportKey === 'calculate_risk_score') {
+                return formatRiskReport(result);
+            } else if (reportKey === 'generate_gap_analysis') {
+                return formatGapAnalysisReport(result);
+            } else {
+                // Generic formatting for other report types
+                return `
+                    <div class="section">
+                        <h2>Report Summary</h2>
+                        <p><strong>Success:</strong> ${result.success ? 'Yes' : 'No'}</p>
+                        ${result.error ? `<p><strong>Error:</strong> ${result.error}</p>` : ''}
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Detailed Data</h2>
+                        <div class="json-data">${JSON.stringify(result, null, 2)}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        function formatMaturityReport(result) {
+            return `
+                <div class="section">
+                    <h2>Maturity Assessment Summary</h2>
+                    <table class="data-table">
+                        <tr><th>Overall Maturity Tier</th><td class="score-medium">${result.overall_maturity_tier || 'Unknown'}</td></tr>
+                        <tr><th>Overall Maturity Score</th><td>${result.overall_maturity_score || 0}</td></tr>
+                        <tr><th>Implementation Percentage</th><td>${result.statistics?.overall_implementation_percentage || 0}%</td></tr>
+                        <tr><th>Assessment Date</th><td>${result.assessment_date || 'N/A'}</td></tr>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h2>Function Breakdown</h2>
+                    ${result.function_breakdown && result.function_breakdown.length > 0 ? 
+                        `<table class="data-table">
+                            <tr><th>Function</th><th>Score</th><th>Tier</th><th>Categories</th></tr>
+                            ${result.function_breakdown.map(func => 
+                                `<tr>
+                                    <td><strong>${func.function_name}</strong></td>
+                                    <td>${func.function_score || 0}</td>
+                                    <td class="score-medium">${func.maturity_tier || 'Unknown'}</td>
+                                    <td>${func.categories ? func.categories.length : 0}</td>
+                                </tr>`
+                            ).join('')}
+                        </table>` : 
+                        '<p>No function data available. Please complete the assessment first.</p>'
+                    }
+                </div>
+                
+                <div class="section">
+                    <h2>Statistics</h2>
+                    <table class="data-table">
+                        <tr><th>Total Functions Assessed</th><td>${result.statistics?.total_functions || 0}</td></tr>
+                        <tr><th>Functions at Adaptive Level</th><td class="score-high">${result.statistics?.functions_at_adaptive || 0}</td></tr>
+                        <tr><th>Functions at Repeatable Level</th><td class="score-medium">${result.statistics?.functions_at_repeatable || 0}</td></tr>
+                        <tr><th>Functions at Risk-Informed Level</th><td class="score-medium">${result.statistics?.functions_at_risk_informed || 0}</td></tr>
+                        <tr><th>Functions at Partial Level</th><td class="score-low">${result.statistics?.functions_at_partial || 0}</td></tr>
+                        <tr><th>Strongest Function</th><td>${result.statistics?.strongest_function || 'N/A'}</td></tr>
+                        <tr><th>Weakest Function</th><td>${result.statistics?.weakest_function || 'N/A'}</td></tr>
+                    </table>
+                </div>
+            `;
+        }
+        
+        function formatRiskReport(result) {
+            return `
+                <div class="section">
+                    <h2>Risk Assessment Summary</h2>
+                    <table class="data-table">
+                        <tr><th>Overall Risk Score</th><td class="${result.overall_risk_score > 7 ? 'score-low' : result.overall_risk_score > 4 ? 'score-medium' : 'score-high'}">${result.overall_risk_score || 'N/A'}</td></tr>
+                        <tr><th>Risk Level</th><td>${result.risk_level || 'Unknown'}</td></tr>
+                        <tr><th>Assessment Date</th><td>${result.assessment_date || 'N/A'}</td></tr>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h2>Detailed Risk Analysis</h2>
+                    <div class="json-data">${JSON.stringify(result, null, 2)}</div>
+                </div>
+            `;
+        }
+        
+        function formatGapAnalysisReport(result) {
+            return `
+                <div class="section">
+                    <h2>Gap Analysis Summary</h2>
+                    <p>This report identifies security gaps and areas for improvement in your cybersecurity posture.</p>
+                </div>
+                
+                <div class="section">
+                    <h2>Detailed Gap Analysis</h2>
+                    <div class="json-data">${JSON.stringify(result, null, 2)}</div>
+                </div>
+            `;
+        }
+
+        function exportAllReports() {
+            if (window.analysisResults) {
+                const allReports = {
+                    organization: {
+                        name: document.getElementById('completionOrgName').textContent,
+                        sector: document.getElementById('completionSector').textContent,
+                        size: document.getElementById('completionSize').textContent
+                    },
+                    assessment: {
+                        completed_date: document.getElementById('completionDate').textContent,
+                        questions_answered: document.getElementById('completionQuestions').textContent,
+                        functions_completed: document.getElementById('completionFunctions').textContent
+                    },
+                    reports: window.analysisResults
+                };
+                
+                const dataStr = JSON.stringify(allReports, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `nist-csf-complete-analysis-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+            }
+        }
+
+        function startNewAssessment() {
+            if (confirm('Are you sure you want to start a new assessment? This will clear all current data.')) {
+                localStorage.clear();
+                location.reload();
             }
         }
 
@@ -1681,7 +2723,7 @@
                         const questionId = currentCat.questions[assessmentState.currentQuestion].subcategory_id;
                         const currentAnswer = document.querySelector('input[name="answer"]:checked');
                         if (currentAnswer) {
-                            scheduleAutoSave(questionId, currentAnswer.value);
+                            scheduleImmediateSave(questionId, currentAnswer.value);
                         }
                     }
                 });
@@ -1699,7 +2741,7 @@
                             const currentAnswer = document.querySelector('input[name="answer"]:checked');
                             if (currentAnswer) {
                                 console.log('AUTO-SAVE: Scheduling for question:', questionId, 'value:', currentAnswer.value);
-                                scheduleAutoSave(questionId, currentAnswer.value);
+                                scheduleImmediateSave(questionId, currentAnswer.value);
                             }
                         }
                     }, 1000); // Save notes after 1 second of no typing
