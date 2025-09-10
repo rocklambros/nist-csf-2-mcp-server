@@ -1,7 +1,0 @@
-{
-  "timestamp": "2025-08-24T02:33:03.119Z",
-  "level": "error",
-  "message": "Simulated test error",
-  "correlationId": "error_test_1756002783119",
-  "stack": "Error: Simulated test error\n    at file:///Users/klambros/PycharmProjects/nist-csf-2-mcp-server/test-e2e-monitoring.js:218:15\n    at MonitoringE2ETest.runStep (file:///Users/klambros/PycharmProjects/nist-csf-2-mcp-server/test-e2e-monitoring.js:38:28)\n    at MonitoringE2ETest.testErrorHandling (file:///Users/klambros/PycharmProjects/nist-csf-2-mcp-server/test-e2e-monitoring.js:215:17)\n    at MonitoringE2ETest.runAllTests (file:///Users/klambros/PycharmProjects/nist-csf-2-mcp-server/test-e2e-monitoring.js:334:16)\n    at async main (file:///Users/klambros/PycharmProjects/nist-csf-2-mcp-server/test-e2e-monitoring.js:388:21)"
-}

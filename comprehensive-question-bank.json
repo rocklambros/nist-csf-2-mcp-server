@@ -1,10 +1,10 @@
 {
   "metadata": {
     "version": "2.0",
-    "created_date": "2025-08-24",
+    "created_date": "2025-09-09",
     "description": "Comprehensive assessment question bank for all 106 NIST CSF 2.0 subcategories",
-    "total_questions": 424,
-    "subcategories_covered": 106,
+    "total_questions": 420,
+    "subcategories_covered": 105,
     "assessment_dimensions": [
       "risk",
       "maturity",
@@ -756,162 +756,6 @@
     },
     {
       "subcategory_id": "DE.AE-07",
-      "question_text": "How effective is your adverse event analysis at identifying and escalating threats?",
-      "question_type": "multiple_choice",
-      "assessment_dimension": "effectiveness",
-      "weight": 1,
-      "options": [
-        {
-          "option_text": "Highly effective with measurable positive outcomes and continuous improvement",
-          "score": 10,
-          "risk_level": "low",
-          "maturity_level": "optimizing"
-        },
-        {
-          "option_text": "Generally effective with good results and regular monitoring",
-          "score": 7,
-          "risk_level": "low",
-          "maturity_level": "managed"
-        },
-        {
-          "option_text": "Moderately effective but with room for improvement",
-          "score": 5,
-          "risk_level": "medium",
-          "maturity_level": "defined"
-        },
-        {
-          "option_text": "Limited effectiveness with inconsistent results",
-          "score": 3,
-          "risk_level": "medium",
-          "maturity_level": "developing"
-        },
-        {
-          "option_text": "Ineffective or not able to measure effectiveness",
-          "score": 1,
-          "risk_level": "high",
-          "maturity_level": "initial"
-        }
-      ]
-    },
-    {
-      "subcategory_id": "DE.AE-08",
-      "question_text": "How would you assess the risk from your current adverse event analysis and response processes?",
-      "question_type": "multiple_choice",
-      "assessment_dimension": "risk",
-      "weight": 1,
-      "options": [
-        {
-          "option_text": "No significant risk identified - comprehensive controls in place",
-          "score": 10,
-          "risk_level": "low",
-          "maturity_level": "managed"
-        },
-        {
-          "option_text": "Low risk - basic controls implemented with minor gaps",
-          "score": 7,
-          "risk_level": "low",
-          "maturity_level": "defined"
-        },
-        {
-          "option_text": "Medium risk - some controls in place but significant gaps exist",
-          "score": 5,
-          "risk_level": "medium",
-          "maturity_level": "developing"
-        },
-        {
-          "option_text": "High risk - minimal or ineffective controls",
-          "score": 2,
-          "risk_level": "high",
-          "maturity_level": "initial"
-        },
-        {
-          "option_text": "Critical risk - no controls in place or complete failure",
-          "score": 0,
-          "risk_level": "critical",
-          "maturity_level": "initial"
-        }
-      ]
-    },
-    {
-      "subcategory_id": "DE.AE-08",
-      "question_text": "What is the maturity level of your adverse event analysis and detection processes?",
-      "question_type": "multiple_choice",
-      "assessment_dimension": "maturity",
-      "weight": 1,
-      "options": [
-        {
-          "option_text": "Optimizing - Continuous improvement with metrics-driven optimization",
-          "score": 10,
-          "risk_level": "low",
-          "maturity_level": "optimizing"
-        },
-        {
-          "option_text": "Managed - Established processes with regular monitoring and measurement",
-          "score": 8,
-          "risk_level": "low",
-          "maturity_level": "managed"
-        },
-        {
-          "option_text": "Defined - Documented and standardized processes across the organization",
-          "score": 6,
-          "risk_level": "medium",
-          "maturity_level": "defined"
-        },
-        {
-          "option_text": "Developing - Basic processes in place but inconsistent implementation",
-          "score": 4,
-          "risk_level": "medium",
-          "maturity_level": "developing"
-        },
-        {
-          "option_text": "Initial - Ad-hoc or reactive approach with minimal structure",
-          "score": 2,
-          "risk_level": "high",
-          "maturity_level": "initial"
-        }
-      ]
-    },
-    {
-      "subcategory_id": "DE.AE-08",
-      "question_text": "What is the implementation status of your adverse event analysis capabilities?",
-      "question_type": "multiple_choice",
-      "assessment_dimension": "implementation",
-      "weight": 1,
-      "options": [
-        {
-          "option_text": "Fully implemented and operational across all applicable areas",
-          "score": 10,
-          "risk_level": "low",
-          "maturity_level": "managed"
-        },
-        {
-          "option_text": "Mostly implemented with minor gaps or limited scope",
-          "score": 7,
-          "risk_level": "low",
-          "maturity_level": "defined"
-        },
-        {
-          "option_text": "Partially implemented in some areas but inconsistent",
-          "score": 5,
-          "risk_level": "medium",
-          "maturity_level": "developing"
-        },
-        {
-          "option_text": "In planning or early implementation stages",
-          "score": 3,
-          "risk_level": "medium",
-          "maturity_level": "developing"
-        },
-        {
-          "option_text": "Not implemented or only conceptual understanding",
-          "score": 0,
-          "risk_level": "high",
-          "maturity_level": "initial"
-        }
-      ]
-    },
-    {
-      "subcategory_id": "DE.AE-08",
       "question_text": "How effective is your adverse event analysis at identifying and escalating threats?",
       "question_type": "multiple_choice",
       "assessment_dimension": "effectiveness",

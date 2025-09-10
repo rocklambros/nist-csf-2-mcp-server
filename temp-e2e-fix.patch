@@ -1,0 +1,61 @@
+  async testGapAnalysis(): Promise<TestResult> {
+    return this.executeStep(
+      'STEP_4_GAP_ANALYSIS',
+      'Generate comprehensive gap analysis',
+      async () => {
+        if (!this.report.artifacts.profileId) {
+          throw new Error('No profile ID available');
+        }
+        
+        // Create a target profile with higher maturity scores
+        const targetProfile = await createProfile({
+          org_id: this.report.artifacts.organizationId!,
+          name: 'E2E Target Profile',
+          type: 'target',
+          description: 'Target state for gap analysis testing'
+        });
+        
+        // Create some target assessments with higher maturity scores
+        const targetAssessments = [
+          { subcategory_id: 'GV.GV-1', maturity_score: 5, implementation_level: 'fully_implemented' },
+          { subcategory_id: 'ID.AM-1', maturity_score: 4, implementation_level: 'largely_implemented' },
+          { subcategory_id: 'PR.AC-1', maturity_score: 4, implementation_level: 'largely_implemented' },
+          { subcategory_id: 'DE.AE-1', maturity_score: 3, implementation_level: 'partially_implemented' },
+          { subcategory_id: 'RS.RP-1', maturity_score: 3, implementation_level: 'partially_implemented' },
+        ];
+        
+        for (const assessment of targetAssessments) {
+          await quickAssessment({
+            profile_id: targetProfile.profile_id,
+            assessments: [{
+              subcategory_id: assessment.subcategory_id,
+              implementation_level: assessment.implementation_level,
+              maturity_score: assessment.maturity_score,
+              confidence_level: 'high'
+            }]
+          });
+        }
+        
+        const result = await generateGapAnalysis({
+          current_profile_id: this.report.artifacts.profileId!,
+          target_profile_id: targetProfile.profile_id,
+          include_priority_matrix: true,
+          include_visualizations: false,
+          minimum_gap_score: 0
+        });
+        
+        if (!result.analysis_id) {
+          throw new Error('Gap analysis generation failed - no analysis ID returned');
+        }
+        
+        this.report.artifacts.gapAnalysisId = result.analysis_id;
+        
+        return {
+          gapAnalysisId: result.analysis_id,
+          totalGaps: result.gap_summary?.total_gaps || 0,
+          criticalGaps: result.gap_summary?.critical_gaps || 0,
+          recommendations: result.recommendations?.immediate_actions?.length || 0
+        };
+      }
+    );
+  }

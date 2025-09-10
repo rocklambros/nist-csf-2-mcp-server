@@ -1,0 +1,161 @@
+{
+  "testSuite": "NIST CSF MCP Server End-to-End Workflow Test",
+  "startTime": "2025-09-05T21:57:02.982Z",
+  "results": [
+    {
+      "step": "STEP_1_ORG_CREATION",
+      "description": "Create test organization and profile",
+      "status": "PASS",
+      "duration": 4,
+      "data": {
+        "profileId": "org-test-corp-e2e-epyw-current-mf7dkzv3",
+        "targetProfileId": "org-test-corp-e2e-2h6v-target-mf7dkzv5",
+        "organizationId": "org-test-corp-e2e-epyw",
+        "message": "Successfully created current profile for Test Corp E2E | Target profile: org-test-corp-e2e-2h6v-target-mf7dkzv5"
+      },
+      "details": "Completed successfully in 4ms"
+    },
+    {
+      "step": "STEP_2_QUICK_ASSESSMENT",
+      "description": "Perform quick assessment with test data",
+      "status": "PASS",
+      "duration": 11,
+      "data": {
+        "assessmentsCreated": 308,
+        "targetAssessmentsCreated": 308,
+        "functionSummaries": 6,
+        "overallAverage": 1.67,
+        "message": "Quick assessment completed successfully for profile: E2E Test Profile. Assessment based on your responses to 6 framework functions."
+      },
+      "details": "Completed successfully in 11ms"
+    },
+    {
+      "step": "STEP_3_MATURITY_RISK",
+      "description": "Assess maturity levels and calculate risk scores",
+      "status": "PASS",
+      "duration": 1,
+      "data": {
+        "maturity": {
+          "overallMaturityTier": "Unknown",
+          "overallMaturityScore": 0,
+          "functionBreakdown": 0
+        },
+        "risk": {
+          "overallRiskScore": 77.09,
+          "riskLevel": "Critical",
+          "criticalRisks": 4
+        }
+      },
+      "details": "Completed successfully in 1ms"
+    },
+    {
+      "step": "STEP_4_GAP_ANALYSIS",
+      "description": "Generate comprehensive gap analysis",
+      "status": "PASS",
+      "duration": 6,
+      "data": {
+        "gapAnalysisId": "80a16899-5a37-4f02-be25-35935bf8b953",
+        "totalGaps": 1,
+        "criticalGaps": 0,
+        "recommendations": 0
+      },
+      "details": "Completed successfully in 6ms"
+    },
+    {
+      "step": "STEP_5_PRIORITY_MATRIX",
+      "description": "Generate implementation priority matrix",
+      "status": "PASS",
+      "duration": 3,
+      "data": {
+        "highPriorityItems": 0,
+        "mediumPriorityItems": 0,
+        "lowPriorityItems": 0,
+        "totalItems": 0
+      },
+      "details": "Completed successfully in 3ms"
+    },
+    {
+      "step": "STEP_6_IMPLEMENTATION_PLAN",
+      "description": "Create comprehensive implementation plan",
+      "status": "FAIL",
+      "duration": 1,
+      "error": "Implementation plan creation failed - no plan ID returned",
+      "details": "Failed after 1ms: Implementation plan creation failed - no plan ID returned"
+    },
+    {
+      "step": "STEP_7_COST_ESTIMATION",
+      "description": "Generate detailed cost estimates",
+      "status": "FAIL",
+      "duration": 0,
+      "error": "No implementation plan ID available",
+      "details": "Failed after 0ms: No implementation plan ID available"
+    },
+    {
+      "step": "STEP_8_PROGRESS_TRACKING",
+      "description": "Track implementation progress updates",
+      "status": "PASS",
+      "duration": 1,
+      "data": {
+        "updatesProcessed": 3,
+        "totalSubcategories": 0,
+        "overallCompletion": 0,
+        "completedCount": 0
+      },
+      "details": "Completed successfully in 1ms"
+    },
+    {
+      "step": "STEP_9_EXECUTIVE_REPORT",
+      "description": "Generate comprehensive executive report",
+      "status": "PASS",
+      "duration": 1,
+      "data": {
+        "reportType": "executive",
+        "format": "json",
+        "success": true,
+        "fileSize": 1799
+      },
+      "details": "Completed successfully in 1ms"
+    },
+    {
+      "step": "STEP_10_DATA_EXPORT",
+      "description": "Export and validate all generated data",
+      "status": "PASS",
+      "duration": 0,
+      "data": {
+        "exportFormat": "json",
+        "success": true,
+        "recordCount": 186,
+        "fileSize": 52051,
+        "includedSections": 3
+      },
+      "details": "Completed successfully in 0ms"
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "passed": 8,
+    "failed": 2,
+    "skipped": 0,
+    "successRate": 80
+  },
+  "artifacts": {
+    "profileId": "org-test-corp-e2e-epyw-current-mf7dkzv3",
+    "organizationId": "org-test-corp-e2e-epyw",
+    "targetProfileId": "org-test-corp-e2e-2h6v-target-mf7dkzv5",
+    "gapAnalysisId": "80a16899-5a37-4f02-be25-35935bf8b953",
+    "reportData": {
+      "success": true,
+      "report_type": "executive",
+      "format": "json",
+      "file_path": "/var/folders/c0/wbpnq0td241bzvxk5cs6t5_w0000gn/T/nist-csf-reports/executive_report_1757109423017.json",
+      "metadata": {
+        "profile_id": "org-test-corp-e2e-epyw-current-mf7dkzv3",
+        "generated_at": "2025-09-05T21:57:03.018Z",
+        "report_size": 1799
+      },
+      "content": "{\n  \"profile_id\": \"org-test-corp-e2e-epyw-current-mf7dkzv3\",\n  \"org_id\": \"org-test-corp-e2e-epyw\",\n  \"profile_name\": \"E2E Test Profile\",\n  \"profile_type\": \"current\",\n  \"description\": \"Complete workflow test profile\",\n  \"created_at\": \"2025-09-05 21:57:02\",\n  \"created_by\": null,\n  \"is_active\": 1,\n  \"parent_profile_id\": null,\n  \"org_name\": \"Test Corp E2E\",\n  \"industry\": \"technology\",\n  \"size\": \"medium\",\n  \"function_summary\": [\n    {\n      \"function_id\": \"DE\",\n      \"function_name\": \"DETECT\",\n      \"avg_maturity\": 2.98,\n      \"subcategories_assessed\": 22,\n      \"mature_subcategories\": 14,\n      \"maturity_percentage\": 63.6\n    },\n    {\n      \"function_id\": \"GV\",\n      \"function_name\": \"GOVERN\",\n      \"avg_maturity\": 1.97,\n      \"subcategories_assessed\": 31,\n      \"mature_subcategories\": 0,\n      \"maturity_percentage\": 0\n    },\n    {\n      \"function_id\": \"ID\",\n      \"function_name\": \"IDENTIFY\",\n      \"avg_maturity\": 2,\n      \"subcategories_assessed\": 39,\n      \"mature_subcategories\": 0,\n      \"maturity_percentage\": 0\n    },\n    {\n      \"function_id\": \"PR\",\n      \"function_name\": \"PROTECT\",\n      \"avg_maturity\": 2,\n      \"subcategories_assessed\": 57,\n      \"mature_subcategories\": 0,\n      \"maturity_percentage\": 0\n    },\n    {\n      \"function_id\": \"RC\",\n      \"function_name\": \"RECOVER\",\n      \"avg_maturity\": 1,\n      \"subcategories_assessed\": 12,\n      \"mature_subcategories\": 0,\n      \"maturity_percentage\": 0\n    },\n    {\n      \"function_id\": \"RS\",\n      \"function_name\": \"RESPOND\",\n      \"avg_maturity\": 0.19,\n      \"subcategories_assessed\": 24,\n      \"mature_subcategories\": 0,\n      \"maturity_percentage\": 0\n    }\n  ],\n  \"total_risks\": 0,\n  \"critical_risks\": null,\n  \"high_risks\": null,\n  \"avg_risk_score\": null,\n  \"total_gaps\": 34,\n  \"avg_gap_score\": 1.71,\n  \"critical_gaps\": 1\n}"
+    }
+  },
+  "endTime": "2025-09-05T21:57:03.018Z",
+  "totalDuration": 36
+}

@@ -1,0 +1,29 @@
+--- a/src/db/database.ts
++++ b/src/db/database.ts
+@@ -1471,14 +1471,13 @@ export class CSFDatabase {
+         WHERE gap_score > 0
+       )
+       INSERT INTO gap_analysis (
+-        id, org_id, category_id, current_score, target_score, 
++        org_id, category_id, current_score, target_score, 
+         gap_score, priority, estimated_effort, target_date, analysis_date
+       )
+       SELECT 
+-        ? || '_' || category_id,
+         (SELECT org_id FROM profiles WHERE profile_id = ?),
+         category_id,
+         AVG(current_score),
+         AVG(target_score),
+         AVG(gap_score),
+         CASE 
+@@ -1501,9 +1500,8 @@ export class CSFDatabase {
+     
+     // Execute the insert
+     this.db.prepare(sql).run(
+       currentProfileId,
+       targetProfileId,
+-      analysisId,
+       currentProfileId
+     );
+     
+     // Return the detailed gap analysis

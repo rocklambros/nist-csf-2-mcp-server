@@ -31,7 +31,7 @@
     "test:coverage": "jest --coverage --coverageReporters=text-lcov --coverageReporters=html",
     "seed:questions": "tsx scripts/generate-comprehensive-questions.ts && tsx scripts/import-comprehensive-questions.ts",
     "import:framework": "tsx scripts/import-framework-fixed.ts",
-    "import:csf-framework": "tsx scripts/import-csf-framework.ts",
+    "import:csf-framework": "node scripts/import-csv-framework.cjs",
     "import:guidance": "tsx scripts/import-implementation-guidance.ts",
     "cleanup:subcategories": "tsx scripts/cleanup-subcategories.ts",
     "import:benchmarks": "tsx scripts/import-benchmarks.ts",

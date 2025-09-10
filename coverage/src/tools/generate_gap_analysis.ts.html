@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/140</span>
+                <span class='fraction'>0/145</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/101</span>
+                <span class='fraction'>0/112</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/129</span>
+                <span class='fraction'>0/134</span>
             </div>
         
             
@@ -645,7 +645,15 @@
 <a name='L580'></a><a href='#L580'>580</a>
 <a name='L581'></a><a href='#L581'>581</a>
 <a name='L582'></a><a href='#L582'>582</a>
-<a name='L583'></a><a href='#L583'>583</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L583'></a><a href='#L583'>583</a>
+<a name='L584'></a><a href='#L584'>584</a>
+<a name='L585'></a><a href='#L585'>585</a>
+<a name='L586'></a><a href='#L586'>586</a>
+<a name='L587'></a><a href='#L587'>587</a>
+<a name='L588'></a><a href='#L588'>588</a>
+<a name='L589'></a><a href='#L589'>589</a>
+<a name='L590'></a><a href='#L590'>590</a>
+<a name='L591'></a><a href='#L591'>591</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -763,19 +771,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1065,12 +1077,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1147,6 +1162,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1344,18 +1360,22 @@ export async function <span class="fstat-no" title="function not covered" >gener
     const analysisId = <span class="cstat-no" title="statement not covered" >uuidv4();</span>
     
     // Perform gap analysis and store results in database
-    const analysisResult = (<span class="cstat-no" title="statement not covered" >db as any).generateGapAnalysis(</span>
-      (params as any).current_profile_id,
-      (params as any).target_profile_id,
-      analysisId
-    );
-    
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!analysisResult || !(Array as any).isArray(analysisResult) || (analysisResult as any).length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >      return createErrorResult('Failed to generate gap analysis');</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      (<span class="cstat-no" title="statement not covered" >db as any).generateGapAnalysis(</span>
+        (params as any).current_profile_id,
+        (params as any).target_profile_id,
+        analysisId
+      );
+    } catch (error) {
+<span class="cstat-no" title="statement not covered" >      return createErrorResult(`Failed to generate gap analysis: ${error instanceof Error ? error.message : 'Unknown error'}`);</span>
     }
     
     // Get detailed gap analysis data
-    const gapDetails = (<span class="cstat-no" title="statement not covered" >db as any).getGapAnalysisDetails(analysisId);</span>
+    const gapDetails = (<span class="cstat-no" title="statement not covered" >db as any).getGapAnalysisDetails((params as any).current_profile_id);</span>
+    
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!gapDetails || !(Array as any).isArray(gapDetails) || (gapDetails as any).length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >      return createErrorResult('Gap analysis generated but no details found');</span>
+    }
     
     // Filter by minimum gap score if specified
     const filteredGaps = (<span class="cstat-no" title="statement not covered" >gapDetails as any).filter(</span>
@@ -1649,8 +1669,11 @@ function <span class="fstat-no" title="function not covered" >generateRecommenda
   // Long-term objectives - Based on functions with highest gaps
   const functionGaps: Record&lt;string, number&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
 <span class="cstat-no" title="statement not covered" >  for (const gap of gaps) {</span>
-    const funcId = (<span class="cstat-no" title="statement not covered" >gap as any).subcategory_id.substring(0, 2);</span>
-<span class="cstat-no" title="statement not covered" >    functionGaps[funcId] = (functionGaps[funcId] || 0) + (gap as any).gap_score;</span>
+    const subcategoryId = (<span class="cstat-no" title="statement not covered" >gap as any).subcategory_id || '';</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (subcategoryId.length &gt;= 2) {</span>
+      const funcId = <span class="cstat-no" title="statement not covered" >subcategoryId.substring(0, 2);</span>
+<span class="cstat-no" title="statement not covered" >      functionGaps[funcId] = (functionGaps[funcId] || 0) + (gap as any).gap_score;</span>
+    }
   }
   
   const sortedFunctions = (<span class="cstat-no" title="statement not covered" >Object as any).entries(functionGaps)</span>
@@ -1729,11 +1752,12 @@ function <span class="fstat-no" title="function not covered" >calculateProfileSu
  * Format gap item for output
  */
 function <span class="fstat-no" title="function not covered" >formatGapItem(</span>gap: any): GapItem {
+  const subcategoryId = (<span class="cstat-no" title="statement not covered" >gap as any).subcategory_id || '';</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    subcategory_id: (gap as any).subcategory_id,
-    subcategory_name: (gap as any).subcategory_name || (gap as any).subcategory_id,
-    function_id: (gap as any).subcategory_id.substring(0, 2),
-    category_id: (gap as any).subcategory_id.substring(0, 5),
+    subcategory_id: subcategoryId,
+    subcategory_name: (gap as any).subcategory_name || subcategoryId,
+    function_id: subcategoryId.length &gt;= 2 ? subcategoryId.substring(0, 2) : '',
+    category_id: subcategoryId.length &gt;= 5 ? subcategoryId.substring(0, 5) : subcategoryId,
     current_implementation: (gap as any).current_implementation || 'not_implemented',
     target_implementation: (gap as any).target_implementation || 'fully_implemented',
     current_maturity: (gap as any).current_maturity || 0,
@@ -1816,7 +1840,7 @@ function <span class="fstat-no" title="function not covered" >createErrorResult(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-03T19:24:01.802Z
+                at 2025-09-07T02:35:23.952Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

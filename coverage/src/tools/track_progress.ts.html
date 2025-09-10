@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/31</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
@@ -237,7 +237,12 @@
 <a name='L172'></a><a href='#L172'>172</a>
 <a name='L173'></a><a href='#L173'>173</a>
 <a name='L174'></a><a href='#L174'>174</a>
-<a name='L175'></a><a href='#L175'>175</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -297,6 +302,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -314,6 +320,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -469,27 +479,32 @@ export async function <span class="fstat-no" title="function not covered" >track
 <span class="cstat-no" title="statement not covered" >        completion_percentage = Math.round((update.current_maturity / 5) * 100);</span>
       }
 &nbsp;
-      // Perform UPSERT operation
-<span class="cstat-no" title="statement not covered" >      db.upsertProgressTracking({</span>
-        id: `${profile_id}_${update.subcategory_id}`,
-        profile_id,
-        subcategory_id: update.subcategory_id,
-        current_implementation: update.current_implementation,
-        current_maturity: update.current_maturity,
-        completion_percentage,
-        status: update.status,
-        is_blocked: update.is_blocked || false,
-        blocking_reason: update.blocking_reason,
-        notes: update.notes,
-        trend: 'stable'
-      });
+      // Perform UPSERT operation with try/catch for validation
+<span class="cstat-no" title="statement not covered" >      try {</span>
+<span class="cstat-no" title="statement not covered" >        db.upsertProgressTracking({</span>
+          id: `${profile_id}_${update.subcategory_id}`,
+          profile_id,
+          subcategory_id: update.subcategory_id,
+          current_implementation: update.current_implementation,
+          current_maturity: update.current_maturity,
+          completion_percentage,
+          status: update.status,
+          is_blocked: update.is_blocked || false,
+          blocking_reason: update.blocking_reason,
+          notes: update.notes,
+          trend: 'stable'
+        });
 &nbsp;
-      // Add to results
-<span class="cstat-no" title="statement not covered" >      updateResults.push({</span>
-        subcategory_id: update.subcategory_id,
-        status: update.status || 'on_track',
-        completion_percentage: completion_percentage || 0
-      });
+        // Add to results
+<span class="cstat-no" title="statement not covered" >        updateResults.push({</span>
+          subcategory_id: update.subcategory_id,
+          status: update.status || 'on_track',
+          completion_percentage: completion_percentage || 0
+        });
+      } catch (error) {
+<span class="cstat-no" title="statement not covered" >        logger.warn(`Failed to track progress for subcategory ${update.subcategory_id}: ${error instanceof Error ? error.message : 'Unknown error'}`);</span>
+        // Skip this update but continue with others
+      }
     }
 &nbsp;
     // Get overall progress summary
@@ -592,7 +607,7 @@ export const trackProgressTool = <span class="cstat-no" title="statement not cov
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-03T19:24:01.802Z
+                at 2025-09-07T02:35:23.952Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

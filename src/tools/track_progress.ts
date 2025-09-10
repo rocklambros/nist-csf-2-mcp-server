@@ -56,27 +56,32 @@ export async function trackProgress(
         completion_percentage = Math.round((update.current_maturity / 5) * 100);
       }
 
-      // Perform UPSERT operation
-      db.upsertProgressTracking({
-        id: `${profile_id}_${update.subcategory_id}`,
-        profile_id,
-        subcategory_id: update.subcategory_id,
-        current_implementation: update.current_implementation,
-        current_maturity: update.current_maturity,
-        completion_percentage,
-        status: update.status,
-        is_blocked: update.is_blocked || false,
-        blocking_reason: update.blocking_reason,
-        notes: update.notes,
-        trend: 'stable'
-      });
+      // Perform UPSERT operation with try/catch for validation
+      try {
+        db.upsertProgressTracking({
+          id: `${profile_id}_${update.subcategory_id}`,
+          profile_id,
+          subcategory_id: update.subcategory_id,
+          current_implementation: update.current_implementation,
+          current_maturity: update.current_maturity,
+          completion_percentage,
+          status: update.status,
+          is_blocked: update.is_blocked || false,
+          blocking_reason: update.blocking_reason,
+          notes: update.notes,
+          trend: 'stable'
+        });
 
-      // Add to results
-      updateResults.push({
-        subcategory_id: update.subcategory_id,
-        status: update.status || 'on_track',
-        completion_percentage: completion_percentage || 0
-      });
+        // Add to results
+        updateResults.push({
+          subcategory_id: update.subcategory_id,
+          status: update.status || 'on_track',
+          completion_percentage: completion_percentage || 0
+        });
+      } catch (error) {
+        logger.warn(`Failed to track progress for subcategory ${update.subcategory_id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        // Skip this update but continue with others
+      }
     }
 
     // Get overall progress summary

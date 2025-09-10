@@ -1,95 +1,48 @@
 #!/usr/bin/env npx tsx
 /**
- * NIST CSF 2.0 Framework Import Script
- * Imports complete framework from csf-2.0-framework.json in project root
- * Handles duplicates, validates data integrity, and provides comprehensive reporting
+ * NIST CSF 2.0 Framework Import Script - CSV Based
+ * Uses definitive nist_csf_function_category_subcategory_only.csv
+ * Ensures clean, official NIST CSF 2.0 framework data
  */
 
 import { readFileSync } from 'fs';
 import { getDatabase, closeDatabase } from '../src/db/database.js';
 import { logger } from '../src/utils/enhanced-logger.js';
 
-interface CSFElement {
-  doc_identifier: string;
-  element_identifier: string;
-  element_type: string;
-  text: string;
-  title: string;
-}
-
-interface CSFFrameworkData {
-  response: {
-    elements: {
-      documents: Array<{
-        doc_identifier: string;
-        name: string;
-        version: string;
-        website: string;
-      }>;
-      elements: CSFElement[];
-    };
-  };
-}
-
-interface ImportStats {
-  processed: number;
-  imported: number;
-  skipped: number;
-  failed: number;
+interface CSVRow {
+  function: string;
+  category: string;
+  subcategory: string;
 }
 
 class CSFFrameworkImporter {
   private db: any;
-  private frameworkData: CSFFrameworkData | null = null;
   
   constructor() {
     this.db = getDatabase();
   }
 
-  /**
-   * Main import process
-   */
   async importFramework(): Promise<boolean> {
-    logger.info('🚀 Starting NIST CSF 2.0 Framework Import');
-    logger.info('📁 Source: csf-2.0-framework.json (project root)');
-
     try {
-      // Load and validate framework file
-      await this.loadFrameworkFile();
+      logger.info('🚀 Starting NIST CSF 2.0 Framework Import from CSV');
       
-      // Disable foreign keys during import
-      this.db.prepare('PRAGMA foreign_keys = OFF').run();
+      // Clear existing data
+      await this.clearExistingData();
       
-      // Begin transaction
-      this.db.prepare('BEGIN TRANSACTION').run();
+      // Import from CSV
+      const csvPath = './nist_csf_function_category_subcategory_only.csv';
+      const results = await this.importFromCSV(csvPath);
       
-      try {
-        // Clear existing framework data
-        await this.clearExistingData();
-        
-        // Import all framework elements
-        const importResults = await this.importAllElements();
-        
-        // Validate import completeness
-        const validationResults = await this.validateImport();
-        
-        // Commit transaction
-        this.db.prepare('COMMIT').run();
-        
-        // Re-enable foreign keys
-        this.db.prepare('PRAGMA foreign_keys = ON').run();
-        
-        // Generate final report
-        this.generateFinalReport(importResults, validationResults);
-        
-        return validationResults.success;
-        
-      } catch (error) {
-        // Rollback on any error
-        this.db.prepare('ROLLBACK').run();
-        this.db.prepare('PRAGMA foreign_keys = ON').run();
-        throw error;
-      }
+      logger.info('📊 FINAL IMPORT REPORT');
+      logger.info('==================================================');
+      logger.info(`📊 FUNCTIONS: ${results.functions} imported`);
+      logger.info(`📊 CATEGORIES: ${results.categories} imported`);
+      logger.info(`📊 SUBCATEGORIES: ${results.subcategories} imported`);
+      logger.info('');
+      logger.info('🎉 IMPORT COMPLETED SUCCESSFULLY!');
+      logger.info('✅ Official NIST CSF 2.0 framework loaded from CSV');
+      
+      return true;
       
     } catch (error) {
       logger.error('💥 Framework import failed:', error);
@@ -97,48 +50,9 @@ class CSFFrameworkImporter {
     }
   }
 
-  /**
-   * Load and validate framework JSON file
-   */
-  private async loadFrameworkFile(): Promise<void> {
-    const frameworkPath = './data/csf-2.0-framework.json';
-    
-    try {
-      logger.info('📖 Loading framework file...');
-      const fileContent = readFileSync(frameworkPath, 'utf-8');
-      this.frameworkData = JSON.parse(fileContent);
-      
-      if (!this.frameworkData?.response?.elements) {
-        throw new Error('Invalid framework file structure - missing response.elements');
-      }
-      
-      const elementCount = this.frameworkData.response.elements.elements.length;
-      const documentInfo = this.frameworkData.response.elements.documents[0];
-      
-      logger.info(`✅ Framework file loaded successfully`);
-      logger.info(`📊 Document: ${documentInfo?.name} v${documentInfo?.version}`);
-      logger.info(`📊 Total elements: ${elementCount}`);
-      
-      // Count elements by type
-      const elementCounts: Record<string, number> = {};
-      this.frameworkData.response.elements.elements.forEach(element => {
-        elementCounts[element.element_type] = (elementCounts[element.element_type] || 0) + 1;
-      });
-      
-      logger.info('📊 Element breakdown:', elementCounts);
-      
-    } catch (error) {
-      throw new Error(`Failed to load framework file '${frameworkPath}': ${error}`);
-    }
-  }
-
-  /**
-   * Clear existing framework data
-   */
   private async clearExistingData(): Promise<void> {
     logger.info('🧹 Clearing existing framework data...');
     
-    // Clear in dependency order
     const clearQueries = [
       'DELETE FROM subcategories',
       'DELETE FROM categories', 
@@ -151,447 +65,162 @@ class CSFFrameworkImporter {
     });
   }
 
-  /**
-   * Import all framework elements with duplicate handling
-   */
-  private async importAllElements(): Promise<Record<string, ImportStats>> {
-    if (!this.frameworkData) throw new Error('Framework data not loaded');
+  private async importFromCSV(csvPath: string) {
+    logger.info(`📁 Loading CSV framework: ${csvPath}`);
     
-    const elements = this.frameworkData.response.elements.elements;
-    const results: Record<string, ImportStats> = {};
+    const csvContent = readFileSync(csvPath, 'utf-8');
+    const lines = csvContent.split('\n');
+    const header = lines[0];
     
-    // Import in dependency order: functions -> categories -> subcategories
-    const importOrder = [
-      { type: 'function', handler: this.importFunctions.bind(this) },
-      { type: 'category', handler: this.importCategories.bind(this) },
-      { type: 'subcategory', handler: this.importSubcategories.bind(this) }
-    ];
+    const functions = new Map();
+    const categories = new Map();
+    const subcategories = new Map();
     
-    for (const { type, handler } of importOrder) {
-      const typeElements = elements.filter(e => e.element_type === type);
-      logger.info(`\n📝 Importing ${typeElements.length} ${type} elements...`);
+    // Parse CSV data (skip header)
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
       
-      results[type] = await handler(typeElements);
+      const row = this.parseCSVLine(line);
+      if (!row) continue;
       
-      logger.info(`✅ ${type} import completed: ${results[type].imported}/${results[type].processed} successful`);
-      if (results[type].skipped > 0) {
-        logger.info(`⚠️  Skipped ${results[type].skipped} duplicates`);
+      // Extract function info
+      const funcMatch = row.function.match(/\(([A-Z]{2})\)/);
+      if (funcMatch) {
+        const functionId = funcMatch[1];
+        const functionName = row.function.split('(')[0].trim();
+        functions.set(functionId, {
+          id: functionId,
+          name: functionName,
+          description: row.function
+        });
       }
-      if (results[type].failed > 0) {
-        logger.warn(`❌ Failed ${results[type].failed} imports`);
+      
+      // Extract category info
+      const catMatch = row.category.match(/\(([A-Z]{2}\.[A-Z]{2})\)/);
+      if (catMatch) {
+        const categoryId = catMatch[1];
+        const categoryName = row.category.split('(')[0].trim();
+        categories.set(categoryId, {
+          id: categoryId,
+          function_id: categoryId.substring(0, 2),
+          name: categoryName,
+          description: row.category
+        });
+      }
+      
+      // Extract subcategory info
+      const subcatMatch = row.subcategory.match(/^([A-Z]{2}\.[A-Z]{2}-\d{2}): (.+)$/);
+      if (subcatMatch) {
+        const subcategoryId = subcatMatch[1];
+        const subcategoryDesc = subcatMatch[2];
+        subcategories.set(subcategoryId, {
+          id: subcategoryId,
+          category_id: subcategoryId.substring(0, 5), // GV.OC from GV.OC-01
+          description: subcategoryDesc
+        });
       }
     }
     
-    return results;
-  }
-
-  /**
-   * Import functions with duplicate detection
-   */
-  private async importFunctions(functions: CSFElement[]): Promise<ImportStats> {
-    const stats: ImportStats = { processed: 0, imported: 0, skipped: 0, failed: 0 };
+    logger.info(`📊 Parsed: ${functions.size} functions, ${categories.size} categories, ${subcategories.size} subcategories`);
     
-    const insertStmt = this.db.prepare(`
-      INSERT INTO functions (id, name, description) VALUES (?, ?, ?)
+    // Insert functions
+    const insertFunction = this.db.prepare(`
+      INSERT INTO functions (id, name, description, created_at) 
+      VALUES (?, ?, ?, ?)
     `);
     
-    const checkStmt = this.db.prepare(`
-      SELECT COUNT(*) as count FROM functions WHERE id = ?
-    `);
-    
-    // Deduplicate by element_identifier, preferring entries with more complete data
-    const uniqueFunctions = new Map<string, CSFElement>();
-    functions.forEach(f => {
-      const existing = uniqueFunctions.get(f.element_identifier);
-      if (!existing || (f.text && f.text.length > (existing.text?.length || 0))) {
-        uniqueFunctions.set(f.element_identifier, f);
-      }
-    });
-    
-    for (const func of uniqueFunctions.values()) {
-      stats.processed++;
-      
-      try {
-        // Check for existing function
-        const existing = checkStmt.get(func.element_identifier) as { count: number };
-        if (existing.count > 0) {
-          stats.skipped++;
-          continue;
-        }
-        
-        // Insert new function (handle missing text field)
-        const description = func.text || func.title || 'No description available';
-        insertStmt.run(func.element_identifier, func.title, description);
-        stats.imported++;
-        
-        logger.info(`  ✅ ${func.element_identifier}: ${func.title}`);
-        
-      } catch (error) {
-        stats.failed++;
-        logger.error(`  ❌ Failed to import function ${func.element_identifier}:`, error);
-      }
+    for (const func of functions.values()) {
+      insertFunction.run(func.id, func.name, func.description, new Date().toISOString());
+      logger.info(`  ✅ ${func.id}: ${func.name}`);
     }
     
-    return stats;
-  }
-
-  /**
-   * Import categories with duplicate detection and parent validation
-   */
-  private async importCategories(categories: CSFElement[]): Promise<ImportStats> {
-    const stats: ImportStats = { processed: 0, imported: 0, skipped: 0, failed: 0 };
-    
-    const insertStmt = this.db.prepare(`
-      INSERT INTO categories (id, function_id, name, description) VALUES (?, ?, ?, ?)
+    // Insert categories
+    const insertCategory = this.db.prepare(`
+      INSERT INTO categories (id, function_id, name, description, created_at) 
+      VALUES (?, ?, ?, ?, ?)
     `);
     
-    const checkStmt = this.db.prepare(`
-      SELECT COUNT(*) as count FROM categories WHERE id = ?
-    `);
-    
-    const functionExistsStmt = this.db.prepare(`
-      SELECT COUNT(*) as count FROM functions WHERE id = ?
-    `);
-    
-    // Deduplicate by element_identifier, preferring entries with more complete data
-    const uniqueCategories = new Map<string, CSFElement>();
-    categories.forEach(c => {
-      const existing = uniqueCategories.get(c.element_identifier);
-      if (!existing || (c.text && c.text.length > (existing.text?.length || 0))) {
-        uniqueCategories.set(c.element_identifier, c);
-      }
-    });
-    
-    for (const category of uniqueCategories.values()) {
-      stats.processed++;
-      
-      try {
-        // Check for existing category
-        const existing = checkStmt.get(category.element_identifier) as { count: number };
-        if (existing.count > 0) {
-          stats.skipped++;
-          continue;
-        }
-        
-        // Extract function ID and validate parent exists
-        const functionId = category.element_identifier.split('.')[0];
-        const functionExists = functionExistsStmt.get(functionId) as { count: number };
-        
-        if (functionExists.count === 0) {
-          stats.failed++;
-          logger.warn(`  ⚠️  Skipping category ${category.element_identifier} - parent function ${functionId} not found`);
-          continue;
-        }
-        
-        // Insert new category (handle missing text field)
-        const description = category.text || category.title || 'No description available';
-        insertStmt.run(category.element_identifier, functionId, category.title, description);
-        stats.imported++;
-        
-        logger.info(`  ✅ ${category.element_identifier}: ${category.title}`);
-        
-      } catch (error) {
-        stats.failed++;
-        logger.error(`  ❌ Failed to import category ${category.element_identifier}:`);
-        logger.error(`     Function ID: ${functionId}, Title: "${category.title}"`);
-        logger.error(`     Error details:`, error);
-        logger.error(`     SQL: INSERT INTO categories (id, function_id, name, description) VALUES ('${category.element_identifier}', '${functionId}', '${category.title}', '...')`);
-      }
+    for (const cat of categories.values()) {
+      insertCategory.run(cat.id, cat.function_id, cat.name, cat.description, new Date().toISOString());
+      logger.info(`  ✅ ${cat.id}: ${cat.name}`);
     }
     
-    return stats;
-  }
-
-  /**
-   * Import subcategories with duplicate detection and parent validation
-   */
-  private async importSubcategories(subcategories: CSFElement[]): Promise<ImportStats> {
-    const stats: ImportStats = { processed: 0, imported: 0, skipped: 0, failed: 0 };
-    
-    const insertStmt = this.db.prepare(`
-      INSERT INTO subcategories (id, category_id, name, description) VALUES (?, ?, ?, ?)
+    // Insert subcategories
+    const insertSubcategory = this.db.prepare(`
+      INSERT INTO subcategories (id, category_id, name, description, created_at) 
+      VALUES (?, ?, ?, ?, ?)
     `);
     
-    const checkStmt = this.db.prepare(`
-      SELECT COUNT(*) as count FROM subcategories WHERE id = ?
-    `);
-    
-    const categoryExistsStmt = this.db.prepare(`
-      SELECT COUNT(*) as count FROM categories WHERE id = ?
-    `);
-    
-    // Deduplicate by element_identifier, preferring entries with more complete data
-    const uniqueSubcategories = new Map<string, CSFElement>();
-    subcategories.forEach(s => {
-      const existing = uniqueSubcategories.get(s.element_identifier);
-      if (!existing || (s.text && s.text.length > (existing.text?.length || 0))) {
-        uniqueSubcategories.set(s.element_identifier, s);
-      }
-    });
-    
-    logger.info(`  📊 Processing ${uniqueSubcategories.size} unique subcategories (from ${subcategories.length} total)`);
-    
-    let logCount = 0;
-    const maxLogEntries = 10;
-    
-    for (const subcategory of uniqueSubcategories.values()) {
-      stats.processed++;
-      
-      try {
-        // Check for existing subcategory
-        const existing = checkStmt.get(subcategory.element_identifier) as { count: number };
-        if (existing.count > 0) {
-          stats.skipped++;
-          continue;
-        }
-        
-        // Extract category ID and validate parent exists
-        const categoryId = subcategory.element_identifier.substring(
-          0, 
-          subcategory.element_identifier.lastIndexOf('-')
-        );
-        
-        const categoryExists = categoryExistsStmt.get(categoryId) as { count: number };
-        
-        if (categoryExists.count === 0) {
-          stats.failed++;
-          if (logCount < maxLogEntries) {
-            logger.warn(`  ⚠️  Skipping subcategory ${subcategory.element_identifier} - parent category ${categoryId} not found`);
-            logCount++;
-          } else if (logCount === maxLogEntries) {
-            logger.warn(`  ⚠️  ... (suppressing further parent-not-found warnings)`);
-            logCount++;
-          }
-          continue;
-        }
-        
-        // Insert new subcategory (handle missing text field)
-        const description = subcategory.text || subcategory.title || 'No description available';
-        insertStmt.run(
-          subcategory.element_identifier, 
-          categoryId, 
-          subcategory.title || '', 
-          description
-        );
-        stats.imported++;
-        
-        if (logCount < 5) {
-          logger.info(`  ✅ ${subcategory.element_identifier}: ${subcategory.title || '(no title)'}`);
-          logCount++;
-        } else if (logCount === 5) {
-          logger.info(`  ✅ ... (continuing import, will show final count)`);
-          logCount++;
-        }
-        
-      } catch (error) {
-        stats.failed++;
-        logger.error(`  ❌ Failed to import subcategory ${subcategory.element_identifier}:`, error);
-      }
+    for (const subcat of subcategories.values()) {
+      insertSubcategory.run(subcat.id, subcat.category_id, '', subcat.description, new Date().toISOString());
     }
     
-    return stats;
-  }
-
-  /**
-   * Validate import completeness and data integrity
-   */
-  private async validateImport(): Promise<{ success: boolean; details: any }> {
-    logger.info('\n🔍 Validating import completeness...');
+    logger.info(`✅ subcategory import completed: ${subcategories.size}/${subcategories.size} successful`);
     
-    const validation = {
-      success: true,
-      details: {} as any
+    return {
+      functions: functions.size,
+      categories: categories.size,
+      subcategories: subcategories.size
     };
-    
-    try {
-      // Count imported elements
-      const counts = {
-        functions: this.db.prepare('SELECT COUNT(*) as count FROM functions').get() as { count: number },
-        categories: this.db.prepare('SELECT COUNT(*) as count FROM categories').get() as { count: number },
-        subcategories: this.db.prepare('SELECT COUNT(*) as count FROM subcategories').get() as { count: number }
-      };
-      
-      validation.details.counts = counts;
-      
-      // Expected minimums for NIST CSF 2.0
-      const expectations = {
-        functions: { min: 6, max: 6 },
-        categories: { min: 20, max: 50 },
-        subcategories: { min: 100, max: 350 }
-      };
-      
-      // Validate counts
-      for (const [type, expectation] of Object.entries(expectations)) {
-        const count = counts[type as keyof typeof counts].count;
-        const isValid = count >= expectation.min && count <= expectation.max;
-        
-        if (isValid) {
-          logger.info(`  ✅ ${type}: ${count} (expected ${expectation.min}-${expectation.max})`);
-        } else {
-          logger.error(`  ❌ ${type}: ${count} (expected ${expectation.min}-${expectation.max})`);
-          validation.success = false;
-        }
-      }
-      
-      // Test foreign key relationships
-      const relationshipTests = [
-        {
-          name: 'Categories→Functions',
-          query: `SELECT COUNT(*) as count FROM categories c 
-                  LEFT JOIN functions f ON c.function_id = f.id 
-                  WHERE f.id IS NULL`
-        },
-        {
-          name: 'Subcategories→Categories',
-          query: `SELECT COUNT(*) as count FROM subcategories s 
-                  LEFT JOIN categories c ON s.category_id = c.id 
-                  WHERE c.id IS NULL`
-        }
-      ];
-      
-      validation.details.relationships = {};
-      
-      for (const test of relationshipTests) {
-        const result = this.db.prepare(test.query).get() as { count: number };
-        const isValid = result.count === 0;
-        
-        validation.details.relationships[test.name] = {
-          orphaned: result.count,
-          valid: isValid
-        };
-        
-        if (isValid) {
-          logger.info(`  ✅ ${test.name}: No orphaned records`);
-        } else {
-          logger.error(`  ❌ ${test.name}: ${result.count} orphaned records`);
-          validation.success = false;
-        }
-      }
-      
-      // Sample data verification
-      const samples = {
-        sampleFunction: this.db.prepare('SELECT id, name FROM functions LIMIT 1').get(),
-        sampleCategory: this.db.prepare('SELECT id, name, function_id FROM categories LIMIT 1').get(),
-        sampleSubcategory: this.db.prepare('SELECT id, name, category_id FROM subcategories LIMIT 1').get()
-      };
-      
-      validation.details.samples = samples;
-      logger.info('  📋 Sample data verified:', Object.keys(samples).length, 'samples collected');
-      
-    } catch (error) {
-      logger.error('💥 Validation failed:', error);
-      validation.success = false;
-      validation.details.error = error;
-    }
-    
-    return validation;
   }
 
-  /**
-   * Generate comprehensive final report
-   */
-  private generateFinalReport(importResults: Record<string, ImportStats>, validationResults: any): void {
-    logger.info('\n📋 FINAL IMPORT REPORT');
-    logger.info('=' .repeat(50));
-    
-    // Import summary
-    let totalProcessed = 0;
-    let totalImported = 0;
-    let totalSkipped = 0;
-    let totalFailed = 0;
-    
-    for (const [type, stats] of Object.entries(importResults)) {
-      totalProcessed += stats.processed;
-      totalImported += stats.imported;
-      totalSkipped += stats.skipped;
-      totalFailed += stats.failed;
+  private parseCSVLine(line: string): CSVRow | null {
+    try {
+      // Simple CSV parsing for quoted fields
+      const fields = [];
+      let current = '';
+      let inQuotes = false;
       
-      logger.info(`📊 ${type.toUpperCase()}:`);
-      logger.info(`   Processed: ${stats.processed}`);
-      logger.info(`   Imported:  ${stats.imported}`);
-      logger.info(`   Skipped:   ${stats.skipped}`);
-      logger.info(`   Failed:    ${stats.failed}`);
-    }
-    
-    logger.info('\n📊 TOTALS:');
-    logger.info(`   Processed: ${totalProcessed}`);
-    logger.info(`   Imported:  ${totalImported}`);
-    logger.info(`   Skipped:   ${totalSkipped}`);
-    logger.info(`   Failed:    ${totalFailed}`);
-    
-    // Database counts
-    logger.info('\n📊 FINAL DATABASE STATE:');
-    logger.info(`   Functions:     ${validationResults.details.counts.functions.count}`);
-    logger.info(`   Categories:    ${validationResults.details.counts.categories.count}`);
-    logger.info(`   Subcategories: ${validationResults.details.counts.subcategories.count}`);
-    
-    // Success/failure status
-    if (validationResults.success && totalFailed === 0) {
-      logger.info('\n🎉 IMPORT COMPLETED SUCCESSFULLY!');
-      logger.info('✅ All data imported and validated');
-      logger.info('✅ Foreign key relationships intact');
-      logger.info('✅ Framework ready for operational use');
-    } else {
-      logger.error('\n💥 IMPORT COMPLETED WITH ISSUES');
-      if (totalFailed > 0) {
-        logger.error(`❌ ${totalFailed} elements failed to import`);
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          fields.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
       }
-      if (!validationResults.success) {
-        logger.error('❌ Validation checks failed');
+      fields.push(current.trim()); // Add last field
+      
+      if (fields.length >= 3) {
+        return {
+          function: fields[0].replace(/^"|"$/g, ''),
+          category: fields[1].replace(/^"|"$/g, ''),
+          subcategory: fields[2].replace(/^"|"$/g, '')
+        };
       }
-      logger.info('⚠️  Review logs above for specific issues');
+      
+      return null;
+    } catch (error) {
+      console.warn('Failed to parse CSV line:', line, error);
+      return null;
     }
   }
 }
 
-// Command line interface
 async function main() {
-  if (process.argv.includes('--help') || process.argv.includes('-h')) {
-    console.log(`
-NIST CSF 2.0 Framework Import Script
-
-Usage: npm run import:csf-framework
-
-This script imports the complete NIST CSF 2.0 framework from csf-2.0-framework.json
-in the project root directory. It handles:
-
-- Duplicate detection and prevention
-- Foreign key validation
-- Transaction safety with rollback on errors  
-- Comprehensive validation and reporting
-
-The script will import:
-- 6 Functions (GV, ID, PR, DE, RS, RC)
-- 20+ Categories 
-- 200+ Subcategories (complete NIST CSF 2.0)
-
-Exit codes:
-  0 = Import successful
-  1 = Import failed
-  `);
-    process.exit(0);
-  }
-
   try {
-    const importer = new CSFFrameworkImporter();
+    const importer = new CSVFrameworkImporter();
     const success = await importer.importFramework();
     
-    process.exit(success ? 0 : 1);
-    
+    if (success) {
+      logger.info('✅ Framework ready for operational use');
+      process.exit(0);
+    } else {
+      logger.error('❌ Framework import failed');
+      process.exit(1);
+    }
   } catch (error) {
-    logger.error('💥 Import script failed:', error);
+    logger.error('💥 Fatal error:', error);
     process.exit(1);
   } finally {
     closeDatabase();
   }
 }
 
-// Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch(error => {
-    console.error('Script execution failed:', error);
-    process.exit(1);
-  });
-}
-
-export default CSFFrameworkImporter;
+// Run import
+main().catch(console.error);

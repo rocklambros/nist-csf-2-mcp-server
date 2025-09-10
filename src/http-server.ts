@@ -8,6 +8,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
 import { z } from 'zod';
 import { logger } from './utils/logger.js';
 import { getDatabase, closeDatabase } from './db/database.js';
@@ -363,15 +364,23 @@ export async function startHttpServer(port: number = 8080): Promise<void> {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-  // Static file serving for GUI
-  app.use(express.static('.', {
-    index: false,
-    setHeaders: (res, path) => {
-      if (path.endsWith('.html')) {
-        res.setHeader('Cache-Control', 'no-cache');
-      }
+  // Secure GUI file serving - specific route only
+  app.get('/nist-csf-assessment-gui.html', (_req, res) => {
+    try {
+      const filePath = path.resolve('nist-csf-assessment-gui.html');
+      
+      // Security headers
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('X-Frame-Options', 'DENY');
+      res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';");
+      
+      res.sendFile(filePath);
+    } catch (error) {
+      logger.error('Error serving GUI file:', error);
+      res.status(404).json({ error: 'GUI file not found' });
     }
-  }));
+  });
 
   // Initialize services
   logger.info('Initializing HTTP server services...');
