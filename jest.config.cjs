@@ -60,7 +60,8 @@ module.exports = {
     '**/tests/tools/csf-lookup.test.ts',
     '**/tests/tools/create-profile.test.ts',
     '**/tests/tools/assess-maturity.test.ts',
-    '**/tests/tools/start-assessment-workflow.test.ts'
+    '**/tests/tools/start-assessment-workflow.test.ts',
+    '**/tests/tools/generate-gap-analysis.unit.test.ts'
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
@@ -68,7 +69,6 @@ module.exports = {
     // Exclude all problematic legacy test files
     'tests/tools/analysis-planning-tools.test.ts',
     'tests/tools/.*simple.*\\.test\\.ts$',
-    'tests/tools/.*unit\\.test\\.ts$',
     'tests/tools/.*comprehensive.*\\.test\\.ts$',
     'tests/tools/.*legacy.*\\.test\\.ts$',
     'tests/tools/reporting-tools.test.ts',
