@@ -519,6 +519,8 @@ async function main() {
           properties: {
             current_profile_id: { type: 'string', description: 'Current profile ID' },
             target_profile_id: { type: 'string', description: 'Target profile ID' },
+            organization_id: { type: 'string', description: 'Organization ID for validation/context' },
+            analysis_name: { type: 'string', description: 'Custom name for the analysis' },
             include_priority_matrix: { type: 'boolean', description: 'Include priority matrix', default: true },
             include_visualizations: { type: 'boolean', description: 'Include visualizations', default: true },
             minimum_gap_score: { type: 'number', description: 'Minimum gap score threshold (0-100)', default: 0 }
@@ -553,7 +555,7 @@ async function main() {
         inputSchema: {
           type: 'object',
           properties: {
-            gap_analysis_id: { type: 'string', description: 'Gap analysis ID' },
+            analysis_id: { type: 'string', description: 'Gap analysis ID' },
             timeline_months: { type: 'number', description: 'Timeline in months (1-36)' },
             available_resources: { type: 'number', description: 'Available resources (1-100)' },
             plan_name: { type: 'string', description: 'Plan name (optional)' },
@@ -567,7 +569,7 @@ async function main() {
             include_dependencies: { type: 'boolean', description: 'Include dependency analysis', default: true },
             include_milestones: { type: 'boolean', description: 'Include milestones', default: true }
           },
-          required: ['gap_analysis_id', 'timeline_months', 'available_resources']
+          required: ['analysis_id', 'timeline_months', 'available_resources']
         }
       },
       {

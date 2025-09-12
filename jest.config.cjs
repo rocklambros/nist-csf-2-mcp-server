@@ -61,7 +61,8 @@ module.exports = {
     '**/tests/tools/create-profile.test.ts',
     '**/tests/tools/assess-maturity.test.ts',
     '**/tests/tools/start-assessment-workflow.test.ts',
-    '**/tests/tools/generate-gap-analysis.unit.test.ts'
+    '**/tests/tools/generate-gap-analysis.unit.test.ts',
+    '**/tests/tools/parameter-schema-validation.test.ts'
   ],
   testPathIgnorePatterns: [
     '/node_modules/',

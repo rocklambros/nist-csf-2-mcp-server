@@ -12,6 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 export const GenerateGapAnalysisSchema = z.object({
   current_profile_id: z.string().min(1),
   target_profile_id: z.string().min(1),
+  organization_id: z.string().min(1).optional(),
+  analysis_name: z.string().min(1).optional(),
   include_priority_matrix: z.boolean().default(true),
   include_visualizations: z.boolean().default(true),
   minimum_gap_score: z.number().min(0).max(100).default(0)
@@ -100,15 +102,22 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
     }
     
     // Verify both profiles exist
-    const currentProfile = (db as any).getProfile((params as any).current_profile_id);
-    const targetProfile = (db as any).getProfile((params as any).target_profile_id);
+    const currentProfile = (db as any).getProfile(params.current_profile_id);
+    const targetProfile = (db as any).getProfile(params.target_profile_id);
     
     if (!currentProfile) {
-      return createErrorResult(`Current profile not found: ${(params as any).current_profile_id}`);
+      return createErrorResult(`Current profile not found: ${params.current_profile_id}`);
     }
     
     if (!targetProfile) {
-      return createErrorResult(`Target profile not found: ${(params as any).target_profile_id}`);
+      return createErrorResult(`Target profile not found: ${params.target_profile_id}`);
+    }
+    
+    // Validate organization_id if provided
+    if (params.organization_id) {
+      if (currentProfile.org_id !== params.organization_id || targetProfile.org_id !== params.organization_id) {
+        return createErrorResult(`Organization ID mismatch: profiles must belong to organization ${params.organization_id}`);
+      }
     }
     
     // Generate unique analysis ID
@@ -116,8 +125,8 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
     
     // Perform gap analysis and store results in database
     const analysisResult = (db as any).generateGapAnalysis(
-      (params as any).current_profile_id,
-      (params as any).target_profile_id,
+      params.current_profile_id,
+      params.target_profile_id,
       analysisId
     );
     
@@ -130,19 +139,19 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
     
     // Filter by minimum gap score if specified
     const filteredGaps = (gapDetails as any).filter(
-      (gap: any) => (gap as any).gap_score >= (params as any).minimum_gap_score
+      (gap: any) => (gap as any).gap_score >= params.minimum_gap_score
     );
     
     // Calculate gap summary statistics
     const gapSummary = calculateGapSummary(filteredGaps);
     
     // Generate priority matrix if requested
-    const priorityMatrix = (params as any).include_priority_matrix
+    const priorityMatrix = params.include_priority_matrix
       ? generatePriorityMatrix(filteredGaps)
       : undefined;
     
     // Generate visualizations if requested
-    const visualizations = (params as any).include_visualizations
+    const visualizations = params.include_visualizations
       ? generateVisualizations(filteredGaps, currentProfile, targetProfile)
       : undefined;
     
@@ -154,8 +163,8 @@ export async function generateGapAnalysis(params: GenerateGapAnalysisParams): Pr
     );
     
     // Calculate profile summaries
-    const currentSummary = calculateProfileSummary((params as any).current_profile_id, db);
-    const targetSummary = calculateProfileSummary((params as any).target_profile_id, db);
+    const currentSummary = calculateProfileSummary(params.current_profile_id, db);
+    const targetSummary = calculateProfileSummary(params.target_profile_id, db);
     
     return {
       success: true,
