@@ -62,7 +62,10 @@ module.exports = {
     '**/tests/tools/assess-maturity.test.ts',
     '**/tests/tools/start-assessment-workflow.test.ts',
     '**/tests/tools/generate-gap-analysis.unit.test.ts',
-    '**/tests/tools/parameter-schema-validation.test.ts'
+    '**/tests/tools/parameter-schema-validation.test.ts',
+    // Enable E2E tests
+    '**/tests/e2e/**/*.e2e.test.ts',
+    '**/tests/**/*.e2e.test.ts'
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
@@ -80,7 +83,7 @@ module.exports = {
     'tests/performance/',
     'tests/security/',
     'tests/integration/',
-    'tests/e2e/',
+    // Enable E2E tests: 'tests/e2e/',
     'tests/services/',
     'tests/simple-db.test.ts',
     '\\.backup$'

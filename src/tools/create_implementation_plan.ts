@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Input schema for the tool
 export const CreateImplementationPlanSchema = z.object({
-  gap_analysis_id: z.string().min(1),
+  analysis_id: z.string().min(1),
   timeline_months: z.number().min(1).max(36),
   available_resources: z.number().min(1).max(100),
   plan_name: z.string().optional(),
@@ -101,7 +101,7 @@ export async function createImplementationPlan(params: CreateImplementationPlanP
     }
     
     // Get gap analysis items
-    const gapItems = db.getGapAnalysisItems(params.gap_analysis_id);
+    const gapItems = db.getGapAnalysisItems(params.analysis_id);
     
     if (!gapItems || gapItems.length === 0) {
       return createErrorResult('No gap analysis items found');
@@ -174,7 +174,7 @@ export async function createImplementationPlan(params: CreateImplementationPlanP
     
     db.createImplementationPlan({
       id: planId,
-      gap_analysis_id: params.gap_analysis_id,
+      gap_analysis_id: params.analysis_id,
       profile_id: profileId,
       plan_name: planName,
       timeline_months: params.timeline_months,

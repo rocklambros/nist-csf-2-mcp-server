@@ -294,10 +294,10 @@ export class RiskAnalysisTestHelper {
 
   static validateGapAnalysis(result: any) {
     expect(result.success).toBe(true);
-    expect(result.gap_analysis).toBeDefined();
-    expect(result.gap_analysis.gaps_identified).toBeDefined();
-    expect(Array.isArray(result.gap_analysis.gaps_identified)).toBe(true);
-    expect(result.gap_analysis.priority_recommendations).toBeDefined();
+    expect(result.gap_summary).toBeDefined();
+    expect(result.gap_summary.gaps_identified).toBeDefined();
+    expect(Array.isArray(result.gap_summary.gaps_identified)).toBe(true);
+    expect(result.gap_summary.priority_recommendations).toBeDefined();
   }
 }
 

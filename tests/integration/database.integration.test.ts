@@ -151,12 +151,12 @@ describe('Database Integration Tests', () => {
       }, testDb);
 
       expect(gapResult.success).toBe(true);
-      expect(gapResult.gap_analysis.overall_gap_score).toBeGreaterThan(0);
-      expect(gapResult.gap_analysis.function_gaps).toBeDefined();
+      expect(gapResult.gap_summary.overall_gap_score).toBeGreaterThan(0);
+      expect(gapResult.gap_summary.function_gaps).toBeDefined();
       expect(gapResult.recommendations).toHaveLength(greaterThan(0));
 
       // Verify that gap analysis reflects the actual differences
-      expect(gapResult.gap_analysis.total_gaps).toBeGreaterThanOrEqual(3);
+      expect(gapResult.gap_summary.total_gaps).toBeGreaterThanOrEqual(3);
     });
   });
 
@@ -346,7 +346,7 @@ describe('Database Integration Tests', () => {
 
       expect(result.success).toBe(true);
       expect(duration).toBeLessThan(3000); // Should complete within 3 seconds
-      expect(result.gap_analysis.total_gaps).toBeGreaterThan(0);
+      expect(result.gap_summary.total_gaps).toBeGreaterThan(0);
     });
   });
 

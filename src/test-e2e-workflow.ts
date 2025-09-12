@@ -398,7 +398,7 @@ class E2ETestRunner {
         // };
         
         const result = await createImplementationPlan({
-          gap_analysis_id: this.report.artifacts.gapAnalysisId!,
+          analysis_id: this.report.artifacts.gapAnalysisId!,
           timeline_months: 12,
           available_resources: 5,
           prioritization_strategy: 'risk_based' as const,
