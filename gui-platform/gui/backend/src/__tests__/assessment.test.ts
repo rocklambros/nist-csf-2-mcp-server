@@ -14,6 +14,8 @@ describe('Assessment API Routes', () => {
 
   beforeAll(() => {
     app = express();
+    // Security: Disable X-Powered-By header to prevent server fingerprinting
+    app.disable('x-powered-by');
     app.use(express.json());
     app.use('/api/assessments', assessmentRoutes);
     

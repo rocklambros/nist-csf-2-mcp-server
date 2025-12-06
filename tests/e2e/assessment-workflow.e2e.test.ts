@@ -260,6 +260,13 @@ describe('End-to-End Assessment Workflow Tests', () => {
       expect(gapAnalysisResult.gap_summary.high_priority_gaps).toBeGreaterThanOrEqual(2);
       
       // Step 5: Generate Comprehensive Report
+      // Security: Validate profile_id format to prevent path traversal attacks
+      // Profile IDs must match the expected pattern (org-*-current/target-*) with no path separators
+      const safeProfileIdPattern = /^org-[a-z0-9-]+-(?:current|target)-[a-z0-9]+$/i;
+      if (!safeProfileIdPattern.test(actualProfileId)) {
+        throw new Error('Invalid profile_id format - potential path traversal attempt');
+      }
+
       const reportParams = {
         profile_id: actualProfileId,
         report_type: 'executive' as const,

@@ -354,13 +354,17 @@ describe('Authentication Middleware Tests', () => {
     });
     
     it('should only accept configured algorithms', async () => {
+      // Generate a random test secret at runtime to avoid hardcoded secret warnings
+      // This secret is only used in this test to verify algorithm rejection (RS256 vs HS256)
+      const { randomBytes } = require('crypto');
+      const testSecretBytes = randomBytes(32);
       const hs256Token = jwt.sign(
         {
           sub: 'test-user',
           aud: 'test-audience',
           iss: 'https://test.auth.com'
         },
-        process.env.TEST_JWT_SECRET || 'defaultTestSecret',
+        testSecretBytes,
         { algorithm: 'HS256' }
       );
       

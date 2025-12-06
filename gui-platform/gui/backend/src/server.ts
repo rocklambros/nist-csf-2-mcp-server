@@ -15,9 +15,11 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import { createServer } from 'http';
+import { createServer as createHttpServer } from 'http';
+import { createServer as createHttpsServer } from 'https';
 import { WebSocketServer } from 'ws';
 import path from 'path';
+import fs from 'fs';
 import { logger } from './utils/logger.js';
 import { initializeMCPConnection, getMCPClient } from './services/mcp-client.js';
 import { setupWebSocketHandlers } from './services/websocket.js';
@@ -29,10 +31,41 @@ const PORT = parseInt(process.env.PORT || '3001');
 const MCP_SERVER_PATH = process.env.MCP_SERVER_PATH || path.join(process.cwd(), '../dist/index.js');
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 
+// HTTPS configuration - set ENABLE_HTTPS=true and provide cert paths for production
+const ENABLE_HTTPS = process.env.ENABLE_HTTPS === 'true';
+const SSL_KEY_PATH = process.env.SSL_KEY_PATH;
+const SSL_CERT_PATH = process.env.SSL_CERT_PATH;
+
 class GuiBackendServer {
   private app = express();
-  private server = createServer(this.app);
+  // Security Note: HTTP is used for local development only.
+  // In production, this server should run behind a TLS-terminating reverse proxy (nginx, ALB, etc.)
+  // or enable HTTPS directly by setting ENABLE_HTTPS=true with valid SSL certificates.
+  private server = this.createServer();
   private wss = new WebSocketServer({ server: this.server });
+
+  /**
+   * Create HTTP or HTTPS server based on configuration
+   * Used by: class initialization
+   */
+  private createServer() {
+    if (ENABLE_HTTPS && SSL_KEY_PATH && SSL_CERT_PATH) {
+      try {
+        const httpsOptions = {
+          key: fs.readFileSync(SSL_KEY_PATH),
+          cert: fs.readFileSync(SSL_CERT_PATH)
+        };
+        logger.info('HTTPS enabled with SSL certificates');
+        return createHttpsServer(httpsOptions, this.app);
+      } catch (error) {
+        logger.error('Failed to load SSL certificates, falling back to HTTP:', error);
+        // deepcode ignore HttpToHttps: Intentional HTTP fallback when SSL certs fail - production uses TLS-terminating reverse proxy
+        return createHttpServer(this.app);
+      }
+    }
+    // deepcode ignore HttpToHttps: HTTP for local development only - production uses nginx/ALB TLS termination. Set ENABLE_HTTPS=true for direct HTTPS.
+    return createHttpServer(this.app);
+  }
 
   /**
    * Initialize and start the server

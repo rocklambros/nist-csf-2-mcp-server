@@ -1,0 +1,28 @@
+# Snyk (https://snyk.io) policy file
+version: v1.25.0
+
+# Security policy for NIST CSF MCP Server
+# This file documents accepted security risks with justifications
+
+# The HTTP issues are intentional design decisions:
+# - These development servers are designed to run behind TLS-terminating reverse proxies in production
+# - HTTP is used for local development only
+# - HTTPS can be enabled by setting ENABLE_HTTPS=true with SSL_KEY_PATH and SSL_CERT_PATH environment variables
+#
+# The following Finding IDs are acknowledged and accepted:
+# - 029f4c94-8aa0-41cd-b48d-1719c6a1b48b: gui-platform/backend/src/server.ts HTTP fallback
+# - 599231cd-ffd2-48ae-87fc-52f345519ad1: gui-platform/backend/src/server.ts HTTP for dev
+# - 68535b3e-7198-4c47-a474-a07141236c50: gui-platform/gui/backend/src/server.ts HTTP fallback
+# - d6c2eb86-4e60-4108-9b6b-a463f0296985: gui-platform/gui/backend/src/server.ts HTTP for dev
+#
+# These servers:
+# 1. Support optional HTTPS via ENABLE_HTTPS environment variable
+# 2. Are designed to run behind nginx/ALB with TLS termination in production
+# 3. Only use HTTP for local development convenience
+# 4. Have comprehensive security documentation in the code comments
+
+# Snyk Open Source ignores (if any)
+ignore: {}
+
+# Patch section (if any)
+patch: {}
