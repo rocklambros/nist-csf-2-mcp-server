@@ -159,13 +159,11 @@ jobs:
 
     - name: Build and push Docker images
       uses: docker/build-push-action@v5
-      # Continue on error for arm64 QEMU emulation issues in PR builds
-      continue-on-error: ${{ github.event_name == 'pull_request' }}
       with:
         context: .
-        # Use amd64-only for PRs to avoid QEMU arm64 emulation issues
-        # Full multi-platform for releases
-        platforms: ${{ github.event_name == 'pull_request' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
+        # Use amd64-only for branch pushes and PRs to avoid QEMU arm64 emulation issues
+        # Full multi-platform only for release tags (v*) which have more time/resources
+        platforms: ${{ startsWith(github.ref, 'refs/tags/v') && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
