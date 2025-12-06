@@ -60,7 +60,7 @@ jobs:
           npx jest --coverage --coverageReporters=html --coverageReporters=text-summary --coverageReporters=lcov
           
       - name: Upload comprehensive coverage
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nightly-unit-coverage
           path: coverage/
@@ -98,7 +98,7 @@ jobs:
           npx jest tests/tools/assessment-integration.test.ts --runInBand --forceExit || true
 
       - name: Upload integration test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nightly-integration-results
           path: coverage/
@@ -138,7 +138,7 @@ jobs:
           npx jest tests/tools/audit-evidence.comprehensive.test.ts --runInBand --forceExit || true
 
       - name: Upload E2E test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nightly-e2e-results
           path: coverage/
@@ -178,7 +178,7 @@ jobs:
           npm audit --audit-level low >> security-report.md || true
 
       - name: Upload security results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nightly-security-results
           path: |
@@ -229,7 +229,7 @@ jobs:
           fi
 
       - name: Upload performance results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nightly-performance-results
           path: |
@@ -282,7 +282,7 @@ jobs:
           fi
 
       - name: Upload code quality results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nightly-code-quality
           path: |
@@ -320,7 +320,7 @@ jobs:
           echo "Database integrity check completed"
 
       - name: Upload database verification results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nightly-database-check
           path: |
@@ -381,7 +381,7 @@ jobs:
           cat nightly-summary.md
 
       - name: Upload nightly summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nightly-test-summary
           path: nightly-summary.md

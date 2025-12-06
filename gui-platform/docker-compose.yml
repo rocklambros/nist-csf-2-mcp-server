@@ -1,0 +1,89 @@
+services:
+  # NIST CSF MCP Server (container optimized)
+  nist-csf-mcp:
+    build: 
+      context: ..
+      dockerfile: Dockerfile
+    container_name: nist-csf-mcp-server
+    restart: on-failure:3
+    environment:
+      - NODE_ENV=production
+      - MCP_SERVER=true
+      - FORCE_TERMINATE=true
+      - INSTANCE_LOCK_PATH=/tmp/container-mcp-server.lock
+    volumes:
+      - ./data:/app/data:ro
+      - nist_csf_data:/app/database
+    tmpfs:
+      - /tmp:size=100M,mode=1777
+    healthcheck:
+      test: ["CMD", "node", "-e", "try { require('fs').accessSync('/app/dist/index.js'); process.exit(0); } catch { process.exit(1); }"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - nist-csf-network
+
+  # GUI Backend API (with MCP connection stability)
+  gui-backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nist-csf-gui-backend
+    restart: on-failure:3
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MCP_SERVER_PATH=/app/nist-csf-mcp/dist/index.js
+      - CORS_ORIGIN=http://localhost:3000
+      - LOG_LEVEL=info
+      - MCP_CONNECTION_TIMEOUT=60000
+      - MCP_RETRY_ATTEMPTS=5
+    depends_on:
+      nist-csf-mcp:
+        condition: service_healthy
+    volumes:
+      - ./backend/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    networks:
+      - nist-csf-network
+
+  # React Frontend (optimized dependencies)
+  gui-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nist-csf-gui-frontend
+    restart: on-failure:2
+    ports:
+      - "3000:80"
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    depends_on:
+      gui-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - nist-csf-network
+
+volumes:
+  nist_csf_data:
+    driver: local
+
+networks:
+  nist-csf-network:
+    driver: bridge

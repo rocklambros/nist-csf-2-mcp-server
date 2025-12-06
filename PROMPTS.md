@@ -42,8 +42,7 @@ Please record this governance response and show me the next question with update
 
 **Conversational Setup:**
 ```
-I need to conduct a comprehensive NIST CSF 2.0 assessment for my organization with complete visual reporting. Here are my organization details:
-
+I need to conduct a complete comprehensive NIST CSF 2.0 assessment, using the nist-csf mcp server, for my organization with complete visual reporting. Here are my organization details:
 Company Name: TechCorp Solutions
 Industry Sector: Technology Services
 Organization Size: Medium (150 employees)
