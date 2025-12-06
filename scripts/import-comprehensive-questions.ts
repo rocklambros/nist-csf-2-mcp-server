@@ -47,29 +47,24 @@ class QuestionBankImporter {
 
       logger.info(`📊 Found ${questionBankData.questions.length} questions for ${questionBankData.metadata.subcategories_covered} subcategories`);
 
-      // Begin transaction
-      this.db.prepare('BEGIN TRANSACTION').run();
-
-      try {
+      // Use better-sqlite3's transaction API for proper transaction handling
+      // This automatically commits on success and rolls back on any error
+      const importTransaction = this.db.transaction(() => {
         // Clear existing question data (already cleared but ensure clean state)
-        await this.clearExistingQuestions();
+        this.clearExistingQuestionsSync();
 
         // Import questions and options
-        await this.importQuestions(questionBankData.questions);
+        this.importQuestionsSync(questionBankData.questions);
+      });
 
-        // Commit transaction
-        this.db.prepare('COMMIT').run();
+      // Execute the transaction
+      importTransaction();
 
-        // Verify import
-        await this.verifyImport(questionBankData.questions.length);
+      // Verify import (outside transaction - read-only)
+      this.verifyImportSync(questionBankData.questions.length);
 
-        logger.info('✅ Comprehensive question bank import completed successfully');
-        return true;
-
-      } catch (error) {
-        this.db.prepare('ROLLBACK').run();
-        throw error;
-      }
+      logger.info('✅ Comprehensive question bank import completed successfully');
+      return true;
 
     } catch (error) {
       logger.error('💥 Question bank import failed:', error);
@@ -77,7 +72,7 @@ class QuestionBankImporter {
     }
   }
 
-  private async clearExistingQuestions(): Promise<void> {
+  private clearExistingQuestionsSync(): void {
     // Clear question options first (foreign key constraint)
     const optionsDeleted = this.db.prepare('DELETE FROM question_options').run().changes;
     logger.info(`🗑️  Cleared ${optionsDeleted} existing question options`);
@@ -87,7 +82,7 @@ class QuestionBankImporter {
     logger.info(`🗑️  Cleared ${questionsDeleted} existing questions`);
   }
 
-  private async importQuestions(questions: AssessmentQuestion[]): Promise<void> {
+  private importQuestionsSync(questions: AssessmentQuestion[]): void {
     const insertQuestionStmt = this.db.prepare(`
       INSERT INTO question_bank (
         id, subcategory_id, question_text, question_type, help_text, weight
@@ -150,7 +145,7 @@ class QuestionBankImporter {
     logger.info(`📊 Imported ${questionsImported} questions with ${optionsImported} options`);
   }
 
-  private async verifyImport(expectedQuestions: number): Promise<void> {
+  private verifyImportSync(expectedQuestions: number): void {
     // Verify question count
     const questionCount = this.db.prepare('SELECT COUNT(*) as count FROM question_bank').get().count;
     

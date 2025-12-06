@@ -5,6 +5,12 @@ on:
     branches: [ main, develop ]
     types: [opened, synchronize, reopened]
 
+# Required permissions for PR commenting and status checks
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 env:
   NODE_VERSION: '18.x'
 
@@ -101,36 +107,37 @@ jobs:
       - name: Comment PR with coverage
         uses: actions/github-script@v6
         if: always()
+        continue-on-error: true
         with:
           script: |
             const fs = require('fs');
             try {
               const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
               const total = coverage.total;
-              
+
               const comment = `
               ## 📊 Unit Test Coverage Report
-              
+
               | Metric | Percentage | Status |
               |--------|------------|--------|
               | Lines | ${total.lines.pct}% | ${total.lines.pct >= 80 ? '✅' : '❌'} |
               | Functions | ${total.functions.pct}% | ${total.functions.pct >= 75 ? '✅' : '❌'} |
               | Branches | ${total.branches.pct}% | ${total.branches.pct >= 70 ? '✅' : '❌'} |
               | Statements | ${total.statements.pct}% | ${total.statements.pct >= 80 ? '✅' : '❌'} |
-              
-              ${total.lines.pct >= 80 && total.functions.pct >= 75 && total.branches.pct >= 70 && total.statements.pct >= 80 
-                ? '🎉 All coverage thresholds met!' 
+
+              ${total.lines.pct >= 80 && total.functions.pct >= 75 && total.branches.pct >= 70 && total.statements.pct >= 80
+                ? '🎉 All coverage thresholds met!'
                 : '⚠️ Some coverage thresholds not met. Please add more tests.'}
               `;
-              
-              github.rest.issues.createComment({
+
+              await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 body: comment
               });
             } catch (error) {
-              console.log('Coverage file not found or invalid');
+              console.log('Could not post coverage comment:', error.message);
             }
 
   tools-tests:
@@ -267,6 +274,7 @@ jobs:
     steps:
       - name: Generate PR summary
         uses: actions/github-script@v6
+        continue-on-error: true
         with:
           script: |
             const jobs = [
@@ -278,35 +286,39 @@ jobs:
               { name: 'Security Check', result: '${{ needs.security-check.result }}' },
               { name: 'Build Check', result: '${{ needs.build-check.result }}' }
             ];
-            
+
             const successful = jobs.filter(job => job.result === 'success').length;
             const failed = jobs.filter(job => job.result === 'failure').length;
             const skipped = jobs.filter(job => job.result === 'skipped').length;
-            
+
             let summary = `## 🔍 PR Validation Summary\n\n`;
             summary += `**Status**: ${failed > 0 ? '❌ Failed' : '✅ Passed'}\n`;
             summary += `**Results**: ${successful} passed, ${failed} failed, ${skipped} skipped\n\n`;
-            
+
             summary += `### Job Details\n`;
             jobs.forEach(job => {
-              const icon = job.result === 'success' ? '✅' : 
-                          job.result === 'failure' ? '❌' : 
+              const icon = job.result === 'success' ? '✅' :
+                          job.result === 'failure' ? '❌' :
                           job.result === 'skipped' ? '⏭️' : '⏸️';
               summary += `- ${icon} ${job.name}: ${job.result}\n`;
             });
-            
+
             if (failed > 0) {
               summary += `\n⚠️ **Action Required**: Please fix the failing checks before merging.`;
             } else {
               summary += `\n🎉 **Ready for Review**: All validation checks passed!`;
             }
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: summary
-            });
+
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: summary
+              });
+            } catch (error) {
+              console.log('Could not post PR summary:', error.message);
+            }
 
   auto-approve-dependabot:
     name: Auto-approve Dependabot PRs
