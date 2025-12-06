@@ -28,7 +28,7 @@
     "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:ci": "jest --ci --coverage --maxWorkers=2 --silent",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage --coverageReporters=text-lcov --coverageReporters=html",
+    "test:coverage": "jest --coverage --coverageThreshold='{}' --coverageReporters=text-lcov --coverageReporters=html",
     "seed:questions": "tsx scripts/generate-comprehensive-questions.ts && tsx scripts/import-comprehensive-questions.ts",
     "import:framework": "tsx scripts/import-framework-fixed.ts",
     "import:csf-framework": "tsx scripts/import-csf-framework.ts",
