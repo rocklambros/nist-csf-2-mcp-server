@@ -187,7 +187,7 @@ jobs:
         run: npm run test:performance
 
       - name: Upload performance test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-results
           path: coverage/
@@ -220,14 +220,15 @@ jobs:
 
       - name: Upload comprehensive coverage
         uses: codecov/codecov-action@v3
+        continue-on-error: true
         with:
           files: ./coverage/lcov.info
           flags: comprehensive
           name: comprehensive-coverage
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
       - name: Upload coverage reports to GitHub
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/

@@ -24,6 +24,20 @@ const mockDb = {
   transaction: jest.fn()
 };
 
+// Mock the framework loader module
+jest.mock('../../src/services/framework-loader.js', () => {
+  const mockLoader = {
+    isLoaded: () => true,
+    load: () => Promise.resolve(),
+    getElementsByType: () => [
+      { element_identifier: 'GV.OC-01', function: 'GV', title: 'Organizational Context' }
+    ]
+  };
+  return {
+    getFrameworkLoader: () => mockLoader
+  };
+});
+
 describe('Parameter Schema Validation - New Parameters', () => {
   const testOrgId = 'test-org-123';
   const currentProfileId = 'current-profile-456';
@@ -33,10 +47,15 @@ describe('Parameter Schema Validation - New Parameters', () => {
     jest.clearAllMocks();
     (getDatabase as jest.MockedFunction<typeof getDatabase>).mockReturnValue(mockDb as any);
 
-    // Mock successful profile lookups
-    mockDb.getProfile
-      .mockReturnValueOnce({ id: currentProfileId, org_id: testOrgId, profile_type: 'current' })
-      .mockReturnValueOnce({ id: targetProfileId, org_id: testOrgId, profile_type: 'target' });
+    // Mock successful profile lookups - use mockImplementation for multiple calls
+    (mockDb.getProfile as jest.Mock).mockImplementation((profileId: any) => {
+      if (profileId === currentProfileId) {
+        return { id: currentProfileId, org_id: testOrgId, profile_type: 'current', profile_name: 'Current Profile' };
+      } else if (profileId === targetProfileId) {
+        return { id: targetProfileId, org_id: testOrgId, profile_type: 'target', profile_name: 'Target Profile' };
+      }
+      return null;
+    });
 
     // Mock assessment data
     mockDb.getProfileAssessments.mockReturnValue([
@@ -49,7 +68,35 @@ describe('Parameter Schema Validation - New Parameters', () => {
       }
     ]);
 
-    // Mock gap analysis creation and retrieval
+    // Mock the actual methods called by generateGapAnalysis
+    mockDb.generateGapAnalysis.mockReturnValue([
+      {
+        subcategory_id: 'GV.OC-01',
+        current_maturity: 2,
+        target_maturity: 4,
+        gap_score: 2
+      }
+    ]);
+
+    mockDb.getGapAnalysisDetails.mockReturnValue([
+      {
+        subcategory_id: 'GV.OC-01',
+        subcategory_name: 'Organizational Context',
+        function_id: 'GV',
+        category_id: 'GV.OC',
+        current_implementation: 'partially_implemented',
+        target_implementation: 'fully_implemented',
+        current_maturity: 2,
+        target_maturity: 4,
+        gap_score: 2,
+        risk_score: 3,
+        effort_score: 2,
+        priority_rank: 1,
+        improvement_required: 'Implement governance controls'
+      }
+    ]);
+
+    // Legacy mocks for backward compatibility
     mockDb.createGapAnalysis.mockReturnValue('gap-123');
     mockDb.getGapAnalysisById.mockReturnValue({
       id: 'gap-123',
@@ -135,10 +182,9 @@ describe('Parameter Schema Validation - New Parameters', () => {
       });
 
       expect(result.success).toBe(false);
-      // Note: Error handling varies based on implementation
-      if (!result.success) {
-        expect(result).toHaveProperty('error');
-      }
+      // Error message is in recommendations.immediate_actions for this implementation
+      expect(result.recommendations.immediate_actions.length).toBeGreaterThan(0);
+      expect(result.recommendations.immediate_actions[0]).toContain('Organization ID mismatch');
     });
   });
 

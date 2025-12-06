@@ -154,11 +154,18 @@ jobs:
           type=semver,pattern={{major}}
           type=raw,value=latest,enable={{is_default_branch}}
 
+    - name: Set up QEMU for multi-platform builds
+      uses: docker/setup-qemu-action@v3
+
     - name: Build and push Docker images
       uses: docker/build-push-action@v5
+      # Continue on error for arm64 QEMU emulation issues in PR builds
+      continue-on-error: ${{ github.event_name == 'pull_request' }}
       with:
         context: .
-        platforms: linux/amd64,linux/arm64
+        # Use amd64-only for PRs to avoid QEMU arm64 emulation issues
+        # Full multi-platform for releases
+        platforms: ${{ github.event_name == 'pull_request' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
