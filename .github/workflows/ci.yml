@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -40,10 +40,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -55,7 +55,7 @@ jobs:
         run: npm run test:unit
 
       - name: Upload unit test coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457  # v3
         with:
           files: ./coverage/lcov.info
           flags: unit
@@ -68,10 +68,10 @@ jobs:
     needs: unit-tests
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -89,7 +89,7 @@ jobs:
         run: npm run test:integration
 
       - name: Upload integration test coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457  # v3
         with:
           files: ./coverage/lcov.info
           flags: integration
@@ -102,10 +102,10 @@ jobs:
     needs: integration-tests
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -123,7 +123,7 @@ jobs:
         run: npm run test:e2e
 
       - name: Upload E2E test coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457  # v3
         with:
           files: ./coverage/lcov.info
           flags: e2e
@@ -135,10 +135,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -153,7 +153,7 @@ jobs:
         run: npm run test:security
 
       - name: Upload security test coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457  # v3
         with:
           files: ./coverage/lcov.info
           flags: security
@@ -166,10 +166,10 @@ jobs:
     needs: e2e-tests
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -187,7 +187,7 @@ jobs:
         run: npm run test:performance
 
       - name: Upload performance test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: performance-results
           path: coverage/
@@ -198,10 +198,10 @@ jobs:
     needs: [unit-tests, integration-tests, e2e-tests, security-tests]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -219,7 +219,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload comprehensive coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457  # v3
         continue-on-error: true
         with:
           files: ./coverage/lcov.info
@@ -228,7 +228,7 @@ jobs:
           fail_ci_if_error: false
 
       - name: Upload coverage reports to GitHub
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: coverage-report
           path: coverage/
@@ -240,10 +240,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f  # v3
 
       - name: Build Docker image
         run: docker build -t nist-csf-mcp-server:test .
