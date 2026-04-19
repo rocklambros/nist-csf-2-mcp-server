@@ -39,10 +39,10 @@ jobs:
     if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'comprehensive' || github.event_name == 'schedule'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -60,7 +60,7 @@ jobs:
           npx jest --coverage --coverageReporters=html --coverageReporters=text-summary --coverageReporters=lcov
           
       - name: Upload comprehensive coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: nightly-unit-coverage
           path: coverage/
@@ -71,10 +71,10 @@ jobs:
     if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'integration' || github.event_name == 'schedule'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -98,7 +98,7 @@ jobs:
           npx jest tests/tools/assessment-integration.test.ts --runInBand --forceExit || true
 
       - name: Upload integration test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: nightly-integration-results
           path: coverage/
@@ -109,10 +109,10 @@ jobs:
     if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'comprehensive' || github.event_name == 'schedule'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -138,7 +138,7 @@ jobs:
           npx jest tests/tools/audit-evidence.comprehensive.test.ts --runInBand --forceExit || true
 
       - name: Upload E2E test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: nightly-e2e-results
           path: coverage/
@@ -149,10 +149,10 @@ jobs:
     if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'security' || github.event_name == 'schedule'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -178,7 +178,7 @@ jobs:
           npm audit --audit-level low >> security-report.md || true
 
       - name: Upload security results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: nightly-security-results
           path: |
@@ -192,10 +192,10 @@ jobs:
     if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'performance' || github.event_name == 'schedule'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -229,7 +229,7 @@ jobs:
           fi
 
       - name: Upload performance results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: nightly-performance-results
           path: |
@@ -242,10 +242,10 @@ jobs:
     if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'comprehensive' || github.event_name == 'schedule'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -282,7 +282,7 @@ jobs:
           fi
 
       - name: Upload code quality results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: nightly-code-quality
           path: |
@@ -295,10 +295,10 @@ jobs:
     if: github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'comprehensive' || github.event_name == 'schedule'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -320,7 +320,7 @@ jobs:
           echo "Database integrity check completed"
 
       - name: Upload database verification results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: nightly-database-check
           path: |
@@ -381,7 +381,7 @@ jobs:
           cat nightly-summary.md
 
       - name: Upload nightly summary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: nightly-test-summary
           path: nightly-summary.md
@@ -394,7 +394,7 @@ jobs:
     steps:
       - name: Create issue on failure
         if: needs.nightly-summary.result == 'failure'
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410  # v6
         with:
           script: |
             const title = `🌙 Nightly Tests Failed - ${new Date().toISOString().split('T')[0]}`;

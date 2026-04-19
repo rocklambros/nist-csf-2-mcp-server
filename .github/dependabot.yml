@@ -1,0 +1,21 @@
+# Owner: Rock Lambros
+# Purpose: Keep third-party GitHub Actions pinned to current SHAs after the
+# aquasecurity/trivy-action supply-chain compromise (TeamPCP, 2026-03-19).
+# When enabled, Dependabot opens PRs that bump action SHAs AND update the
+# version comment, so we retain SHA-pinning without doing it manually.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Denver"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci(actions)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
